@@ -134,7 +134,10 @@ class Centrale(StoreWithUrlExtensions):
             stock = 0
         offer_price = Decimal(
             remove_words(
-                soup.find("div", {"style": "margin-bottom: -4px;"}).text.split("$")[1]
+                soup.find(
+                    "span",
+                    {"style": "font-size: 35px; font-weight: 1000; color: #0076F1"},
+                ).text.split("$")[1]
             )
         )
         normal_price = Decimal(
