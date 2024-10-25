@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
 
 
 class Novey(Store):
@@ -20,24 +20,40 @@ class Novey(Store):
     def discover_urls_for_category(cls, category, extra_args=None):
         # Only interested in LG products
 
-        session = session_with_proxy(extra_args)
-        product_urls = []
         if TELEVISION != category:
             return []
 
-        url = "https://lusearchapi-na.hawksearch.com/sites/novey/?searchText=LG&mpp=300"
-        print(url)
-        response = session.get(url)
-        soup = BeautifulSoup(response.text, "lxml")
+        session = session_with_proxy(extra_args)
+        product_urls = []
+        payload = {
+            "requests": [
+                {
+                    "indexName": "magento2_prod_novey_panama_products",
+                    "params": "hitsPerPage=300&page=0&query=lg",
+                }
+            ]
+        }
+        session.headers = {
+            "x-algolia-api-key": "ZTA5ODZlODJlN2M2N2NiYzdkOTI2OWFmNDZjNTA3MDQyZTY4NTdhMDc3MTNkNDM3YTc4YjA0YzBmMzdhZmUzZGZpbHRlcnM9Y2F0YWxvZ19wZXJtaXNzaW9ucy5jdXN0b21lcl9ncm91cF8wJTIwJTIxJTNEJTIwMCZ0YWdGaWx0ZXJzPSZ2YWxpZFVudGlsPTE3Mjk5NTMzMjc=",
+            "x-algolia-application-id": "ZCZRBTYD8I",
+        }
+        page = 0
 
-        product_containers = soup.findAll("div", "cc_product_item")
+        while True:
+            url = "https://zczrbtyd8i-dsn.algolia.net/1/indexes/*/queries"
+            payload["requests"][0]["params"] = f"hitsPerPage=300&page={page}&query=lg"
+            print(url)
+            response = json.loads(session.post(url, json=payload).text)
+            products = response["results"][0]["hits"]
 
-        if not product_containers:
-            logging.warning("Empty category:" + url)
+            if not products:
+                break
 
-        for container in product_containers:
-            product_url = container.find("a")["href"]
-            product_urls.append(product_url)
+            for product in products:
+                product_urls.append(product["url"])
+
+            page += 1
+
         return product_urls
 
     @classmethod
@@ -45,30 +61,24 @@ class Novey(Store):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
-
-        product_data = re.search(
-            r"CCRZ.detailData.jsonProductData = {([\S\s]+?)};", response.text
+        soup = BeautifulSoup(response.text, "lxml")
+        name = soup.find("h1", "page-title").text.strip()
+        key = str(soup.find("input", {"name": "product"})["value"])
+        sku = soup.find("div", {"itemprop": "sku"}).text.strip()
+        price_container = soup.find("div", "product-info-price")
+        price = Decimal(
+            remove_words(price_container.find("span", "price").text, ["$", ","])
         )
-
-        if not product_data:
-            return []
-
-        product_json = json.loads("{" + product_data.groups()[0] + "}")["product"]
-
-        if product_json["canAddtoCart"]:
-            stock = -1
-        else:
-            stock = 0
-
-        prodBean = product_json["prodBean"]
-
-        name = prodBean["name"]
-        sku = prodBean["sku"]
-        key = prodBean["id"]
-        price = Decimal(str(prodBean["price"]))
-        description = prodBean.get("filterData", None)
-
-        picture_urls = [i["uri"] for i in prodBean.get("EProductMediasS", [])]
+        description_container = soup.find("div", {"id": "description"})
+        description = html_to_markdown(
+            description_container.find("div", "product-detailed-info").text
+        )
+        stock_container = soup.find("div", "stock available")
+        stock = -1 if stock_container.text.strip() == "Disponible" else 0
+        pictures_data = json.loads(
+            soup.findAll("script", {"type": "text/x-magento-init"})[27].text
+        )["[data-gallery-role=gallery-placeholder]"]["mage/gallery/gallery"]["data"]
+        picture_urls = [img["img"].split("?")[0] for img in pictures_data]
 
         p = Product(
             name,
@@ -85,4 +95,5 @@ class Novey(Store):
             picture_urls=picture_urls,
             description=description,
         )
+
         return [p]
