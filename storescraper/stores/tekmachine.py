@@ -78,6 +78,9 @@ class Tekmachine(StoreWithUrlExtensions):
         prices = soup.find("p", "price").findAll("span", "amount")
         normal_price = Decimal(remove_words(prices[0].text))
 
+        if normal_price == 0:
+            return []
+
         if len(prices) > 1:
             offer_price = Decimal(remove_words(prices[1].text))
         else:
