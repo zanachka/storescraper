@@ -43,7 +43,7 @@ class ShopBox(StoreWithUrlExtensions):
         ["mouse", MOUSE],
         ["teclados-accesorios-computacion", KEYBOARD],
         ["discos-duros", STORAGE_DRIVE],
-        ["pendrive", USB_FLASH_DRIVE],
+        ["pendrives", USB_FLASH_DRIVE],
         ["tarjetas-de-memoria", MEMORY_CARD],
         ["fuentes-de-poder", POWER_SUPPLY],
         ["memorias-ram", RAM],
