@@ -171,11 +171,15 @@ class DiamondPc(StoreWithUrlExtensions):
         else:
             normal_price = offer_price
 
-        stock_p = soup.find("p", "in-stock")
-        if stock_p:
-            stock = int(stock_p.text.strip().split(" ")[0])
-        else:
+        in_stock = soup.find("p", "in-stock")
+        out_stock = soup.find("p", "out-of-stock")
+
+        if out_stock:
             stock = 0
+        elif in_stock:
+            stock = int(in_stock.text.strip().split(" ")[0])
+        else:
+            stock = -1
 
         picture_urls = [
             tag["href"].split("?")[0]
