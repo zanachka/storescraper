@@ -69,8 +69,7 @@ class PlazaLama(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        sku = re.search(r"-(\d+)$", url).group(1)
-
+        sku = re.search(r"[^-]+$", url).group()
         payload = {
             "operationName": "GetProductsBySKU",
             "variables": {
