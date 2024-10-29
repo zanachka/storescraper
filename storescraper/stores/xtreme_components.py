@@ -44,12 +44,17 @@ class XtremeComponents(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        soup = BeautifulSoup(session.get(url).text, "lxml")
-        response = json.loads(
+        response = session.get(url)
+
+        if response.status_code == 404:
+            return []
+
+        soup = BeautifulSoup(response.text, "lxml")
+        response_data = json.loads(
             soup.findAll("script", {"type": "application/ld+json"})[1].text
         )
 
-        for node in response["@graph"]:
+        for node in response_data["@graph"]:
             if node["@type"] == "Product":
                 product_data = node
                 break
