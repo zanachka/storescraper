@@ -75,9 +75,16 @@ class Novey(Store):
         )
         stock_container = soup.find("div", "stock available")
         stock = -1 if stock_container.text.strip() == "Disponible" else 0
-        pictures_data = json.loads(
-            soup.findAll("script", {"type": "text/x-magento-init"})[27].text
-        )["[data-gallery-role=gallery-placeholder]"]["mage/gallery/gallery"]["data"]
+        magento_scripts = soup.findAll("script", {"type": "text/x-magento-init"})
+        pictures_data = None
+
+        for script in magento_scripts:
+            data = json.loads(script.text)
+
+            if "[data-gallery-role=gallery-placeholder]" in data:
+                pictures_data = data["[data-gallery-role=gallery-placeholder]"]["mage/gallery/gallery"]["data"]
+                break
+            
         picture_urls = [img["img"].split("?")[0] for img in pictures_data]
 
         p = Product(
