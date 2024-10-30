@@ -1,6 +1,6 @@
 import logging
 from decimal import Decimal
-
+import math
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
@@ -103,8 +103,16 @@ class LoiChile(StoreWithUrlExtensions):
             price_tag = soup.find("p", "hotsale-precio-hotsale").find("span")
             price = Decimal(remove_words(price_tag.text.replace("USD", "")))
 
+        offer_price = None
         offer_price_tag = soup.find("span", "precio")
-        offer_price = Decimal(remove_words(offer_price_tag.text)) if offer_price_tag else price
+        
+        if offer_price_tag:
+            offer_price = float(remove_words(offer_price_tag.text, ["$", " "]).replace(",", "."))
+            offer_price = Decimal(math.ceil(offer_price))
+
+        if not offer_price or offer_price > price:
+            offer_price = price
+
         picture_urls = []
         picture_response = session.get(
             f"https://loi.com.uy/index.php?ctrl=productos&urlseo=smart-tv-lg-4k-43ur7800psb"
