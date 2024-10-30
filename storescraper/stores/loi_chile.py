@@ -95,16 +95,17 @@ class LoiChile(StoreWithUrlExtensions):
             .replace("\n", "")
         )
         sku = soup.find("span", {"id": "idProducto"}).text
-
         price_tag = soup.find("div", {"id": "contenedor_precio_detalle_producto"})
+
         if price_tag:
             price = Decimal(price_tag["data-precio"].replace(",", ".")).quantize(0)
         else:
             price_tag = soup.find("p", "hotsale-precio-hotsale").find("span")
             price = Decimal(remove_words(price_tag.text.replace("USD", "")))
 
+        offer_price_tag = soup.find("span", "precio")
+        offer_price = Decimal(remove_words(offer_price_tag.text)) if offer_price_tag else price
         picture_urls = []
-
         picture_response = session.get(
             f"https://loi.com.uy/index.php?ctrl=productos&urlseo=smart-tv-lg-4k-43ur7800psb"
         )
@@ -123,7 +124,7 @@ class LoiChile(StoreWithUrlExtensions):
             sku,
             -1,
             price,
-            price,
+            offer_price,
             cls.CURRENCY,
             sku=sku,
             picture_urls=picture_urls,

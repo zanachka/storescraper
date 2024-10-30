@@ -4,3 +4,4 @@ env
 .idea
 *.crt
 .DS_Store
+dummy*
