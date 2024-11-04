@@ -815,8 +815,12 @@ class MercadoLibreChile(Store):
             ).format(review_entry["item_id"])
             reviews_response = api_session.get(review_endpoint)
             reviews_data = reviews_response.json()
-            review_count = reviews_data["paging"]["total"]
-            review_avg_score = float(reviews_data["rating_average"])
+            
+            if "paging" in review_count:
+                review_count = reviews_data["paging"]["total"]
+                review_avg_score = float(reviews_data["rating_average"])
+            else:
+                return []
         else:
             review_count = None
             review_avg_score = None
