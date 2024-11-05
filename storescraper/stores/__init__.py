@@ -63,6 +63,7 @@ from .diamond_pc import DiamondPc
 from .diayta import Diayta
 from .digiplot import Digiplot
 from .digital_choice import DigitalChoice
+from .digitek import Digitek
 from .dismac import Dismac
 from .diunsa import Diunsa
 from .divino import Divino
