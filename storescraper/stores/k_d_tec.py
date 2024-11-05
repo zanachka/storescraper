@@ -105,7 +105,7 @@ class KDTec(StoreWithUrlExtensions):
         product_urls = []
         page = 1
         while True:
-            if page > 30:
+            if page > 40:
                 raise Exception("Page overflow: " + url_extension)
             url_webpage = "https://kdtec.cl/categoria-producto/{}/".format(
                 url_extension
