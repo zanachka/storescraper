@@ -1,4 +1,3 @@
-import logging
 from decimal import Decimal
 
 from bs4 import BeautifulSoup
@@ -110,8 +109,22 @@ class TiShop(StoreWithUrlExtensions):
         name = product_data_tags[1].text.strip()
         sku = product_data_tags[2].text.strip()
         key = soup.find("input", {"id": "line_item_product_id"}).get("value")
-        offer_price = Decimal(remove_words(product_data_tags[3].text.strip()))
-        normal_price = Decimal(remove_words(product_data_tags[5].text.strip()))
+
+        normal_price = None
+        offer_price = None
+
+        for i, product_data_tag in enumerate(product_data_tags):
+            tag_text = product_data_tag.text.strip().lower()
+
+            if tag_text == "por transferencia":
+                offer_price = Decimal(
+                    remove_words(product_data_tags[i - 1].text.strip().lower())
+                )
+            elif tag_text == "otros medios de pago":
+                normal_price = Decimal(
+                    remove_words(product_data_tags[i - 1].text.strip().lower())
+                )
+
         stock = -1 if soup.find("form", {"id": "add_to_cart_form"}) else 0
         picture_urls_container = soup.find("div", "main-carousel")
         picture_urls = [img["src"] for img in picture_urls_container.findAll("img")]
