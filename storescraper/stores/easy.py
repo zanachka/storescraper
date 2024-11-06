@@ -294,9 +294,14 @@ class Easy(Store):
             return []
 
         response = response.json()
+
         assert len(response["items"]) == 1
 
         item = response["items"][0]
+
+        if "images" not in item:
+            return []
+
         name = response["productName"]
         key = response["productId"]
         picture_urls = [img["imageUrl"] for img in item["images"]]
