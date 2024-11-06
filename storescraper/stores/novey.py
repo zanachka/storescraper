@@ -34,7 +34,7 @@ class Novey(Store):
             ]
         }
         session.headers = {
-            "x-algolia-api-key": "YjQ4NTdlNGQ3MWRlNjdhMGQ1Yzc0NjYxOTZiMzQ0YWFhMTMxM2RlNTk4NTNlMGRiNzUwZWEwOTYzYWUxMDc2NmZpbHRlcnM9Y2F0YWxvZ19wZXJtaXNzaW9ucy5jdXN0b21lcl9ncm91cF8wJTIwJTIxJTNEJTIwMCZ0YWdGaWx0ZXJzPSZ2YWxpZFVudGlsPTE3MzA4MTE5Nzk=",
+            "x-algolia-api-key": "ZDcxNjkyOTI0ODE3MTYxYjYzZmZjOGIyN2RhM2FmN2YzMDcwMjJlNGY3YjdkMjBjZDc5YmU2MDc0NmQ0NGJhZmZpbHRlcnM9Y2F0YWxvZ19wZXJtaXNzaW9ucy5jdXN0b21lcl9ncm91cF8wJTIwJTIxJTNEJTIwMCZ0YWdGaWx0ZXJzPSZ2YWxpZFVudGlsPTE3MzA5OTA3Mjk=",
             "x-algolia-application-id": "ZCZRBTYD8I",
         }
         page = 0
@@ -82,9 +82,11 @@ class Novey(Store):
             data = json.loads(script.text)
 
             if "[data-gallery-role=gallery-placeholder]" in data:
-                pictures_data = data["[data-gallery-role=gallery-placeholder]"]["mage/gallery/gallery"]["data"]
+                pictures_data = data["[data-gallery-role=gallery-placeholder]"][
+                    "mage/gallery/gallery"
+                ]["data"]
                 break
-            
+
         picture_urls = [img["img"].split("?")[0] for img in pictures_data]
 
         p = Product(
