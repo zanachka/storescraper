@@ -1,4 +1,5 @@
 import logging
+import json
 from decimal import Decimal
 
 from bs4 import BeautifulSoup
@@ -30,120 +31,125 @@ from storescraper.categories import (
     WEARABLE,
     CPU_COOLER,
     MEMORY_CARD,
+    TELEVISION,
+    CASE_FAN,
+    VIDEO_GAME_CONSOLE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
 
 
 class Globalbox(StoreWithUrlExtensions):
     url_extensions = [
-        ["computacion/notebooks", NOTEBOOK],
-        ["computacion/ipad-tablets", TABLET],
-        ["computacion/all-in-one", ALL_IN_ONE],
-        ["componentes/gabinetes", COMPUTER_CASE],
-        ["componentes/placas-madres", MOTHERBOARD],
-        ["componentes/fuentes-de-poder", POWER_SUPPLY],
-        ["componentes/procesadores", PROCESSOR],
-        ["componentes/tarjetas-de-video", VIDEO_CARD],
-        ["componentes/memorias/memorias-ram", RAM],
-        ["componentes/memorias/pendrive", USB_FLASH_DRIVE],
-        ["componentes/memorias/tarjetas-de-memoria-flash", MEMORY_CARD],
-        ["componentes/almacenamiento/discos-externos", EXTERNAL_STORAGE_DRIVE],
-        ["componentes/almacenamiento/discos-internos", STORAGE_DRIVE],
-        ["componentes/almacenamiento/ssd", SOLID_STATE_DRIVE],
-        ["perifericos/kit-teclado-y-mouse", KEYBOARD_MOUSE_COMBO],
-        ["perifericos/monitores", MONITOR],
-        ["perifericos/impresion-y-scanners", PRINTER],
-        ["perifericos/proteccion-electrica/ups", UPS],
-        ["electronica/relojes-inteligentes", WEARABLE],
-        ["electronica/celulares", CELL],
-        ["electronica/parlantes", STEREO_SYSTEM],
-        ["electronica/audifonos", HEADPHONES],
-        ["gamer/notebook-gamer", NOTEBOOK],
-        ["gamer/monitor-gamer", MONITOR],
-        ["gamer/gabinetes-gamer", COMPUTER_CASE],
-        ["gamer/memorias-gamer", RAM],
-        ["gamer/fuentes-de-poder-gamer", POWER_SUPPLY],
-        ["gamer/teclados-gamer", KEYBOARD],
-        ["gamer/mouse-gamer", MOUSE],
-        ["gamer/audifonos-gamer", HEADPHONES],
-        ["gamer/sillas-gamer", GAMING_CHAIR],
-        ["perifericos/teclados", KEYBOARD],
-        ["perifericos/mouse", MOUSE],
-        ["componentes/enfriamiento-y-ventilacion", CPU_COOLER],
+        ["notebooks", NOTEBOOK],
+        ["all-in-one", ALL_IN_ONE],
+        ["tablets", TABLET],
+        ["macbook", NOTEBOOK],
+        ["imac", ALL_IN_ONE],
+        ["ipad", TABLET],
+        ["monitores", MONITOR],
+        ["mouse", MOUSE],
+        ["teclados", KEYBOARD],
+        ["combo-teclado-y-mouse", KEYBOARD_MOUSE_COMBO],
+        ["parlantes-de-pc", STEREO_SYSTEM],
+        ["auriculares-y-headset", HEADPHONES],
+        ["memorias-ram", RAM],
+        ["unidades-flash", USB_FLASH_DRIVE],
+        ["tarjetas-de-memoria", MEMORY_CARD],
+        ["discos-duros-externos", EXTERNAL_STORAGE_DRIVE],
+        ["discos-duros-internos", STORAGE_DRIVE],
+        ["unidades-de-estado-solido", SOLID_STATE_DRIVE],
+        ["unidades-de-estado-solido-externos", EXTERNAL_STORAGE_DRIVE],
+        ["tarjetas-graficas", VIDEO_CARD],
+        ["torres", COMPUTER_CASE],
+        ["ventiladores-pc", CASE_FAN],
+        ["refrigeracion-cpu", CPU_COOLER],
+        ["procesadores", PROCESSOR],
+        ["placas-base", MOTHERBOARD],
+        ["fuentes-de-alimentacion", POWER_SUPPLY],
+        ["ups-y-respaldo-energia", UPS],
+        ["impresoras-laser", PRINTER],
+        ["impresoras-tinta", PRINTER],
+        ["impresoras-multifuncionales", PRINTER],
+        ["impresoras-laser", PRINTER],
+        ["celulares", CELL],
+        ["smartwatches", WEARABLE],
+        ["wearables", WEARABLE],
+        ["smart-tv", TELEVISION],
+        ["parlantes", STEREO_SYSTEM],
+        ["monitores-de-estudio", STEREO_SYSTEM],
+        ["barras-de-sonido", STEREO_SYSTEM],
+        ["consolas-de-videojuegos", VIDEO_GAME_CONSOLE],
+        ["sillas-y-escritorios-gaming", GAMING_CHAIR],
     ]
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-        session.headers["user-agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
-        )
-        session.cookies["humans_21909"] = "1"
+        session.headers["user-agent"] = "SoloTodoBot"
         product_urls = []
-
-        done = False
         page = 1
+
         while True:
-            url_webpage = "https://globalbox.cl/{}?p={}".format(url_extension, page)
+            url_webpage = (
+                f"https://globalbox.cl/categoria-producto/{url_extension}/page/{page}/"
+            )
             print(url_webpage)
 
             if page > 10:
                 raise Exception("page overflow: " + url_webpage)
 
-            response = session.get(url_webpage)
-
-            if response.url != url_webpage:
-                raise Exception("URL mismatch: {} {}".format(url_webpage, response.url))
-
+            response = session.get(url_webpage, allow_redirects=True)
             soup = BeautifulSoup(response.text, "lxml")
-            product_containers = soup.findAll("li", "item isotope-item")
+            product_containers = soup.findAll("li", "product")
+
             if not product_containers:
                 if page == 1:
-                    logging.warning("Empty category: " + url_extension)
+                    logging.warning(f"Empty category: {url_extension}")
                 break
-            for container in product_containers:
-                product_url = container.find("a")["href"]
-                if product_url in product_urls:
-                    done = True
-                    break
-                product_urls.append(product_url)
 
-            if done:
-                break
+            for container in product_containers:
+                product_urls.append(
+                    container.find("a", "woocommerce-loop-product__link")["href"]
+                )
 
             page += 1
+
         return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        session.headers["user-agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
-        )
-        session.cookies["humans_21909"] = "1"
+        session.headers["user-agent"] = "SoloTodoBot"
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        name = soup.find("h1", {"itemprop": "name"}).text
-        key = soup.find("input", {"name": "product"})["value"]
-        sku = soup.find("th", text="SKU").parent.find("td").text.strip()
-        part_number = soup.find("th", text="Part Number").parent.find("td").text.strip()
-        availability_tag = soup.find("link", {"itemprop": "availability"})
 
-        if (
-            not availability_tag
-            or availability_tag["href"] != "http://schema.org/InStock"
-        ):
-            stock = 0
-        else:
-            stock = -1
+        product_data = None
+        json_data = json.loads(
+            soup.findAll("script", {"type": "application/ld+json"})[1].text
+        )
 
-        price = Decimal(remove_words(soup.find("span", "regular-price").text.strip()))
-        picture_urls = [tag["src"] for tag in soup.find("figure").findAll("img")]
+        for entry in json_data["@graph"]:
+            if entry["@type"] == "Product":
+                product_data = entry
+                break
+
+        name = product_data["name"]
+        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
+        sku = product_data["sku"]
+
+        assert len(product_data["offers"]) == 1
+
+        offer = product_data["offers"][0]
+        price = Decimal(offer["price"])
+        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        picture_urls = [soup.find("div", "single-product-wrapper").find("a")["href"]]
+        description = html_to_markdown(
+            soup.find("div", {"id": "tab-specification"}).text
+        )
+
         p = Product(
             name,
             cls.__name__,
@@ -155,8 +161,10 @@ class Globalbox(StoreWithUrlExtensions):
             price,
             price,
             "CLP",
+            description=description,
             sku=sku,
-            part_number=part_number,
+            part_number=sku,
             picture_urls=picture_urls,
         )
+
         return [p]
