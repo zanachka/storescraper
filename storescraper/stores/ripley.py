@@ -202,7 +202,7 @@ class Ripley(Store):
         # ['electro/lavanderia/doble-carga', [WASHING_MACHINE],
         #  'Electro > Lavandería > Doble carga', 1],
         [
-            "tecno/celulares?facet=Tipo%20de%20Producto%3ASmartphone",
+            "tecno/celulares?facet=Tipo%20de%20Producto%3ASmartphone&s=mdco",
             [CELL],
             "Tecno > Celulares",
             1,
@@ -320,7 +320,8 @@ class Ripley(Store):
                 if page > 400:
                     raise Exception(f"Page overflow: {category_path}")
 
-                url = f"https://simple.ripley.cl/api/v1/catalog-products/{category_path}?page={page}"
+                separator = "&" if "?" in category_path else "?"
+                url = f"https://simple.ripley.cl/api/v1/catalog-products/{category_path}{separator}page={page}"
 
                 if fast_mode:
                     url += "&facet=Vendido%20por%3ARipley"
@@ -357,6 +358,7 @@ class Ripley(Store):
                     response["pagination"]["actualPage"]
                     == response["pagination"]["totalPages"]
                 ):
+
                     break
 
                 page += 1
