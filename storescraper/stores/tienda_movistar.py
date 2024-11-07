@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
@@ -47,7 +48,10 @@ class TiendaMovistar(Movistar):
         session.headers["x-requested-with"] = "XMLHttpRequest"
         session.headers["referer"] = url
         soup = BeautifulSoup(session.get(url).text, "html5lib")
-        form_key = soup.find("input", {"id": "du-form-key"})["value"]
+        form_key = soup.find("script", text=re.compile("var formKeyDetalle"))
+        form_key = re.search(r"var formKeyDetalle = '([^']+)'", form_key.string).group(
+            1
+        )
         form_emh = soup.find("input", {"id": "du-form-emh"})["value"]
 
         for product in products:
