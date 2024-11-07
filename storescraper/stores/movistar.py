@@ -214,7 +214,8 @@ class Movistar(Store):
             condition = "https://schema.org/NewCondition"
         products = []
 
-        form_key = soup.find("input", {"id": "du-form-key"})["value"]
+        form_key = soup.find("script", text=re.compile("var formKeyDetalle")).text
+        form_key = re.search(r"var formKeyDetalle = '([^']+)'", form_key).group(1)
         form_emh = soup.find("input", {"id": "du-form-emh"})["value"]
         base_payload = f"key={form_key}&emh={form_emh}"
         base_endpoint = "https://catalogo.movistar.cl/tienda/detalleequipo/ajax/"
