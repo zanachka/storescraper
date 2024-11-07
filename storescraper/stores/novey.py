@@ -69,10 +69,14 @@ class Novey(Store):
         price = Decimal(
             remove_words(price_container.find("span", "price").text, ["$", ","])
         )
+        description = None
         description_container = soup.find("div", {"id": "description"})
-        description = html_to_markdown(
-            description_container.find("div", "product-detailed-info").text
-        )
+
+        if description_container:
+            description = html_to_markdown(
+                description_container.find("div", "product-detailed-info").text
+            )
+
         stock_container = soup.find("div", "stock available")
         stock = -1 if stock_container.text.strip() == "Disponible" else 0
         magento_scripts = soup.findAll("script", {"type": "text/x-magento-init"})
