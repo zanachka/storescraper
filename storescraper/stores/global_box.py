@@ -128,7 +128,7 @@ class Globalbox(StoreWithUrlExtensions):
 
         product_data = None
         json_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[1].text
+            soup.findAll("script", {"type": "application/ld+json"})[0].text
         )
 
         for entry in json_data["@graph"]:
@@ -139,12 +139,9 @@ class Globalbox(StoreWithUrlExtensions):
         name = product_data["name"]
         key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
         sku = product_data["sku"]
-
-        assert len(product_data["offers"]) == 1
-
-        offer = product_data["offers"][0]
+        offer = product_data["offers"]
         price = Decimal(offer["price"])
-        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
         picture_urls = [soup.find("div", "single-product-wrapper").find("a")["href"]]
         description = html_to_markdown(
             soup.find("div", {"id": "tab-specification"}).text
