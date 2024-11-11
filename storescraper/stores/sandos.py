@@ -60,6 +60,7 @@ class Sandos(StoreWithUrlExtensions):
         [35, POWER_SUPPLY],
         [36, POWER_SUPPLY],
         [39, COMPUTER_CASE],
+        [60, RAM],
         [63, NOTEBOOK],
         [64, NOTEBOOK],
         [66, TABLET],
