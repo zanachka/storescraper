@@ -61,6 +61,10 @@ class Novey(Store):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
+
+        if response.status_code == 404:
+            return []
+
         soup = BeautifulSoup(response.text, "lxml")
         name = soup.find("h1", "page-title").text.strip()
         key = str(soup.find("input", {"name": "product"})["value"])
