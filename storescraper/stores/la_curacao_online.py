@@ -42,16 +42,19 @@ class LaCuracaoOnline(Store):
 
             response = session.get(url)
             soup = BeautifulSoup(response.text, "lxml")
-            product_containers = soup.findAll("li", "product")
 
-            if not product_containers:
-                if page == 1:
-                    raise Exception("Empty section: {}".format(url))
-                break
+            product_containers = soup.findAll("li", "product")
 
             for container in product_containers:
                 product_url = container.find("a")["href"]
                 product_urls.append(product_url)
+
+            item_amount = soup.find("p", {"id": "toolbar-amount"}).findAll(
+                "span", "toolbar-number"
+            )
+
+            if item_amount[0].text == item_amount[1].text:
+                break
 
             page += 1
 
