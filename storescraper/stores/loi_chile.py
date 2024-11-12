@@ -105,9 +105,11 @@ class LoiChile(StoreWithUrlExtensions):
 
         offer_price = None
         offer_price_tag = soup.find("span", "precio")
-        
+
         if offer_price_tag:
-            offer_price = float(remove_words(offer_price_tag.text, ["$", " "]).replace(",", "."))
+            offer_price = float(
+                remove_words(offer_price_tag.text, ["$", " ", "."]).replace(",", ".")
+            )
             offer_price = Decimal(math.ceil(offer_price))
 
         if not offer_price or offer_price > price:
