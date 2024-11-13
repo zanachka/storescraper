@@ -175,7 +175,6 @@ class DiamondPc(StoreWithUrlExtensions):
         imported = soup.findAll("strong", text="Producto de ImportaciÃ³n")
 
         if imported:
-            print(url, "YAY")
             stock = 0
         else:
             in_stock = soup.find("p", "in-stock")
