@@ -11,14 +11,13 @@ from storescraper.categories import (
     COMPUTER_CASE,
     MOUSE,
     CPU_COOLER,
-    VIDEO_CARD,
-    MOTHERBOARD,
-    PROCESSOR,
     RAM,
-    CASE_FAN,
-    USB_FLASH_DRIVE,
     STEREO_SYSTEM,
-    PRINTER,
+    MONITOR,
+    GAMING_CHAIR,
+    GAMING_DESK,
+    SOLID_STATE_DRIVE,
+    MICROPHONE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -26,32 +25,25 @@ from storescraper.utils import session_with_proxy
 
 
 class VGamers(StoreWithUrlExtensions):
-    preferred_discover_urls_concurrency = 3
-    preferred_products_for_url_concurrency = 3
+    base_url = "https://vgamers.cl"
 
     url_extensions = [
-        ["audifonos-gamer", HEADPHONES],
-        ["teclados-gamers", KEYBOARD],
-        ["mouse-gamer", MOUSE],
-        ["disipador-cpu", CPU_COOLER],
-        ["water-cooling", CPU_COOLER],
-        ["ventiladores", CASE_FAN],
-        ["procesadores", PROCESSOR],
-        ["placas-madres", MOTHERBOARD],
-        ["memorias-ram", RAM],
-        ["almacenamiento", USB_FLASH_DRIVE],
-        ["tarjetas-graficas", VIDEO_CARD],
-        ["gabinetes", COMPUTER_CASE],
-        ["fuentes-de-poder", POWER_SUPPLY],
-        ["audifonos-tradicionales", HEADPHONES],
-        ["audifonos-bluetooth", HEADPHONES],
-        ["radio-reloj", STEREO_SYSTEM],
-        ["barras-de-sonido", STEREO_SYSTEM],
-        ["parlantes", STEREO_SYSTEM],
-        ["portables", STEREO_SYSTEM],
-        ["mouse-tradicional", MOUSE],
-        ["teclado-tradicional", KEYBOARD],
-        ["impresoras-y-suministros", PRINTER],
+        ["perifericos-gamer/audifonos-gamer", HEADPHONES],
+        ["perifericos-gamer/teclados-gamer", KEYBOARD],
+        ["perifericos-gamer/mouse-gamer", MOUSE],
+        ["perifericos-gamer/parlantes", STEREO_SYSTEM],
+        ["perifericos-gamer/monitores", MONITOR],
+        ["hardware-1/fuentes-de-poder", POWER_SUPPLY],
+        ["hardware-1/almacenamiento", SOLID_STATE_DRIVE],
+        ["hardware-1/gabinetes-gamer", COMPUTER_CASE],
+        ["hardware-1/refrigeracion", CPU_COOLER],
+        ["hardware-1/memorias-ram", RAM],
+        ["gaming/sillas-gamer", GAMING_CHAIR],
+        ["gaming/escritorios-gamer", GAMING_DESK],
+        ["hogar-y-oficina/accesorios-computacionales/mouse", MOUSE],
+        ["hogar-y-oficina/accesorios-computacionales/teclado", KEYBOARD],
+        ["hogar-y-oficina/accesorios-computacionales/audifonos", HEADPHONES],
+        ["streaming/microfonos", MICROPHONE],
     ]
 
     @classmethod
@@ -68,9 +60,7 @@ class VGamers(StoreWithUrlExtensions):
             if page > 10:
                 raise Exception("page overflow: " + url_extension)
 
-            url_webpage = "https://vgamers.cl/categoria-producto/{}/page/{}/".format(
-                url_extension, page
-            )
+            url_webpage = f"{cls.base_url}/{url_extension}?page={page}"
             print(url_webpage)
 
             response = session.get(url_webpage)
@@ -79,34 +69,38 @@ class VGamers(StoreWithUrlExtensions):
                 break
 
             soup = BeautifulSoup(response.text, "lxml")
-            products_container = soup.find("div", "products")
+            products = soup.find("section", "page-gallery").findAll(
+                "div", "product-block"
+            )
 
-            if not products_container:
+            if not products:
                 if page == 1:
-                    logging.warning("Empty category: " + url_extension)
+                    logging.warning(f"Empty category: {url_extension}")
+
                 break
 
-            for product in products_container.find_all("div", "product"):
+            for product in products:
                 product_url = product.find("a")["href"]
-                product_urls.append(product_url)
+
+                if product_url != "/":
+                    product_url = f"{cls.base_url}{product_url}"
+                    product_urls.append(product_url)
+
             page += 1
+
         return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
-        )
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
+        key = soup.find("form", "product-form")["data-id"]
         json_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[-1].text
+            soup.find("script", {"type": "application/ld+json"}).text
         )
-        for entry in json_data["@graph"]:
+        for entry in json_data:
             if entry["@type"] == "Product":
                 product_data = entry
                 break
@@ -114,23 +108,15 @@ class VGamers(StoreWithUrlExtensions):
             raise Exception("No JSON product data found")
 
         name = product_data["name"]
-        sku = product_data["sku"]
+        sku = product_data.get("sku")
         description = product_data.get("description", None)
-        offer_price = Decimal(product_data["offers"]["price"])
-        normal_price = (offer_price * Decimal(1.05)).quantize(Decimal(0))
-
-        if not soup.find("button", "single_add_to_cart_button"):
-            stock = 0
-        else:
-            qty_input = soup.find("input", "qty")
-            if qty_input["type"] == "hidden":
-                stock = 1
-            elif "max" in qty_input.attrs and qty_input["max"] != "":
-                stock = int(qty_input["max"])
-            else:
-                stock = -1
-
-        picture_urls = [soup.find("meta", {"property": "og:image"})["content"]]
+        offer = product_data["offers"]
+        price = Decimal(offer["price"])
+        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        picture_urls = [
+            slide.find("img")["src"].split("resize")[0]
+            for slide in soup.findAll("div", "swiper-slide product-gallery__slide trsn")
+        ]
 
         p = Product(
             name,
@@ -140,8 +126,8 @@ class VGamers(StoreWithUrlExtensions):
             url,
             key,
             stock,
-            normal_price,
-            offer_price,
+            price,
+            price,
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
