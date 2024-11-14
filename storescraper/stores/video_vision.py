@@ -1,7 +1,8 @@
 import json
 import logging
-from decimal import Decimal
+import re
 
+from decimal import Decimal
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
@@ -15,7 +16,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
 
 
 class VideoVision(StoreWithUrlExtensions):
@@ -71,22 +72,25 @@ class VideoVision(StoreWithUrlExtensions):
         soup = BeautifulSoup(response.text, "lxml")
 
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
-
-        json_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[-1].text
+        name = soup.find("h2", "product_title").text
+        sku = soup.find("span", "sku").text
+        part_number = soup.find(
+            "div", "description woocommerce-product-details__short-description"
+        ).text.strip()
+        stock_span = soup.find(
+            "span", "product-stock in-stock s_in_stock_color woo-custom-stock-status"
         )
+        stock = int(re.search(r"\d+", stock_span.text).group()) if stock_span else 0
+        price = soup.find("div", "product-summary-wrap").find("p", "price").find("bdi")
 
-        name = json_data["name"]
-        sku = json_data["sku"]
-        part_number = json_data["description"]
-        stock_span = soup.find("span", "in-stock")
-        if stock_span:
-            stock = int(stock_span.find("span", "stock").text.split(" ")[0])
+        if not price:
+            return []
         else:
-            stock = 0
-        price = Decimal(json_data["offers"][0]["price"])
-        price = (price * Decimal("1.19")).quantize(0)
-        picture_urls = [json_data["image"]]
+            price = (Decimal(remove_words(price.text)) * Decimal("1.19")).quantize(0)
+
+        picture_urls = [soup.find("img", "woocommerce-main-image")["src"]]
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -101,5 +105,6 @@ class VideoVision(StoreWithUrlExtensions):
             sku=sku,
             part_number=part_number,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]
