@@ -1,6 +1,7 @@
 from decimal import Decimal
 import json
 import logging
+import re
 
 from bs4 import BeautifulSoup
 
@@ -104,21 +105,49 @@ class GestionYEquipos(StoreWithUrlExtensions):
                 )
                 products.append(p)
         else:
-            key = soup.find("input", {"name": "id"})["value"]
             json_container = soup.findAll("script", {"type": "application/ld+json"})[-1]
             json_data = json.loads(json_container.text)
-            name = json_data["name"].strip()
-            price = Decimal(json_data["offers"][0]["price"])
-            stock = (
-                -1
-                if json_data["offers"][0]["availability"] == "http://schema.org/InStock"
-                else 0
-            )
-            container = soup.find("div", "product-info")
-            sku = container.find("span", "product-sku__value").text.strip()
             picture_urls = [
                 "https:" + x["href"] for x in soup.findAll("a", "media--cover")
             ]
+        if "hasVariant" in json_data:
+            for variant in json_data["hasVariant"]:
+                name = variant["name"]
+                key = re.search(r"variant=(\d+)", variant["@id"]).group(1)
+                sku = variant["sku"]
+                offer = variant["offers"]
+                price = Decimal(offer["price"])
+                stock = (
+                    -1 if offer["availability"] == "http://schema.org/InStock" else 0
+                )
+
+                p = Product(
+                    name,
+                    cls.__name__,
+                    category,
+                    url,
+                    url,
+                    key,
+                    stock,
+                    price,
+                    price,
+                    "CLP",
+                    sku=sku,
+                    part_number=sku,
+                    picture_urls=picture_urls,
+                    description=description,
+                    condition=condition,
+                )
+
+                products.append(p)
+        else:
+            key = soup.find("input", {"name": "id"})["value"]
+            name = json_data["name"].strip()
+            offer = json_data["offers"]
+            price = Decimal(offer["price"])
+            stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+            container = soup.find("div", "product-info")
+            sku = container.find("span", "product-sku__value").text.strip()
 
             p = Product(
                 name,

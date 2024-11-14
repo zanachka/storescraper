@@ -166,20 +166,26 @@ class DiamondPc(StoreWithUrlExtensions):
 
         offer_price = Decimal(product_data["offers"][0]["price"]).quantize(0)
         second_price = soup.find("div", "wds-second price wds-below")
+
         if second_price:
             normal_price = Decimal(remove_words(second_price.find("bdi").text))
         else:
             normal_price = offer_price
 
-        in_stock = soup.find("p", "in-stock")
-        out_stock = soup.find("p", "out-of-stock")
+        imported = soup.findAll("strong", text="Producto de ImportaciÃ³n")
 
-        if out_stock:
+        if imported:
             stock = 0
-        elif in_stock:
-            stock = int(in_stock.text.strip().split(" ")[0])
         else:
-            stock = -1
+            in_stock = soup.find("p", "in-stock")
+            out_stock = soup.find("p", "out-of-stock")
+
+            if out_stock:
+                stock = 0
+            elif in_stock:
+                stock = int(in_stock.text.strip().split(" ")[0])
+            else:
+                stock = -1
 
         picture_urls = [
             tag["href"].split("?")[0]

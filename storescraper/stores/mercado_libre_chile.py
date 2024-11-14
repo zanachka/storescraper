@@ -621,6 +621,8 @@ class MercadoLibreChile(Store):
         ("MLC1692", "Placas Madre", MOTHERBOARD),
     ]
 
+    sellers_blacklist = ["REUSE"]
+
     @classmethod
     def categories(cls):
         # We are hardcoding the categories for now to slowly input ML SKUs
@@ -815,7 +817,7 @@ class MercadoLibreChile(Store):
             ).format(review_entry["item_id"])
             reviews_response = api_session.get(review_endpoint)
             reviews_data = reviews_response.json()
-            
+
             if "paging" in reviews_data:
                 review_count = reviews_data["paging"]["total"]
                 review_avg_score = float(reviews_data["rating_average"])
@@ -860,6 +862,7 @@ class MercadoLibreChile(Store):
             )
             seller_info = json.loads(api_session.get(seller_endpoint).text)
             seller = seller_info["nickname"]
+            stock = 0 if seller in cls.sellers_blacklist else -1
             picture_urls = [p["url"] for p in variation_data["pictures"]]
 
             products.append(
@@ -870,7 +873,7 @@ class MercadoLibreChile(Store):
                     url,
                     url,
                     sku,
-                    -1,
+                    stock,
                     price,
                     price,
                     "CLP",
@@ -891,6 +894,7 @@ class MercadoLibreChile(Store):
         seller = data["initialState"]["components"]["track"]["analytics_event"][
             "custom_dimensions"
         ]["customDimensions"]["officialStore"]
+        stock = 0 if seller in cls.sellers_blacklist else -1
         sku = data["initialState"]["id"]
         base_name = data["initialState"]["schema"][0]["name"]
         price = Decimal(data["initialState"]["schema"][0]["offers"]["price"]).quantize(
@@ -966,7 +970,7 @@ class MercadoLibreChile(Store):
                         variation_url,
                         url,
                         key,
-                        -1,
+                        stock,
                         price,
                         price,
                         "CLP",
@@ -992,7 +996,7 @@ class MercadoLibreChile(Store):
                     url,
                     url,
                     sku,
-                    -1,
+                    stock,
                     price,
                     price,
                     "CLP",

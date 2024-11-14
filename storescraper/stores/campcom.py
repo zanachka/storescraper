@@ -1,6 +1,8 @@
 from decimal import Decimal
 import json
 import logging
+import re
+
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
@@ -13,7 +15,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class Campcom(Store):
@@ -94,11 +96,12 @@ class Campcom(Store):
         name = json_data["name"]
         sku = str(json_data["sku"])
         offer = json_data["offers"][0]
+
         if "price" in offer:
-            offer_price = Decimal(offer["price"])
+            price = Decimal(offer["price"])
         else:
-            offer_price = Decimal(offer["lowPrice"])
-        normal_price = (offer_price * Decimal("1.04")).quantize(0)
+            price = Decimal(offer["lowPrice"])
+
         stock_span = soup.find("span", "stock in-stock")
 
         if soup.find("p", "available-on-backorder") or soup.find(
@@ -106,15 +109,20 @@ class Campcom(Store):
         ):
             stock = 0
         elif stock_span:
-            stock = int(stock_span.text.split("disp")[0].strip())
+            stock = int(re.search(r"\d+", stock_span.text).group())
         else:
             stock = -1
 
         picture_urls = []
         picture_container = soup.find("div", "woocommerce-product-gallery__wrapper")
+
         for a in picture_container.findAll("a"):
             if a["href"] != "":
                 picture_urls.append(a["href"])
+
+        description = html_to_markdown(
+            soup.find("div", "woocommerce-Tabs-panel--description").text
+        )
 
         p = Product(
             name,
@@ -124,11 +132,12 @@ class Campcom(Store):
             url,
             key,
             stock,
-            normal_price,
-            offer_price,
+            price,
+            price,
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
 
         return [p]
