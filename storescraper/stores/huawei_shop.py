@@ -120,8 +120,8 @@ class HuaweiShop(Store):
         if product_id_tag:
             product_id = product_id_tag.text.strip()
 
-        if 'productId' in url:
-            product_id = url.split('productId=')[1]
+        if "productId" in url:
+            product_id = url.split("productId=")[1]
 
         if not product_id_tag or not product_id:
             product_id_tag = soup.find("input", {"id": "productId"})
@@ -188,10 +188,9 @@ class HuaweiShop(Store):
             name = product["name"]
             picture_urls = [
                 "https://img01.huaweifile.com/sg/ms/cl/pms"
-                + photo["photoPath"]
+                + product["photoPath"]
                 + "800_800_"
-                + photo["photoName"]
-                for photo in product["groupPhotoList"]
+                + product["photoName"]
             ]
 
             if product["sbomPackageList"]:
