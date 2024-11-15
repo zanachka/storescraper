@@ -56,7 +56,7 @@ class Max(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url)
 
-        if response.status_code == 404:
+        if response.status_code in [404, 410]:
             return []
 
         soup = BeautifulSoup(response.text, "lxml")
