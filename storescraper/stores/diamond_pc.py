@@ -29,7 +29,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import remove_words, session_with_proxy
+from storescraper.utils import remove_words, session_with_proxy, html_to_markdown
 
 
 class DiamondPc(StoreWithUrlExtensions):
@@ -129,7 +129,16 @@ class DiamondPc(StoreWithUrlExtensions):
         else:
             sku = None
 
-        description = product_data["description"]
+        short_description_tag = soup.find("div", "wd-single-title").parent.find(
+            "div", "vc_row"
+        )
+
+        description = (
+            html_to_markdown(str(short_description_tag))
+            + "\n\n"
+            + product_data["description"]
+        )
+        imported = "PRODUCTO DE IMPORTACI" in description.upper()
 
         if soup.find("form", "variations_form"):
             products = []
@@ -141,7 +150,7 @@ class DiamondPc(StoreWithUrlExtensions):
                 variation_name = f"{name} - {''.join(product['attributes'].values())}"
                 key = str(product["variation_id"])
                 sku = product.get("sku", None)
-                stock = 0 if product["max_qty"] == "" else product["max_qty"]
+                stock = 0 if product["max_qty"] == "" or imported else product["max_qty"]
                 offer_price = Decimal(product["display_price"])
                 normal_price = (offer_price * Decimal("1.08")).quantize(0)
                 picture_urls = [product["image"]["url"]]
@@ -171,8 +180,6 @@ class DiamondPc(StoreWithUrlExtensions):
             normal_price = Decimal(remove_words(second_price.find("bdi").text))
         else:
             normal_price = offer_price
-
-        imported = soup.findAll("strong", text="Producto de ImportaciÃ³n")
 
         if imported:
             stock = 0
