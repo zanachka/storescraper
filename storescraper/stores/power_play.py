@@ -9,6 +9,7 @@ from storescraper.categories import (
     GAMING_CHAIR,
     HEADPHONES,
     KEYBOARD,
+    MONITOR,
     MOTHERBOARD,
     MOUSE,
     POWER_SUPPLY,
@@ -43,6 +44,7 @@ class PowerPlay(StoreWithUrlExtensions):
         ["consolas-ps3-ps4", VIDEO_GAME_CONSOLE],
         ["consolas-ps5", VIDEO_GAME_CONSOLE],
         ["consolas-xbox-series-s-x", VIDEO_GAME_CONSOLE],
+        ["monitores", MONITOR],
     ]
 
     @classmethod
