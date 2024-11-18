@@ -172,22 +172,14 @@ class NotebooksYa(StoreWithUrlExtensions):
             return []
 
         soup = BeautifulSoup(json.loads(content_tag.text), "lxml")
-
         name = soup.find("h2").text.strip()
-        key = soup.find("a", "single_add_to_wishlist")["data-product-id"]
-
-        qty_input = soup.find("input", "qty")
-
-        if not qty_input:
-            return []
-
-        if "max" in qty_input.attrs:
-            if qty_input["max"]:
-                stock = int(qty_input["max"])
-            else:
-                stock = -1
-        else:
-            stock = 1
+        key = raw_soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
+        stock_text = soup.find("span", "stock").text.lower()
+        stock = (
+            0
+            if stock_text in ["agotado", "out of stock"]
+            else int(stock_text.split()[0])
+        )
         price_tags = soup.findAll("span", "woocommerce-Price-amount")
         assert len(price_tags) in [2, 3]
 
