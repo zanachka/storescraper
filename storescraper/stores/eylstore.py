@@ -96,7 +96,7 @@ class Eylstore(StoreWithUrlExtensions):
         else:
             stock = -1
 
-        pricing_tag = soup.find("div", "wc_dynprice container")
+        pricing_tag = soup.find("div", "wc_dynprice")
         price_tags = pricing_tag.findAll("span", "woocommerce-Price-amount")
 
         if not price_tags:
