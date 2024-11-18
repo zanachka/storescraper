@@ -78,6 +78,8 @@ GAMING_DESK = "GamingDesk"
 CASE_FAN = "CaseFan"
 # Abarrotes
 GROCERIES = "Groceries"
+# Electrodomésticos pequeños (hervidores, sandwicheras, etc)
+KITCHEN_APPLIANCE = "KitchenAppliance"
 
 #########################
 # Legacy (no usar)

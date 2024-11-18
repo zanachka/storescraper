@@ -559,6 +559,12 @@ class Falabella(Store):
             "Home > Electrohogar - Línea blanca > Cocina > Encimeras",
             1,
         ],
+        [
+            "cat2034",
+            [KITCHEN_APPLIANCE],
+            "Home > Electrohogar - Electrodomésticos cocina",
+            1,
+        ],
     ]
 
     @classmethod
@@ -1050,7 +1056,7 @@ class Falabella(Store):
                         destination_urls = []
                     else:
                         destination_urls = list({slide["urlLeft"], slide["urlRight"]})
-                        
+
                     picture_url = slide["imgBackgroundDesktopUrl"]
 
                     banners.append(
