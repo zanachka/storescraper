@@ -12,6 +12,8 @@ from storescraper.categories import (
     MOTHERBOARD,
     PROCESSOR,
     VIDEO_CARD,
+    POWER_SUPPLY,
+    CPU_COOLER,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -28,6 +30,8 @@ class Campcom(Store):
             MOTHERBOARD,
             PROCESSOR,
             VIDEO_CARD,
+            POWER_SUPPLY,
+            CPU_COOLER,
         ]
 
     @classmethod
@@ -40,6 +44,9 @@ class Campcom(Store):
             ("placas-madre", MOTHERBOARD),
             ("procesadores", PROCESSOR),
             ("tarjetas-de-video", VIDEO_CARD),
+            ("fuentes-de-poder", POWER_SUPPLY),
+            ("placas-madre-mobo", MOTHERBOARD),
+            ("refrigeracion-pcs", CPU_COOLER),
         ]
 
         session = session_with_proxy(extra_args)
