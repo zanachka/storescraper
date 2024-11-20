@@ -30,6 +30,7 @@ from storescraper.categories import (
     VIDEO_CARD,
     UPS,
     TELEVISION,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -67,6 +68,7 @@ class CNava(Store):
             GAMING_CHAIR,
             UPS,
             TELEVISION,
+            KITCHEN_APPLIANCE,
         ]
 
     @classmethod
@@ -100,6 +102,7 @@ class CNava(Store):
             ["hogar/sillas-gamer", GAMING_CHAIR],
             ["equipos/ups", UPS],
             ["televisores", TELEVISION],
+            ["electrodomesticos", KITCHEN_APPLIANCE],
         ]
 
         session = session_with_proxy(extra_args)

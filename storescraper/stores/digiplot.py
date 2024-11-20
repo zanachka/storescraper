@@ -31,6 +31,7 @@ from storescraper.categories import (
     UPS,
     USB_FLASH_DRIVE,
     VIDEO_CARD,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -66,6 +67,7 @@ class Digiplot(Store):
             MEMORY_CARD,
             ALL_IN_ONE,
             TELEVISION,
+            KITCHEN_APPLIANCE,
         ]
 
     @classmethod
@@ -114,6 +116,7 @@ class Digiplot(Store):
             ["ups-y-alargador-elec/ups-sobre-1000va", UPS],
             ["video/tarjetas-video", VIDEO_CARD],
             ["sillas/sillas-gamer", GAMING_CHAIR],
+            ["electrohogar/electrodomesticos", KITCHEN_APPLIANCE],
         ]
 
         session = session_with_proxy(extra_args)

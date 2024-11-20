@@ -20,6 +20,7 @@ from storescraper.categories import (
     TELEVISION,
     VIDEO_GAME_CONSOLE,
     WEARABLE,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -45,6 +46,7 @@ class Diayta(StoreWithUrlExtensions):
         ["tablet", TABLET],
         ["teclados", KEYBOARD],
         ["televisores", TELEVISION],
+        ["electrodomesticos", KITCHEN_APPLIANCE],
     ]
 
     @classmethod

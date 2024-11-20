@@ -23,6 +23,7 @@ from storescraper.categories import (
     GAMING_CHAIR,
     PRINTER,
     POWER_SUPPLY,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -55,6 +56,7 @@ class FiestaLan(StoreWithUrlExtensions):
             KEYBOARD,
         ],
         ["accesorios-computacion/sillas-gamer", GAMING_CHAIR],
+        ["electro/electrodomesticos", KITCHEN_APPLIANCE],
     ]
 
     @classmethod

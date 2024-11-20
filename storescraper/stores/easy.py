@@ -16,6 +16,7 @@ from storescraper.categories import (
     VIDEO_GAME_CONSOLE,
     WATER_HEATER,
     STOVE,
+    KITCHEN_APPLIANCE,
 )
 
 from storescraper.product import Product
@@ -38,6 +39,7 @@ class Easy(Store):
             VIDEO_GAME_CONSOLE,
             WATER_HEATER,
             STOVE,
+            KITCHEN_APPLIANCE,
         ]
 
     @classmethod
@@ -212,6 +214,12 @@ class Easy(Store):
                 "electrohogar-y-climatizacion/cocina/encimeras",
                 [STOVE],
                 "Electrohogar y Climatización > Cocina > Encimeras",
+                1,
+            ],
+            [
+                "electrohogar-y-climatizacion/electrodomesticos",
+                [KITCHEN_APPLIANCE],
+                "Electrohogar y Climatización > Electrodomésticos",
                 1,
             ],
         ]

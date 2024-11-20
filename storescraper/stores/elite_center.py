@@ -36,6 +36,7 @@ from storescraper.categories import (
     PRINTER,
     CELL,
     WEARABLE,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, session_with_proxy
@@ -75,6 +76,7 @@ class EliteCenter(StoreWithUrlExtensions):
         ["celulares-desbloqueados", CELL],
         ["trackers-de-actividad", WEARABLE],
         ["relojes", WEARABLE],
+        ["electrodomesticos", KITCHEN_APPLIANCE],
     ]
 
     @classmethod
@@ -90,7 +92,6 @@ class EliteCenter(StoreWithUrlExtensions):
                 "https://elitecenter.cl/product-category/{}/"
                 "page/{}/?per_page=28".format(url_extension, page)
             )
-            print(url_webpage)
             response = session.get(url_webpage)
 
             data = response.text
@@ -107,6 +108,7 @@ class EliteCenter(StoreWithUrlExtensions):
                 break
 
             page += 1
+
         return product_urls
 
     @classmethod

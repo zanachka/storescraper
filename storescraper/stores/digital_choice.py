@@ -5,7 +5,24 @@ import logging
 import validators
 from bs4 import BeautifulSoup
 from storescraper.product import Product
-from storescraper.categories import *
+from storescraper.categories import (
+    EXTERNAL_STORAGE_DRIVE,
+    USB_FLASH_DRIVE,
+    MEMORY_CARD,
+    SOLID_STATE_DRIVE,
+    HEADPHONES,
+    STEREO_SYSTEM,
+    MICROPHONE,
+    PRINTER,
+    MONITOR,
+    MOUSE,
+    RAM,
+    KEYBOARD,
+    GAMING_CHAIR,
+    TABLET,
+    UPS,
+    KITCHEN_APPLIANCE,
+)
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy
 
@@ -28,6 +45,7 @@ class DigitalChoice(StoreWithUrlExtensions):
         ["tablas-digitalizadoras-y-tablets", TABLET],
         ["ups-baterias-y-cargadores", UPS],
         ["open-box", MONITOR],
+        ["electrodomesticos", KITCHEN_APPLIANCE],
     ]
 
     @classmethod

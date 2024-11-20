@@ -33,6 +33,7 @@ from storescraper.categories import (
     UPS,
     STEREO_SYSTEM,
     WEARABLE,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -41,48 +42,49 @@ from storescraper.utils import session_with_proxy, remove_words, html_to_markdow
 
 class CtMan(StoreWithUrlExtensions):
     url_extensions = [
-        ["notebooks", NOTEBOOK],
-        ["memorias-ram-para-laptops", RAM],
-        ["memorias-ram", RAM],
-        ["memoria-ram-server", RAM],
-        ["all-in-one", ALL_IN_ONE],
-        ["gabinetes", COMPUTER_CASE],
-        ["impresoras", PRINTER],
-        ["teclados", KEYBOARD],
-        ["teclados-fisicos", KEYBOARD],
-        ["audifonos", HEADPHONES],
-        ["impresoras-a-color", PRINTER],
-        ["coolers-para-pc", CPU_COOLER],
-        ["fuentes-de-poder", POWER_SUPPLY],
-        ["tarjetas-de-video", VIDEO_CARD],
-        ["procesadores", PROCESSOR],
-        ["placas-madre", MOTHERBOARD],
-        ["packs", PROCESSOR],
-        ["discos-duros-externos", EXTERNAL_STORAGE_DRIVE],
-        ["ssds-externos", EXTERNAL_STORAGE_DRIVE],
-        ["ssd", SOLID_STATE_DRIVE],
-        ["pen-drives", USB_FLASH_DRIVE],
-        ["monitores", MONITOR],
-        ["televisores", TELEVISION],
-        ["celulares-y-smartphones", CELL],
-        ["fuentes-de-alimentacion", POWER_SUPPLY],
-        ["sillas-gamer", GAMING_CHAIR],
-        ["gabinetes", COMPUTER_CASE],
-        ["notebooks", NOTEBOOK],
-        ["kits-de-mouse-y-teclado", KEYBOARD_MOUSE_COMBO],
-        ["consolas-de-videojuegos", VIDEO_GAME_CONSOLE],
-        ["mouse", MOUSE],
-        ["coolers-para-pc", CPU_COOLER],
-        ["disco-duro", STORAGE_DRIVE],
-        ["tarjeta-de-memoria-flash", MEMORY_CARD],
-        ["tablets", TABLET],
-        ["ups", UPS],
-        ["parlantes", STEREO_SYSTEM],
-        ["reloj-inteligente", WEARABLE],
-        ["macbooks", NOTEBOOK],
-        ["ipads", TABLET],
-        ["iphone", CELL],
-        ["watch", WEARABLE],
+        ["types/notebooks", NOTEBOOK],
+        ["types/memorias-ram-para-laptops", RAM],
+        ["types/memorias-ram", RAM],
+        ["types/memoria-ram-server", RAM],
+        ["types/all-in-one", ALL_IN_ONE],
+        ["types/gabinetes", COMPUTER_CASE],
+        ["types/impresoras", PRINTER],
+        ["types/teclados", KEYBOARD],
+        ["types/teclados-fisicos", KEYBOARD],
+        ["types/audifonos", HEADPHONES],
+        ["types/impresoras-a-color", PRINTER],
+        ["types/coolers-para-pc", CPU_COOLER],
+        ["types/fuentes-de-poder", POWER_SUPPLY],
+        ["types/tarjetas-de-video", VIDEO_CARD],
+        ["types/procesadores", PROCESSOR],
+        ["types/placas-madre", MOTHERBOARD],
+        ["types/packs", PROCESSOR],
+        ["types/discos-duros-externos", EXTERNAL_STORAGE_DRIVE],
+        ["types/ssds-externos", EXTERNAL_STORAGE_DRIVE],
+        ["types/ssd", SOLID_STATE_DRIVE],
+        ["types/pen-drives", USB_FLASH_DRIVE],
+        ["types/monitores", MONITOR],
+        ["types/televisores", TELEVISION],
+        ["types/celulares-y-smartphones", CELL],
+        ["types/fuentes-de-alimentacion", POWER_SUPPLY],
+        ["types/sillas-gamer", GAMING_CHAIR],
+        ["types/gabinetes", COMPUTER_CASE],
+        ["types/notebooks", NOTEBOOK],
+        ["types/kits-de-mouse-y-teclado", KEYBOARD_MOUSE_COMBO],
+        ["types/consolas-de-videojuegos", VIDEO_GAME_CONSOLE],
+        ["types/mouse", MOUSE],
+        ["types/coolers-para-pc", CPU_COOLER],
+        ["types/disco-duro", STORAGE_DRIVE],
+        ["types/tarjeta-de-memoria-flash", MEMORY_CARD],
+        ["types/tablets", TABLET],
+        ["types/ups", UPS],
+        ["types/parlantes", STEREO_SYSTEM],
+        ["types/reloj-inteligente", WEARABLE],
+        ["types/macbooks", NOTEBOOK],
+        ["types/ipads", TABLET],
+        ["types/iphone", CELL],
+        ["types/watch", WEARABLE],
+        ["collections/electrodomesticos", KITCHEN_APPLIANCE],
     ]
 
     @classmethod
@@ -94,9 +96,7 @@ class CtMan(StoreWithUrlExtensions):
         while True:
             if page > 25:
                 raise Exception("page overflow: " + url_extension)
-            url_webpage = "https://www.ctman.cl/types/{}/" "{}".format(
-                url_extension, page
-            )
+            url_webpage = "https://www.ctman.cl/{}/" "{}".format(url_extension, page)
             print(url_webpage)
             response = session.get(url_webpage)
             soup = BeautifulSoup(response.text, "lxml")
