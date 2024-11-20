@@ -17,6 +17,7 @@ from storescraper.categories import (
     EXTERNAL_STORAGE_DRIVE,
     GAMING_CHAIR,
     KEYBOARD,
+    KITCHEN_APPLIANCE,
     MEMORY_CARD,
     MONITOR,
     NOTEBOOK,
@@ -347,6 +348,12 @@ class Lider(Store):
         #     "Electrohogar > Climatización > Calefacción > Termos y Calefonts",
         #     1.0,
         # ],
+        [
+            "Electrohogar/Electrodomésticos_Cocina",
+            [KITCHEN_APPLIANCE],
+            "Electrohogar > Electrodomésticos Cocina",
+            1.0,
+        ],
     ]
 
     @classmethod
@@ -379,6 +386,7 @@ class Lider(Store):
             SOLID_STATE_DRIVE,
             DISH_WASHER,
             WATER_HEATER,
+            KITCHEN_APPLIANCE,
         ]
 
     @classmethod

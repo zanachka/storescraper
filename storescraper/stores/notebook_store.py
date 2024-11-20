@@ -35,6 +35,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     PRINTER,
     VIDEO_GAME_CONSOLE,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -105,6 +106,7 @@ class NotebookStore(StoreWithUrlExtensions):
         ["apple-tv/airpods", HEADPHONES],
         ["apple/articulos/perifericos", KEYBOARD],
         ["apple/articulos/monitores-studio", MONITOR],
+        ["equipos/wellness-home/home", KITCHEN_APPLIANCE],
     ]
 
     @classmethod

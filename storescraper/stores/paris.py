@@ -35,6 +35,7 @@ from storescraper.categories import (
     OVEN,
     SPACE_HEATER,
     AIR_CONDITIONER,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.flixmedia import flixmedia_video_urls
 from storescraper.product import Product
@@ -175,6 +176,7 @@ class Paris(Store):
         ["linea-blanca/climatizacion/aires-acondicionado/", AIR_CONDITIONER, 1],
         ["linea-blanca/climatizacion/ventilacion/", AIR_CONDITIONER, 1],
         ["linea-blanca/climatizacion/tratamiento-aire/", AIR_CONDITIONER, 1],
+        ["linea-blanca/electrodomesticos/", KITCHEN_APPLIANCE, 1],
     ]
 
     @classmethod

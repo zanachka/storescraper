@@ -18,7 +18,6 @@ from storescraper.categories import (
     GAMING_CHAIR,
     PRINTER,
     GAMING_DESK,
-    CASE_FAN,
     NOTEBOOK,
 )
 from storescraper.product import Product

@@ -15,6 +15,7 @@ from storescraper.categories import (
     GAMING_DESK,
     CELL,
     COMPUTER_CASE,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -38,6 +39,7 @@ class LoiChile(StoreWithUrlExtensions):
         ["207", VIDEO_GAME_CONSOLE],
         ["154", GAMING_CHAIR],
         ["155", GAMING_DESK],
+        ["138", KITCHEN_APPLIANCE],
     ]
 
     @classmethod

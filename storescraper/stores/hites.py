@@ -33,6 +33,7 @@ from storescraper.categories import (
     WASHING_MACHINE,
     WEARABLE,
     WATER_HEATER,
+    KITCHEN_APPLIANCE,
 )
 
 from storescraper.flixmedia import flixmedia_video_urls
@@ -70,6 +71,7 @@ class Hites(Store):
             DISH_WASHER,
             GAMING_CHAIR,
             WATER_HEATER,
+            KITCHEN_APPLIANCE,
         ]
 
     @classmethod
@@ -457,6 +459,12 @@ class Hites(Store):
                 "electro-hogar/calefaccion/calefont-y-termos",
                 [WATER_HEATER],
                 "Inicio > Electro Hogar > Calefacción > Calefont y Termos",
+                1,
+            ],
+            [
+                "electro-hogar/electrodomesticos-cocina",
+                [KITCHEN_APPLIANCE],
+                "Inicio > Electro Hogar > Electrodomésticos Cocina",
                 1,
             ],
         ]
