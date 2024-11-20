@@ -73,6 +73,7 @@ class Sandos(StoreWithUrlExtensions):
         [90, ALL_IN_ONE],
         [97, UPS],
         [101, MONITOR],
+        [103, MONITOR],
         [121, HEADPHONES],
         [125, PRINTER],
         [128, PRINTER],
