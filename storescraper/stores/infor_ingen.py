@@ -93,7 +93,7 @@ class InforIngen(StoreWithUrlExtensions):
 
         soup = BeautifulSoup(response.text, "lxml")
 
-        json_tag = soup.find("script", {"type": "application/ld+json"})
+        json_tag = soup.findAll("script", {"type": "application/ld+json"})[1]
         json_data = json.loads(json_tag.text)
         name = json_data["name"].strip()
 
