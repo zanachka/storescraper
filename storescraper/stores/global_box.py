@@ -143,9 +143,14 @@ class Globalbox(StoreWithUrlExtensions):
         price = Decimal(offer["price"])
         stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
         picture_urls = [soup.find("div", "single-product-wrapper").find("a")["href"]]
-        description = html_to_markdown(
-            soup.find("div", {"id": "tab-specification"}).text
-        )
+        description = soup.find("div", {"id": "tab-specification"})
+
+        if not description:
+            description = soup.find(
+                "div", "woocommerce-product-details__short-description"
+            )
+
+        description = html_to_markdown(description.text)
 
         p = Product(
             name,
