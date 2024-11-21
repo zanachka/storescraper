@@ -41,6 +41,7 @@ from storescraper.categories import (
     PROJECTOR,
     CELL,
     VIDEO_GAME_CONSOLE,
+    KITCHEN_APPLIANCE,
 )
 
 
@@ -103,6 +104,7 @@ class SpDigital(StoreWithUrlExtensions):
         ["barra-y-sistema-de-sonido", STEREO_SYSTEM],
         ["audio-y-musica-audio-profesional-microfono-profesional", MICROPHONE],
         ["otras-categorias-celular-y-accesorios-smartphones", CELL],
+        ["electrodomésticos", KITCHEN_APPLIANCE],
     ]
 
     @classmethod

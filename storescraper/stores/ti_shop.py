@@ -28,6 +28,7 @@ from storescraper.categories import (
     USB_FLASH_DRIVE,
     VIDEO_CARD,
     VIDEO_GAME_CONSOLE,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -62,6 +63,7 @@ class TiShop(StoreWithUrlExtensions):
         ["107", POWER_SUPPLY],
         ["52", PROCESSOR],
         ["81", VIDEO_CARD],
+        ["60?q[navbar_items_id_eq_any][]=72", KITCHEN_APPLIANCE],
     ]
 
     @classmethod

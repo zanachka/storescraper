@@ -26,6 +26,7 @@ from storescraper.categories import (
     VACUUM_CLEANER,
     SPACE_HEATER,
     DISH_WASHER,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -67,6 +68,7 @@ class TravelTienda(StoreWithUrlExtensions):
         ("2661527844", DISH_WASHER),  # Lavavajillas
         # ("1318662286", OVEN),  # Empotrados
         ("1864719901", OVEN),  # Empotrados
+        ("2343511074", KITCHEN_APPLIANCE),  # Electro Hogar > Electrodomésticos
     ]
 
     @classmethod

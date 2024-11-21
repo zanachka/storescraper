@@ -16,6 +16,7 @@ from storescraper.categories import (
     MOUSE,
     VIDEO_CARD,
     GAMING_DESK,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -37,24 +38,27 @@ class Valrod(Store):
             CASE_FAN,
             MOTHERBOARD,
             MICROPHONE,
+            KITCHEN_APPLIANCE,
         ]
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         url_extensions = [
-            ["perifericos/mouse-y-mousepads", MOUSE],
-            ["teclados", KEYBOARD],
-            ["audifonos", HEADPHONES],
-            ["sillas-gamer", GAMING_CHAIR],
-            ["accesorios", COMPUTER_CASE],
-            ["monitores", MONITOR],
-            ["gabinetes", COMPUTER_CASE],
-            ["accesorios", COMPUTER_CASE],
-            ["hardware/tarjetas-de-video", VIDEO_CARD],
-            ["escritorios", GAMING_DESK],
-            ["tarjeta-de-video-y-coolers/coolers", CASE_FAN],
-            ["accesorios/placa-madre", MOTHERBOARD],
-            ["microfonos", MICROPHONE],
+            ["gamers/perifericos/mouse-y-mousepads", MOUSE],
+            ["gamers/teclados", KEYBOARD],
+            ["gamers/audifonos", HEADPHONES],
+            ["gamers/sillas-gamer", GAMING_CHAIR],
+            ["gamers/accesorios", COMPUTER_CASE],
+            ["gamers/monitores", MONITOR],
+            ["gamers/gabinetes", COMPUTER_CASE],
+            ["gamers/accesorios", COMPUTER_CASE],
+            ["gamers/hardware/tarjetas-de-video", VIDEO_CARD],
+            ["gamers/escritorios", GAMING_DESK],
+            ["gamers/tarjeta-de-video-y-coolers/coolers", CASE_FAN],
+            ["gamers/accesorios/placa-madre", MOTHERBOARD],
+            ["gamers/microfonos", MICROPHONE],
+            ["electrodomesticos-de-cocina", KITCHEN_APPLIANCE],
+            ["cafeteras-electricas-1", KITCHEN_APPLIANCE],
         ]
         session = session_with_proxy(extra_args)
         product_urls = []
@@ -67,9 +71,7 @@ class Valrod(Store):
                 if page > 10:
                     raise Exception("page overflow: " + url_extension)
 
-                url_webpage = "https://valrod.cl/gamers/{}?page={}".format(
-                    url_extension, page
-                )
+                url_webpage = "https://valrod.cl/{}?page={}".format(url_extension, page)
                 print(url_webpage)
                 response = session.get(url_webpage)
                 soup = BeautifulSoup(response.text, "lxml")

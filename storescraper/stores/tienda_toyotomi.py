@@ -7,26 +7,29 @@ from decimal import Decimal
 from storescraper.product import Product
 from storescraper.store import Store
 from storescraper.utils import session_with_proxy
+from storescraper.categories import (
+    AIR_CONDITIONER,
+    OVEN,
+    VACUUM_CLEANER,
+    SPACE_HEATER,
+    KITCHEN_APPLIANCE,
+)
 
 
 class TiendaToyotomi(Store):
     @classmethod
     def categories(cls):
-        return [
-            "AirConditioner",
-            "Oven",
-            "VacuumCleaner",
-            "SpaceHeater",
-        ]
+        return [AIR_CONDITIONER, OVEN, VACUUM_CLEANER, SPACE_HEATER, KITCHEN_APPLIANCE]
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         category_paths = [
-            ["calefaccion", "SpaceHeater"],
-            ["ventilacion/aire-acondicionado", "AirConditioner"],
-            ["electro-hogar/electrodomesticos/aspiradoras", "VacuumCleaner"],
-            ["electro-hogar/electrodomesticos/hornos-electricos", "Oven"],
-            ["electro-hogar/electrodomesticos/microondas", "Oven"],
+            ["calefaccion", SPACE_HEATER],
+            ["ventilacion/aire-acondicionado", AIR_CONDITIONER],
+            ["electrodomesticos", KITCHEN_APPLIANCE],
+            ["electro-hogar/electrodomesticos/aspiradoras", VACUUM_CLEANER],
+            ["electro-hogar/electrodomesticos/hornos-electricos", OVEN],
+            ["electro-hogar/electrodomesticos/microondas", OVEN],
         ]
 
         session = session_with_proxy(extra_args)

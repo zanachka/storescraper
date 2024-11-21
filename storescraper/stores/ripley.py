@@ -33,6 +33,7 @@ from storescraper.categories import (
     HEADPHONES,
     VACUUM_CLEANER,
     WATER_HEATER,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.store import Store
 from storescraper.product import Product
@@ -286,6 +287,12 @@ class Ripley(Store):
             "ferreteria/cocina/calefont-y-termos",
             [WATER_HEATER],
             "Ferretería > Cocina > Calefont y Termos",
+            1,
+        ],
+        [
+            "electro/electrodomesticos",
+            [KITCHEN_APPLIANCE],
+            "Electro > Electrodomésticos",
             1,
         ],
     ]

@@ -16,6 +16,7 @@ from storescraper.categories import (
     TELEVISION,
     REFRIGERATOR,
     VIDEO_GAME_CONSOLE,
+    KITCHEN_APPLIANCE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -35,6 +36,7 @@ class Reuse(StoreWithUrlExtensions):
         ["electrodomesticos", REFRIGERATOR],
         ["linea-blanca", REFRIGERATOR],
         ["consolas-y-juegos", VIDEO_GAME_CONSOLE],
+        ["electrodomesticos", KITCHEN_APPLIANCE],
     ]
 
     @classmethod

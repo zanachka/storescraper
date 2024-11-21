@@ -10,6 +10,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     TELEVISION,
     NOTEBOOK,
+    KITCHEN_APPLIANCE,
 )
 from .movistar import Movistar
 from ..utils import session_with_proxy
@@ -31,11 +32,20 @@ class TiendaMovistar(Movistar):
         ("smarthome", TELEVISION),
         ("accesorios/parlantes-bluetooth", STEREO_SYSTEM),
         ("notebooks", NOTEBOOK),
+        ("smarthome", KITCHEN_APPLIANCE),
     ]
 
     @classmethod
     def categories(cls):
-        return [CELL, TABLET, HEADPHONES, WEARABLE, VIDEO_GAME_CONSOLE, STEREO_SYSTEM]
+        return [
+            CELL,
+            TABLET,
+            HEADPHONES,
+            WEARABLE,
+            VIDEO_GAME_CONSOLE,
+            STEREO_SYSTEM,
+            KITCHEN_APPLIANCE,
+        ]
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
