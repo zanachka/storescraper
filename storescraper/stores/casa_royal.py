@@ -112,9 +112,16 @@ class CasaRoyal(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         res = session.get(url)
         soup = BeautifulSoup(res.text, "lxml")
-        product_data = json.loads(
-            soup.find("template", {"data-varname": "__STATE__"}).find("script").text
+        product_data = soup.find("template", {"data-varname": "__STATE__"}).find(
+            "script"
         )
+
+        try:
+            product_data = json.loads(product_data.text)
+        except ValueError as e:
+            print(url, "YAY")
+            return []
+
         base_json_keys = list(product_data.keys())
 
         if not base_json_keys:
