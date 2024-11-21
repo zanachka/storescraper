@@ -74,6 +74,9 @@ class LapShop(StoreWithUrlExtensions):
         offer_price = Decimal(remove_words(price_tags[0].text))
         normal_price = Decimal(remove_words(price_tags[-1].text))
 
+        if offer_price > normal_price:
+            offer_price = normal_price
+
         if "SEGUNDA" in name.upper():
             condition = "https://schema.org/RefurbishedCondition"
         else:
