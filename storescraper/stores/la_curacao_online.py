@@ -49,11 +49,7 @@ class LaCuracaoOnline(Store):
                 product_url = container.find("a")["href"]
                 product_urls.append(product_url)
 
-            item_amount = soup.find("p", {"id": "toolbar-amount"}).findAll(
-                "span", "toolbar-number"
-            )
-
-            if item_amount[0].text == item_amount[1].text:
+            if not soup.find("a", "action next"):
                 break
 
             page += 1
