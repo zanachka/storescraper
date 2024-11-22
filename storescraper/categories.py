@@ -80,6 +80,8 @@ CASE_FAN = "CaseFan"
 GROCERIES = "Groceries"
 # Electrodomésticos pequeños (hervidores, sandwicheras, etc)
 KITCHEN_APPLIANCE = "KitchenAppliance"
+# Insumos para impresoras (Tintas, toners)
+PRINTER_SUPPLY = "PrinterSupply"
 
 #########################
 # Legacy (no usar)

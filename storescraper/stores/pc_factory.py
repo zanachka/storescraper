@@ -1,11 +1,8 @@
 import html
-import json
-import logging
 import re
 from collections import defaultdict
 from decimal import Decimal
 
-import requests.utils
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
@@ -42,10 +39,11 @@ from storescraper.categories import (
     CASE_FAN,
     HEADPHONES,
     DISH_WASHER,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import session_with_proxy
 
 
 class PcFactory(Store):
@@ -84,6 +82,7 @@ class PcFactory(Store):
             GAMING_CHAIR,
             CASE_FAN,
             HEADPHONES,
+            PRINTER_SUPPLY,
         ]
 
     @classmethod
@@ -134,6 +133,7 @@ class PcFactory(Store):
             ["647", CASE_FAN],
             ["648", CPU_COOLER],
             ["286", OPTICAL_DRIVE],
+            ["12,442,444,725,973", PRINTER_SUPPLY],
         ]
 
         for url_extension, local_category in url_extensions:
