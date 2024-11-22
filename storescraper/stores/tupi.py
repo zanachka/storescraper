@@ -29,7 +29,7 @@ class Tupi(Store):
             )
             print(url)
 
-            if page >= 20:
+            if page >= 25:
                 raise Exception("Page overflow: " + url)
 
             soup = BeautifulSoup(session.get(url).text, "lxml")
