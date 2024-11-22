@@ -63,55 +63,108 @@ class TodoGeek(StoreWithUrlExtensions):
             if entry["@type"] == "Product":
                 product_data = entry
 
-        assert len(product_data["offers"]) == 1
+        product_variations = soup.find("form", "variations_form")
 
-        name = product_data["name"]
-        sku = str(product_data["sku"])
-        offer = product_data["offers"][0]
-        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        if product_variations:
+            products = []
 
-        offer_price = Decimal(
-            remove_words(soup.find("p", "price-transferencia").find("bdi").text)
-        )
-        normal_price = Decimal(
-            remove_words(soup.find("p", "price-debito-credito").find("bdi").text)
-        )
-        description = html_to_markdown(product_data["description"])
-        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
-        picture_urls = [
-            a["href"]
-            for a in soup.find("div", "woocommerce-product-gallery__wrapper").findAll(
-                "a"
-            )
-        ]
+            for product in json.loads(product_variations["data-product_variations"]):
+                key = str(product["variation_id"])
+                name = f"{product_data['name']} ({', '.join(product['attributes'].values())})"
+                sku = product["sku"]
 
-        categories = [
-            category.text.lower()
-            for category in soup.find("span", "posted_in").findAll("a")
-        ]
+                if sku == "":
+                    sku = None
 
-        if "seminuevos" in categories or "seminuevo" in name:
-            condition = "https://schema.org/RefurbishedCondition"
-        elif "open box" in categories or "open box" in name:
-            condition = "https://schema.org/OpenBoxCondition"
+                description = product_data["description"]
+                offer_price = Decimal(product["display_price"])
+                normal_price = (offer_price * Decimal("1.06")).quantize(0)
+                stock = (
+                    0
+                    if (product["is_in_stock"] == "False" or not product["max_qty"])
+                    else product["max_qty"]
+                )
+                picture_urls = [product["image"]["url"]]
+
+                condition_tag = soup.find("p", "product-condition")
+
+                if (
+                    condition_tag
+                    and "producto: nuevo" not in condition_tag.text.lower()
+                ):
+                    condition = "https://schema.org/RefurbishedCondition"
+                else:
+                    condition = "https://schema.org/NewCondition"
+
+                p = Product(
+                    name,
+                    cls.__name__,
+                    category,
+                    url,
+                    url,
+                    key,
+                    stock,
+                    normal_price,
+                    offer_price,
+                    "CLP",
+                    condition=condition,
+                    sku=sku,
+                    part_number=sku,
+                    picture_urls=picture_urls,
+                    description=description,
+                )
+
+                products.append(p)
+
+            return products
         else:
-            condition = "https://schema.org/NewCondition"
+            name = product_data["name"]
+            sku = str(product_data["sku"])
+            offer = product_data["offers"][0]
+            stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
 
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            key,
-            stock,
-            normal_price,
-            offer_price,
-            "CLP",
-            sku=sku,
-            picture_urls=picture_urls,
-            description=description,
-            condition=condition,
-        )
+            offer_price = Decimal(
+                remove_words(soup.find("p", "price-transferencia").find("bdi").text)
+            )
+            normal_price = Decimal(
+                remove_words(soup.find("p", "price-debito-credito").find("bdi").text)
+            )
+            description = html_to_markdown(product_data["description"])
+            key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
+            picture_urls = [
+                a["href"]
+                for a in soup.find(
+                    "div", "woocommerce-product-gallery__wrapper"
+                ).findAll("a")
+            ]
 
-        return [p]
+            categories = [
+                category.text.lower()
+                for category in soup.find("span", "posted_in").findAll("a")
+            ]
+
+            if "seminuevos" in categories or "seminuevo" in name:
+                condition = "https://schema.org/RefurbishedCondition"
+            elif "open box" in categories or "open box" in name:
+                condition = "https://schema.org/OpenBoxCondition"
+            else:
+                condition = "https://schema.org/NewCondition"
+
+            p = Product(
+                name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                key,
+                stock,
+                normal_price,
+                offer_price,
+                "CLP",
+                sku=sku,
+                picture_urls=picture_urls,
+                description=description,
+                condition=condition,
+            )
+
+            return [p]
