@@ -35,11 +35,11 @@ class AgenciasWayOnline(Store):
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         category_filters = [
-            ("categorias/televisores", TELEVISION),
-            ("categorias/audio?marca=lg", STEREO_SYSTEM),
-            ("categorias/linea-blanca/?categoria=refrigeradoras", REFRIGERATOR),
-            ("categorias/linea-blanca/?categoria=lavadoras", WASHING_MACHINE),
-            ("categorias/linea-blanca/?categoria=estufas", STOVE),
+            ("categorias/televisores/page/0/", TELEVISION),
+            ("categorias/audio/page/0/", STEREO_SYSTEM),
+            ("categorias/linea-blanca/page/0/?categoria=refrigeradoras", REFRIGERATOR),
+            ("categorias/linea-blanca/page/0/?categoria=lavadoras", WASHING_MACHINE),
+            ("categorias/linea-blanca/page/0/?categoria=estufas", STOVE),
         ]
 
         session = session_with_proxy(extra_args)
@@ -56,7 +56,11 @@ class AgenciasWayOnline(Store):
                     raise Exception("Page overflow")
 
                 separator = "&" if "?" in category_path else "?"
-                url = f"https://agenciasway.com.gt/{category_path}{separator}marca=lg&page={page}"
+                category_path = category_path.replace(
+                    f"/page/{page-1}/",
+                    f"/page/{page}/",
+                )
+                url = f"https://agenciasway.com.gt/{category_path}{separator}marca=lg"
                 print(url)
 
                 soup = BeautifulSoup(session.get(url, timeout=60).text, "lxml")
