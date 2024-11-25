@@ -32,6 +32,7 @@ from storescraper.categories import (
     USB_FLASH_DRIVE,
     VIDEO_CARD,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -68,6 +69,7 @@ class Digiplot(Store):
             ALL_IN_ONE,
             TELEVISION,
             KITCHEN_APPLIANCE,
+            PRINTER_SUPPLY,
         ]
 
     @classmethod
@@ -117,6 +119,12 @@ class Digiplot(Store):
             ["video/tarjetas-video", VIDEO_CARD],
             ["sillas/sillas-gamer", GAMING_CHAIR],
             ["electrohogar/electrodomesticos", KITCHEN_APPLIANCE],
+            ["oficina-insumos/tinta-recarga", PRINTER_SUPPLY],
+            ["oficina-insumos/toner-original", PRINTER_SUPPLY],
+            ["oficina-insumos/cartridge-brother-orig", PRINTER_SUPPLY],
+            ["oficina-insumos/cartridge-canon-orig", PRINTER_SUPPLY],
+            ["oficina-insumos/cartridge-epson-orig", PRINTER_SUPPLY],
+            ["oficina-insumos/cartridge-hp-orig", PRINTER_SUPPLY],
         ]
 
         session = session_with_proxy(extra_args)

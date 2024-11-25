@@ -26,6 +26,7 @@ from storescraper.categories import (
     HEADPHONES,
     STEREO_SYSTEM,
     NOTEBOOK,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -60,6 +61,7 @@ class AllTec(Store):
             MEMORY_CARD,
             CELL,
             CASE_FAN,
+            PRINTER_SUPPLY,
         ]
 
     @classmethod
@@ -98,6 +100,7 @@ class AllTec(Store):
             ["59-memorias-flash-microsdsdcompac-flash", MEMORY_CARD],
             ["74-smartphone-smartwatch-smartband", CELL],
             ["91-chassis-fan-ventiladores", CASE_FAN],
+            ["45-tinta", PRINTER_SUPPLY],
         ]
 
         session = session_with_proxy(extra_args)

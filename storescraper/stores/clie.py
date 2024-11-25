@@ -14,6 +14,7 @@ from storescraper.categories import (
     TABLET,
     PRINTER,
     EXTERNAL_STORAGE_DRIVE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -31,6 +32,8 @@ class Clie(StoreWithUrlExtensions):
         ["componentes", PROCESSOR],
         ["memoria-ram-servidor", RAM],
         ["disco-duro-para-servidor", SOLID_STATE_DRIVE],
+        ["tinta", PRINTER_SUPPLY],
+        ["toners", PRINTER_SUPPLY],
     ]
 
     @classmethod

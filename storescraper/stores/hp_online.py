@@ -10,6 +10,7 @@ from storescraper.categories import (
     ALL_IN_ONE,
     MOUSE,
     HEADPHONES,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -23,7 +24,15 @@ from storescraper.utils import (
 class HpOnline(Store):
     @classmethod
     def categories(cls):
-        return [NOTEBOOK, PRINTER, MONITOR, ALL_IN_ONE, MOUSE, HEADPHONES]
+        return [
+            NOTEBOOK,
+            PRINTER,
+            MONITOR,
+            ALL_IN_ONE,
+            MOUSE,
+            HEADPHONES,
+            PRINTER_SUPPLY,
+        ]
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
@@ -34,6 +43,7 @@ class HpOnline(Store):
             ["desktops", ALL_IN_ONE],
             ["accesorios/mouse-teclados", MOUSE],
             ["accesorios/bocinas-audio", HEADPHONES],
+            ["tinta-toner", PRINTER_SUPPLY],
         ]
         session = session_with_proxy(extra_args)
         product_urls = []

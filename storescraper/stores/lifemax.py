@@ -28,6 +28,7 @@ from storescraper.categories import (
     VIDEO_CARD,
     ALL_IN_ONE,
     CPU_COOLER,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -73,6 +74,9 @@ class Lifemax(StoreWithUrlExtensions):
         ["audifonos-on-ear-1", HEADPHONES],
         ["audifonos-over-ear", HEADPHONES],
         ["audifonos-tws", HEADPHONES],
+        ["botellas-de-tinta-impresoras", PRINTER_SUPPLY],
+        ["cartuchos-de-tinta", PRINTER_SUPPLY],
+        ["toners", PRINTER_SUPPLY],
     ]
 
     @classmethod

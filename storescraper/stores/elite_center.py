@@ -37,6 +37,7 @@ from storescraper.categories import (
     CELL,
     WEARABLE,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY,
 )
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, session_with_proxy
@@ -77,6 +78,7 @@ class EliteCenter(StoreWithUrlExtensions):
         ["trackers-de-actividad", WEARABLE],
         ["relojes", WEARABLE],
         ["electrodomesticos", KITCHEN_APPLIANCE],
+        ["cartuchos-de-toner-e-ink-jet", PRINTER_SUPPLY],
     ]
 
     @classmethod

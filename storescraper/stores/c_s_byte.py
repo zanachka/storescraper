@@ -26,6 +26,7 @@ from storescraper.categories import (
     USB_FLASH_DRIVE,
     VIDEO_CARD,
     WEARABLE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -75,6 +76,7 @@ class CSByte(StoreWithUrlExtensions):
         ["mouse-zona-gamer", MOUSE],
         ["wearables", WEARABLE],
         ["fuentes-de-poder", POWER_SUPPLY],
+        ["tinta", PRINTER_SUPPLY],
     ]
 
     @classmethod

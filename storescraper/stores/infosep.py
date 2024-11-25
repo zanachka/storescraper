@@ -32,6 +32,7 @@ from storescraper.categories import (
     MEMORY_CARD,
     USB_FLASH_DRIVE,
     STEREO_SYSTEM,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -89,6 +90,7 @@ class Infosep(StoreWithUrlExtensions):
         ["portatiles/celulares", CELL],
         ["portatiles/reloj-inteligente", WEARABLE],
         ["portatiles/tablet", TABLET],
+        ["toner-tintas", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -97,7 +99,7 @@ class Infosep(StoreWithUrlExtensions):
         product_urls = []
         page = 1
         while True:
-            if page > 20:
+            if page > 30:
                 raise Exception("page overflow: " + url_extension)
 
             if page == 1:

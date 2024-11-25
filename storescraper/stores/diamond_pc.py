@@ -26,6 +26,7 @@ from storescraper.categories import (
     TELEVISION,
     VIDEO_CARD,
     VIDEO_GAME_CONSOLE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -59,6 +60,7 @@ class DiamondPc(StoreWithUrlExtensions):
         ["celulares-y-accesorios/celulares-smartphone", CELL],
         ["celulares-y-accesorios/audifonos-inalambricos", HEADPHONES],
         ["consolas", VIDEO_GAME_CONSOLE],
+        ["suministros", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -150,7 +152,9 @@ class DiamondPc(StoreWithUrlExtensions):
                 variation_name = f"{name} - {''.join(product['attributes'].values())}"
                 key = str(product["variation_id"])
                 sku = product.get("sku", None)
-                stock = 0 if product["max_qty"] == "" or imported else product["max_qty"]
+                stock = (
+                    0 if product["max_qty"] == "" or imported else product["max_qty"]
+                )
                 offer_price = Decimal(product["display_price"])
                 normal_price = (offer_price * Decimal("1.08")).quantize(0)
                 picture_urls = [product["image"]["url"]]

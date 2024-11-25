@@ -34,6 +34,7 @@ from storescraper.categories import (
     WEARABLE,
     WATER_HEATER,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY,
 )
 
 from storescraper.flixmedia import flixmedia_video_urls
@@ -72,6 +73,7 @@ class Hites(Store):
             GAMING_CHAIR,
             WATER_HEATER,
             KITCHEN_APPLIANCE,
+            PRINTER_SUPPLY,
         ]
 
     @classmethod
@@ -465,6 +467,12 @@ class Hites(Store):
                 "electro-hogar/electrodomesticos-cocina",
                 [KITCHEN_APPLIANCE],
                 "Inicio > Electro Hogar > Electrodomésticos Cocina",
+                1,
+            ],
+            [
+                "tecnologia/accesorios-y-otros/tintas-y-toner",
+                [PRINTER_SUPPLY],
+                "Inicio > Tecnología > Accesorios y Otros > Tintas y Toner",
                 1,
             ],
         ]

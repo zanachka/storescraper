@@ -28,6 +28,7 @@ from storescraper.categories import (
     STOVE,
     AIR_CONDITIONER,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -337,6 +338,7 @@ class AbcDin(Store):
             "Línea Blanca / Cocina / Parrillas Eléctricas",
             1,
         ],
+        ["tintas", [PRINTER_SUPPLY], "Tecnología / Computadores / Tintas", 1],
     ]
 
     @classmethod

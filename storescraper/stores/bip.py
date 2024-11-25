@@ -28,6 +28,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     UPS,
     TELEVISION,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -67,6 +68,16 @@ class Bip(StoreWithUrlExtensions):
         ["591", GAMING_CHAIR],  # Sillas
         ["864", CELL],
         ["762", TELEVISION],
+        ["446", PRINTER_SUPPLY],
+        ["447", PRINTER_SUPPLY],
+        ["448", PRINTER_SUPPLY],
+        ["501", PRINTER_SUPPLY],
+        ["547", PRINTER_SUPPLY],
+        ["556", PRINTER_SUPPLY],
+        ["442", PRINTER_SUPPLY],
+        ["443", PRINTER_SUPPLY],
+        ["444", PRINTER_SUPPLY],
+        ["445", PRINTER_SUPPLY],
     ]
 
     @classmethod

@@ -31,6 +31,7 @@ from storescraper.categories import (
     GAMING_CHAIR,
     UPS,
     EXTERNAL_STORAGE_DRIVE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -111,6 +112,7 @@ class MyShop(StoreWithUrlExtensions):
             "156",
             MEMORY_CARD,
         ],  # computacion-almacenamiento-externo-memoria-flash
+        ["188", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -120,7 +122,7 @@ class MyShop(StoreWithUrlExtensions):
         product_urls = []
         page = 1
         while True:
-            if page > 20:
+            if page > 50:
                 raise Exception("Page overflow: " + url_extension)
 
             payload = {"tipo": "3", "page": str(page), "idFamilia": url_extension}

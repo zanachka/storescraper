@@ -30,6 +30,7 @@ from storescraper.categories import (
     VIDEO_GAME_CONSOLE,
     TELEVISION,
     PRINTER,
+    PRINTER_SUPPLY,
 )
 
 
@@ -65,6 +66,7 @@ class InfographicsSolutions(StoreWithUrlExtensions):
         ["todas-las-consolas", VIDEO_GAME_CONSOLE],
         ["televisores", TELEVISION],
         ["impresoras", PRINTER],
+        ["insumos-y-accesorios", PRINTER_SUPPLY],
     ]
 
     @classmethod

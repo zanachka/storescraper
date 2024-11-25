@@ -34,6 +34,7 @@ from storescraper.categories import (
     TELEVISION,
     CASE_FAN,
     VIDEO_GAME_CONSOLE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -82,6 +83,8 @@ class Globalbox(StoreWithUrlExtensions):
         ["barras-de-sonido", STEREO_SYSTEM],
         ["consolas-de-videojuegos", VIDEO_GAME_CONSOLE],
         ["sillas-y-escritorios-gaming", GAMING_CHAIR],
+        ["tintas-de-impresora", PRINTER_SUPPLY],
+        ["toner-de-impresora", PRINTER_SUPPLY],
     ]
 
     @classmethod

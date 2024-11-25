@@ -29,6 +29,7 @@ from storescraper.categories import (
     USB_FLASH_DRIVE,
     MONITOR,
     VIDEO_GAME_CONSOLE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -61,6 +62,7 @@ class BookComputer(Store):
             STORAGE_DRIVE,
             VIDEO_GAME_CONSOLE,
             MOUSE,
+            PRINTER_SUPPLY,
         ]
 
     @classmethod
@@ -95,6 +97,7 @@ class BookComputer(Store):
             ["tarjetas-de-video", VIDEO_CARD],
             ["chuwi", NOTEBOOK],
             ["thunderobot", NOTEBOOK],
+            ["cartuchos-de-toner-e-ink-jet", PRINTER_SUPPLY],
         ]
         session = session_with_proxy(extra_args)
         product_urls = []

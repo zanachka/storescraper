@@ -28,6 +28,7 @@ from storescraper.categories import (
     TELEVISION,
     PRINTER,
     MEMORY_CARD,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -66,6 +67,7 @@ class Netxa(StoreWithUrlExtensions):
         ["parlantes-bocinas-cornetas", STEREO_SYSTEM],
         ["ratones", MOUSE],
         ["teclados-y-teclados-de-numeros", KEYBOARD],
+        ["cartuchos-de-toner-e-ink-jet", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -74,7 +76,7 @@ class Netxa(StoreWithUrlExtensions):
         product_urls = []
         page = 1
         while True:
-            if page > 10:
+            if page > 20:
                 raise Exception("page overflow: " + url_extension)
             url_webpage = "https://netxa.cl/categoria-producto/{}/page/{}/".format(
                 url_extension, page

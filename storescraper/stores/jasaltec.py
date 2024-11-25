@@ -30,6 +30,7 @@ from storescraper.categories import (
     MEMORY_CARD,
     KEYBOARD_MOUSE_COMBO,
     PRINTER,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -66,6 +67,7 @@ class Jasaltec(Store):
             MEMORY_CARD,
             KEYBOARD_MOUSE_COMBO,
             PRINTER,
+            PRINTER_SUPPLY,
         ]
 
     @classmethod
@@ -106,6 +108,7 @@ class Jasaltec(Store):
             ["sillas", GAMING_CHAIR],
             ["sillas-oficina", GAMING_CHAIR],
             ["consola", VIDEO_GAME_CONSOLE],
+            ["tintas", PRINTER_SUPPLY],
         ]
 
         session = session_with_proxy(extra_args)

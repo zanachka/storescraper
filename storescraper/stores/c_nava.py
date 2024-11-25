@@ -31,6 +31,7 @@ from storescraper.categories import (
     UPS,
     TELEVISION,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -69,6 +70,7 @@ class CNava(Store):
             UPS,
             TELEVISION,
             KITCHEN_APPLIANCE,
+            PRINTER_SUPPLY,
         ]
 
     @classmethod
@@ -103,6 +105,7 @@ class CNava(Store):
             ["equipos/ups", UPS],
             ["televisores", TELEVISION],
             ["electrodomesticos", KITCHEN_APPLIANCE],
+            ["impresoras-y-multifuncionales/suministros1", PRINTER_SUPPLY],
         ]
 
         session = session_with_proxy(extra_args)

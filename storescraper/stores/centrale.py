@@ -34,6 +34,7 @@ from storescraper.categories import (
     MEMORY_CARD,
     CASE_FAN,
     MICROPHONE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -71,6 +72,7 @@ class Centrale(StoreWithUrlExtensions):
         ["ups-sistema-de-alimentacion-ininterrumpida", UPS],
         ["refrigeracion-para-pc", CASE_FAN],
         ["microfonos", MICROPHONE],
+        ["suministros-para-impresoras", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -79,7 +81,7 @@ class Centrale(StoreWithUrlExtensions):
         product_urls = []
         page = 1
         while True:
-            if page > 20:
+            if page > 40:
                 raise Exception("page overflow: " + url_extension)
             url_webpage = "https://centrale.cl/categoria-producto" "/{}/page/{}".format(
                 url_extension, page

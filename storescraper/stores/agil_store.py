@@ -13,6 +13,7 @@ from storescraper.categories import (
     ALL_IN_ONE,
     KEYBOARD_MOUSE_COMBO,
     EXTERNAL_STORAGE_DRIVE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -32,6 +33,8 @@ class AgilStore(StoreWithUrlExtensions):
         ["5601", STORAGE_DRIVE],  # Disco Duro Interno
         ["5602", EXTERNAL_STORAGE_DRIVE],  # Disco Duro Externo
         ["5606", POWER_SUPPLY],  # Fuente Poder
+        ["5530", PRINTER_SUPPLY],  # Toner
+        ["5531", PRINTER_SUPPLY],  # Cartuchos de Tinta
     ]
 
     @classmethod

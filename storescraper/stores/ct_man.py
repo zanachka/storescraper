@@ -34,6 +34,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     WEARABLE,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -84,6 +85,9 @@ class CtMan(StoreWithUrlExtensions):
         ["types/ipads", TABLET],
         ["types/iphone", CELL],
         ["types/watch", WEARABLE],
+        ["types/botella-de-tinta", PRINTER_SUPPLY],
+        ["types/toner", PRINTER_SUPPLY],
+        ["types/cartucho-de-tinta", PRINTER_SUPPLY],
         ["collections/electrodomesticos", KITCHEN_APPLIANCE],
     ]
 

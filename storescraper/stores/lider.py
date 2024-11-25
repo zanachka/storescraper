@@ -38,6 +38,7 @@ from storescraper.categories import (
     WASHING_MACHINE,
     WEARABLE,
     WATER_HEATER,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -354,6 +355,12 @@ class Lider(Store):
             "Electrohogar > Electrodomésticos Cocina",
             1.0,
         ],
+        [
+            "Computación/Impresión/Tintas_y_Toners",
+            [PRINTER_SUPPLY],
+            "Computación > Impresión > Tintas y Toners",
+            1.0,
+        ],
     ]
 
     @classmethod
@@ -387,6 +394,7 @@ class Lider(Store):
             DISH_WASHER,
             WATER_HEATER,
             KITCHEN_APPLIANCE,
+            PRINTER_SUPPLY,
         ]
 
     @classmethod

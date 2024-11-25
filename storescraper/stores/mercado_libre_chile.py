@@ -38,6 +38,7 @@ from storescraper.categories import (
     VIDEO_CARD,
     MOTHERBOARD,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -620,6 +621,10 @@ class MercadoLibreChile(Store):
         ("MLC174376", "Walkman", None),
         ("MLC10350", "Tarjetas de Video", VIDEO_CARD),
         ("MLC1692", "Placas Madre", MOTHERBOARD),
+        ("MLC3560", "Toners", PRINTER_SUPPLY),
+        ("MLC7415", "Cartuchos de Tinta", PRINTER_SUPPLY),
+        ("MLC428989", "Sets de Insumos de Impresión", PRINTER_SUPPLY),
+        ("MLC10871", "Tintas", PRINTER_SUPPLY),
     ]
 
     sellers_blacklist = ["REUSE"]

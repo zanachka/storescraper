@@ -33,6 +33,7 @@ from storescraper.categories import (
     VIDEO_GAME_CONSOLE,
     RAM,
     CELL,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -90,6 +91,8 @@ class KDTec(StoreWithUrlExtensions):
         ["celulares", CELL],
         ["pantallas-interactivas", MONITOR],
         ["parlantes-audio", STEREO_SYSTEM],
+        ["tintas", PRINTER_SUPPLY],
+        ["toner", PRINTER_SUPPLY],
     ]
 
     @classmethod

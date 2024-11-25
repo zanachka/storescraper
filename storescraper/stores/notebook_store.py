@@ -36,6 +36,7 @@ from storescraper.categories import (
     PRINTER,
     VIDEO_GAME_CONSOLE,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -107,6 +108,7 @@ class NotebookStore(StoreWithUrlExtensions):
         ["apple/articulos/perifericos", KEYBOARD],
         ["apple/articulos/monitores-studio", MONITOR],
         ["equipos/wellness-home/home", KITCHEN_APPLIANCE],
+        ["impresion/consumibles-y-media/cartuchos", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -121,7 +123,7 @@ class NotebookStore(StoreWithUrlExtensions):
         page = 1
 
         while True:
-            if page > 15:
+            if page > 30:
                 raise Exception("Page overflow")
 
             url = "https://notebookstore.cl/{}?page={}".format(url_extension, page)

@@ -33,6 +33,7 @@ from storescraper.categories import (
     GAMING_CHAIR,
     WEARABLE,
     STORAGE_DRIVE,
+    PRINTER_SUPPLY,
 )
 
 
@@ -81,6 +82,8 @@ class Cintegral(StoreWithUrlExtensions):
         ["178", RAM],
         ["106", NOTEBOOK],
         ["141", UPS],
+        ["133", PRINTER_SUPPLY],
+        ["134", PRINTER_SUPPLY],
     ]
 
     @classmethod

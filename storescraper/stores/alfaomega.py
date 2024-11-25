@@ -13,12 +13,11 @@ from storescraper.categories import (
     COMPUTER_CASE,
     RAM,
     CPU_COOLER,
-    NOTEBOOK,
     USB_FLASH_DRIVE,
     PRINTER,
     MONITOR,
-    KEYBOARD,
     MOUSE,
+    PRINTER_SUPPLY,
 )
 
 
@@ -38,6 +37,8 @@ class Alfaomega(StoreWithUrlExtensions):
         ["monitores", MONITOR],
         ["pendrive-almacenamiento-externo", USB_FLASH_DRIVE],
         ["impresoras", PRINTER],
+        ["toner-alternativos", PRINTER_SUPPLY],
+        ["tintas-impresora", PRINTER_SUPPLY],
     ]
 
     @classmethod

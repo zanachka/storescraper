@@ -565,6 +565,12 @@ class Falabella(Store):
             "Home > Electrohogar - Electrodomésticos cocina",
             1,
         ],
+        [
+            "cat3246",
+            [PRINTER_SUPPLY],
+            "Home > Tecnología-Computadores > Impresoras y Tintas > Tintas y Toners",
+            1,
+        ],
     ]
 
     @classmethod
