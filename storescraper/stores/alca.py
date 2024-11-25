@@ -6,51 +6,59 @@ import validators
 from bs4 import BeautifulSoup
 from requests import ReadTimeout
 
-from storescraper.categories import PRINTER
+from storescraper.categories import (
+    PRINTER,
+    MOUSE,
+    SOLID_STATE_DRIVE,
+    ALL_IN_ONE,
+    NOTEBOOK,
+    MONITOR,
+    PRINTER_SUPPLY,
+)
 from storescraper.product import Product
-from storescraper.store import Store
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy
 
 
-class Alca(Store):
-    @classmethod
-    def categories(cls):
-        return [PRINTER]
+class Alca(StoreWithUrlExtensions):
+    url_extensions = [
+        ("accesorios-solotodo", MOUSE),
+        ("all-in-one-solotodo", ALL_IN_ONE),
+        ("almacenamiento-solotodo", SOLID_STATE_DRIVE),
+        ("impresoras-solotodo", PRINTER),
+        ("laptops", NOTEBOOK),
+        ("monitores-solotodo", MONITOR),
+        ("suministro", PRINTER_SUPPLY),
+    ]
 
     @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        url_extensions = [["solotodo", PRINTER]]
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
         product_urls = []
 
-        for url_extension, local_category in url_extensions:
+        page = 1
 
-            if local_category != category:
-                continue
+        while True:
+            if page > 30:
+                raise Exception("Page overflow: " + url_extension)
+            url_webpage = "https://www.alcaplus.cl/solotodo/{}/page/{}/".format(
+                url_extension, page
+            )
+            print(url_webpage)
+            data = session.get(url_webpage).text
+            soup = BeautifulSoup(data, "lxml")
+            product_containers = soup.findAll("div", "product")
 
-            page = 1
+            if not product_containers:
+                if page == 1:
+                    logging.warning("Empty category: " + url_extension)
+                break
 
-            while True:
-                if page > 30:
-                    raise Exception("Page overflow: " + url_extension)
-                url_webpage = "https://www.alcaplus.cl/{}/" "page/{}/".format(
-                    url_extension, page
-                )
-                print(url_webpage)
-                data = session.get(url_webpage).text
-                soup = BeautifulSoup(data, "lxml")
-                product_containers = soup.findAll("div", "product")
+            for container in product_containers:
+                product_url = container.find("a")["href"]
+                product_urls.append(product_url)
 
-                if not product_containers:
-                    if page == 1:
-                        logging.warning("Empty category: " + url_extension)
-                    break
-
-                for container in product_containers:
-                    product_url = container.find("a")["href"]
-                    product_urls.append(product_url)
-
-                page += 1
+            page += 1
 
         return product_urls
 
