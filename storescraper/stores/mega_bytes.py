@@ -89,6 +89,10 @@ class MegaBytes(StoreWithUrlExtensions):
 
         json_tag = soup.find("script", {"type": "application/ld+json"})
         json_data = json.loads(json_tag.text)
+
+        if not "@graph" in json_data:
+            return []
+
         product_data = json_data["@graph"][1]
 
         name = product_data["name"]
