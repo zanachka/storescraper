@@ -23,6 +23,7 @@ from storescraper.categories import (
     MICROPHONE,
     GAMING_CHAIR,
     UPS,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -52,6 +53,7 @@ class Zacto(Store):
             GAMING_CHAIR,
             MICROPHONE,
             UPS,
+            PRINTER_SUPPLY,
         ]
 
     @classmethod
@@ -79,6 +81,7 @@ class Zacto(Store):
             ["audio-video-y-fotografia/microfonos", MICROPHONE],
             ["conectividad-y-redes/ups", UPS],
             ["gamers", HEADPHONES],
+            ["accesorios-de-impresora", PRINTER_SUPPLY],
         ]
 
         session = session_with_proxy(extra_args)
