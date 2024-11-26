@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import json
 
 from storescraper import banner_sections as bs
-from storescraper.utils import session_with_proxy
+from storescraper.utils import session_with_proxy, cf_session_with_proxy
 from .falabella import Falabella
 
 
@@ -27,10 +27,11 @@ class Tottus(Falabella):
 
     @classmethod
     def banners(cls, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         banners = []
         soup = BeautifulSoup(session.get(cls.banners_base_url).text, "lxml")
         json_data = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)
+
         props = json_data["props"]["pageProps"]["page"]["containers"]
         banners_data = None
 
