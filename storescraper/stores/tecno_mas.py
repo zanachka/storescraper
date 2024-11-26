@@ -29,6 +29,7 @@ from storescraper.categories import (
     CPU_COOLER,
     VIDEO_GAME_CONSOLE,
     WEARABLE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -69,6 +70,7 @@ class TecnoMas(StoreWithUrlExtensions):
         [" Sillas", GAMING_CHAIR],
         ["Consolas", VIDEO_GAME_CONSOLE],
         ["Smartwatch", WEARABLE],
+        ["Insumos de Impresora", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -77,7 +79,7 @@ class TecnoMas(StoreWithUrlExtensions):
         product_urls = []
         page = 0
         while True:
-            if page > 10:
+            if page > 35:
                 raise Exception("page overflow: " + url_extension)
 
             facet_filters = urllib.parse.quote(

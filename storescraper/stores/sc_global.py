@@ -20,6 +20,7 @@ from storescraper.categories import (
     SOLID_STATE_DRIVE,
     PROCESSOR,
     VIDEO_CARD,
+    PRINTER_SUPPLY,
 )
 
 
@@ -47,6 +48,8 @@ class ScGlobal(StoreWithUrlExtensions):
         ["silla-gamer-88", GAMING_CHAIR],
         ["procesadores-94", PROCESSOR],
         ["tarjetas-de-video-56", VIDEO_CARD],
+        ["toners-44", PRINTER_SUPPLY],
+        ["tintas-45", PRINTER_SUPPLY],
     ]
 
     @classmethod

@@ -42,6 +42,7 @@ from storescraper.categories import (
     CELL,
     VIDEO_GAME_CONSOLE,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY,
 )
 
 
@@ -105,6 +106,9 @@ class SpDigital(StoreWithUrlExtensions):
         ["audio-y-musica-audio-profesional-microfono-profesional", MICROPHONE],
         ["otras-categorias-celular-y-accesorios-smartphones", CELL],
         ["electrodomésticos", KITCHEN_APPLIANCE],
+        ["hogar-y-oficina-impresoras-tinta-para-impresora", PRINTER_SUPPLY],
+        ["hogar-y-oficina-impresoras-toner-cartridge-laser", PRINTER_SUPPLY],
+        ["botellas-de-tinta", PRINTER_SUPPLY],
     ]
 
     @classmethod

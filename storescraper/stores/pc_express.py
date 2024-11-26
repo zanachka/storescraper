@@ -31,6 +31,7 @@ from storescraper.categories import (
     MONITOR,
     SOLID_STATE_DRIVE,
     PRINTER,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -76,6 +77,9 @@ class PcExpress(StoreWithUrlExtensions):
         ["170", CASE_FAN],  # Ventilacion para Gabinete
         ["493", PRINTER],  # Impresoras Hogar y Oficina
         ["282", HEADPHONES],  # Microfonos y Manos Libres
+        ["149", PRINTER_SUPPLY],  # Tintas Cartridge o Botellas
+        ["152", PRINTER_SUPPLY],  # Toner Laser
+        ["504", PRINTER_SUPPLY],  # Tintas para Plotter
     ]
 
     @classmethod
@@ -94,7 +98,7 @@ class PcExpress(StoreWithUrlExtensions):
         page = 1
 
         while True:
-            if page > 15:
+            if page > 20:
                 raise Exception("Page overflow: " + url_extension)
 
             category_page_url = category_url + str(page)

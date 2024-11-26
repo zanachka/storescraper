@@ -29,6 +29,7 @@ from storescraper.categories import (
     VIDEO_CARD,
     VIDEO_GAME_CONSOLE,
     KITCHEN_APPLIANCE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -64,6 +65,7 @@ class TiShop(StoreWithUrlExtensions):
         ["52", PROCESSOR],
         ["81", VIDEO_CARD],
         ["60?q[navbar_items_id_eq_any][]=72", KITCHEN_APPLIANCE],
+        ["59?q[navbar_items_id_eq_any][]=37", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -74,7 +76,7 @@ class TiShop(StoreWithUrlExtensions):
         page = 1
 
         while True:
-            if page > 20:
+            if page > 40:
                 raise Exception(f"page overflow: {url_extension}")
 
             separator = "&" if "?" in url_extension else "?"
