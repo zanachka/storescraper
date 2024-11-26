@@ -99,7 +99,7 @@ class VGamers(StoreWithUrlExtensions):
         product_form = soup.find("form", "product-form")
 
         if not product_form:
-            return None
+            return []
 
         key = product_form["data-id"]
         json_data = json.loads(
