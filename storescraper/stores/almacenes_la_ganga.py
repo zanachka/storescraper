@@ -29,13 +29,10 @@ class AlmacenesLaGanga(Store):
             if page > 10:
                 raise Exception("Page overflow")
 
-            url = (
-                "https://www.almaceneslaganga.com/pedidos-en-linea/"
-                "efectivo/LG?page={}".format(page)
-            )
+            url = f"https://laganga.com/catalogsearch/result/?q=LG&p={page}"
             print(url)
             soup = BeautifulSoup(session.get(url).text, "lxml")
-            products = soup.findAll("div", "esquema_producto")
+            products = soup.findAll("li", "item product product-item")
 
             if not products:
                 if page == 1:
@@ -43,12 +40,7 @@ class AlmacenesLaGanga(Store):
                 break
 
             for product in products:
-                product_slug = product.find("button", "btn-detalles")["producto"]
-                product_url = (
-                    "https://www.almaceneslaganga.com/"
-                    "pedidos-en-linea/efectivo/{}".format(product_slug)
-                )
-                product_urls.append(product_url)
+                product_urls.append(product.find("a")["href"])
 
             page += 1
 
@@ -59,36 +51,24 @@ class AlmacenesLaGanga(Store):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
-        page_source = response.text
+        soup = BeautifulSoup(response.text, "lxml")
 
-        soup = BeautifulSoup(page_source, "lxml")
-
-        name = soup.find(
-            "div", {"id": "nombre_producto_detalles_tecnicos"}
-        ).text.strip()
-        sku = re.search(r'global_id_producto="([\S\s]+?)";', page_source).groups()[0]
-        part_number = (
-            re.search(r"\[modelo] => ([\S\s]*?)\n", page_source).groups()[0].strip()
+        cart_form = soup.find("form", {"id": "product_addtocart_form"})
+        key = cart_form.find("input", {"name": "product"})["value"]
+        name = soup.find("span", {"itemprop": "name"}).text.strip()
+        sku = soup.find("div", {"itemprop": "sku"}).text
+        price = Decimal(soup.find("meta", {"itemprop": "price"})["content"])
+        stock = (
+            -1
+            if soup.find("div", "stock available").text.strip().lower() == "en stock"
+            else 0
         )
-        if not part_number:
-            part_number = None
-        stock = -1
-
-        price = Decimal(
-            soup.find("label", {"id": "precio_detalles_tecnicos"})
-            .text.replace("$", "")
-            .replace(",", "")
-        )
-
-        picture_url_base = "https://www.almaceneslaganga.com/pedidos-en-linea"
-        picture_urls = [
-            a["src"].replace("..", picture_url_base)
-            for a in soup.findAll("img", "galeria_detalles_tecnicos")
-        ]
-
+        part_number = soup.find("td", {"data-th": "Modelo"}).text.strip()
         description = html_to_markdown(
-            str(soup.find("label", {"id": "descripcion_detalles_tecnicos"}))
+            soup.find("div", {"itemprop": "description"}).text
         )
+        slider = soup.find("div", "p-thumb-nav slick-slider")
+        picture_urls = [img["src"] for img in slider.findAll("img")]
 
         p = Product(
             name,
@@ -96,7 +76,7 @@ class AlmacenesLaGanga(Store):
             category,
             url,
             url,
-            sku,
+            key,
             stock,
             price,
             price,
