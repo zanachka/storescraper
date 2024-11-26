@@ -159,10 +159,13 @@ class TecnoMas(StoreWithUrlExtensions):
 
         normal_price_tag = soup.find("span", {"id": "webpay-price-" + key})
         normal_price = Decimal(remove_words(normal_price_tag.text))
+        slides = soup.findAll("div", "swiper-slide")
+        picture_urls = []
 
-        picture_urls = [
-            tag.find("img")["src"] for tag in soup.findAll("div", "swiper-slide")
-        ]
+        for slide in slides:
+            img = slide.find("img")
+            if "src" in img.attrs:
+                picture_urls.append(img["src"])
 
         p = Product(
             name,
