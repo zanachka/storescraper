@@ -28,6 +28,7 @@ from storescraper.categories import (
     UPS,
     MOUSE,
     PRINTER_SUPPLY,
+    TABLET,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -44,14 +45,16 @@ class ZonaPortatil(StoreWithUrlExtensions):
         ["procesador", PROCESSOR],
         ["tarjeta-de-video", VIDEO_CARD],
         ["ventilador", CASE_FAN],
-        ["disco-duro-externo", EXTERNAL_STORAGE_DRIVE],
+        ["discos-duros-externos", EXTERNAL_STORAGE_DRIVE],
         ["disco-duro-servidor", STORAGE_DRIVE],
         ["disco-duro-ssd", SOLID_STATE_DRIVE],
         ["memorias-flash", MEMORY_CARD],
         ["aio-todo-en-uno", ALL_IN_ONE],
         ["notebook", NOTEBOOK],
+        ["tablets", TABLET],
         ["ups", UPS],
         ["impresoras", PRINTER],
+        ["suministros", PRINTER_SUPPLY],
         ["monitores-monitores", MONITOR],
         ["impresoras-open-box", PRINTER],
         ["notebook-partes-y-piezas-open-box", NOTEBOOK],
@@ -79,7 +82,6 @@ class ZonaPortatil(StoreWithUrlExtensions):
         ["placas-madres-placas-madres", MOTHERBOARD],
         ["fuente-de-poder-fuente-de-poder-zona-gamer", POWER_SUPPLY],
         ["procesadores-procesadores", PROCESSOR],
-        ["suministros", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -96,6 +98,8 @@ class ZonaPortatil(StoreWithUrlExtensions):
             )
             print(url_webpage)
             response = session.get(url_webpage)
+            if response.status_code == 404 and page == 1:
+                raise Exception("Invalid category: " + url_extension)
             soup = BeautifulSoup(response.text, "lxml")
             product_containers = soup.findAll("article", "product")
 
