@@ -336,3 +336,4 @@ from .you_tech import YouTech
 from .zacto import Zacto
 from .zmart import Zmart
 from .zona_portatil import ZonaPortatil
+from .z_tech import ZTech
