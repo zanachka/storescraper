@@ -1,10 +1,9 @@
 from bs4 import BeautifulSoup
 from decimal import Decimal
-import json
 import re
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, html_to_markdown, remove_words
+from storescraper.utils import session_with_proxy, remove_words
 from storescraper.categories import PRINTER, PRINTER_SUPPLY
 
 
@@ -57,13 +56,13 @@ class CanonTiendaOnline(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        soup = BeautifulSoup(session.get(url).text, "lxml")
+        soup = BeautifulSoup(session.get(url).text, "html5lib")
         entry_params = soup.find("input", {"id": "catEntryParams"})["value"]
 
         key = re.search(r"id:\s*'(\d+)'", entry_params).group(1)
         name = soup.find("span", {"itemprop": "name"}).text
         price = Decimal(remove_words(soup.find("span", {"itemprop": "price"}).text))
-        description = soup.find("p", {"itemprop": "description"}).text
+        description = soup.find("p", {"itemprop": "description"}).text.strip()
         stock = (
             -1
             if soup.find("span", {"itemprop": "availability"}).text.strip()
