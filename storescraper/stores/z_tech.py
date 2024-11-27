@@ -26,6 +26,9 @@ class ZTech(StoreWithUrlExtensions):
         page = 1
 
         while True:
+            if page > 10:
+                raise Exception("Page overflow")
+
             url = f"https://ztech.cl/collections/{url_extension}?page={page}"
             print(url)
             response = session.get(url)
@@ -51,7 +54,7 @@ class ZTech(StoreWithUrlExtensions):
             soup.findAll("script", {"type": "application/ld+json"})[1].text
         )
         name = product_data["name"]
-        part_number = re.search(r"\[([^\]]+)\](?!.*\[[^\]]+\])", name)
+        part_number = re.search(r"\[([^]]+)](?!.*\[[^]]+])", name)
 
         if part_number:
             part_number = part_number.group(1)
