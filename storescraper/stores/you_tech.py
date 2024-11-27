@@ -31,6 +31,7 @@ from storescraper.categories import (
     ALL_IN_ONE,
     GAMING_DESK,
     VIDEO_GAME_CONSOLE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -69,6 +70,7 @@ class YouTech(StoreWithUrlExtensions):
         ["67844", GAMING_CHAIR],
         ["67845", GAMING_DESK],
         ["68010", VIDEO_GAME_CONSOLE],
+        ["67852", PRINTER_SUPPLY],
     ]
 
     @classmethod

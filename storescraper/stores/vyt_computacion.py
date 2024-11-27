@@ -1,7 +1,28 @@
 from decimal import Decimal
 import logging
 from bs4 import BeautifulSoup
-from storescraper.categories import *
+from storescraper.categories import (
+    PRINTER,
+    PRINTER_SUPPLY,
+    USB_FLASH_DRIVE,
+    MEMORY_CARD,
+    SOLID_STATE_DRIVE,
+    STORAGE_DRIVE,
+    CASE_FAN,
+    MOTHERBOARD,
+    POWER_SUPPLY,
+    CPU_COOLER,
+    PROCESSOR,
+    VIDEO_CARD,
+    RAM,
+    GAMING_CHAIR,
+    KEYBOARD,
+    STEREO_SYSTEM,
+    HEADPHONES,
+    MONITOR,
+    COMPUTER_CASE,
+    UPS,
+)
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy, remove_words
@@ -29,6 +50,7 @@ class VyTComputacion(StoreWithUrlExtensions):
         ["gabinetes-para-pc", COMPUTER_CASE],
         ["audio", STEREO_SYSTEM],
         ["ups", UPS],
+        ["tintas-y-toner-de-impresoras", PRINTER_SUPPLY],
     ]
 
     @classmethod
@@ -37,7 +59,7 @@ class VyTComputacion(StoreWithUrlExtensions):
         product_urls = []
         page = 1
         while True:
-            if page > 20:
+            if page > 25:
                 raise Exception("Page overflow: " + url_extension)
             url_webpage = (
                 "https://www.vytcomputacion.cl/categoria-producto/{}/page/{}/".format(

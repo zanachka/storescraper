@@ -21,6 +21,7 @@ from storescraper.categories import (
     HEADPHONES,
     USB_FLASH_DRIVE,
     PRINTER,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -52,6 +53,8 @@ class WebRedes(StoreWithUrlExtensions):
         ["302-almacenamiento", STORAGE_DRIVE],
         ["318-todo-en-uno", ALL_IN_ONE],
         ["320-notebooks-gamer", NOTEBOOK],
+        ["305-tintas-impresora", PRINTER_SUPPLY],
+        ["306-toner-impresora", PRINTER_SUPPLY],
     ]
 
     @classmethod

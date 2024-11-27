@@ -27,6 +27,7 @@ from storescraper.categories import (
     WEARABLE,
     MEMORY_CARD,
     ALL_IN_ONE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -63,6 +64,7 @@ class Spider(StoreWithUrlExtensions):
         ["273-smartwatch", WEARABLE],
         ["274-memoria-flashpendrive", MEMORY_CARD],
         ["40-pc-fijos", ALL_IN_ONE],
+        ["246-tintas-y-toner", PRINTER_SUPPLY],
     ]
 
     @classmethod

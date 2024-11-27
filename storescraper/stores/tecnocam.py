@@ -33,6 +33,7 @@ from storescraper.categories import (
     MICROPHONE,
     VIDEO_GAME_CONSOLE,
     PRINTER,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -71,6 +72,8 @@ class Tecnocam(StoreWithUrlExtensions):
         ["computadores/consolas-de-videojuegos", VIDEO_GAME_CONSOLE],
         ["computadores/notebook", NOTEBOOK],
         ["impresoras-y-escaner/impresoras", PRINTER],
+        ["impresoras-y-escaner/tintas", PRINTER_SUPPLY],
+        ["impresoras-y-escaner/toner", PRINTER_SUPPLY],
     ]
 
     @classmethod

@@ -31,6 +31,7 @@ from storescraper.categories import (
     EXTERNAL_STORAGE_DRIVE,
     STEREO_SYSTEM,
     UPS,
+    PRINTER_SUPPLY,
 )
 from storescraper.flixmedia import flixmedia_video_urls
 from storescraper.product import Product
@@ -80,6 +81,9 @@ class Winpy(StoreWithUrlExtensions):
         ["accesorios/audifonos/", HEADPHONES],
         ["accesorios/parlantes/", STEREO_SYSTEM],
         ["ups/ups/", UPS],
+        ["suministros/toner/", PRINTER_SUPPLY],
+        ["suministros/botellas-de-tinta/", PRINTER_SUPPLY],
+        ["suministros/cartuchos-de-tinta/", PRINTER_SUPPLY],
     ]
 
     @classmethod

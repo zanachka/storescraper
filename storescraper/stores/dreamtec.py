@@ -87,12 +87,16 @@ class Dreamtec(StoreWithUrlExtensions):
         stock = product_data["stock"]
 
         ean_candidate = product_data["upc"] or ""
+        ean = None
+
         if len(ean_candidate) == 12:
             ean_candidate = "0" + ean_candidate
-        if check_ean13(ean_candidate):
-            ean = ean_candidate
-        else:
-            ean = None
+
+        try:
+            if check_ean13(ean_candidate):
+                ean = ean_candidate
+        except ValueError:
+            pass
 
         picture_urls = [
             "https://dreamtec.cl/" + product_data[tag].replace(" ", "%20")

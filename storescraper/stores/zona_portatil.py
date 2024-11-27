@@ -27,6 +27,7 @@ from storescraper.categories import (
     CASE_FAN,
     UPS,
     MOUSE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -78,6 +79,7 @@ class ZonaPortatil(StoreWithUrlExtensions):
         ["placas-madres-placas-madres", MOTHERBOARD],
         ["fuente-de-poder-fuente-de-poder-zona-gamer", POWER_SUPPLY],
         ["procesadores-procesadores", PROCESSOR],
+        ["suministros", PRINTER_SUPPLY],
     ]
 
     @classmethod

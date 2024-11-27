@@ -35,6 +35,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     VIDEO_GAME_CONSOLE,
     UPS,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -90,6 +91,9 @@ class Wei(StoreWithUrlExtensions):
         ["782", UPS],  # UPS
         ["809", GAMING_CHAIR],
         ["1182", MICROPHONE],
+        ["1288", PRINTER_SUPPLY],
+        ["862", PRINTER_SUPPLY],  # SUMINISTROS DE IMPRESORAS
+        ["694", PRINTER_SUPPLY],  # SUMINISTROS PARA BROTHER  # SUMINISTROS PARA HP
     ]
 
     @classmethod

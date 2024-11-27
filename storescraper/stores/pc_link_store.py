@@ -36,6 +36,7 @@ from storescraper.categories import (
     POWER_SUPPLY,
     WEARABLE,
     MICROPHONE,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -78,6 +79,10 @@ class PcLinkStore(StoreWithUrlExtensions):
         ["ups-respaldo-de-energia", UPS],
         ["escritorios", GAMING_DESK],
         ["sillas-de-escritorio", GAMING_CHAIR],
+        ["cartuchos", PRINTER_SUPPLY],
+        ["botellas", PRINTER_SUPPLY],
+        ["bolsas", PRINTER_SUPPLY],
+        ["toner", PRINTER_SUPPLY],
     ]
 
     @classmethod

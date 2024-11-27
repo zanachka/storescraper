@@ -96,10 +96,16 @@ class VGamers(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        key = soup.find("form", "product-form")["data-id"]
+        product_form = soup.find("form", "product-form")
+
+        if not product_form:
+            return []
+
+        key = product_form["data-id"]
         json_data = json.loads(
             soup.find("script", {"type": "application/ld+json"}).text
         )
+
         for entry in json_data:
             if entry["@type"] == "Product":
                 product_data = entry

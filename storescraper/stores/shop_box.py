@@ -27,6 +27,7 @@ from storescraper.categories import (
     TELEVISION,
     USB_FLASH_DRIVE,
     WEARABLE,
+    PRINTER_SUPPLY,
 )
 
 
@@ -56,6 +57,7 @@ class ShopBox(StoreWithUrlExtensions):
         ["tablets", TABLET],
         ["impresoras-y-scanners", PRINTER],
         ["relojes", WEARABLE],
+        ["cartuchos-de-toner-e-ink-jet", PRINTER_SUPPLY],
     ]
 
     @classmethod

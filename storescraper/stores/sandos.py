@@ -35,6 +35,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     UPS,
     PRINTER,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -95,6 +96,8 @@ class Sandos(StoreWithUrlExtensions):
         [179, MONITOR],
         [180, TELEVISION],
         [182, RAM],
+        [131, PRINTER_SUPPLY],
+        [127, PRINTER_SUPPLY],
     ]
 
     @classmethod

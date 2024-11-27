@@ -34,6 +34,7 @@ from storescraper.categories import (
     CELL,
     WEARABLE,
     CASE_FAN,
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -85,6 +86,8 @@ class Todoclick(StoreWithUrlExtensions):
         ["refrigeracion-liquida-473", CPU_COOLER],
         ["ventiladores-pc-474", CASE_FAN],
         ["tarjetas-de-video-549", VIDEO_CARD],
+        ["cartuchos-de-tinta-y-botellas-para-impresoras-541", PRINTER_SUPPLY],
+        ["toners-impresora-laser-542", PRINTER_SUPPLY],
     ]
 
     @classmethod

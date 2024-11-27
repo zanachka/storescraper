@@ -153,7 +153,7 @@ class Globalbox(StoreWithUrlExtensions):
                 "div", "woocommerce-product-details__short-description"
             )
 
-        description = html_to_markdown(description.text)
+        description = html_to_markdown(description.text) if description else None
 
         p = Product(
             name,
