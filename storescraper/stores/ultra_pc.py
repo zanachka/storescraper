@@ -25,6 +25,7 @@ class UltraPc(StoreWithUrlExtensions):
         ["monitores", MONITOR],
         ["accesorios", MOUSE],
         ["consolas-videojuegos", VIDEO_GAME_CONSOLE],
+        ["consolas-videojuegos-2", VIDEO_GAME_CONSOLE],
         ["smartphones-2", CELL],
         ["electrodomesticos", TELEVISION],
     ]
@@ -167,6 +168,7 @@ class UltraPc(StoreWithUrlExtensions):
                 "SEMINUEVO": "https://schema.org/UsedCondition",
                 "OPEN BOX": "https://schema.org/OpenBoxCondition",
                 "REACONDICIONADO (SIN USO)": "https://schema.org/RefurbishedCondition",
+                "REACONDICIONADO (CON USO)": "https://schema.org/RefurbishedCondition",
             }
             if condition_span:
                 condition_text = condition_span.text.strip().upper()
