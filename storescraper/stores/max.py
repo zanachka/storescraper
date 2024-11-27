@@ -4,35 +4,36 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 
 from storescraper.product import Product
-from storescraper.store_with_url_extensions import StoreWithUrlExtensions
+from storescraper.store import Store
 from storescraper.utils import session_with_proxy
 from storescraper.categories import TELEVISION
 
 
-class Max(StoreWithUrlExtensions):
+class Max(Store):
     # Only made to get LG products
-    url_extensions = [
-        ["1964", TELEVISION],
-    ]
+    api_base_url = "https://apigt.tienda.max.com.gt"
     headers = {"x-api-key": "ROGi1LWB3saRqFw4Xdqc4Z9jGWVxYLl9ZEZjbJu9"}
-    v1_api_base_url = "https://apigt.tienda.max.com.gt/v1"
 
     @classmethod
-    def discover_urls_for_url_extension(cls, url_extension, extra_args):
+    def categories(cls):
+        return [TELEVISION]
+
+    @classmethod
+    def discover_urls_for_category(cls, category, extra_args=None):
+        if category != TELEVISION:
+            return []
+
         session = session_with_proxy(extra_args)
+        session.headers["x-api-key"] = "ROGi1LWB3saRqFw4Xdqc4Z9jGWVxYLl9ZEZjbJu9"
         product_urls = []
         page = 1
 
         while True:
-            if page >= 5:
+            if page >= 20:
                 raise Exception("Page overflow")
 
-            api_endpoint = f"https://apigt.tienda.max.com.gt/v2/products?categories={url_extension}&page={page}&pageSize=200&sessionId=1&clientId=e0a1625b-3c2b-4552-bce9-07d32ca12d59"
-            print(api_endpoint)
-            response = session.get(
-                api_endpoint,
-                headers=cls.headers,
-            )
+            api_endpoint = f"{cls.api_base_url}/v2/products?page={page}&search=lg"
+            response = session.get(api_endpoint)
             json_data = response.json()
 
             if json_data["products"] == []:
@@ -42,7 +43,7 @@ class Max(StoreWithUrlExtensions):
 
             product_urls.extend(
                 [
-                    f"https://tienda.max.com.gt/{product['meta']['url_key']}"
+                    f"https://www.max.com.gt/{product['meta']['url_key']}"
                     for product in json_data["products"]
                 ]
             )
@@ -70,7 +71,7 @@ class Max(StoreWithUrlExtensions):
 
         prices = json.loads(
             session.get(
-                f"{cls.v1_api_base_url}/prices/{sku}",
+                f"{cls.api_base_url}/v1/prices/{sku}",
                 headers=cls.headers,
             ).text
         )
@@ -80,7 +81,7 @@ class Max(StoreWithUrlExtensions):
 
         summary = json.loads(
             session.get(
-                f"{cls.v1_api_base_url}/products/{sku}/contentSyndication",
+                f"{cls.api_base_url}/v1/products/{sku}/contentSyndication",
                 headers=cls.headers,
             ).text
         )
@@ -101,7 +102,7 @@ class Max(StoreWithUrlExtensions):
 
         stock_info = json.loads(
             session.get(
-                f"{cls.v1_api_base_url}/products/{sku}/stock",
+                f"{cls.api_base_url}/v1/products/{sku}/stock",
                 headers=cls.headers,
             ).text
         )
