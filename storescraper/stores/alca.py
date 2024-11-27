@@ -14,6 +14,7 @@ from storescraper.categories import (
     NOTEBOOK,
     MONITOR,
     PRINTER_SUPPLY,
+    TABLET,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -29,6 +30,7 @@ class Alca(StoreWithUrlExtensions):
         ("laptops", NOTEBOOK),
         ("monitores-solotodo", MONITOR),
         ("suministro", PRINTER_SUPPLY),
+        ("tablets-solotodo", TABLET),
     ]
 
     @classmethod
