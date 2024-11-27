@@ -34,6 +34,7 @@ from .c_nava import CNava
 from .c_s_byte import CSByte
 from .cafe_digital import CafeDigital
 from .campcom import Campcom
+from .canon_tienda_online import CanonTiendaOnline
 from .carsa import Carsa
 from .casa_royal import CasaRoyal
 from .cc_link import CCLink
