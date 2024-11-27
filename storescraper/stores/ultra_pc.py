@@ -168,6 +168,7 @@ class UltraPc(StoreWithUrlExtensions):
                 "SEMINUEVO": "https://schema.org/UsedCondition",
                 "OPEN BOX": "https://schema.org/OpenBoxCondition",
                 "REACONDICIONADO (SIN USO)": "https://schema.org/RefurbishedCondition",
+                "REACONDICIONADO (CON USO)": "https://schema.org/RefurbishedCondition",
             }
             if condition_span:
                 condition_text = condition_span.text.strip().upper()
