@@ -111,7 +111,7 @@ class Wei(StoreWithUrlExtensions):
         done = False
 
         while not done:
-            if page >= 10:
+            if page >= 20:
                 raise Exception("Page overflow: " + url_extension)
 
             page_url = "https://www.wei.cl/categoria/{}?page={}" "".format(
