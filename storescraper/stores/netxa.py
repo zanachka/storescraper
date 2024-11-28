@@ -114,6 +114,10 @@ class Netxa(StoreWithUrlExtensions):
         json_data = json.loads(
             soup.find("script", {"type": "application/ld+json"}).text
         )
+
+        if "@graph" not in json_data:
+            return []
+
         for entry in json_data["@graph"]:
             if entry["@type"] == "Product":
                 product_data = entry
