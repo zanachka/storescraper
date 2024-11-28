@@ -47,6 +47,7 @@ class ZonaPortatil(StoreWithUrlExtensions):
         ["ventilador", CASE_FAN],
         ["discos-duros-externos", EXTERNAL_STORAGE_DRIVE],
         ["disco-duro-servidor", STORAGE_DRIVE],
+        ["disco-duro-gamer", STORAGE_DRIVE],
         ["disco-duro-ssd", SOLID_STATE_DRIVE],
         ["memorias-flash", MEMORY_CARD],
         ["aio-todo-en-uno", ALL_IN_ONE],
