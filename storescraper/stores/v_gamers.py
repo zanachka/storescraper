@@ -18,6 +18,7 @@ from storescraper.categories import (
     GAMING_DESK,
     SOLID_STATE_DRIVE,
     MICROPHONE,
+    NOTEBOOK,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -44,6 +45,7 @@ class VGamers(StoreWithUrlExtensions):
         ["hogar-y-oficina/accesorios-computacionales/teclado", KEYBOARD],
         ["hogar-y-oficina/accesorios-computacionales/audifonos", HEADPHONES],
         ["streaming/microfonos", MICROPHONE],
+        ["notebook-y-consolas", NOTEBOOK],
     ]
 
     @classmethod

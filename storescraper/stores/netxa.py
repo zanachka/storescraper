@@ -76,7 +76,7 @@ class Netxa(StoreWithUrlExtensions):
         product_urls = []
         page = 1
         while True:
-            if page > 20:
+            if page > 30:
                 raise Exception("page overflow: " + url_extension)
             url_webpage = "https://netxa.cl/categoria-producto/{}/page/{}/".format(
                 url_extension, page
@@ -114,6 +114,10 @@ class Netxa(StoreWithUrlExtensions):
         json_data = json.loads(
             soup.find("script", {"type": "application/ld+json"}).text
         )
+
+        if "@graph" not in json_data:
+            return []
+
         for entry in json_data["@graph"]:
             if entry["@type"] == "Product":
                 product_data = entry

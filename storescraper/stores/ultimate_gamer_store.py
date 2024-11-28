@@ -1,4 +1,5 @@
 import logging
+import math
 import re
 import json
 from bs4 import BeautifulSoup
@@ -89,7 +90,7 @@ class UltimateGamerStore(StoreWithUrlExtensions):
                 break
 
         name = product_data["name"]
-        normal_price = Decimal(product_data["offers"]["price"])
+        normal_price = Decimal(product_data["offers"]["price"]).quantize(0)
         offer_price = (normal_price * Decimal("0.96")).quantize(0)
         key = soup.find("meta", {"property": "og:id"})["content"]
 

@@ -1,4 +1,4 @@
-import re
+import logging
 from decimal import Decimal
 
 from bs4 import BeautifulSoup
@@ -61,7 +61,7 @@ class Eylstore(StoreWithUrlExtensions):
 
             if not product_containers:
                 if page == 1:
-                    raise Exception("Empty category: " + url_extension)
+                    logging.warning(f"Empty category: {url_extension}")
                 break
 
             for product in product_containers:
