@@ -21,7 +21,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import session_with_proxy, remove_words, html_to_markdown
 
 
 class SevenGamer(StoreWithUrlExtensions):
@@ -102,6 +102,7 @@ class SevenGamer(StoreWithUrlExtensions):
             tag["src"]
             for tag in soup.find("div", "product-images-wrapper").findAll("img")
         ]
+        description = html_to_markdown(str(soup.find("div", {"id": "tab-description"})))
         p = Product(
             name,
             cls.__name__,
@@ -115,5 +116,6 @@ class SevenGamer(StoreWithUrlExtensions):
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]

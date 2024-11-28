@@ -43,7 +43,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import session_with_proxy, html_to_markdown
 
 
 class PcFactory(Store):
@@ -225,6 +225,7 @@ class PcFactory(Store):
             part_number = part_number.strip()
 
         name = product_data["nombre"]
+        description = html_to_markdown(product_data["descripcion"])
 
         # Precio
         res = session.get(
@@ -266,5 +267,6 @@ class PcFactory(Store):
             sku=sku,
             part_number=part_number,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]

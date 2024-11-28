@@ -106,18 +106,21 @@ class AsusStore(StoreWithUrlExtensions):
         products = []
 
         if variations_data and "[data-role=swatch-options]" in variations_data:
+            description = html_to_markdown(
+                str(soup.find("div", {"id": "specification"}))
+            )
             variations_data = variations_data["[data-role=swatch-options]"][
                 "Magento_Swatches/js/swatch-renderer"
             ]["jsonConfig"]
             for key, sku in variations_data["sku"].items():
                 name = variations_data["sales_model_name"][key]
+                description = json.dumps(
+                    json.loads(variations_data["product_spec"][key])
+                )
                 price = Decimal(
                     variations_data["optionPrices"][key]["finalPrice"]["amount"]
                 )
                 picture_urls = [x["full"] for x in variations_data["images"][key]]
-                description = html_to_markdown(
-                    variations_data["dynamic"]["short_description"][key]["value"]
-                )
                 stock = -1 if variations_data["isSalable"][key] else 0
 
                 p = Product(
@@ -163,6 +166,9 @@ class AsusStore(StoreWithUrlExtensions):
             picture_urls = [
                 tag["src"] for tag in soup.find("div", "product media").findAll("img")
             ]
+            description = html_to_markdown(
+                str(soup.find("div", {"id": "specification"}))
+            )
             p = Product(
                 name,
                 cls.__name__,
@@ -177,6 +183,7 @@ class AsusStore(StoreWithUrlExtensions):
                 sku=sku,
                 part_number=sku,
                 picture_urls=picture_urls,
+                description=description,
             )
             products.append(p)
         return products

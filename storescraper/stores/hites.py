@@ -41,6 +41,7 @@ from storescraper.flixmedia import flixmedia_video_urls
 from storescraper.product import Product
 from storescraper.store import Store
 from storescraper import banner_sections as bs
+from storescraper.utils import html_to_markdown
 
 
 class Hites(Store):
@@ -680,6 +681,10 @@ class Hites(Store):
         else:
             review_avg_score = None
 
+        description = html_to_markdown(
+            str(soup.find("div", {"id": "descriptionAndDetails"}))
+        )
+
         p = Product(
             name,
             cls.__name__,
@@ -700,6 +705,7 @@ class Hites(Store):
             seller=seller,
             review_count=review_count,
             review_avg_score=review_avg_score,
+            description=description,
         )
 
         return [p]

@@ -30,7 +30,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import session_with_proxy, html_to_markdown
 
 
 class TravelTienda(StoreWithUrlExtensions):
@@ -138,6 +138,7 @@ class TravelTienda(StoreWithUrlExtensions):
         publication_entry = page_json["catalogRepository"]["products"][publication_id]
         products = []
         skus_data = page_json["catalogRepository"]["skus"]
+        description = html_to_markdown(publication_entry["longDescription"])
 
         for sku, sku_data in skus_data.items():
             name = sku_data["displayName"]
@@ -177,7 +178,6 @@ class TravelTienda(StoreWithUrlExtensions):
                 for picture in publication_entry["fullImageURLs"]
             ]
 
-            print(page_json["inventoryRepository"]["skus"][sku])
             stock = page_json["inventoryRepository"]["skus"][sku]["default"].get(
                 "orderableQuantity", 0
             )
@@ -196,6 +196,7 @@ class TravelTienda(StoreWithUrlExtensions):
                 sku=sku,
                 picture_urls=picture_urls,
                 part_number=part_number,
+                description=description,
             )
             products.append(p)
 

@@ -74,9 +74,6 @@ class BackOnline(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         soup = BeautifulSoup(session.get(url).text, "lxml")
 
-        json_tag = soup.findAll("script", {"type": "application/ld+json"})
-        json_data = json.loads(json_tag[1].text)
-        json_data_tags = [tag.lower() for tag in json_data["tags"]]
         variations_tags = soup.findAll("script", {"type": "application/json"})
         products = []
         product_caption = soup.find(
@@ -90,11 +87,12 @@ class BackOnline(StoreWithUrlExtensions):
         else:
             condition = "https://schema.org/NewCondition"
 
-        if len(variations_tags) <= 3:
-            product_data = json.loads(
-                soup.findAll("script", {"type": "application/ld+json"})[2].text
-            )
+        product_data = json.loads(
+            soup.findAll("script", {"type": "application/ld+json"})[2].text
+        )
+        description = product_data["description"]
 
+        if len(variations_tags) <= 3:
             if "open" in product_data["brand"]["name"].lower():
                 condition = "https://schema.org/OpenBoxCondition"
 
@@ -121,6 +119,7 @@ class BackOnline(StoreWithUrlExtensions):
                 part_number=sku,
                 picture_urls=picture_urls,
                 condition=condition,
+                description=description,
             )
             products.append(p)
         else:
@@ -159,6 +158,7 @@ class BackOnline(StoreWithUrlExtensions):
                     part_number=sku,
                     picture_urls=picture_urls,
                     condition=condition,
+                    description=description,
                 )
                 products.append(p)
 
