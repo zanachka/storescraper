@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from storescraper.categories import AIR_CONDITIONER
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class Abastible(StoreWithUrlExtensions):
@@ -29,6 +29,9 @@ class Abastible(StoreWithUrlExtensions):
         price = Decimal(re.search(r'"regular_price":(\d+)', response.text).groups()[0])
         name = soup.find("div", "page-title-desktop").text.strip()
         stock = -1
+        description = html_to_markdown(
+            soup.find("div", "product attribute description").text
+        )
 
         p = Product(
             name,
@@ -41,5 +44,6 @@ class Abastible(StoreWithUrlExtensions):
             price,
             price,
             "CLP",
+            description=description,
         )
         return [p]
