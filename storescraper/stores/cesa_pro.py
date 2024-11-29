@@ -21,7 +21,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import remove_words, session_with_proxy
+from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
 
 
 class CesaPro(Store):
@@ -63,15 +63,18 @@ class CesaPro(Store):
         ]
 
         session = session_with_proxy(extra_args)
-        session.headers[
-            "content-type"
-        ] = "application/x-www-form-urlencoded;charset=UTF-8"
+        session.headers["content-type"] = (
+            "application/x-www-form-urlencoded;charset=UTF-8"
+        )
         session.headers["x-requested-with"] = "XMLHttpRequest"
         product_urls = []
+
         for url_extension, local_category in url_extensions:
             if local_category != category:
                 continue
+
             page = 1
+
             while True:
                 if page > 10:
                     raise Exception("page overflow: " + url_extension)
@@ -93,7 +96,9 @@ class CesaPro(Store):
                 for container in product_containers:
                     product_url = container.find("a")["href"]
                     product_urls.append(product_url)
+
                 page += 1
+
         return product_urls
 
     @classmethod
@@ -107,9 +112,10 @@ class CesaPro(Store):
 
         if not soup.find("h1", "product_title"):
             return []
-        name = soup.find("h1", "product_title").text.strip()
 
+        name = soup.find("h1", "product_title").text.strip()
         product_container = soup.find("p", "price")
+
         if not product_container.text:
             return []
 
@@ -132,10 +138,12 @@ class CesaPro(Store):
         normal_price = (offer_price * Decimal("1.02")).quantize(0)
 
         stock_span = soup.find("span", "stock")
+
         if not stock_span:
             stock = 0
         else:
             stock_text = stock_span.text.strip()
+
             if stock_text == "Agotado":
                 stock = 0
             else:
@@ -143,11 +151,14 @@ class CesaPro(Store):
 
         image_style = soup.find("style", {"id": "elementor-frontend-inline-css"})
         picture_urls = []
+
         if image_style:
             picture = re.search(
                 r"background-image:url\(\"(.*?)\"\)", image_style.text
             ).groups()[0]
             picture_urls.append(picture)
+
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
 
         p = Product(
             name,
@@ -162,5 +173,6 @@ class CesaPro(Store):
             "CLP",
             sku=key,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]
