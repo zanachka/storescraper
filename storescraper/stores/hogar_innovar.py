@@ -52,23 +52,44 @@ class HogarInnovar(Store):
         product_data = json.loads(
             soup.findAll("script", {"type": "application/ld+json"})[1].text
         )
-        variants = product_data["hasVariant"]
 
-        assert len(variants) == 1
+        if "hasVariant" in product_data:
+            variants = product_data["hasVariant"]
 
-        variant = variants[0]
+            assert len(variants) == 1
 
-        name = variant["name"]
-        offer = variant["offers"]
+            variant = variants[0]
+            offer = variant["offers"]
+            name = variant["name"]
+        else:
+            offer = product_data["offers"]
+            name = product_data["name"]
+
         price = Decimal(offer["price"])
 
         if price == 0:
             return []
 
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
-
+        formatted_url = offer["url"]
         regex = r"/products/([^?]+)\?variant=(\d+)"
-        match = re.search(regex, offer["url"])
+        match = re.search(regex, formatted_url)
+        keywords = [
+            "-hd-led-smart-tv",
+            "-4k-uhd-nanocell-smart-tv",
+            "-4k-uhd-qned-smart-tv",
+            "-4k-uhd-led-smart-tv",
+        ]
+
+        for keyword in keywords:
+            if keyword in formatted_url:
+                print(formatted_url)
+                url_segments = formatted_url.split(keyword)
+                formatted_url = f"{url_segments[0].split('-')[-1]}{url_segments[1]}"
+                regex = r"([^?]+)\?variant=(\d+)"
+                match = re.search(regex, formatted_url)
+                break
+
         sku = match.group(1)
         key = match.group(2)
         picture_urls = [
