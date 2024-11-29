@@ -76,7 +76,7 @@ class TiShop(StoreWithUrlExtensions):
         page = 1
 
         while True:
-            if page > 40:
+            if page > 50:
                 raise Exception(f"page overflow: {url_extension}")
 
             separator = "&" if "?" in url_extension else "?"
