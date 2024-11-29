@@ -38,7 +38,7 @@ from storescraper.categories import (
     VIDEO_CARD,
     MOTHERBOARD,
     KITCHEN_APPLIANCE,
-    PRINTER_SUPPLY
+    PRINTER_SUPPLY,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -627,7 +627,7 @@ class MercadoLibreChile(Store):
         ("MLC10871", "Tintas", PRINTER_SUPPLY),
     ]
 
-    sellers_blacklist = ["REUSE"]
+    sellers_blacklist = ["REUSE", "REUSE CL"]
 
     @classmethod
     def categories(cls):
@@ -901,7 +901,7 @@ class MercadoLibreChile(Store):
         print("Type2")
         seller = data["initialState"]["components"]["track"]["analytics_event"][
             "custom_dimensions"
-        ]["customDimensions"]["officialStore"]
+        ]["customDimensions"]["collectorNickname"]
         stock = 0 if seller in cls.sellers_blacklist else -1
         sku = data["initialState"]["id"]
         base_name = data["initialState"]["schema"][0]["name"]
