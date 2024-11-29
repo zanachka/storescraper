@@ -38,7 +38,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class Centrale(StoreWithUrlExtensions):
@@ -110,16 +110,20 @@ class Centrale(StoreWithUrlExtensions):
         product_data = json.loads(
             soup.find("script", {"type": "application/ld+json"}).text
         )
+
         if "@graph" in product_data:
             product_data = product_data["@graph"][-1]
 
         modified_notebook_parts_label = soup.find("strong", text="COMPONENTES")
+
         if modified_notebook_parts_label:
             part_number_components = []
             table_tag = modified_notebook_parts_label.parent.find("table")
+
             for row in table_tag.findAll("tr")[1:]:
                 component_mpn = row.findAll("td")[1].text
                 part_number_components.append(component_mpn)
+
             part_number = " + ".join(part_number_components) or None
         else:
             mpn_tag = soup.find("strong", text="NÚMERO DE PARTE:")
@@ -128,10 +132,12 @@ class Centrale(StoreWithUrlExtensions):
         name = product_data["name"].strip()
         sku = product_data["sku"].strip()
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
+
         if soup.find("p", "stock in-stock"):
             stock = int(soup.find("p", "stock in-stock").text.split()[0])
         else:
             stock = 0
+
         offer_price = Decimal(
             remove_words(
                 soup.find(
@@ -150,6 +156,7 @@ class Centrale(StoreWithUrlExtensions):
         )
         picture_urls = []
         picture_container = soup.find("div", "product-thumbnails")
+
         if picture_container:
             for tag in picture_container.findAll(
                 "img", "attachment-woocommerce_thumbnail"
@@ -163,6 +170,7 @@ class Centrale(StoreWithUrlExtensions):
             )
 
         picture_urls = [x for x in picture_urls if validators.url(x)]
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
 
         p = Product(
             name,
@@ -178,5 +186,6 @@ class Centrale(StoreWithUrlExtensions):
             sku=sku,
             picture_urls=picture_urls,
             part_number=part_number[:50],
+            description=description,
         )
         return [p]
