@@ -17,7 +17,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class MiStore(StoreWithUrlExtensions):
@@ -68,23 +68,28 @@ class MiStore(StoreWithUrlExtensions):
         # lxml parser fails for this scraper
         soup = BeautifulSoup(response.text, "html.parser")
         name = soup.find("h1", "product_title").text.strip()
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         if soup.find("form", "variations_form"):
             variations_container = json.loads(
                 soup.find("form", "variations_form")["data-product_variations"]
             )
             products = []
+
             for variation in variations_container:
                 variation_name = (
-                    name + " - " + variation["attributes"]["attribute_pa_color"]
+                    f"{name} - {variation['attributes']['attribute_pa_color']}"
                 )
                 sku = str(variation["variation_id"])
                 part_number = variation["sku"]
                 stock = 0 if variation["max_qty"] == "" else variation["max_qty"]
                 price = Decimal(variation["display_price"])
+
                 if validators.url(variation["image"]["src"]):
                     picture_urls = [variation["image"]["src"]]
                 else:
                     picture_urls = None
+
                 p = Product(
                     variation_name,
                     cls.__name__,
@@ -99,12 +104,16 @@ class MiStore(StoreWithUrlExtensions):
                     sku=part_number,
                     part_number=part_number,
                     picture_urls=picture_urls,
+                    description=description,
                 )
+
                 products.append(p)
+
             return products
         else:
             sku = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
             part_number = soup.find("span", "sku").text
+
             if soup.find("p", "stock in-stock"):
                 stock_container = (
                     soup.find("p", "stock in-stock")
@@ -113,19 +122,22 @@ class MiStore(StoreWithUrlExtensions):
                     .findAll("td")[1]
                     .text.strip()
                 )
+
                 if stock_container == "50+":
                     stock = 50
                 else:
                     stock = int(stock_container)
-
             else:
                 stock = 0
             price_container = soup.find("p", "price")
+
             if price_container.find("ins"):
                 price = Decimal(remove_words(price_container.find("ins").text))
             else:
                 price = Decimal(remove_words(price_container.find("bdi").text))
+
             picture_container = soup.find("div", "product-gallery")
+
             if picture_container.find("div", "product-thumbnails"):
                 picture_urls = [
                     tag["src"]
@@ -155,5 +167,7 @@ class MiStore(StoreWithUrlExtensions):
                 sku=part_number,
                 part_number=part_number,
                 picture_urls=picture_urls,
+                description=description,
             )
+
             return [p]
