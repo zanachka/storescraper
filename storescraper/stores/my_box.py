@@ -24,7 +24,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class MyBox(StoreWithUrlExtensions):
@@ -116,6 +116,8 @@ class MyBox(StoreWithUrlExtensions):
         offer_price = (normal_price * Decimal("0.95")).quantize(0)
 
         picture_urls = [soup.find("meta", {"property": "og:image"})["content"]]
+        description = html_to_markdown(soup.find("div", {"id": "description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -130,5 +132,6 @@ class MyBox(StoreWithUrlExtensions):
             sku=sku,
             part_number=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]
