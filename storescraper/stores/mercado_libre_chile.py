@@ -627,7 +627,7 @@ class MercadoLibreChile(Store):
         ("MLC10871", "Tintas", PRINTER_SUPPLY),
     ]
 
-    sellers_blacklist = ["REUSE", "REUSE CL"]
+    sellers_blacklist = ["REUSE", "REUSE CL", "DREAMTEC-CHILE", "Dreamtec"]
 
     @classmethod
     def categories(cls):
