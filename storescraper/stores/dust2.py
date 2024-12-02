@@ -30,7 +30,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class Dust2(StoreWithUrlExtensions):
@@ -102,19 +102,24 @@ class Dust2(StoreWithUrlExtensions):
         endpoint = "https://dust2.gg/page-data/producto/{}/page-data.json".format(slug)
         print(endpoint)
         response = session.get(endpoint)
+
         if response.status_code == 404:
             return []
+
         json_data = response.json()["result"]["pageContext"]["product"]
         name = json_data["name"]
         key = str(json_data["id"])
+
         if "PREVENTA" in name:
             stock = 0
         else:
             stock = json_data["stock_quantity"] or 0
+
         offer_price = Decimal(json_data["price"]).quantize(0)
         normal_price = (offer_price / Decimal("0.93")).quantize(0)
         sku = json_data["sku"]
         picture_urls = [x["src"] for x in json_data["images"]]
+        description = html_to_markdown(json_data["description"])
 
         p = Product(
             name,
@@ -129,5 +134,6 @@ class Dust2(StoreWithUrlExtensions):
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]
