@@ -21,7 +21,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class MegaBytes(StoreWithUrlExtensions):
@@ -126,6 +126,8 @@ class MegaBytes(StoreWithUrlExtensions):
             for tag in soup.find("div", "woocommerce-product-gallery").findAll("img")
             if "data-src" in tag.attrs
         ]
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -139,5 +141,6 @@ class MegaBytes(StoreWithUrlExtensions):
             "CLP",
             sku=sku,
             picture_urls=picture_urls[1:],
+            description=description,
         )
         return [p]
