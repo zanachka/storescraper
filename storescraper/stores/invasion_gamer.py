@@ -23,7 +23,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class InvasionGamer(StoreWithUrlExtensions):
@@ -102,6 +102,8 @@ class InvasionGamer(StoreWithUrlExtensions):
         else:
             condition = "https://schema.org/NewCondition"
 
+        description = html_to_markdown(soup.find("div", "product-description").text)
+
         p = Product(
             name,
             cls.__name__,
@@ -115,5 +117,6 @@ class InvasionGamer(StoreWithUrlExtensions):
             "CLP",
             sku=key,
             condition=condition,
+            description=description,
         )
         return [p]
