@@ -19,7 +19,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import cf_session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, cf_session_with_proxy, remove_words
 
 
 class LoiChile(StoreWithUrlExtensions):
@@ -127,6 +127,10 @@ class LoiChile(StoreWithUrlExtensions):
                 f"https://{cls.IMAGE_DOMAIN}.cloudfront.net/{picture['url']}"
             )
 
+        description = html_to_markdown(
+            soup.find("div", {"id": "contenedor-ficha"}).text
+        )
+
         p = Product(
             name,
             cls.__name__,
@@ -140,5 +144,6 @@ class LoiChile(StoreWithUrlExtensions):
             cls.CURRENCY,
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]
