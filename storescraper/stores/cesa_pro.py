@@ -158,7 +158,10 @@ class CesaPro(Store):
             ).groups()[0]
             picture_urls.append(picture)
 
-        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+        description_tag = soup.find("div", {"id": "tab-description"})
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
+        )
 
         p = Product(
             name,
@@ -175,4 +178,5 @@ class CesaPro(Store):
             picture_urls=picture_urls,
             description=description,
         )
+
         return [p]
