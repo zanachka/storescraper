@@ -31,7 +31,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import remove_words, session_with_proxy
+from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
 
 
 class Spider(StoreWithUrlExtensions):
@@ -76,14 +76,18 @@ class Spider(StoreWithUrlExtensions):
         while True:
             if page > 20:
                 raise Exception("page overflow: " + url_extension)
+
             url_webpage = "https://www.spider.cl/{}?page={}".format(url_extension, page)
             data = session.get(url_webpage).text
             soup = BeautifulSoup(data, "lxml")
             product_containers = soup.findAll("article", "product-miniature")
+
             if not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
+
                 break
+
             for product_container in product_containers:
                 product_url = product_container.find("a")["href"]
                 product_urls.append(product_url)
@@ -133,6 +137,7 @@ class Spider(StoreWithUrlExtensions):
             picture_containers = soup.find("div", "MagicToolboxSelectorsContainer")
         else:
             picture_containers = soup.find("div", "MagicToolboxMainContainer")
+
         if picture_containers:
             picture_urls = [
                 tag["src"].replace("-small_default", "")
@@ -140,6 +145,8 @@ class Spider(StoreWithUrlExtensions):
             ]
         else:
             picture_urls = []
+
+        description = html_to_markdown(soup.find("div", {"id": "description"}).text)
 
         p = Product(
             name,
@@ -155,6 +162,7 @@ class Spider(StoreWithUrlExtensions):
             sku=key,
             part_number=part_number,
             picture_urls=picture_urls,
+            description=description,
         )
 
         return [p]
