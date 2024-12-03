@@ -5,7 +5,7 @@ from decimal import Decimal
 
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 from storescraper.categories import (
     NOTEBOOK,
     PRINTER,
@@ -115,6 +115,7 @@ class ScGlobal(StoreWithUrlExtensions):
                 "li", "thumb-container"
             )
         ]
+        description = html_to_markdown(soup.find("div", {"id": "description"}).text)
 
         p = Product(
             name,
@@ -130,6 +131,7 @@ class ScGlobal(StoreWithUrlExtensions):
             sku=sku,
             part_number=part_number,
             picture_urls=picture_urls,
+            description=description,
         )
 
         return [p]
