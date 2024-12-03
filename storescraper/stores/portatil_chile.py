@@ -7,7 +7,7 @@ from decimal import Decimal
 from storescraper.categories import NOTEBOOK, VIDEO_GAME_CONSOLE
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class PortatilChile(Store):
@@ -81,10 +81,15 @@ class PortatilChile(Store):
             ]
 
         condition = "https://schema.org/NewCondition"
+
         for f in json_data["features"]:
             if f["name"] == "Garantia":
                 if "Open Box" in f["value"]:
                     condition = "https://schema.org/RefurbishedCondition"
+
+        description = html_to_markdown(
+            soup.find("section", "product-description-section").text
+        )
 
         p = Product(
             name,
@@ -101,6 +106,7 @@ class PortatilChile(Store):
             part_number=part_number,
             picture_urls=picture_urls,
             condition=condition,
+            description=description,
         )
 
         return [p]

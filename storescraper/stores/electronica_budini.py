@@ -32,7 +32,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class ElectronicaBudini(StoreWithUrlExtensions):
@@ -138,6 +138,8 @@ class ElectronicaBudini(StoreWithUrlExtensions):
             if kw in name.upper():
                 condition = "https://schema.org/RefurbishedCondition"
 
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -152,5 +154,6 @@ class ElectronicaBudini(StoreWithUrlExtensions):
             sku=sku,
             picture_urls=picture_urls,
             condition=condition,
+            description=description,
         )
         return [p]

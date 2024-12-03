@@ -28,7 +28,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class FiestaLan(StoreWithUrlExtensions):
@@ -116,6 +116,8 @@ class FiestaLan(StoreWithUrlExtensions):
             "img"
         )
         picture_urls = [tag["src"] for tag in picture_containers]
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -129,5 +131,6 @@ class FiestaLan(StoreWithUrlExtensions):
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]

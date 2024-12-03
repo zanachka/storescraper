@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from storescraper.categories import NOTEBOOK, CELL, TABLET, WEARABLE, HEADPHONES
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class HuaweiShop(Store):
@@ -183,6 +183,12 @@ class HuaweiShop(Store):
 
         products = []
 
+        specs_res = session.get(f"{url}/specs/")
+        specs_soup = BeautifulSoup(specs_res.text, "lxml")
+        description = html_to_markdown(
+            specs_soup.find("ul", "large-accordion__list").text
+        )
+
         for product in product_json["data"]["sbomList"]:
             base_stock = stock_dict[product["sbomCode"]]
             name = product["name"]
@@ -216,6 +222,7 @@ class HuaweiShop(Store):
                         "CLP",
                         sku=sku,
                         picture_urls=picture_urls,
+                        description=description,
                     )
                     products.append(p)
 
@@ -240,6 +247,7 @@ class HuaweiShop(Store):
                     "CLP",
                     sku=sku,
                     picture_urls=picture_urls,
+                    description=description,
                 )
                 products.append(p)
 

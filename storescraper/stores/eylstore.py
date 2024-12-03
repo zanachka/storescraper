@@ -20,7 +20,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class Eylstore(StoreWithUrlExtensions):
@@ -111,6 +111,10 @@ class Eylstore(StoreWithUrlExtensions):
         for a in picture_container.findAll("a"):
             picture_urls.append(a["href"])
 
+        description = html_to_markdown(
+            soup.find("div", "elementor-widget-woostify-product-content").text
+        )
+
         p = Product(
             name,
             cls.__name__,
@@ -125,5 +129,6 @@ class Eylstore(StoreWithUrlExtensions):
             sku=sku,
             picture_urls=picture_urls,
             part_number=sku,
+            description=description,
         )
         return [p]

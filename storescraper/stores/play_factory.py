@@ -25,7 +25,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class PlayFactory(StoreWithUrlExtensions):
@@ -88,12 +88,18 @@ class PlayFactory(StoreWithUrlExtensions):
 
         picture_urls = []
         figures = soup.find("div", "woocommerce-product-gallery__wrapper")
+
         for a in figures.findAll("img"):
             if validators.url(a["src"]):
                 picture_urls.append(a["src"])
 
+        description_tag = soup.find("div", {"id": "tab-description"})
+        description = (
+            html_to_markdown(description_tag).text if description_tag else None
+        )
         products = []
         variants_form = soup.find("form", "variations_form cart")
+
         if variants_form:
             varaints_json = json.loads(variants_form["data-product_variations"])
             for variant in varaints_json:
@@ -120,6 +126,7 @@ class PlayFactory(StoreWithUrlExtensions):
                     "CLP",
                     sku=sku,
                     picture_urls=picture_urls,
+                    description=description,
                 )
                 products.append(p)
 
@@ -137,6 +144,7 @@ class PlayFactory(StoreWithUrlExtensions):
             normal_price = (offer_price * Decimal("1.025")).quantize(0)
             stock = 0
             qty_input = soup.find("input", "qty")
+
             if qty_input:
                 if "type" in qty_input.attrs and qty_input["type"] == "hidden":
                     stock = 1
@@ -158,5 +166,6 @@ class PlayFactory(StoreWithUrlExtensions):
                 "CLP",
                 sku=sku,
                 picture_urls=picture_urls,
+                description=description,
             )
             return [p]

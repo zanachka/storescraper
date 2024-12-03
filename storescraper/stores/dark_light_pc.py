@@ -14,7 +14,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class DarkLightPc(StoreWithUrlExtensions):
@@ -90,11 +90,12 @@ class DarkLightPc(StoreWithUrlExtensions):
             offer_price = Decimal(remove_words(soup.find("p", "price").text))
 
         normal_price = (offer_price * Decimal("1.038")).quantize(0)
-
         picture_urls = [
             tag["src"]
             for tag in soup.find("div", "woocommerce-" "product-gallery").findAll("img")
         ]
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -108,5 +109,6 @@ class DarkLightPc(StoreWithUrlExtensions):
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]

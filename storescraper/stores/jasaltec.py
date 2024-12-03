@@ -34,7 +34,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class Jasaltec(Store):
@@ -186,6 +186,13 @@ class Jasaltec(Store):
             tag["src"]
             for tag in soup.find("div", "woocommerce-product" "-gallery").findAll("img")
         ]
+        description_tag = soup.find(
+            "div", "elementor-widget-woocommerce-product-content"
+        )
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
+        )
+
         p = Product(
             name,
             cls.__name__,
@@ -200,5 +207,6 @@ class Jasaltec(Store):
             sku=sku,
             part_number=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]

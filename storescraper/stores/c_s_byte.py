@@ -30,7 +30,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class CSByte(StoreWithUrlExtensions):
@@ -197,6 +197,7 @@ class CSByte(StoreWithUrlExtensions):
             sku = str(json_data["sku"])
             part_number = json_data.get("gtin", None)
             offer = json_data["offers"][0]
+
             if offer["availability"] == "http://schema.org/InStock":
                 stock_p = soup.find("p", "stock")
                 if stock_p and "hay existencias" not in stock_p.text.lower():
@@ -205,12 +206,17 @@ class CSByte(StoreWithUrlExtensions):
                     stock = -1
             else:
                 stock = 0
+
             price = Decimal(offer["price"])
 
             if "image" in json_data:
                 picture_urls = [json_data["image"]]
             else:
                 picture_urls = None
+
+            description = html_to_markdown(
+                soup.find("div", {"id": "tab-description"}).text
+            )
 
             p = Product(
                 name,
@@ -227,5 +233,6 @@ class CSByte(StoreWithUrlExtensions):
                 picture_urls=picture_urls,
                 condition=condition,
                 part_number=part_number,
+                description=description,
             )
             return [p]

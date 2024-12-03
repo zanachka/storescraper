@@ -26,7 +26,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class Natcom(StoreWithUrlExtensions):
@@ -123,11 +123,11 @@ class Natcom(StoreWithUrlExtensions):
             offer_price = Decimal(remove_words(price_container.text))
 
         normal_price = (offer_price * Decimal("1.05")).quantize(0)
-
         picture_urls = [
             tag["src"]
             for tag in soup.find("div", "woocommerce-product-gallery").findAll("img")
         ]
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
 
         p = Product(
             name,
@@ -143,5 +143,6 @@ class Natcom(StoreWithUrlExtensions):
             sku=sku,
             picture_urls=picture_urls,
             part_number=part_number,
+            description=description,
         )
         return [p]

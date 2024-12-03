@@ -19,7 +19,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class DazbogStore(StoreWithUrlExtensions):
@@ -83,10 +83,14 @@ class DazbogStore(StoreWithUrlExtensions):
         price_container = soup.find("table").findAll("bdi")
         offer_price = Decimal(remove_words(price_container[3].text))
         normal_price = Decimal(remove_words(price_container[0].text))
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         image_container = soup.find("div", "woocommerce-product-gallery__image")
         picture_urls = []
+
         if image_container:
             picture_urls.append(image_container.find("img")["data-large_image"])
+
         p = Product(
             name,
             cls.__name__,
@@ -99,6 +103,7 @@ class DazbogStore(StoreWithUrlExtensions):
             offer_price,
             "CLP",
             sku=sku,
+            description=description,
             picture_urls=picture_urls,
             part_number=part_number,
         )

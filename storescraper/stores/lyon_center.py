@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from storescraper.categories import AIR_CONDITIONER
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import remove_words, session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class LyonCenter(StoreWithUrlExtensions):
@@ -40,6 +40,8 @@ class LyonCenter(StoreWithUrlExtensions):
 
         variations_form = soup.find("form", "variations_form")
         products = []
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         if variations_form:
             variations = json.loads(variations_form["data-product_variations"])
             for product in variations:
@@ -67,6 +69,7 @@ class LyonCenter(StoreWithUrlExtensions):
                     "CLP",
                     sku=sku,
                     picture_urls=picture_urls,
+                    description=description,
                 )
                 products.append(p)
         else:
@@ -98,6 +101,7 @@ class LyonCenter(StoreWithUrlExtensions):
                 "CLP",
                 sku=sku,
                 picture_urls=picture_urls,
+                description=description,
             )
             products.append(p)
         return products

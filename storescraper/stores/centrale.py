@@ -73,6 +73,7 @@ class Centrale(StoreWithUrlExtensions):
         ["refrigeracion-para-pc", CASE_FAN],
         ["microfonos", MICROPHONE],
         ["suministros-para-impresoras", PRINTER_SUPPLY],
+        ["celulares", CELL],
     ]
 
     @classmethod
