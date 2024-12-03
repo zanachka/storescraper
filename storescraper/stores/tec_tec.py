@@ -25,7 +25,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class TecTec(Store):
@@ -150,6 +150,8 @@ class TecTec(Store):
             for tag in soup.find("div", "woocommerce-product-gallery").findAll("img")
             if validators.url(tag["src"])
         ]
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -163,5 +165,7 @@ class TecTec(Store):
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
+
         return [p]
