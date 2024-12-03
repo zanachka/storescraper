@@ -94,7 +94,7 @@ class SmartDeal(StoreWithUrlExtensions):
         normal_price = Decimal(remove_words(soup.find("span", "precio-otromedio").text))
 
         key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
-        description = html_to_markdown(str(soup.find("div", "et_pb_tabs")))
+        description = html_to_markdown(soup.find("div", "et_pb_tabs").text)
 
         if "PEDIDO" in description.upper():
             stock = 0
@@ -139,5 +139,6 @@ class SmartDeal(StoreWithUrlExtensions):
             condition=condition,
             part_number=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]
