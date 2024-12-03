@@ -15,7 +15,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class SmartMobile(StoreWithUrlExtensions):
@@ -38,6 +38,7 @@ class SmartMobile(StoreWithUrlExtensions):
         )
         product_urls = []
         page = 1
+
         while True:
             if page > 10:
                 raise Exception("page overflow: " + url_extension)
@@ -53,6 +54,7 @@ class SmartMobile(StoreWithUrlExtensions):
             if soup.find("div", "info-404") or not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
+
                 break
 
             for container in product_containers.findAll("li", "product"):
@@ -60,7 +62,9 @@ class SmartMobile(StoreWithUrlExtensions):
                     "href"
                 ]
                 product_urls.append(product_url)
+
             page += 1
+
         return product_urls
 
     @classmethod
@@ -78,6 +82,7 @@ class SmartMobile(StoreWithUrlExtensions):
         name = product_container.find("h1", "product_title").text
 
         tags = product_container.find("span", "loop-product-categories").findAll("a")
+
         for tag in tags:
             if "PEDIDO" in tag.text.upper():
                 force_unavailable = True
@@ -98,11 +103,14 @@ class SmartMobile(StoreWithUrlExtensions):
         else:
             condition = "https://schema.org/NewCondition"
 
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         if soup.find("form", "variations_form cart"):
             products = []
             variations = json.loads(
                 soup.find("form", "variations_form cart")["data-product_variations"]
             )
+
             for variation in variations:
                 variation_attribute = list(variation["attributes"].values())
                 variation_name = name + " (" + " - ".join(variation_attribute) + ")"
@@ -132,7 +140,9 @@ class SmartMobile(StoreWithUrlExtensions):
                         stock = 0
                     else:
                         stock = int(stock_text.split()[0])
+
                 picture_urls = [variation["image"]["url"]]
+
                 p = Product(
                     variation_name,
                     cls.__name__,
@@ -147,15 +157,20 @@ class SmartMobile(StoreWithUrlExtensions):
                     sku=sku,
                     picture_urls=picture_urls,
                     condition=condition,
+                    description=description,
                 )
+
                 products.append(p)
+
             return products
         else:
             json_data = json.loads(
                 soup.find("script", {"type": "application/ld+json"}).text
             )
+
             if "@graph" not in json_data:
                 return []
+
             price_info = int(
                 json_data["@graph"][1]["offers"][0]["priceSpecification"]["price"]
             )
@@ -184,6 +199,7 @@ class SmartMobile(StoreWithUrlExtensions):
                     "img"
                 )
             ]
+
             p = Product(
                 name,
                 cls.__name__,
@@ -198,5 +214,7 @@ class SmartMobile(StoreWithUrlExtensions):
                 sku=sku,
                 picture_urls=picture_urls,
                 condition=condition,
+                description=description,
             )
+
             return [p]
