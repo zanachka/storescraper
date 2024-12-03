@@ -21,7 +21,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class TecnoSite(StoreWithUrlExtensions):
@@ -93,8 +93,8 @@ class TecnoSite(StoreWithUrlExtensions):
             part_number = None
 
         sku = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
-
         stock_tag = soup.find("input", {"name": "quantity"})
+
         if stock_tag:
             if "max" in stock_tag.attrs:
                 if stock_tag["max"]:
@@ -119,6 +119,10 @@ class TecnoSite(StoreWithUrlExtensions):
             )
             if "No-Disponible" not in tag["src"]
         ]
+        description = html_to_markdown(
+            soup.find("div", {"id": "productOverview_feature_div"}).text
+        )
+
         p = Product(
             name,
             cls.__name__,
@@ -134,5 +138,7 @@ class TecnoSite(StoreWithUrlExtensions):
             part_number=part_number,
             picture_urls=picture_urls,
             condition=condition,
+            description=description,
         )
+
         return [p]
