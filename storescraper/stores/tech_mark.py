@@ -72,7 +72,9 @@ class TechMark(StoreWithUrlExtensions):
         ]
         description = soup.find("meta", {"name": "description"})["content"]
 
-        if "USADO" in description.upper():
+        if "SELLADO" in description.upper():
+            condition = "https://schema.org/NewCondition"
+        elif "USADO" in description.upper():
             condition = "https://schema.org/UsedCondition"
         else:
             condition = "https://schema.org/RefurbishedCondition"
