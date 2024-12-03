@@ -28,7 +28,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class TecnoSaga(Store):
@@ -133,6 +133,7 @@ class TecnoSaga(Store):
         sku_container = soup.find("div", "cart_btn").find("button", "btn")["onclick"]
         sku = re.search(r"agregar_producto\((\d+)\)", sku_container).groups()[0]
         stock = 0
+
         for products_stock in soup.find("div", "pr_detail").findAll("div", "col-lg-3"):
             if products_stock.text.strip().split()[-1].isnumeric():
                 stock += int(products_stock.text.strip().split()[-1])
@@ -149,11 +150,15 @@ class TecnoSaga(Store):
             .split()[1]
             .replace(".", "")
         )
+
         if normal_price < offer_price:
             offer_price = normal_price
+
         picture_urls = [
             tag["src"] for tag in soup.find("div", "col-lg-6").findAll("img")
         ]
+        description = html_to_markdown(soup.find("div", {"id": "Description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -167,5 +172,6 @@ class TecnoSaga(Store):
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]
