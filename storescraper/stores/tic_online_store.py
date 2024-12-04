@@ -78,8 +78,7 @@ class TicOnlineStore(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
         )
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
