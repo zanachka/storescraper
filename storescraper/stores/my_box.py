@@ -116,7 +116,11 @@ class MyBox(StoreWithUrlExtensions):
         offer_price = (normal_price * Decimal("0.95")).quantize(0)
 
         picture_urls = [soup.find("meta", {"property": "og:image"})["content"]]
-        description = html_to_markdown(soup.find("div", {"id": "description"}).text)
+
+        description_tag = soup.find("div", {"id": "description"})
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
+        )
 
         p = Product(
             name,
