@@ -185,9 +185,8 @@ class HuaweiShop(Store):
 
         specs_res = session.get(f"{url}/specs/")
         specs_soup = BeautifulSoup(specs_res.text, "lxml")
-        description = html_to_markdown(
-            specs_soup.find("ul", "large-accordion__list").text
-        )
+        specs_tag = specs_soup.find("ul", "large-accordion__list")
+        description = html_to_markdown(specs_tag.text) if specs_tag else None
 
         for product in product_json["data"]["sbomList"]:
             base_stock = stock_dict[product["sbomCode"]]
