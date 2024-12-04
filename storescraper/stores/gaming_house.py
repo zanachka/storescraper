@@ -99,7 +99,10 @@ class GamingHouse(StoreWithUrlExtensions):
             tag["src"]
             for tag in soup.find("div", "woocommerce-product" "-gallery").findAll("img")
         ]
-        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+        description_tag = soup.find("div", {"id": "tab-description"}) or soup.find(
+            "div", "woocommerce-product-details__short-description"
+        )
+        description = html_to_markdown(description_tag)
 
         p = Product(
             name,
