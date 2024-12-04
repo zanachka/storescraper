@@ -94,9 +94,8 @@ class PlayFactory(StoreWithUrlExtensions):
                 picture_urls.append(a["src"])
 
         description_tag = soup.find("div", {"id": "tab-description"})
-        description = (
-            html_to_markdown(description_tag).text if description_tag else None
-        )
+        description = description_tag.text if description_tag else None
+
         products = []
         variants_form = soup.find("form", "variations_form cart")
 
