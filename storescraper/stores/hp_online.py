@@ -53,7 +53,7 @@ class HpOnline(Store):
             page = 1
             do = True
             while do:
-                if page > 13:
+                if page > 40:
                     raise Exception("page overflow: " + category_path)
                 category_url = (
                     "https://www.hp.com/cl-es/shop"
