@@ -44,11 +44,11 @@ class TicOnlineStore(StoreWithUrlExtensions):
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
         )
         product_urls = []
         page = 1
+
         while True:
             if page > 10:
                 raise Exception("Page overflow: " + url_extension)
@@ -59,14 +59,18 @@ class TicOnlineStore(StoreWithUrlExtensions):
             data = session.get(url_webpage).text
             soup = BeautifulSoup(data, "lxml")
             product_containers = soup.findAll("li", "product")
+
             if not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
                 break
+
             for container in product_containers:
                 product_url = container.find("a")["href"]
                 product_urls.append(product_url)
+
             page += 1
+
         return product_urls
 
     @classmethod
@@ -98,21 +102,26 @@ class TicOnlineStore(StoreWithUrlExtensions):
         description = product_data["description"]
 
         products = []
+
         if soup.find("form", "variations_form"):
             variations = json.loads(
                 soup.find("form", "variations_form")["data-product_variations"]
             )
+
             for product in variations:
                 variation_name = (
                     name + " - " + product["attributes"]["attribute_pa_color"]
                 )
                 sku = str(product["variation_id"])
+
                 if product["max_qty"] == "":
                     stock = 0
                 else:
                     stock = product["max_qty"]
+
                 price = Decimal(product["display_price"])
                 picture_urls = [product["image"]["url"]]
+
                 p = Product(
                     variation_name,
                     cls.__name__,
@@ -128,6 +137,7 @@ class TicOnlineStore(StoreWithUrlExtensions):
                     picture_urls=picture_urls,
                     description=description,
                 )
+
                 products.append(p)
         else:
             key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
@@ -136,12 +146,15 @@ class TicOnlineStore(StoreWithUrlExtensions):
             price = Decimal(
                 remove_words(soup.find("p", "price").findAll("bdi")[-1].text)
             )
+
             if len(price.as_tuple().digits) > 10:
                 return []
 
             cart_btn = soup.find("button", {"name": "add-to-cart"})
+
             if cart_btn:
                 input_qty = soup.find("input", "input-text qty text")
+
                 if input_qty:
                     if "max" in input_qty.attrs and input_qty["max"]:
                         stock = int(input_qty["max"])
@@ -154,6 +167,7 @@ class TicOnlineStore(StoreWithUrlExtensions):
 
             picture_urls = []
             container = soup.find("figure", "woocommerce-product-gallery__wrapper")
+
             if container:
                 for a in container.findAll("a"):
                     picture_urls.append(a["href"])
@@ -176,5 +190,7 @@ class TicOnlineStore(StoreWithUrlExtensions):
                 picture_urls=picture_urls,
                 description=description,
             )
+
             products.append(p)
+
         return products
