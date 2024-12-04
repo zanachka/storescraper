@@ -18,7 +18,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class V2(Store):
@@ -55,10 +55,12 @@ class V2(Store):
         ]
         session = session_with_proxy(extra_args)
         product_urls = []
+
         for url_extension, local_category in url_extensions:
             if local_category != category:
                 continue
             page = 1
+
             while True:
                 if page > 10:
                     raise Exception("page overflow: " + url_extension)
@@ -69,14 +71,19 @@ class V2(Store):
                 product_containers = soup.findAll(
                     "div", {"itemprop": "itemListElement"}
                 )
+
                 if not product_containers:
                     if page == 1:
                         logging.warning("Empty category: " + url_extension)
+
                     break
+
                 for container in product_containers:
                     product_url = container.find("a")["href"]
                     product_urls.append(product_url)
+
                 page += 1
+
         return product_urls
 
     @classmethod
@@ -91,6 +98,7 @@ class V2(Store):
         name = json_container["name"]
         sku = str(json_container["id"])
         description = soup.find("div", "product-description")
+
         if (
             description.find("strong")
             and "Disponible desde" in description.find("strong").text
@@ -100,6 +108,7 @@ class V2(Store):
             stock = json_container["quantity"]
 
         description_table = soup.find("dl", "data-sheet")
+
         for tag in description_table.findAll("dt", "name"):
             if tag.text.upper().strip() == "CONDICIÓN":
                 tag_value = tag.next.next.next.text.strip().upper()
@@ -116,6 +125,8 @@ class V2(Store):
         picture_urls = [
             tag["src"] for tag in soup.find("ul", "product-images").findAll("img")
         ]
+        description = html_to_markdown(soup.find("div", {"id": "product-details"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -130,5 +141,6 @@ class V2(Store):
             sku=sku,
             picture_urls=picture_urls,
             condition=condition,
+            description=description,
         )
         return [p]
