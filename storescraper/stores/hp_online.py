@@ -47,11 +47,14 @@ class HpOnline(Store):
         ]
         session = session_with_proxy(extra_args)
         product_urls = []
+
         for category_path, local_category in category_paths:
             if local_category != category:
                 continue
+
             page = 1
             do = True
+
             while do:
                 if page > 40:
                     raise Exception("page overflow: " + category_path)
@@ -62,23 +65,31 @@ class HpOnline(Store):
                 soup = BeautifulSoup(session.get(category_url).text, "lxml")
                 product_cells = soup.findAll("div", "product-item-info")
                 toolbars = soup.findAll("span", "toolbar-number")
+
                 if int(toolbars[0].text) == 1 and page != 1:
                     break
+
                 if not product_cells:
                     if page == 1:
                         logging.warning("Empty category: " + category_url)
                     break
+
                 for cell in product_cells:
                     product_url = cell.find("div", "product-item-photo-box").find("a")[
                         "href"
                     ]
+
                     if product_url in product_urls:
                         do = False
                         break
+
                     product_urls.append(product_url)
+
                 if len(toolbars) == 2:
                     break
+
                 page += 1
+
         return product_urls
 
     @classmethod
@@ -95,7 +106,12 @@ class HpOnline(Store):
         if soup.find("ol", "products"):
             return []
 
-        name = soup.find("span", {"itemprop": "name"}).text.strip()
+        name_tag = soup.find("span", {"itemprop": "name"})
+
+        if not name_tag:
+            return []
+
+        name = name_tag.text.strip()
         sku = soup.find("div", {"itemprop": "sku"}).text.strip()
         stock = -1
 
