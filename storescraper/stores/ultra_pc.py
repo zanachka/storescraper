@@ -52,6 +52,7 @@ class UltraPc(StoreWithUrlExtensions):
         for cont in products_container.findAll("div", "product-outer"):
             product_url = cont.find("a", "woocommerce-LoopProduct-link")["href"]
             product_urls.append(product_url)
+
         return product_urls
 
     @classmethod
@@ -67,10 +68,13 @@ class UltraPc(StoreWithUrlExtensions):
         base_name = soup.find("h1", "product_title").text
 
         bundle_tag = soup.find("span", "accesorios_sumario")
+
         if bundle_tag:
             base_name += " BUNDLE: " + " ".join(bundle_tag["data-tooltip"].split())
 
         variants = soup.find("form", "variations_form")
+        description_tag = soup.find("div", {"id": "tab-description"})
+        description = html_to_markdown(str(description_tag)).split("————————")[1]
         products = []
 
         if variants:
@@ -82,13 +86,16 @@ class UltraPc(StoreWithUrlExtensions):
                 variant_name = (
                     base_name + " - " + next(iter(product["attributes"].values()))
                 )
+
                 if product["is_in_stock"]:
                     stock = int(product["max_qty"])
                 else:
                     stock = 0
+
                 sku = product["sku"]
                 key = str(product["variation_id"])
                 price = Decimal(product["display_price"])
+
                 if product["image"]["src"] == "":
                     picture_urls = [
                         "https://www.ultrapc.cl" + tag["src"]
@@ -98,6 +105,7 @@ class UltraPc(StoreWithUrlExtensions):
                     ]
                 else:
                     picture_urls = [product["image"]["src"]]
+
                 products.append(
                     Product(
                         variant_name,
@@ -112,13 +120,12 @@ class UltraPc(StoreWithUrlExtensions):
                         "CLP",
                         sku=sku,
                         picture_urls=picture_urls,
+                        description=description,
                     )
                 )
         else:
             key = soup.find("link", {"type": "application/json"})["href"].split("/")[-1]
             sku = soup.find("meta", {"property": "product:retailer_item_id"})["content"]
-            description_tag = soup.find("div", {"id": "tab-description"})
-            description = html_to_markdown(str(description_tag)).split("————————")[1]
 
             product_container = soup.find("div", "post-" + key)
 
@@ -141,6 +148,7 @@ class UltraPc(StoreWithUrlExtensions):
                     stock = -1
 
             price_tags = soup.findAll("span", "precio_oferta")
+
             if not price_tags:
                 price_tags = soup.findAll("span", "precio_con_iva_tbk")
 
@@ -170,6 +178,7 @@ class UltraPc(StoreWithUrlExtensions):
                 "REACONDICIONADO (SIN USO)": "https://schema.org/RefurbishedCondition",
                 "REACONDICIONADO (CON USO)": "https://schema.org/RefurbishedCondition",
             }
+
             if condition_span:
                 condition_text = condition_span.text.strip().upper()
                 condition = conditions_dict[condition_text]
@@ -193,4 +202,5 @@ class UltraPc(StoreWithUrlExtensions):
                     allow_zero_prices=True,
                 )
             )
+
         return products
