@@ -32,7 +32,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class ZonaPortatil(StoreWithUrlExtensions):
@@ -90,6 +90,7 @@ class ZonaPortatil(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         product_urls = []
         page = 1
+
         while True:
             if page > 10:
                 raise Exception("page overflow: " + url_extension)
@@ -99,8 +100,10 @@ class ZonaPortatil(StoreWithUrlExtensions):
             )
             print(url_webpage)
             response = session.get(url_webpage)
+
             if response.status_code == 404 and page == 1:
                 raise Exception("Invalid category: " + url_extension)
+
             soup = BeautifulSoup(response.text, "lxml")
             product_containers = soup.findAll("article", "product")
 
@@ -108,10 +111,13 @@ class ZonaPortatil(StoreWithUrlExtensions):
                 if page == 1:
                     logging.warning("Empty category")
                 break
+
             for container in product_containers:
                 product_url = container.find("a")["href"]
                 product_urls.append(product_url)
+
             page += 1
+
         return product_urls
 
     @classmethod
@@ -119,7 +125,6 @@ class ZonaPortatil(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
-        # lxml parser fails for this scraper
         soup = BeautifulSoup(response.text, "html.parser")
         name = soup.find("p", "product_title").text.strip()
         alternate_url = soup.find(
@@ -129,6 +134,7 @@ class ZonaPortatil(StoreWithUrlExtensions):
         key = key_match.groups()[0]
 
         qty_input = soup.find("input", "input-text qty text")
+
         if qty_input:
             if qty_input["max"]:
                 stock = int(qty_input["max"])
@@ -168,6 +174,8 @@ class ZonaPortatil(StoreWithUrlExtensions):
         else:
             condition = "https://schema.org/NewCondition"
 
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -183,5 +191,7 @@ class ZonaPortatil(StoreWithUrlExtensions):
             part_number=sku,
             picture_urls=picture_urls,
             condition=condition,
+            description=description,
         )
+
         return [p]
