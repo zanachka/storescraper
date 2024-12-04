@@ -20,7 +20,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class Valrod(Store):
@@ -66,7 +66,9 @@ class Valrod(Store):
         for url_extension, local_category in url_extensions:
             if local_category != category:
                 continue
+
             page = 1
+
             while True:
                 if page > 10:
                     raise Exception("page overflow: " + url_extension)
@@ -80,11 +82,15 @@ class Valrod(Store):
                 if not product_container:
                     if page == 1:
                         logging.warning("Empty category: " + url_extension)
+
                     break
+
                 for container in product_container:
                     product_url = container.find("a")["href"]
                     product_urls.append("https://valrod.cl" + product_url)
+
                 page += 1
+
         return product_urls
 
     @classmethod
@@ -97,16 +103,19 @@ class Valrod(Store):
         key = soup.find("form", {"id": "addtocart"})["action"].split("/")[-1]
 
         sku_match = re.search(r'"sku":\s?"(.+?)"', response.text)
+
         if sku_match:
             sku = sku_match.groups()[0]
         else:
             sku = None
 
         stock_container = soup.find("div", "product-availability").find("span")
+
         if stock_container.text == "No Disponible" or stock_container.text == "Agotado":
             stock = 0
         else:
             stock = int(stock_container.text)
+
         price = Decimal(
             remove_words(soup.find("div", "price").find("span", "special-price").text)
         )
@@ -119,6 +128,10 @@ class Valrod(Store):
             condition = "https://schema.org/RefurbishedCondition"
         else:
             condition = "https://schema.org/NewCondition"
+
+        description = html_to_markdown(
+            soup.find("div", {"id": "product-description"}).text
+        )
 
         p = Product(
             name,
@@ -135,5 +148,7 @@ class Valrod(Store):
             part_number=sku,
             picture_urls=picture_urls,
             condition=condition,
+            description=description,
         )
+
         return [p]
