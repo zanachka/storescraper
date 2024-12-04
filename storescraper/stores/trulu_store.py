@@ -26,7 +26,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class TruluStore(Store):
@@ -77,10 +77,12 @@ class TruluStore(Store):
         ]
         session = session_with_proxy(extra_args)
         product_urls = []
+
         for url_extension, local_category in url_extensions:
             if local_category != category:
                 continue
             page = 1
+
             while True:
                 if page > 10:
                     raise Exception("page overflow: " + url_extension)
@@ -102,7 +104,9 @@ class TruluStore(Store):
                 for container in product_containers:
                     product_url = container.find("a")["href"]
                     product_urls.append(product_url)
+
                 page += 1
+
         return product_urls
 
     @classmethod
@@ -119,6 +123,7 @@ class TruluStore(Store):
         name = soup.find("h1", "product-title").text.strip()
         sku = soup.find("span", "sku").text
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
+
         if (
             soup.find("p", "stock out-of-stock")
             or "venta" in name.lower()
@@ -127,12 +132,16 @@ class TruluStore(Store):
             stock = 0
         else:
             stock = int(soup.find("p", "stock in-stock").text.split()[0])
+
         price_container = soup.find("p", "price")
+
         if price_container.find("ins"):
             offer_price = Decimal(remove_words(price_container.find("ins").text))
         else:
             offer_price = Decimal(remove_words(price_container.find("bdi").text))
+
         normal_price_container = soup.find("p", "price").find("div", "ww-price")
+
         if normal_price_container:
             normal_price = Decimal(remove_words(normal_price_container.text))
         else:
@@ -148,6 +157,8 @@ class TruluStore(Store):
         else:
             picture_urls = [soup.find("meta", {"property": "og:image"})["content"]]
 
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
         p = Product(
             name,
             cls.__name__,
@@ -161,5 +172,7 @@ class TruluStore(Store):
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
+
         return [p]
