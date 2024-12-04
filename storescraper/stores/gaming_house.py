@@ -102,7 +102,8 @@ class GamingHouse(StoreWithUrlExtensions):
         description_tag = soup.find("div", {"id": "tab-description"}) or soup.find(
             "div", "woocommerce-product-details__short-description"
         )
-        description = html_to_markdown(description_tag)
+
+        description = html_to_markdown(description_tag.text)
 
         p = Product(
             name,
