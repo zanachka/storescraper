@@ -34,7 +34,7 @@ class Novey(Store):
             ]
         }
         session.headers = {
-            "x-algolia-api-key": "NWU5ODk0N2NmNjljZTg0NjEwZmVmZDQ2ODdhNWI3NWJhN2ZjM2I3MmY1Y2RhZDViMjNhODRhYjQ0Y2ZlN2RhNGZpbHRlcnM9Y2F0YWxvZ19wZXJtaXNzaW9ucy5jdXN0b21lcl9ncm91cF8wJTIwJTIxJTNEJTIwMCZ0YWdGaWx0ZXJzPSZ2YWxpZFVudGlsPTE3MzMyMzMxNTU=",
+            "x-algolia-api-key": "ZDVlZWRiMWJhYWIzM2RkZTExYTkyZTYzNzcxZGM1ODIyOTNhZTdkN2Y1NWE1ZjdjM2Y3OWVmYzg0MjM4ZDQyMmZpbHRlcnM9Y2F0YWxvZ19wZXJtaXNzaW9ucy5jdXN0b21lcl9ncm91cF8wJTIwJTIxJTNEJTIwMCZ0YWdGaWx0ZXJzPSZ2YWxpZFVudGlsPTE3MzMzOTkzMTM=",
             "x-algolia-application-id": "ZCZRBTYD8I",
         }
         page = 0
