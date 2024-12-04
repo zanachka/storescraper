@@ -31,7 +31,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class Thundertech(StoreWithUrlExtensions):
@@ -73,9 +73,11 @@ class Thundertech(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         product_urls = []
         page = 1
+
         while True:
             if page > 10:
                 raise Exception("Page overflow: " + url_extension)
+
             url_webpage = "https://www.thundertech.cl/{}?page={}".format(
                 url_extension, page
             )
@@ -83,6 +85,7 @@ class Thundertech(StoreWithUrlExtensions):
             response = session.get(url_webpage)
             soup = BeautifulSoup(response.text, "lxml")
             product_containers = soup.findAll("div", "product-block")
+
             if not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
@@ -90,6 +93,7 @@ class Thundertech(StoreWithUrlExtensions):
             for container in product_containers:
                 product_url = "https://www.thundertech.cl" + container.find("a")["href"]
                 product_urls.append(product_url)
+
             page += 1
 
         return product_urls
@@ -124,6 +128,7 @@ class Thundertech(StoreWithUrlExtensions):
             )
 
         sku_tag = soup.find("span", "product-heading__detail--sku")
+
         if sku_tag:
             sku = sku_tag.text.split("SKU: ")[1].strip()
         else:
@@ -134,6 +139,7 @@ class Thundertech(StoreWithUrlExtensions):
             for x in soup.findAll("img", "product-gallery__image")
             if validators.url(x["data-src"])
         ]
+        description = html_to_markdown(soup.find("div", "product-description").text)
 
         p = Product(
             name,
@@ -149,5 +155,7 @@ class Thundertech(StoreWithUrlExtensions):
             sku=sku,
             picture_urls=picture_urls,
             part_number=sku,
+            description=description,
         )
+
         return [p]
