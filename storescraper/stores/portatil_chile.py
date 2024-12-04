@@ -87,9 +87,10 @@ class PortatilChile(Store):
                 if "Open Box" in f["value"]:
                     condition = "https://schema.org/RefurbishedCondition"
 
-        description = html_to_markdown(
-            soup.find("section", "product-description-section").text
-        )
+        description_tag = soup.find(
+            "section", "product-description-section"
+        ) or soup.find("section", "product-details-section")
+        description = html_to_markdown(description_tag.text)
 
         p = Product(
             name,
