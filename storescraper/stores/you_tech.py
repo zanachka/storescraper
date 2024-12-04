@@ -35,7 +35,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class YouTech(StoreWithUrlExtensions):
@@ -81,6 +81,7 @@ class YouTech(StoreWithUrlExtensions):
 
         product_urls = []
         page = 1
+
         while True:
             if page > 10:
                 raise Exception("page overflow: " + url_extension)
@@ -92,14 +93,19 @@ class YouTech(StoreWithUrlExtensions):
             data = session.get(url_webpage).text
             soup = BeautifulSoup(data, "lxml")
             product_containers = soup.findAll("div", "product-layout")
+
             if not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
+
                 break
+
             for container in product_containers:
                 product_url = container.find("a")["href"]
                 product_urls.append(product_url)
+
             page += 1
+
         return product_urls
 
     @classmethod
@@ -112,6 +118,7 @@ class YouTech(StoreWithUrlExtensions):
         key = soup.find("input", {"name": "product_id"})["value"]
         sku = soup.find("td", text="Código del producto:").next.next.text.strip()
         stock_text = soup.find("td", text="Disponibilidad:").next.next.text.strip()
+
         if stock_text == "En Stock":
             stock = -1
         else:
@@ -127,6 +134,7 @@ class YouTech(StoreWithUrlExtensions):
             tag["data-zoom-image"]
             for tag in soup.find("div", "additional-images-container").findAll("img")
         ]
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
 
         p = Product(
             name,
@@ -141,5 +149,7 @@ class YouTech(StoreWithUrlExtensions):
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
+
         return [p]
