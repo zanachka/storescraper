@@ -119,9 +119,11 @@ class TecnoSite(StoreWithUrlExtensions):
             )
             if "No-Disponible" not in tag["src"]
         ]
-        description = html_to_markdown(
-            soup.find("div", {"id": "productOverview_feature_div"}).text
+
+        description_tag = soup.find("div", "tab-description") or soup.find(
+            "div", {"id": "productOverview_feature_div"}
         )
+        description = html_to_markdown(description_tag.text)
 
         p = Product(
             name,
