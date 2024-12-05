@@ -67,6 +67,10 @@ class Novey(Store):
 
         soup = BeautifulSoup(response.text, "lxml")
         name = soup.find("h1", "page-title").text.strip()
+
+        if name == "Default Novey":
+            return []
+
         key = str(soup.find("input", {"name": "product"})["value"])
         sku = soup.find("div", {"itemprop": "sku"}).text.strip()
         price_container = soup.find("div", "product-info-price")
