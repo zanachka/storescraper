@@ -14,7 +14,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class SonyStore(Store):
@@ -84,9 +84,20 @@ class SonyStore(Store):
             return []
 
         preventa = False
+
         for d in json_container:
             if "name" in d and d["name"] == "Preventa":
                 preventa = True
+
+        specs_container = None
+
+        for container in json_container:
+            if "name" in container and container["name"] == "Informaciones tecnicas":
+                specs_container = container
+                break
+
+        specs_soup = BeautifulSoup(specs_container["values"]["json"][0], "lxml")
+        description = html_to_markdown(specs_soup.text)
 
         json_container = json_container[0]
         api_url = (
@@ -98,16 +109,19 @@ class SonyStore(Store):
         name = json_product["name"]
         part_number = json_product["name"].replace("|", "").strip()
         sku = json_product["itemId"]
+
         if preventa:
             stock = 0
         elif json_product["sellers"][0]["commertialOffer"]["AvailableQuantity"] > 10:
             stock = 10
         else:
             stock = json_product["sellers"][0]["commertialOffer"]["AvailableQuantity"]
+
         price = Decimal(json_product["sellers"][0]["commertialOffer"]["Price"])
         picture_urls = [
             picture["imageUrl"].split("?v")[0] for picture in json_product["images"]
         ]
+
         p = Product(
             name,
             cls.__name__,
@@ -122,5 +136,7 @@ class SonyStore(Store):
             sku=sku,
             part_number=part_number,
             picture_urls=picture_urls,
+            description=description,
         )
+
         return [p]
