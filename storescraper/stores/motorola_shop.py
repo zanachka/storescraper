@@ -11,47 +11,49 @@ from storescraper.utils import session_with_proxy, vtex_preflight
 
 
 class MotorolaShop(StoreWithUrlExtensions):
-    url_extensions = [
-        ('smartphones', CELL)
-    ]
+    url_extensions = [("smartphones", CELL)]
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         product_urls = []
         session = session_with_proxy(extra_args)
-
         offset = 0
+
         while True:
             if offset >= 600:
-                raise Exception('Page overflow')
+                raise Exception("Page overflow")
 
             variables = {
                 "from": offset,
                 "to": offset + 24,
-                "selectedFacets": [{"key": "c", "value": url_extension}]
+                "selectedFacets": [{"key": "c", "value": url_extension}],
             }
 
             payload = {
                 "persistedQuery": {
                     "version": 1,
-                    "sha256Hash": extra_args['sha256Hash']
+                    "sha256Hash": extra_args["sha256Hash"],
                 },
-                "variables": base64.b64encode(json.dumps(
-                    variables).encode('utf-8')).decode('utf-8')
+                "variables": base64.b64encode(
+                    json.dumps(variables).encode("utf-8")
+                ).decode("utf-8"),
             }
 
-            endpoint = 'https://www.motorola.cl/_v/segment/graphql/v1' \
-                       '?extensions={}'.format(json.dumps(payload))
+            endpoint = (
+                "https://www.motorola.cl/_v/segment/graphql/v1"
+                "?extensions={}".format(json.dumps(payload))
+            )
             response = session.get(endpoint).json()
 
-            product_entries = response['data']['productSearch']['products']
+            product_entries = response["data"]["productSearch"]["products"]
 
             if not product_entries:
                 break
 
             for product_entry in product_entries:
-                product_url = 'https://www.motorola.cl/{}/p'.format(
-                    product_entry['linkText'])
+                product_url = "https://www.motorola.cl/{}/p".format(
+                    product_entry["linkText"]
+                )
                 product_urls.append(product_url)
 
             offset += 24
@@ -63,37 +65,52 @@ class MotorolaShop(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
-        soup = BeautifulSoup(response.text, 'html5lib')
+        soup = BeautifulSoup(response.text, "html5lib")
 
-        product_data_tag = soup.find('template', {'data-varname': '__STATE__'})
-        json_product = json.loads(str(
-            product_data_tag.find('script').contents[0]))
+        product_data_tag = soup.find("template", {"data-varname": "__STATE__"})
+        json_product = json.loads(str(product_data_tag.find("script").contents[0]))
         item_key = list(json_product.keys())[0]
         products = []
         index = 0
+
         while True:
-            variation_key = '{}.items.{}'.format(item_key, index)
+            variation_key = "{}.items.{}".format(item_key, index)
             product = json_product.get(variation_key, None)
+
             if not product:
                 break
 
             product = json_product[variation_key]
-            name = product['nameComplete']
-            sku = product['itemId']
-            variation_url = url + '?skuId=' + sku
-            stock = json_product['$' + variation_key +
-                                 '.sellers.0.commertialOffer'][
-                'AvailableQuantity']
-            price = Decimal(json_product['$' + variation_key +
-                                         '.sellers.0.commertialOffer'][
-                                'Price'])
+            name = product["nameComplete"]
+            sku = product["itemId"]
+            variation_url = url + "?skuId=" + sku
+            stock = json_product["$" + variation_key + ".sellers.0.commertialOffer"][
+                "AvailableQuantity"
+            ]
+            price = Decimal(
+                json_product[f"${variation_key}.sellers.0.commertialOffer"]["Price"]
+            )
+
+            description = {}
+
+            for entry in json_product:
+                data = json_product[entry]
+                if (
+                    "__typename" in data
+                    and data["__typename"] == "SpecificationGroupProperty"
+                ):
+                    description[data["name"]] = data["values"]["json"]
+
+            description = json.dumps(description)
 
             if not stock and not price:
                 return []
 
             picture_urls = [
-                json_product[image['id']]['imageUrl'].split('?v=')[0] for
-                image in product['images']]
+                json_product[image["id"]]["imageUrl"].split("?v=")[0]
+                for image in product["images"]
+            ]
+
             p = Product(
                 name,
                 cls.__name__,
@@ -104,16 +121,17 @@ class MotorolaShop(StoreWithUrlExtensions):
                 stock,
                 price,
                 price,
-                'CLP',
+                "CLP",
                 sku=sku,
                 picture_urls=picture_urls,
-
+                description=description,
             )
+
             products.append(p)
             index += 1
+
         return products
 
     @classmethod
     def preflight(cls, extra_args=None):
-        return vtex_preflight(
-            extra_args, 'https://www.motorola.cl/smartphones/d')
+        return vtex_preflight(extra_args, "https://www.motorola.cl/smartphones/d")
