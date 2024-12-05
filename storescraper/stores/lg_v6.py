@@ -8,7 +8,7 @@ from decimal import Decimal
 
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class LgV6(Store):
@@ -133,10 +133,13 @@ class LgV6(Store):
         # return them by default because the Where To Buy (WTB) system
         # needs to consider all products, so use zero as default.
         price = Decimal(0)
+
         for price_key in ["ec_price", "ec_msrp"]:
             if price_key not in json_data:
                 continue
+
             price_value = Decimal(json_data[price_key])
+
             if price_value:
                 price = price_value.quantize(Decimal(cls.price_approximation))
                 break
@@ -153,10 +156,13 @@ class LgV6(Store):
             stock = 0
 
         section_path_components = []
+
         for i in range(1, 5):
             section_key = "ec_classification_flag_lv_{}".format(i)
+
             if section_key not in json_data:
                 continue
+
             section_path_components.append(json_data[section_key])
 
         if section_path_components:
@@ -167,11 +173,12 @@ class LgV6(Store):
         positions = [(section_path, 1)]
         sku = json_data["ec_sku"]
 
-        pdp_data = soup.find("div", {"id": "pdp-overview-section"})
-        if pdp_data:
-            description = str(pdp_data).replace('="/', '="https://www.lg.com/')
-        else:
-            description = None
+        description = {}
+
+        for spec in cls.string_to_dict(json_data["ec_tech_spec_list"]):
+            description[spec["lv2SpecName"]] = spec["specValueName"]
+
+        description = json.dumps(description)
 
         reviews_endpoint = (
             "https://api.bazaarvoice.com/data/display/0.2alpha/product/summary?PassKey="
@@ -219,3 +226,21 @@ class LgV6(Store):
         json_response = response.json()
         coveo_token = json_response["token"]
         return {"coveo_token": coveo_token}
+
+    def string_to_dict(input_string):
+        entries = input_string.split("};")
+
+        result = []
+
+        for entry in entries:
+            entry = entry.strip().lstrip("{")
+            elements = entry.split(", ")
+            entry_dict = {}
+
+            for element in elements:
+                key, value = element.split("=", 1)
+                entry_dict[key] = value
+
+            result.append(entry_dict)
+
+        return result
