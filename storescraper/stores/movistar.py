@@ -7,7 +7,7 @@ from decimal import Decimal
 from storescraper.categories import CELL_PLAN, CELL
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
 class Movistar(Store):
@@ -190,6 +190,7 @@ class Movistar(Store):
             return []
 
         soup = BeautifulSoup(page.text, "lxml")
+
         if soup.find("meta", {"name": "title"}):
             name = soup.find("meta", {"name": "title"})["content"]
         else:
@@ -197,13 +198,17 @@ class Movistar(Store):
 
         sku = soup.find("div", {"itemprop": "sku"}).text.strip()
         breadcrumbs = soup.find("ul", "items").findAll("li")
+
         for breadcrumb in breadcrumbs:
             breadcrumb_link = breadcrumb.find("a")
+
             if breadcrumb_link:
                 breadcrumb_path = breadcrumb_link["href"]
             else:
                 breadcrumb_path = ""
+
             breadcrumb_kw = "{} {}".format(breadcrumb.text, breadcrumb_path)
+
             if (
                 "OUTLET" in breadcrumb_kw.upper()
                 or "REACONDICIONADO" in breadcrumb_kw.upper()
@@ -212,6 +217,7 @@ class Movistar(Store):
                 break
         else:
             condition = "https://schema.org/NewCondition"
+
         products = []
 
         form_key = soup.find("script", text=re.compile("var formKeyDetalle"))
@@ -221,6 +227,8 @@ class Movistar(Store):
         form_emh = soup.find("input", {"id": "du-form-emh"})["value"]
         base_payload = f"key={form_key}&emh={form_emh}"
         base_endpoint = "https://catalogo.movistar.cl/tienda/detalleequipo/ajax/"
+        description = html_to_markdown(soup.find("div", "caracteristicas").text)
+
         # Prepago
         if cls.include_prepago:
             product_id = soup.find("input", {"id": "du-product-id"})["value"]
@@ -249,6 +257,7 @@ class Movistar(Store):
                         cell_plan_name="Movistar Prepago",
                         cell_monthly_payment=Decimal(0),
                         condition=condition,
+                        description=description,
                     )
                 )
 
@@ -279,14 +288,17 @@ class Movistar(Store):
 
                 for method_id, plan_name_suffix in variation["methods"]:
                     cell_plan_name = plan["name"].strip() + plan_name_suffix
+
                     if method_id == 1:
                         if "tarjeta" not in precio_data:
                             continue
+
                         price = Decimal(remove_words(precio_data["tarjeta"]["total"]))
                         cell_monthly_payment = Decimal(0)
                     elif method_id == 2:
                         if "boleta" not in precio_data:
                             continue
+
                         price = Decimal(
                             remove_words(precio_data["boleta"]["pieFormated"])
                         )
@@ -296,6 +308,7 @@ class Movistar(Store):
                     elif method_id == 3:
                         if "mone" not in precio_data:
                             continue
+
                         price = Decimal(
                             remove_words(precio_data["mone"]["pieFormated"])
                         )
@@ -322,6 +335,7 @@ class Movistar(Store):
                             cell_monthly_payment=cell_monthly_payment,
                             allow_zero_prices=True,
                             condition=condition,
+                            description=description,
                         )
                     )
 
