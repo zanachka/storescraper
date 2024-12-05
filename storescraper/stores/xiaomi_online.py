@@ -17,7 +17,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, magento_picture_urls
+from storescraper.utils import (
+    html_to_markdown,
+    session_with_proxy,
+    magento_picture_urls,
+)
 
 
 class XiaomiOnline(StoreWithUrlExtensions):
@@ -44,6 +48,7 @@ class XiaomiOnline(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         product_urls = []
         page = 1
+
         while True:
             if page > 10:
                 raise Exception("page overflow: " + url_extension)
@@ -65,7 +70,9 @@ class XiaomiOnline(StoreWithUrlExtensions):
                 if product_url in product_urls:
                     return product_urls
                 product_urls.append(product_url)
+
             page += 1
+
         return product_urls
 
     @classmethod
@@ -82,11 +89,17 @@ class XiaomiOnline(StoreWithUrlExtensions):
             soup.find("meta", {"property": "product:price:amount"})["content"]
         )
         part_number_tag = soup.find("td", {"data-th": "Mpn"})
+
         if part_number_tag:
             part_number = part_number_tag.text.strip()
         else:
             part_number = None
+
         picture_urls = magento_picture_urls(soup)
+        description = html_to_markdown(
+            soup.find("div", "container-description-table").text
+            + soup.find("div", "product attribute description").text
+        )
 
         p = Product(
             name,
@@ -102,5 +115,7 @@ class XiaomiOnline(StoreWithUrlExtensions):
             sku=sku,
             part_number=part_number,
             picture_urls=picture_urls,
+            description=description,
         )
+
         return [p]
