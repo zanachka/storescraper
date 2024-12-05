@@ -232,6 +232,17 @@ class SpDigital(StoreWithUrlExtensions):
         else:
             description = None
 
+        if not description or description.strip() == "":
+            for meta in page_data["content"]["metadata"]:
+                if meta["key"] == "specs":
+                    description = {}
+                    meta_values = json.loads(meta["value"])
+
+                    for value in meta_values["values"]:
+                        description[value[4]] = value[5]
+
+                    description = json.dumps(description)
+
         picture_urls = [x["url"] for x in page_data["content"]["media"]]
 
         products = []
