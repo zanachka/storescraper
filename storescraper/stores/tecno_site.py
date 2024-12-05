@@ -123,7 +123,9 @@ class TecnoSite(StoreWithUrlExtensions):
         description_tag = soup.find("div", "tab-description") or soup.find(
             "div", {"id": "productOverview_feature_div"}
         )
-        description = html_to_markdown(description_tag.text)
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
+        )
 
         p = Product(
             name,
