@@ -48,7 +48,6 @@ class Centrale(StoreWithUrlExtensions):
         ["smartphones", CELL],
         ["kit-teclado-y-mouse", KEYBOARD_MOUSE_COMBO],
         ["refrigeracion-para-pc", CPU_COOLER],
-        ["almacenamiento-para-pc", STORAGE_DRIVE],
         ["discos-externos", EXTERNAL_STORAGE_DRIVE],
         ["sistemas-de-audio", STEREO_SYSTEM],
         ["pendrive", USB_FLASH_DRIVE],
@@ -74,6 +73,15 @@ class Centrale(StoreWithUrlExtensions):
         ["microfonos", MICROPHONE],
         ["suministros-para-impresoras", PRINTER_SUPPLY],
         ["celulares", CELL],
+        ["almacenamiento-para-servidor", STORAGE_DRIVE],
+        ["parlantes", STEREO_SYSTEM],
+        ["pendrives", USB_FLASH_DRIVE],
+        ["plotters-gran-formato", PRINTER],
+        ["parlantes-para-videoconferencias", STEREO_SYSTEM],
+        ["sistemas-integrados-para-videoconferencias", STEREO_SYSTEM],
+        ["pantallas-interactivas", MONITOR],
+        ["notebooks-gamer", NOTEBOOK],
+        ["workstations-portatiles", NOTEBOOK],
     ]
 
     @classmethod
