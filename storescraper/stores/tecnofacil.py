@@ -71,7 +71,9 @@ class Tecnofacil(Store):
             return []
 
         sku = sku_container.text.strip()
-        key = soup.find("input", {"name": "product"})["value"]
+        key = soup.find("div", "product-add-form").find("input", {"name": "product"})[
+            "value"
+        ]
         name = "{} ({})".format(
             soup.find("span", {"itemprop": "name"}).text.strip(), sku
         )
