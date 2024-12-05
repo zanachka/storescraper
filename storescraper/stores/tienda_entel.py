@@ -39,6 +39,7 @@ class TiendaEntel(Store):
             # For the case of https://miportal.entel.cl/personas/producto/
             # prod1410051 that displays a blank page
             return []
+
         raw_json = product_detail_container.find("script").string
 
         if not raw_json:
@@ -61,6 +62,15 @@ class TiendaEntel(Store):
             offer_price = None
 
         base_name = json_data["renderVOBean"]["productName"]
+
+        description = {}
+
+        for spec in json_data["specifications"]:
+            if "groupValue" in spec:
+                for attribute in spec["groupValue"]:
+                    description[attribute["attributeKey"]] = attribute["attributeValue"]
+
+        description = json.dumps(description)
 
         for sku in json_data["renderSkusBean"]["skus"]:
             if not sku["available"]:
@@ -109,7 +119,9 @@ class TiendaEntel(Store):
                 sku=sku_id,
                 picture_urls=picture_urls,
                 condition=condition,
+                description=description,
             )
+
             products.append(product)
 
         return products
