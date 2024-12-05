@@ -78,6 +78,7 @@ class TecnoMas(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         product_urls = []
         page = 0
+
         while True:
             if page > 35:
                 raise Exception("page overflow: " + url_extension)
@@ -106,22 +107,29 @@ class TecnoMas(StoreWithUrlExtensions):
             json_data = response.json()
 
             product_containers = json_data["results"][0]["hits"]
+
             if not product_containers:
                 if page == 0:
                     logging.warning("Empty category: " + url_extension)
+
                 break
+
             for container in product_containers:
                 product_urls.append(
                     "https://www.tecnomas.cl/producto/{}".format(container["slug"])
                 )
+
             page += 1
+
         return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
+
         if len(url) > 510:
             return []
+
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
@@ -167,6 +175,9 @@ class TecnoMas(StoreWithUrlExtensions):
             if "src" in img.attrs:
                 picture_urls.append(img["src"])
 
+        description_tag = soup.find("meta", {"property": "og:description"})
+        description = description_tag["content"] if description_tag else None
+
         p = Product(
             name,
             cls.__name__,
@@ -182,5 +193,7 @@ class TecnoMas(StoreWithUrlExtensions):
             part_number=sku,
             picture_urls=picture_urls,
             condition=condition,
+            description=description,
         )
+
         return [p]
