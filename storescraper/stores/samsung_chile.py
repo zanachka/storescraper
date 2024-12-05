@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from collections import defaultdict
 from decimal import Decimal
 
@@ -21,7 +22,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 import json
 
@@ -249,11 +250,23 @@ class SamsungChile(Store):
         response = session.get(endpoint)
         json_data = json.loads(response.text)["response"]["resultData"]
 
+        response = session.get(url)
+        soup = BeautifulSoup(response.text, "lxml")
+        description_tags = [
+            soup.find("div", {"id": "benefit"}),
+            soup.find("div", {"id": "specs"}),
+        ]
+        description = ""
+
+        for tag in description_tags:
+            if tag:
+                description += tag.text
+
+        description = html_to_markdown(description) if description != "" else None
         products = []
 
         for product in json_data["productList"]:
             for model in product["modelList"]:
-                # print(json.dumps(model))
                 if model["reviewCount"]:
                     review_count = int(model["reviewCount"])
                     review_avg_score = float(model["ratings"])
@@ -311,6 +324,8 @@ class SamsungChile(Store):
                         review_count=review_count,
                         review_avg_score=review_avg_score,
                         part_number=key,
+                        description=description,
                     )
                 )
+
         return products
