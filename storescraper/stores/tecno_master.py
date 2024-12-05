@@ -183,7 +183,10 @@ class TecnoMaster(Store):
             tag["src"]
             for tag in soup.find("div", "elementor-widget-image").findAll("img")
         ]
-        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+        description_tag = soup.find("div", {"id": "tab-description"}) or soup.find(
+            "div", "woocommerce-product-details__short-description"
+        )
+        description = html_to_markdown(description_tag.text)
 
         p = Product(
             name,
