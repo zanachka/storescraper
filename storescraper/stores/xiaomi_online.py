@@ -96,10 +96,18 @@ class XiaomiOnline(StoreWithUrlExtensions):
             part_number = None
 
         picture_urls = magento_picture_urls(soup)
-        description = html_to_markdown(
-            soup.find("div", "container-description-table").text
-            + soup.find("div", "product attribute description").text
-        )
+
+        description_tags = [
+            soup.find("div", "container-description-table"),
+            soup.find("div", "product attribute description"),
+        ]
+        description = ""
+
+        for description_tag in description_tags:
+            if description_tag:
+                description += description_tag.text
+
+        description_tag = html_to_markdown(description)
 
         p = Product(
             name,
