@@ -107,7 +107,7 @@ class PcFactory(Store):
             ["38", UPS],
             ["995", MONITOR],
             ["46", PROJECTOR],
-            ["422", EXTERNAL_STORAGE_DRIVE],
+            # ["422", EXTERNAL_STORAGE_DRIVE],
             ["904", EXTERNAL_STORAGE_DRIVE],
             ["218", USB_FLASH_DRIVE],
             ["48", MEMORY_CARD],
