@@ -24,16 +24,23 @@ class AppleStore(StoreWithUrlExtensions):
         response = session.get(url)
         match = re.search(r"cards: (.+)", response.text)
         page_data = json.loads(match.groups()[0])
+
         for item in page_data["items"]:
             card_type = item["value"]["items"][0]["value"]["cardType"]
+
             if "heroCard" not in card_type:
                 continue
+
             url = card_type["heroCard"]["heroStoreCard"]["title"]["link"]
+
             if not isinstance(url, str):
                 url = url["url"]
+
             if not url.startswith("https"):
                 url = "https://www.apple.com" + url
+
             product_urls.append(url)
+
         return product_urls
 
     @classmethod
@@ -46,13 +53,18 @@ class AppleStore(StoreWithUrlExtensions):
 
         if product_match:
             product_data = json.loads(product_match.groups()[0])
+
             for product_entry in product_data["products"]:
                 dimensions = []
+
                 if "partNumber" in product_entry:
                     mpn = product_entry["partNumber"]
+
                     for key, value in product_entry.items():
                         if key.startswith("dimension") and isinstance(value, str):
                             dimensions.append(value)
+
+                    description = json.dumps(dimensions)
                     name = "{} ({})".format(
                         product_entry["familyType"], " / ".join(dimensions)
                     )
@@ -63,6 +75,7 @@ class AppleStore(StoreWithUrlExtensions):
                         label = key.replace("watch_cases-dimension", "")
                         dimensions.append("{} {}".format(label, value))
 
+                    description = json.dumps(dimensions)
                     name = "{} ({})".format(mpn, " / ".join(dimensions))
 
                 if "fullPrice" in product_entry:
@@ -97,18 +110,23 @@ class AppleStore(StoreWithUrlExtensions):
                     "CLP",
                     sku=mpn,
                     part_number=mpn,
+                    description=description,
                 )
+
                 products.append(p)
         else:
             soup = BeautifulSoup(response.text, "lxml")
             noscript_tag = soup.findAll("noscript")[1]
+
             for form_tag in noscript_tag.findAll("form"):
                 product_id = form_tag.find("input", {"name": "product"})["value"]
                 tckey_tag = form_tag.find("input", {"name": "tckey"})
+
                 if tckey_tag:
                     tckey = tckey_tag["value"]
                 else:
                     tckey = ""
+
                 sku_url = "{}?product={}&tckey={}&proceed=proceed".format(
                     url, product_id, tckey
                 )
@@ -124,6 +142,7 @@ class AppleStore(StoreWithUrlExtensions):
                         "taxInclusivePrice"
                     ]
                 ).quantize(0)
+
                 p = Product(
                     "{} ({})".format(name, mpn),
                     cls.__name__,
@@ -138,5 +157,7 @@ class AppleStore(StoreWithUrlExtensions):
                     sku=mpn,
                     part_number=mpn,
                 )
+
                 products.append(p)
+
         return products
