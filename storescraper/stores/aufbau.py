@@ -124,8 +124,8 @@ class Aufbau(StoreWithUrlExtensions):
 
         products = []
 
-        if "variantOptions" in product_info:
-            for variant in product_info["variantOptions"]:
+        if "baseOptions" in product_info and len(product_info["baseOptions"]) > 0:
+            for variant in product_info["baseOptions"][0]["options"]:
                 code = variant["code"]
                 variant_url = "https://www.aufbau.cl" + variant["url"].replace(
                     "%2F", "--"
