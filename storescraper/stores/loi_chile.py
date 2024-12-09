@@ -110,7 +110,9 @@ class LoiChile(StoreWithUrlExtensions):
 
         if offer_price_tag:
             offer_price = float(
-                remove_words(offer_price_tag.text, ["$", " ", "."]).replace(",", ".")
+                remove_words(offer_price_tag.text, ["$", " ", "."])
+                .replace(",", ".")
+                .replace("USD", "")
             )
             offer_price = Decimal(math.ceil(offer_price))
 
