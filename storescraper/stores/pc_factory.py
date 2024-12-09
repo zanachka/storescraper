@@ -234,7 +234,11 @@ class PcFactory(Store):
         price_data = res.json()
 
         normal_price = Decimal(price_data["precio"]["normal"])
-        offer_price = Decimal(price_data["precio"]["efectivo"])
+
+        if price_data["precio"].get("bancoEstado", None):
+            offer_price = Decimal(price_data["precio"]["bancoEstado"])
+        else:
+            offer_price = Decimal(price_data["precio"]["efectivo"])
 
         # Stock
         res = session.get(
