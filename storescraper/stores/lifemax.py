@@ -1,9 +1,7 @@
 from decimal import Decimal
 import json
 import logging
-import re
 
-import validators
 from bs4 import BeautifulSoup
 from storescraper.categories import (
     COMPUTER_CASE,
@@ -131,7 +129,7 @@ class Lifemax(StoreWithUrlExtensions):
             return []
 
         product_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[5].text
+            soup.findAll("script", {"type": "application/ld+json"})[-1].text
         )
         main_section = soup.find("div", "hdt-main-product")
         normal_price = Decimal(
