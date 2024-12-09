@@ -1,80 +1,108 @@
 from decimal import Decimal
 import json
-import logging
 
-from storescraper.categories import ALL_IN_ONE, CELL, HEADPHONES, MOUSE, \
-    NOTEBOOK, STEREO_SYSTEM, TABLET, WEARABLE, MONITOR
+from storescraper.categories import (
+    ALL_IN_ONE,
+    CELL,
+    HEADPHONES,
+    NOTEBOOK,
+    TABLET,
+    WEARABLE,
+    VIDEO_GAME_CONSOLE,
+)
 from storescraper.product import Product
-from storescraper.store import Store
-from storescraper.utils import remove_words, session_with_proxy, \
-    html_to_markdown
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
+from storescraper.utils import remove_words, session_with_proxy, html_to_markdown
 
 
-class Aufbau(Store):
+class Aufbau(StoreWithUrlExtensions):
+    url_extensions = [
+        ["macbook-air", NOTEBOOK],
+        ["macbook-pro", NOTEBOOK],
+        ["imac", ALL_IN_ONE],
+        ["ipad-pro", TABLET],
+        ["ipad-air", TABLET],
+        ["ipad", TABLET],
+        ["ipad-mini", TABLET],
+        ["iphone-se", CELL],
+        ["iphone-16-pro", CELL],
+        ["iphone-16", CELL],
+        ["iphone-15-pro", CELL],
+        ["iphone-15", CELL],
+        ["iphone-14", CELL],
+        ["iphone-13", CELL],
+        ["apple-watch-ultra-2", WEARABLE],
+        ["apple-watch-series-10", WEARABLE],
+        ["apple-watch-series-9", WEARABLE],
+        ["apple-watch-1", WEARABLE],
+        ["airpods-pro", HEADPHONES],
+        ["airpods", HEADPHONES],
+        ["airpods-max", HEADPHONES],
+        ["beats", HEADPHONES],
+        ["parlantes-audifonos", HEADPHONES],
+        ["gaming", VIDEO_GAME_CONSOLE],
+    ]
+
     @classmethod
-    def categories(cls):
-        return [
-            CELL,
-            TABLET,
-            ALL_IN_ONE,
-            NOTEBOOK,
-            WEARABLE,
-            HEADPHONES,
-            STEREO_SYSTEM,
-            MOUSE,
-            MONITOR,
-        ]
-
-    @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        url_extensions = [
-            ['aufbauIphone', CELL],
-            ['aufbauIpad', TABLET],
-            ['aufbauiMac', ALL_IN_ONE],
-            ['aufbauMacBookPro', NOTEBOOK],
-            ['aufbauMbAirRetina', NOTEBOOK],
-            # ['MacBookAir', NOTEBOOK],
-            ['aufbauWatch', WEARABLE],
-            ['aufbauAirPods', HEADPHONES],
-            ['aufbauAudioAudifonos', HEADPHONES],
-            ['aufbauAudioBeats', HEADPHONES],
-            ['aufbauAudioParlantes', STEREO_SYSTEM],
-            ['aufbauAccesoriosMouseTeclados', MOUSE],
-            ['aufbauStudioDisplay', MONITOR],
-        ]
-
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-        session.headers['origin'] = 'https://aufbau.cl'
+        session.headers["origin"] = "https://aufbau.cl"
         product_urls = []
-        for url_extension, local_category in url_extensions:
-            if local_category != category:
-                continue
+        page = 0
 
-            url_webpage = ('https://api-prd.ynk.cl/rest/v2/reifstoreb2cstore/'
-                           'products/search?fields=products(url, code)&'
-                           'query=%3Arelevance%3AallCategories%3A{}').format(
-                            url_extension)
-            data = session.get(url_webpage).text
+        while True:
+            url_webpage = f"https://api-prd.ynk.cl/rest/v2/reifstoreb2cstore/cms/pages?pageLabelOrId=%2Fcollections%2F{url_extension}"
+            response = json.loads(session.get(url_webpage).text)
 
-            product_containers = json.loads(data)['products']
-            if len(product_containers) == 0:
-                logging.warning('Empty category: ' + url_extension)
-                continue
-            for container in product_containers:
-                url = container['url'].split('reifstore-encoding')[0]
-                product_urls.append(
-                    'https://www.aufbau.cl' +
-                    url + container['code'].replace('/', '--'))
+            if "contentSlots" in response:
+                print(url_webpage)
+                contentSlots = response["contentSlots"]
+                product_grids = None
+
+                for slot in contentSlots:
+                    for component in contentSlots[slot]:
+                        for entry in component["components"]["component"]:
+                            if entry["typeCode"] == "ProductGrid":
+                                product_grids = entry["gridItems"].replace(" ", "%2C")
+
+                products_url = f"https://api-prd.ynk.cl/rest/v2/reifstoreb2cstore/cms/components?currentPage={page}&pageSize=18&componentIds={product_grids}"
+                product_containers = json.loads(session.get(products_url).text)[
+                    "component"
+                ]
+
+                if not product_containers:
+                    break
+
+                for container in product_containers:
+                    product_urls.append(
+                        f"https://www.aufbau.cl{container['buttonLink']}"
+                    )
+
+            else:
+                products_url = f"https://api-prd.ynk.cl/rest/v2/reifstoreb2cstore/products/search?query=%3Arelevance%3AallCategories%3A{url_extension}&pageSize=12&currentPage={page}"
+                print(products_url)
+                product_containers = json.loads(session.get(products_url).text)[
+                    "products"
+                ]
+
+                if not product_containers:
+                    break
+
+                for container in product_containers:
+                    product_urls.append(f"https://www.aufbau.cl/p/{container['code']}")
+
+            page += 1
+
         return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        code = url.split('/p/')[-1].replace('--', '/')
+        code = url.split("/p/")[-1].replace("--", "/")
         session = session_with_proxy(extra_args)
         response = session.get(
-            'https://api-prd.ynk.cl/rest/v2/reifstoreb2cstore/products/'
-            'reifstore-encoding?productCode={}'.format(code)
+            "https://api-prd.ynk.cl/rest/v2/reifstoreb2cstore/products/"
+            "reifstore-encoding?productCode={}".format(code)
         )
 
         if response.status_code == 400:
@@ -83,27 +111,32 @@ class Aufbau(Store):
 
         product_info = json.loads(response.text)
 
-        base_name = product_info['name']
-        description = html_to_markdown(product_info['description'])
+        base_name = product_info["name"]
+        description = html_to_markdown(product_info["description"])
         picture_urls = []
-        for i in product_info['images']:
-            if i['format'] == 'product':
-                picture_urls.append('https://api.cxl8rgz-articulos1-p1-public'
-                                    '.model-t.cc.commerce.ondemand.com' +
-                                    i['url'])
+
+        for i in product_info["images"]:
+            if i["format"] == "product":
+                picture_urls.append(
+                    "https://api.cxl8rgz-articulos1-p1-public"
+                    ".model-t.cc.commerce.ondemand.com" + i["url"]
+                )
 
         products = []
-        if 'variantOptions' in product_info:
-            for variant in product_info['variantOptions']:
-                code = variant['code']
-                variant_url = 'https://www.aufbau.cl' + \
-                    variant['url'].replace('%2F', '--')
-                price = Decimal(variant['priceData']['value'])
-                stock = variant['stock']['stockLevel']
 
-                variation_name = base_name + ' -'
-                for v in variant['variantOptionQualifiers']:
-                    variation_name += ' ' + v['value']
+        if "variantOptions" in product_info:
+            for variant in product_info["variantOptions"]:
+                code = variant["code"]
+                variant_url = "https://www.aufbau.cl" + variant["url"].replace(
+                    "%2F", "--"
+                )
+                price = Decimal(variant["priceData"]["value"])
+                stock = variant["stock"]["stockLevel"]
+
+                variation_name = base_name + " -"
+
+                for v in variant["variantOptionQualifiers"]:
+                    variation_name += " " + v["value"]
 
                 p = Product(
                     variation_name,
@@ -115,22 +148,23 @@ class Aufbau(Store):
                     stock,
                     price,
                     price,
-                    'CLP',
+                    "CLP",
                     sku=code,
                     part_number=code,
                     picture_urls=picture_urls,
-                    description=description
+                    description=description,
                 )
+
                 products.append(p)
         else:
-            code = product_info['code']
-            price = Decimal(remove_words(
-                product_info['price']['formattedValue']))
-            stock_json = product_info['stock']
-            if 'stockLevel' in stock_json:
-                stock = stock_json['stockLevel']
+            code = product_info["code"]
+            price = Decimal(remove_words(product_info["price"]["formattedValue"]))
+            stock_json = product_info["stock"]
+
+            if "stockLevel" in stock_json:
+                stock = stock_json["stockLevel"]
             else:
-                if stock_json['stockLevelStatus'] == 'inStock':
+                if stock_json["stockLevelStatus"] == "inStock":
                     stock = -1
                 else:
                     stock = 0
@@ -145,12 +179,13 @@ class Aufbau(Store):
                 stock,
                 price,
                 price,
-                'CLP',
+                "CLP",
                 sku=code,
                 part_number=code,
                 picture_urls=picture_urls,
-                description=description
+                description=description,
             )
+
             products.append(p)
 
         return products
