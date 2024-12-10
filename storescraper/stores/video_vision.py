@@ -69,7 +69,7 @@ class VideoVision(StoreWithUrlExtensions):
         if response.status_code == 404:
             return []
 
-        soup = BeautifulSoup(response.text, "lxml")
+        soup = BeautifulSoup(response.text, "html5lib")
 
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
         name = soup.find("h2", "product_title").text
@@ -88,7 +88,16 @@ class VideoVision(StoreWithUrlExtensions):
         else:
             price = (Decimal(remove_words(price.text)) * Decimal("1.19")).quantize(0)
 
-        picture_urls = [soup.find("img", "woocommerce-main-image")["src"]]
+        picture_urls = []
+
+        for img in soup.find("div", "woocommerce-product-gallery__wrapper").findAll(
+            "img"
+        ):
+            picture = img.get("href")
+
+            if picture:
+                picture_urls.append(picture)
+
         description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
 
         p = Product(
