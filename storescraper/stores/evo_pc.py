@@ -1,0 +1,103 @@
+import logging
+import json
+from decimal import Decimal
+from bs4 import BeautifulSoup
+from storescraper.categories import (
+    PROCESSOR,
+    COMPUTER_CASE,
+    MOTHERBOARD,
+    POWER_SUPPLY,
+    CPU_COOLER,
+)
+from storescraper.product import Product
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
+from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
+
+
+class EvoPc(StoreWithUrlExtensions):
+    url_extensions = [
+        ["procesadores-intel-amd", PROCESSOR],
+        ["gabinetes", COMPUTER_CASE],
+        ["placas-madres-intel-amd", MOTHERBOARD],
+        ["fuentes-de-poder", POWER_SUPPLY],
+        ["refrigeraciones", CPU_COOLER],
+    ]
+
+    @classmethod
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
+        session = session_with_proxy(extra_args)
+        product_urls = []
+        page = 1
+
+        while True:
+            url_webpage = (
+                f"https://evopc.cl/categoria-producto/{url_extension}/page/{page}/"
+            )
+            print(url_webpage)
+
+            if page > 10:
+                raise Exception("page overflow: " + url_webpage)
+
+            response = session.get(url_webpage)
+            soup = BeautifulSoup(response.text, "lxml")
+            product_containers = soup.findAll("li", "product")
+
+            if not product_containers:
+                if page == 1:
+                    logging.warning(f"Empty category: {url_extension}")
+                break
+
+            for container in product_containers:
+                product_urls.append(container.find("a")["href"])
+
+            page += 1
+
+        return product_urls
+
+    @classmethod
+    def products_for_url(cls, url, category=None, extra_args=None):
+        print(url)
+        session = session_with_proxy(extra_args)
+        soup = BeautifulSoup(session.get(url).text, "lxml")
+        page_data = json.loads(
+            soup.find("script", {"type": "application/ld+json"}).text
+        )
+        product_data = None
+
+        for data in page_data["@graph"]:
+            if data["@type"] == "Product":
+                product_data = data
+
+        assert len(product_data["offers"]) == 1
+
+        name = product_data["name"]
+        offer = product_data["offers"][0]
+        sku = product_data["sku"]
+        key = soup.find("button", {"name": "add-to-cart"})["value"]
+        price = Decimal(offer["price"])
+        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        picture_urls = [
+            a["href"]
+            for a in soup.find("div", "woocommerce-product-gallery__wrapper").findAll(
+                "a"
+            )
+        ]
+        description = product_data["description"]
+
+        p = Product(
+            name,
+            cls.__name__,
+            category,
+            url,
+            url,
+            key,
+            stock,
+            price,
+            price,
+            "CLP",
+            description=description,
+            sku=sku,
+            picture_urls=picture_urls,
+        )
+
+        return [p]

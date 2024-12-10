@@ -92,6 +92,7 @@ from .entre_pc_y_web import EntrePcYWeb
 from .estilos import Estilos
 from .et_chile import ETChile
 from .eurogen import Eurogen
+from .evo_pc import EvoPc
 from .exito import Exito
 from .eyc import Eyc
 from .eylstore import Eylstore
