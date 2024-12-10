@@ -78,7 +78,6 @@ class Digitek(StoreWithUrlExtensions):
         products = []
         name = product_data["name"]
         description = html_to_markdown(product_data["description"])
-        sku = product_data["sku"]
         pictures_container = soup.find("media-gallery").findAll("a")
         picture_urls = [f"https:{a['href'].split('?')[0]}" for a in pictures_container]
         product_details = soup.find("div", "product-details").text
@@ -102,7 +101,9 @@ class Digitek(StoreWithUrlExtensions):
                 condition = condition_url
                 break
 
-        for offer in product_data["offers"]:
+        for variant in product_data["hasVariant"]:
+            sku = variant["sku"]
+            offer = variant["offers"]
             key = offer["url"].split("?variant=")[1]
             price = Decimal(offer["price"])
             stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
