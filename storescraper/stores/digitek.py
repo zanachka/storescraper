@@ -101,9 +101,38 @@ class Digitek(StoreWithUrlExtensions):
                 condition = condition_url
                 break
 
-        for variant in product_data["hasVariant"]:
-            sku = variant["sku"]
-            offer = variant["offers"]
+        if "hasVariant" in product_data:
+            for variant in product_data["hasVariant"]:
+                sku = variant["sku"]
+                offer = variant["offers"]
+                key = offer["url"].split("?variant=")[1]
+                price = Decimal(offer["price"])
+                stock = (
+                    -1 if offer["availability"] == "http://schema.org/InStock" else 0
+                )
+
+                p = Product(
+                    name,
+                    cls.__name__,
+                    category,
+                    url,
+                    url,
+                    key,
+                    stock,
+                    price,
+                    price,
+                    "CLP",
+                    condition=condition,
+                    description=description,
+                    sku=sku,
+                    picture_urls=picture_urls,
+                )
+
+                products.append(p)
+        else:
+            offer = product_data["offers"]
+            sku = product_data["sku"]
+            offer = product_data["offers"]
             key = offer["url"].split("?variant=")[1]
             price = Decimal(offer["price"])
             stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
