@@ -74,7 +74,8 @@ class EvoPc(StoreWithUrlExtensions):
         offer = product_data["offers"][0]
         sku = product_data["sku"]
         key = soup.find("button", {"name": "add-to-cart"})["value"]
-        price = Decimal(offer["price"])
+        offer_price = Decimal(offer["price"])
+        price = (offer_price * Decimal(1.04)).quantize(0)
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
         picture_urls = [
             a["href"]
@@ -93,7 +94,7 @@ class EvoPc(StoreWithUrlExtensions):
             key,
             stock,
             price,
-            price,
+            offer_price,
             "CLP",
             description=description,
             sku=sku,
