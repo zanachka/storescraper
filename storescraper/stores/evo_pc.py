@@ -73,7 +73,16 @@ class EvoPc(StoreWithUrlExtensions):
         name = product_data["name"]
         offer = product_data["offers"][0]
         sku = product_data["sku"]
-        key = soup.find("button", {"name": "add-to-cart"})["value"]
+        key_tag = soup.find("button", {"name": "add-to-cart"})
+
+        if key_tag:
+            key = key_tag["value"]
+        else:
+            canonical_url_tag = soup.find(
+                "link", {"rel": "alternate", "type": "application/json"}
+            )
+            key = canonical_url_tag["href"].split("/")[-1]
+
         offer_price = Decimal(offer["price"])
         price = (offer_price * Decimal(1.04)).quantize(0)
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
