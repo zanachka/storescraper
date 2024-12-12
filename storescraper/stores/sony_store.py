@@ -96,8 +96,12 @@ class SonyStore(Store):
                 specs_container = container
                 break
 
-        specs_soup = BeautifulSoup(specs_container["values"]["json"][0], "lxml")
-        description = html_to_markdown(specs_soup.text)
+        specs_soup = (
+            BeautifulSoup(specs_container["values"]["json"][0], "lxml")
+            if specs_container
+            else None
+        )
+        description = html_to_markdown(specs_soup.text) if specs_soup else None
 
         json_container = json_container[0]
         api_url = (
