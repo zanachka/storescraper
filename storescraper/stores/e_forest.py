@@ -109,7 +109,7 @@ class EForest(MercadoLibreChile):
                         logging.warning("Empty category: " + url_extension)
                     break
                 for container in product_containers:
-                    product_url = container.find("a", "ui-search-link")["href"]
+                    product_url = container.find("a", "poly-component__title")["href"]
                     product_urls.append(product_url.split("#")[0])
                 page += 1
         return product_urls
