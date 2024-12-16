@@ -181,6 +181,10 @@ class NotebooksYa(StoreWithUrlExtensions):
             else int(stock_text.split()[0])
         )
         price_tags = soup.findAll("span", "woocommerce-Price-amount")
+
+        if not price_tags:
+            return []
+
         assert len(price_tags) in [2, 3]
 
         offer_price = Decimal(remove_words(price_tags[-2].text))
