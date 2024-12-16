@@ -1,6 +1,6 @@
-import json
 import logging
 import re
+import time
 
 from decimal import Decimal
 from bs4 import BeautifulSoup
@@ -70,17 +70,27 @@ class VideoVision(StoreWithUrlExtensions):
             return []
 
         soup = BeautifulSoup(response.text, "html5lib")
+        tries = 0
 
-        key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
+        while tries < 3:
+            key_tag = soup.find("link", {"rel": "shortlink"})
+
+            if key_tag:
+                break
+
+            tries += 1
+            time.sleep(10)
+
+        if not key_tag:
+            return []
+
+        key = key_tag["href"].split("p=")[-1]
         name = soup.find("h2", "product_title").text
         sku = soup.find("span", "sku").text
         part_number = soup.find(
             "div", "description woocommerce-product-details__short-description"
         ).text.strip()
-        stock_span = soup.find(
-            "span", "product-stock in-stock s_in_stock_color woo-custom-stock-status"
-        )
-        stock = int(re.search(r"\d+", stock_span.text).group()) if stock_span else 0
+        stock = -1 if soup.find("button", {"name": "add-to-cart"}) else 0
         price = soup.find("div", "product-summary-wrap").find("p", "price").find("bdi")
 
         if not price:
@@ -116,4 +126,5 @@ class VideoVision(StoreWithUrlExtensions):
             picture_urls=picture_urls,
             description=description,
         )
+
         return [p]
