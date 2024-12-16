@@ -79,11 +79,7 @@ class TodoGeek(StoreWithUrlExtensions):
                 description = product_data["description"]
                 offer_price = Decimal(product["display_price"])
                 normal_price = (offer_price * Decimal("1.06")).quantize(0)
-                stock = (
-                    0
-                    if (product["is_in_stock"] == "False" or not product["max_qty"])
-                    else product["max_qty"]
-                )
+                stock = -1 if product["is_in_stock"] else 0
                 picture_urls = [product["image"]["url"]]
 
                 condition_tag = soup.find("p", "product-condition")
