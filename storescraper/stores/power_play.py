@@ -81,13 +81,15 @@ class PowerPlay(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         soup = BeautifulSoup(session.get(url).text, "lxml")
         json_data = json.loads(
-            soup.find("script", {"type": "application/ld+json"}).text
+            soup.findAll("script", {"type": "application/ld+json"})[1].text
         )
 
         for item in json_data["@graph"]:
             if item["@type"] == "Product":
                 product_data = item
+
                 assert len(product_data["offers"]) == 1
+
                 key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
                 name = product_data["name"]
                 sku = product_data["sku"]

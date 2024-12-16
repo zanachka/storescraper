@@ -40,6 +40,7 @@ class LoiChile(StoreWithUrlExtensions):
         ["154", GAMING_CHAIR],
         ["155", GAMING_DESK],
         ["138", KITCHEN_APPLIANCE],
+        ["209", TABLET],
     ]
 
     @classmethod

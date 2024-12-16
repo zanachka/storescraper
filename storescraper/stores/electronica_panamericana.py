@@ -28,17 +28,25 @@ class ElectronicaPanamericana(Store):
 
         session = requests.Session(impersonate="chrome120")
         product_urls = []
-        url = (
-            "https://electronicapanamericana.com/marcas/lg/?"
-            "product_count=1000&avia_extended_shop_select=yes"
-        )
-        print(url)
-        response = session.get(url, verify=False, timeout=30)
-        soup = BeautifulSoup(response.text, "lxml")
+        page = 1
 
-        for container in soup.findAll("li", "product"):
-            product_url = container.find("a")["href"]
-            product_urls.append(product_url)
+        while True:
+            url = f"https://electronicapanamericana.com/page/{page}/?s=LG&product_cat=0&post_type=product"
+            print(url)
+            response = session.get(url, verify=False, timeout=30)
+
+            if response.status_code == 404:
+                break
+
+            soup = BeautifulSoup(response.text, "lxml")
+
+            for container in soup.findAll("li", "product"):
+                product_url = container.find(
+                    "a", "woocommerce-LoopProduct-link woocommerce-loop-product__link"
+                )["href"]
+                product_urls.append(product_url)
+
+            page += 1
 
         return product_urls
 
@@ -59,7 +67,7 @@ class ElectronicaPanamericana(Store):
         else:
             sku = sku.text.strip()
 
-        name = "{} - {}".format(sku, soup.find("h1", "product_title").text.strip())[
+        name = "{} - {}".format(sku, soup.find("h2", "product_title").text.strip())[
             :255
         ]
 
@@ -68,11 +76,14 @@ class ElectronicaPanamericana(Store):
         else:
             stock = 0
 
-        price_container = soup.find("span", "woocommerce-Price-amount")
+        price_container = soup.find("p", "price").find(
+            "span", "woocommerce-Price-amount"
+        )
+
         if not price_container:
             return []
-        price = Decimal(price_container.text.replace("Q", "").replace(",", ""))
 
+        price = Decimal(price_container.text.replace("Q", "").replace(",", ""))
         picture_urls = [
             tag.find("a")["href"]
             for tag in soup.findAll("div", "woocommerce-product-gallery__image")
