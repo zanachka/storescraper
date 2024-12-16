@@ -169,7 +169,7 @@ class NotebooksYa(StoreWithUrlExtensions):
         content_tag = raw_soup.find("script", {"type": "text/template"})
 
         if not content_tag:
-            return []
+            raise Exception(response.text)
 
         soup = BeautifulSoup(json.loads(content_tag.text), "lxml")
         name = soup.find("h2").text.strip()
