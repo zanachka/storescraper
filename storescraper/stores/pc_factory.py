@@ -1,4 +1,5 @@
 import html
+import logging
 import re
 from collections import defaultdict
 from decimal import Decimal
@@ -107,7 +108,7 @@ class PcFactory(Store):
             ["38", UPS],
             ["995", MONITOR],
             ["46", PROJECTOR],
-            # ["422", EXTERNAL_STORAGE_DRIVE],
+            ["422", EXTERNAL_STORAGE_DRIVE],
             ["904", EXTERNAL_STORAGE_DRIVE],
             ["218", USB_FLASH_DRIVE],
             ["48", MEMORY_CARD],
@@ -157,7 +158,8 @@ class PcFactory(Store):
 
                 if not products_data:
                     if page == 0:
-                        raise Exception("Empty category: " + url_extension)
+                        logging.warning(f"Empty category: {url_extension}")
+
                     break
 
                 for product_entry in products_data:
