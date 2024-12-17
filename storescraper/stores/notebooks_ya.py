@@ -113,21 +113,19 @@ class NotebooksYa(StoreWithUrlExtensions):
         product_urls = []
         page = 1
         done = False
+
         while not done:
             if page > 20:
                 raise Exception("page overflow: " + url_extension)
 
-            url_components = url_extension.split("?")
+            url_components = url_extension.split("/?")
 
             if len(url_components) > 1:
                 query = url_components[1]
             else:
                 query = ""
 
-            url_webpage = (
-                "https://notebooksya.cl/product-category/{}/"
-                "page/{}/?load_posts_only=1&{}"
-            ).format(url_extension, page, query)
+            url_webpage = f"https://notebooksya.cl/product-category/{url_components[0]}/page/{page}/?load_posts_only=1&{query}"
 
             print(url_webpage)
 
