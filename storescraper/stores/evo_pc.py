@@ -8,6 +8,7 @@ from storescraper.categories import (
     MOTHERBOARD,
     POWER_SUPPLY,
     CPU_COOLER,
+    VIDEO_CARD,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -21,6 +22,7 @@ class EvoPc(StoreWithUrlExtensions):
         ["placas-madres-intel-amd", MOTHERBOARD],
         ["fuentes-de-poder", POWER_SUPPLY],
         ["refrigeraciones", CPU_COOLER],
+        ["tarjetas-de-video-nvidia", VIDEO_CARD],
     ]
 
     @classmethod
