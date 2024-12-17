@@ -11,7 +11,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
+from storescraper.utils import session_with_proxy
 
 
 class EvoPc(StoreWithUrlExtensions):
@@ -26,6 +26,9 @@ class EvoPc(StoreWithUrlExtensions):
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
+        session.headers = {
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+        }
         product_urls = []
         page = 1
 
