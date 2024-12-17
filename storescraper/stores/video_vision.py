@@ -64,15 +64,15 @@ class VideoVision(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        response = session.get(url)
-
-        if response.status_code == 404:
-            return []
-
-        soup = BeautifulSoup(response.text, "html5lib")
         tries = 0
 
         while tries < 3:
+            response = session.get(url)
+
+            if response.status_code == 404:
+                return []
+
+            soup = BeautifulSoup(response.text, "html5lib")
             key_tag = soup.find("link", {"rel": "shortlink"})
 
             if key_tag:
