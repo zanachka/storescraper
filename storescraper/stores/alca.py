@@ -18,7 +18,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import get_price_from_price_specification, session_with_proxy
 
 
 class Alca(StoreWithUrlExtensions):
@@ -91,9 +91,7 @@ class Alca(StoreWithUrlExtensions):
 
                 assert len(product_data["offers"]) == 1
 
-                price = Decimal(
-                    product_data["offers"][0]["priceSpecification"]["price"]
-                )
+                price = get_price_from_price_specification(product_data)
                 picture_container = soup.find(
                     "figure", "woocommerce-product-gallery__wrapper"
                 )
