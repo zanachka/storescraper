@@ -12,7 +12,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import get_price_from_price_specification, session_with_proxy
 
 
 class EvoPc(StoreWithUrlExtensions):
@@ -88,7 +88,7 @@ class EvoPc(StoreWithUrlExtensions):
             )
             key = canonical_url_tag["href"].split("/")[-1]
 
-        offer_price = Decimal(offer["priceSpecification"][0]["price"])
+        offer_price = get_price_from_price_specification(product_data)
         price = (offer_price * Decimal(1.04)).quantize(0)
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
         picture_urls = [
