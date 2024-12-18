@@ -91,7 +91,7 @@ class AlcaColombia(StoreWithUrlExtensions):
         assert len(product_data["offers"]) == 1
 
         offer = product_data["offers"][0]
-        price = Decimal(offer["price"])
+        price = Decimal(offer["priceSpecification"][0]["price"])
         description = html_to_markdown(product_data["description"])
         stock_quantity = re.findall(r"\d+", soup.find("p", "stock").text)
         stock = int(stock_quantity[0])

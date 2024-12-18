@@ -83,7 +83,7 @@ class EvoPc(StoreWithUrlExtensions):
             )
             key = canonical_url_tag["href"].split("/")[-1]
 
-        offer_price = Decimal(offer["price"])
+        offer_price = Decimal(offer["priceSpecification"][0]["price"])
         price = (offer_price * Decimal(1.04)).quantize(0)
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
         picture_urls = [

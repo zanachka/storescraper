@@ -79,7 +79,7 @@ class LyonCenter(StoreWithUrlExtensions):
             )
             product_data = json_data["@graph"][1]
             sku = product_data["sku"]
-            price = Decimal(product_data["offers"][0]["price"])
+            price = Decimal(product_data["offers"][0]["priceSpecification"][0]["price"])
             picture_urls = [product_data["image"]]
             stock = (
                 -1

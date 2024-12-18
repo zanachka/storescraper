@@ -77,7 +77,7 @@ class Computron(Store):
         sku = json_data["sku"]
         description = json_data["description"]
 
-        price = Decimal(json_data["offers"][0]["price"])
+        price = Decimal(json_data["offers"][0]["priceSpecification"][0]["price"])
 
         if soup.find("button", {"name": "add-to-cart"}):
             stock = -1
