@@ -237,6 +237,9 @@ def get_price_from_price_specification(product_data):
         if not "priceType" in offer:
             price.append(offer["price"])
 
+    if len(price) == 0:
+        return None
+
     assert len(price) == 1
 
     return Decimal(price[0])

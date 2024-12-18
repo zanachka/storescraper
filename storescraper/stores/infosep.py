@@ -36,7 +36,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import (
+    get_price_from_price_specification,
+    html_to_markdown,
+    session_with_proxy,
+)
 
 
 class Infosep(StoreWithUrlExtensions):
@@ -156,7 +160,7 @@ class Infosep(StoreWithUrlExtensions):
 
         name = json_data["name"]
         sku = json_data["sku"]
-        offer_price = Decimal(json_data["offers"][0]["priceSpecification"][0]["price"])
+        offer_price = get_price_from_price_specification(json_data)
 
         if not offer_price:
             return []
