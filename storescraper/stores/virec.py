@@ -68,7 +68,9 @@ class Virec(StoreWithUrlExtensions):
         json_data = json.loads(json_tag.text)
         name = json_data["name"]
         offer = json_data["offers"][0]
-        price = (Decimal(offer["price"]) * Decimal("1.19")).quantize(0)
+        price = (
+            Decimal(offer["priceSpecification"][0]["price"]) * Decimal("1.19")
+        ).quantize(0)
         description = json_data["description"]
 
         if "image" in json_data:
