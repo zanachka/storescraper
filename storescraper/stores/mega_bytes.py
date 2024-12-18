@@ -21,7 +21,12 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
+from storescraper.utils import (
+    get_price_from_price_specification,
+    html_to_markdown,
+    session_with_proxy,
+    remove_words,
+)
 
 
 class MegaBytes(StoreWithUrlExtensions):
@@ -94,26 +99,28 @@ class MegaBytes(StoreWithUrlExtensions):
             return []
 
         product_data = json_data["@graph"][1]
-
         name = product_data["name"]
         sku = str(product_data["sku"])
-
         offer = product_data["offers"][0]
+
         if offer["availability"] == "http://schema.org/InStock":
             stock = -1
         else:
             stock = 0
 
-        offer_price = Decimal(offer["price"])
-
+        offer_price = get_price_from_price_specification(product_data)
         price_container = soup.find("div", "summary-inner").find("table")
+
         if price_container:
             prices = price_container.findAll("span", "woocommerce-Price-amount")
             highest_price = Decimal(0)
+
             for price in prices:
                 p = Decimal(remove_words(price.text))
+
                 if p > highest_price:
                     highest_price = p
+
             normal_price = highest_price
         else:
             normal_price = offer_price
