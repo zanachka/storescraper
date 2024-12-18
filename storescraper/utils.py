@@ -231,15 +231,20 @@ def get_price_from_price_specification(product_data):
     assert len(offers) == 1
 
     price_specification = product_data["offers"][0]["priceSpecification"]
-    price = []
 
-    for offer in price_specification:
-        if not "priceType" in offer:
-            price.append(offer["price"])
+    if isinstance(price_specification, list):
+        price = []
 
-    if len(price) == 0:
-        return None
+        for offer in price_specification:
+            print(offer)
+            if not "priceType" in offer:
+                price.append(offer["price"])
 
-    assert len(price) == 1
+        if len(price) == 0:
+            return None
 
-    return Decimal(price[0])
+        assert len(price) == 1
+
+        return Decimal(price[0])
+
+    return Decimal(price_specification["price"])
