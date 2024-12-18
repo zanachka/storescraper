@@ -156,7 +156,7 @@ class Infosep(StoreWithUrlExtensions):
 
         name = json_data["name"]
         sku = json_data["sku"]
-        offer_price = Decimal(json_data["offers"][0]["price"])
+        offer_price = Decimal(json_data["offers"][0]["priceSpecification"][0]["price"])
 
         if not offer_price:
             return []
