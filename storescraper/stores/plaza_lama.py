@@ -100,7 +100,7 @@ class PlazaLama(Store):
         product = product_response[0]
         name = product["name"]
         stock = -1 if product["isAvailable"] else 0
-        price = Decimal(product["price"])
+        price = round(Decimal(product["price"]), 2)
         picture_urls = product["photosUrl"]
         description = html_to_markdown(product["description"])
 
