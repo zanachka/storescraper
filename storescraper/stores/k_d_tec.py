@@ -171,14 +171,17 @@ class KDTec(StoreWithUrlExtensions):
         if offer_price > Decimal(100000000) or normal_price > Decimal(100000000):
             return []
 
-        input_qty = soup.find("input", "qty")
-        if input_qty:
-            if "max" in input_qty.attrs and input_qty["max"]:
-                stock = int(input_qty["max"])
-            else:
-                stock = -1
-        else:
+        if product_data["offers"]["availability"] == "https://schema.org/OutOfStock":
             stock = 0
+        else:
+            input_qty = soup.find("input", "qty")
+            if input_qty:
+                if "max" in input_qty.attrs and input_qty["max"]:
+                    stock = int(input_qty["max"])
+                else:
+                    stock = -1
+            else:
+                stock = 0
 
         if soup.find("span", "font-bold"):
             part_number = soup.find("span", "font-bold").text
