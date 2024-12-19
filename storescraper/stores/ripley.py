@@ -34,6 +34,7 @@ from storescraper.categories import (
     VACUUM_CLEANER,
     WATER_HEATER,
     KITCHEN_APPLIANCE,
+    MOUSE,
 )
 from storescraper.store import Store
 from storescraper.product import Product
@@ -278,9 +279,27 @@ class Ripley(Store):
             1,
         ],
         [
+            "tecno/computacion-gamer/audifonos-gamer",
+            [HEADPHONES],
+            "Tecno > Computación Gamer > Audífonos Gamer",
+            1,
+        ],
+        [
+            "tecno/computacion-gamer/accesorios-gamer",
+            [HEADPHONES],
+            "Tecno > Computación Gamer > Accesorios Gamer",
+            1,
+        ],
+        [
             "muebles/home-office-y-oficina/sillas-y-escritorios-gamer",
             [GAMING_CHAIR],
             "Tecno > Computación Gamer > Sillas Gamer",
+            1,
+        ],
+        [
+            "tecno/computacion-gamer/teclados-y-mouse-gamer",
+            [MOUSE],
+            "Tecno > Computación Gamer > Teclados y Mouse Gamer",
             1,
         ],
         [
