@@ -8,6 +8,7 @@ from storescraper.categories import (
     POWER_SUPPLY,
     CPU_COOLER,
     VIDEO_CARD,
+    PROCESSOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -21,6 +22,7 @@ class EvoPc(StoreWithUrlExtensions):
         ["fuentes-de-poder", POWER_SUPPLY],
         ["refrigeraciones", CPU_COOLER],
         ["tarjetas-de-video", VIDEO_CARD],
+        ["procesadores", PROCESSOR],
     ]
 
     @classmethod
