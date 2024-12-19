@@ -203,7 +203,7 @@ class Ripley(Store):
         # ['electro/lavanderia/doble-carga', [WASHING_MACHINE],
         #  'Electro > Lavandería > Doble carga', 1],
         [
-            "tecno/celulares?facet=Tipo%20de%20Producto%3ASmartphone&s=mdco",
+            "tecno/celulares",
             [CELL],
             "Tecno > Celulares",
             1,
@@ -293,6 +293,18 @@ class Ripley(Store):
             "electro/electrodomesticos",
             [KITCHEN_APPLIANCE],
             "Electro > Electrodomésticos",
+            1,
+        ],
+        [
+            "electro/cocina/parrillas-electricas",
+            [KITCHEN_APPLIANCE],
+            "Electro > Cocina > Parrillas Eléctricas",
+            1,
+        ],
+        [
+            "tecno/smart-home/asistentes-virtuales",
+            [STEREO_SYSTEM],
+            "Tecno > Smart Home > Asistentes Virtuales",
             1,
         ],
     ]
