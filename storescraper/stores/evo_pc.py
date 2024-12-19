@@ -3,7 +3,6 @@ import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
 from storescraper.categories import (
-    PROCESSOR,
     COMPUTER_CASE,
     MOTHERBOARD,
     POWER_SUPPLY,
@@ -17,12 +16,11 @@ from storescraper.utils import get_price_from_price_specification, session_with_
 
 class EvoPc(StoreWithUrlExtensions):
     url_extensions = [
-        ["procesadores-intel-amd", PROCESSOR],
         ["gabinetes", COMPUTER_CASE],
-        ["placas-madres-intel-amd", MOTHERBOARD],
+        ["placas-madres", MOTHERBOARD],
         ["fuentes-de-poder", POWER_SUPPLY],
         ["refrigeraciones", CPU_COOLER],
-        ["tarjetas-de-video-nvidia", VIDEO_CARD],
+        ["tarjetas-de-video", VIDEO_CARD],
     ]
 
     @classmethod
@@ -36,7 +34,7 @@ class EvoPc(StoreWithUrlExtensions):
 
         while True:
             url_webpage = (
-                f"https://evopc.cl/categoria-producto/{url_extension}/page/{page}/"
+                f"https://evopc.cl/product-category/{url_extension}/page/{page}/"
             )
             print(url_webpage)
 
@@ -47,7 +45,7 @@ class EvoPc(StoreWithUrlExtensions):
             soup = BeautifulSoup(response.text, "lxml")
             product_containers = soup.findAll("li", "product")
 
-            if not product_containers:
+            if response.status_code == 404:
                 if page == 1:
                     logging.warning(f"Empty category: {url_extension}")
                 break
