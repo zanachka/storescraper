@@ -4,7 +4,11 @@ from bs4 import BeautifulSoup
 from storescraper.categories import AIR_CONDITIONER
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import (
+    get_price_from_price_specification,
+    html_to_markdown,
+    session_with_proxy,
+)
 
 
 class LyonCenter(StoreWithUrlExtensions):
@@ -79,7 +83,7 @@ class LyonCenter(StoreWithUrlExtensions):
             )
             product_data = json_data["@graph"][1]
             sku = product_data["sku"]
-            price = Decimal(product_data["offers"][0]["priceSpecification"][0]["price"])
+            price = get_price_from_price_specification(product_data)
             picture_urls = [product_data["image"]]
             stock = (
                 -1

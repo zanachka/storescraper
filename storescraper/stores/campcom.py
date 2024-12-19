@@ -17,7 +17,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import (
+    get_price_from_price_specification,
+    html_to_markdown,
+    session_with_proxy,
+)
 
 
 class Campcom(Store):
@@ -70,6 +74,7 @@ class Campcom(Store):
                 if response.status_code == 404:
                     if page == 1:
                         logging.warning("Empty category: " + url_webpage)
+
                     break
 
                 soup = BeautifulSoup(response.text, "lxml")
@@ -78,7 +83,9 @@ class Campcom(Store):
                 for container in product_containers:
                     product_url = container.find("a")["href"]
                     product_urls.append(product_url)
+
                 page += 1
+
         return product_urls
 
     @classmethod
@@ -102,13 +109,7 @@ class Campcom(Store):
 
         name = json_data["name"]
         sku = str(json_data["sku"])
-        offer = json_data["offers"][0]
-
-        if "price" in offer:
-            price = Decimal(offer["price"])
-        else:
-            price = Decimal(offer["lowPrice"])
-
+        price = get_price_from_price_specification(json_data)
         stock_span = soup.find("span", "stock in-stock")
 
         if soup.find("p", "available-on-backorder") or soup.find(

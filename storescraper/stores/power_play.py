@@ -21,7 +21,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import (
+    get_price_from_price_specification,
+    html_to_markdown,
+    session_with_proxy,
+)
 
 
 class PowerPlay(StoreWithUrlExtensions):
@@ -93,7 +97,7 @@ class PowerPlay(StoreWithUrlExtensions):
                 key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
                 name = product_data["name"]
                 sku = product_data["sku"]
-                normal_price = Decimal(product_data["offers"][0]["price"])
+                normal_price = get_price_from_price_specification(product_data)
                 gallery = soup.find(
                     "div", "woocommerce-product-gallery__wrapper"
                 ).findAll("a")

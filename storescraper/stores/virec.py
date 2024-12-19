@@ -1,10 +1,9 @@
 from decimal import Decimal
 import json
-import logging
 from bs4 import BeautifulSoup
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import cf_session_with_proxy
+from storescraper.utils import get_price_from_price_specification, cf_session_with_proxy
 from storescraper.categories import (
     HEADPHONES,
     MONITOR,
@@ -68,7 +67,8 @@ class Virec(StoreWithUrlExtensions):
         json_data = json.loads(json_tag.text)
         name = json_data["name"]
         offer = json_data["offers"][0]
-        price = (Decimal(offer["price"]) * Decimal("1.19")).quantize(0)
+        price = get_price_from_price_specification(json_data)
+        price = (price * Decimal("1.19")).quantize(0)
         description = json_data["description"]
 
         if "image" in json_data:

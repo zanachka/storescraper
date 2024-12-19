@@ -14,7 +14,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, html_to_markdown
+from storescraper.utils import (
+    get_price_from_price_specification,
+    session_with_proxy,
+    html_to_markdown,
+)
 
 
 class AlcaColombia(StoreWithUrlExtensions):
@@ -90,8 +94,7 @@ class AlcaColombia(StoreWithUrlExtensions):
 
         assert len(product_data["offers"]) == 1
 
-        offer = product_data["offers"][0]
-        price = Decimal(offer["priceSpecification"][0]["price"])
+        price = get_price_from_price_specification(product_data)
         description = html_to_markdown(product_data["description"])
         stock_quantity = re.findall(r"\d+", soup.find("p", "stock").text)
         stock = int(stock_quantity[0])

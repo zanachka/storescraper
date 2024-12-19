@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import get_price_from_price_specification, session_with_proxy
 
 
 class Computron(Store):
@@ -76,8 +76,7 @@ class Computron(Store):
         name = json_data["name"]
         sku = json_data["sku"]
         description = json_data["description"]
-
-        price = Decimal(json_data["offers"][0]["priceSpecification"][0]["price"])
+        price = round(get_price_from_price_specification(json_data) * Decimal(1.15), 2)
 
         if soup.find("button", {"name": "add-to-cart"}):
             stock = -1

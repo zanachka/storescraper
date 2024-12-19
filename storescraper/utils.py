@@ -223,3 +223,28 @@ CF_REQUEST_HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) "
     "Gecko/20100101 Firefox/84.0"
 }
+
+
+def get_price_from_price_specification(product_data):
+    offers = product_data["offers"]
+
+    assert len(offers) == 1
+
+    price_specification = product_data["offers"][0]["priceSpecification"]
+
+    if isinstance(price_specification, list):
+        price = []
+
+        for offer in price_specification:
+            print(offer)
+            if not "priceType" in offer:
+                price.append(offer["price"])
+
+        if len(price) == 0:
+            return None
+
+        assert len(price) == 1
+
+        return Decimal(price[0])
+
+    return Decimal(price_specification["price"])

@@ -3,26 +3,26 @@ import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
 from storescraper.categories import (
-    PROCESSOR,
     COMPUTER_CASE,
     MOTHERBOARD,
     POWER_SUPPLY,
     CPU_COOLER,
     VIDEO_CARD,
+    PROCESSOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import get_price_from_price_specification, session_with_proxy
 
 
 class EvoPc(StoreWithUrlExtensions):
     url_extensions = [
-        ["procesadores-intel-amd", PROCESSOR],
         ["gabinetes", COMPUTER_CASE],
-        ["placas-madres-intel-amd", MOTHERBOARD],
+        ["placas-madres", MOTHERBOARD],
         ["fuentes-de-poder", POWER_SUPPLY],
         ["refrigeraciones", CPU_COOLER],
-        ["tarjetas-de-video-nvidia", VIDEO_CARD],
+        ["tarjetas-de-video", VIDEO_CARD],
+        ["procesadores", PROCESSOR],
     ]
 
     @classmethod
@@ -36,7 +36,7 @@ class EvoPc(StoreWithUrlExtensions):
 
         while True:
             url_webpage = (
-                f"https://evopc.cl/categoria-producto/{url_extension}/page/{page}/"
+                f"https://evopc.cl/product-category/{url_extension}/page/{page}/"
             )
             print(url_webpage)
 
@@ -47,7 +47,7 @@ class EvoPc(StoreWithUrlExtensions):
             soup = BeautifulSoup(response.text, "lxml")
             product_containers = soup.findAll("li", "product")
 
-            if not product_containers:
+            if response.status_code == 404:
                 if page == 1:
                     logging.warning(f"Empty category: {url_extension}")
                 break
@@ -88,7 +88,7 @@ class EvoPc(StoreWithUrlExtensions):
             )
             key = canonical_url_tag["href"].split("/")[-1]
 
-        offer_price = Decimal(offer["priceSpecification"][0]["price"])
+        offer_price = get_price_from_price_specification(product_data)
         price = (offer_price * Decimal(1.04)).quantize(0)
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
         picture_urls = [

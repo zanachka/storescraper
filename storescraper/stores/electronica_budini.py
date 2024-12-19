@@ -32,7 +32,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import (
+    get_price_from_price_specification,
+    html_to_markdown,
+    session_with_proxy,
+)
 
 
 class ElectronicaBudini(StoreWithUrlExtensions):
@@ -114,10 +118,9 @@ class ElectronicaBudini(StoreWithUrlExtensions):
             soup.findAll("script", {"type": "application/ld+json"})[1].text
         )
         product_data = json_data["@graph"][1]
-
         name = product_data["name"]
         sku = str(product_data["sku"])
-        offer_price = Decimal(product_data["offers"][0]["price"])
+        offer_price = get_price_from_price_specification(product_data)
         normal_price = (offer_price * Decimal("1.04")).quantize(0)
 
         if soup.find("button", {"name": "add-to-cart"}):

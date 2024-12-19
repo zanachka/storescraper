@@ -67,7 +67,7 @@ class ShopBox(StoreWithUrlExtensions):
         page = 1
 
         while True:
-            if page > 30:
+            if page > 60:
                 raise Exception("Page overflow: " + url_extension)
 
             url = f"https://www.shopbox.cl/product-category/{url_extension}/page/{page}"

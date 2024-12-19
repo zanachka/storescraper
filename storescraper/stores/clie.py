@@ -18,7 +18,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import get_price_from_price_specification, session_with_proxy
 
 
 class Clie(StoreWithUrlExtensions):
@@ -83,12 +83,7 @@ class Clie(StoreWithUrlExtensions):
         key = str(product_data["sku"])
         offer = product_data["offers"][0]
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
-
-        if offer["price"] == "0":
-            return []
-
-        offer_price = Decimal(offer["price"])
-        normal_price = (offer_price * Decimal("1.03")).quantize(0)
+        price = get_price_from_price_specification(product_data)
         picture_urls = (
             [product_data["image"]] if validators.url(product_data["image"]) else None
         )
@@ -102,8 +97,8 @@ class Clie(StoreWithUrlExtensions):
             url,
             key,
             stock,
-            normal_price,
-            offer_price,
+            price,
+            price,
             "CLP",
             sku=key,
             picture_urls=picture_urls,

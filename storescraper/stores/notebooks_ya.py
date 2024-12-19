@@ -139,6 +139,7 @@ class NotebooksYa(StoreWithUrlExtensions):
             soup = BeautifulSoup(response.text, "lxml")
 
             template_tag = soup.find("script", {"type": "text/template"})
+
             if template_tag:
                 template_soup = BeautifulSoup(json.loads(template_tag.text), "lxml")
                 product_containers = template_soup.findAll("li", "product")
@@ -152,10 +153,14 @@ class NotebooksYa(StoreWithUrlExtensions):
 
             for container in product_containers:
                 product_url = container.find("a")["href"]
+
                 if product_url in product_urls:
                     return product_urls
+
                 product_urls.append(product_url)
+
             page += 1
+
         return product_urls
 
     @classmethod
@@ -187,6 +192,10 @@ class NotebooksYa(StoreWithUrlExtensions):
 
         offer_price = Decimal(remove_words(price_tags[-2].text))
         normal_price = Decimal(remove_words(price_tags[-1].text))
+
+        if normal_price == 0 and stock == 0:
+            return []
+
         sku = soup.find("span", "sku").text.strip()
 
         picture_containers = soup.find("div", "product-image-slider").findAll(

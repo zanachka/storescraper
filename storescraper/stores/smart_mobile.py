@@ -15,7 +15,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import (
+    get_price_from_price_specification,
+    html_to_markdown,
+    session_with_proxy,
+)
 
 
 class SmartMobile(StoreWithUrlExtensions):
@@ -171,11 +175,8 @@ class SmartMobile(StoreWithUrlExtensions):
             if "@graph" not in json_data:
                 return []
 
-            price_info = int(
-                json_data["@graph"][1]["offers"][0]["priceSpecification"]["price"]
-            )
-            normal_price = Decimal(round(price_info * 1.04))
-            offer_price = Decimal(price_info)
+            offer_price = get_price_from_price_specification(json_data["@graph"][1])
+            normal_price = round(offer_price * Decimal(1.06), 2)
             sku = soup.find("link", {"rel": "shortlink"})["href"].split("=")[-1]
 
             if force_unavailable:
