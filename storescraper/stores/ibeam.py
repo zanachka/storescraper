@@ -24,6 +24,7 @@ class Ibeam(StoreWithUrlExtensions):
         ["teclados", KEYBOARD],
         ["audifonos-earphones", HEADPHONES],
         ["parlantes-bluetooth", STEREO_SYSTEM],
+        ["mouse-g", MOUSE],
     ]
 
     @classmethod
