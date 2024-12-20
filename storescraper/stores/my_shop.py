@@ -51,7 +51,7 @@ class MyShop(StoreWithUrlExtensions):
         ["66", CELL],  # celulares
         ["92", RAM],  # portabilidad-memorias-notebook
         ["21", TABLET],  # portabilidad-tablet
-        ["56", WEARABLE],  # portabilidad-relojes
+        # ["56", WEARABLE],  # portabilidad-relojes
         ["20", ALL_IN_ONE],  # computacion-all-in-one
         ["32", MOTHERBOARD],  # partes-y-piezas-placas-madres
         ["35", RAM],  # partes-y-piezas-memorias-ram
