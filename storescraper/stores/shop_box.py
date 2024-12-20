@@ -39,7 +39,7 @@ class ShopBox(StoreWithUrlExtensions):
         ["televisores", TELEVISION],
         ["audifonos", HEADPHONES],
         ["audifonos-accesorios-computacion", HEADPHONES],
-        ["coolers", CPU_COOLER],
+        ["enfriamiento", CPU_COOLER],
         ["kit-mouse-y-teclado", KEYBOARD_MOUSE_COMBO],
         ["mouse", MOUSE],
         ["teclados-accesorios-computacion", KEYBOARD],
