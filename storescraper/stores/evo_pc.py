@@ -81,6 +81,9 @@ class EvoPc(StoreWithUrlExtensions):
         )
         product_data = None
 
+        if "@graph" not in page_data:
+            return []
+
         for data in page_data["@graph"]:
             if data["@type"] == "Product":
                 product_data = data
