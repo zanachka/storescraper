@@ -355,7 +355,7 @@ class Ripley(Store):
             section_index = 1
 
             while True:
-                if page > 400:
+                if page > 500:
                     raise Exception(f"Page overflow: {category_path}")
 
                 separator = "&" if "?" in category_path else "?"
