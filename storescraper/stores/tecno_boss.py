@@ -46,7 +46,9 @@ class TecnoBoss(StoreWithUrlExtensions):
 
             data = session.get(url_webpage).text
             soup = BeautifulSoup(data, "lxml")
-            product_containers = soup.findAll("article", "product-block")
+            product_containers = soup.find("div", "theme-section__content").findAll(
+                "div", "product-block__wrapper"
+            )
 
             if not product_containers:
                 if page == 1:
