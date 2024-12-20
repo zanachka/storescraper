@@ -9,6 +9,12 @@ from storescraper.categories import (
     CPU_COOLER,
     VIDEO_CARD,
     PROCESSOR,
+    KEYBOARD,
+    RAM,
+    MOUSE,
+    HEADPHONES,
+    MONITOR,
+    SOLID_STATE_DRIVE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -20,9 +26,15 @@ class EvoPc(StoreWithUrlExtensions):
         ["gabinetes", COMPUTER_CASE],
         ["placas-madres", MOTHERBOARD],
         ["fuentes-de-poder", POWER_SUPPLY],
-        ["refrigeraciones", CPU_COOLER],
+        ["refrigeracion", CPU_COOLER],
         ["tarjetas-de-video", VIDEO_CARD],
         ["procesadores", PROCESSOR],
+        ["memorias-ram", RAM],
+        ["teclado", KEYBOARD],
+        ["audifonos", HEADPHONES],
+        ["monitor", MONITOR],
+        ["mouse", MOUSE],
+        ["almacenamiento", SOLID_STATE_DRIVE],
     ]
 
     @classmethod
