@@ -154,9 +154,13 @@ class Lifemax(StoreWithUrlExtensions):
                 for img in picture_urls_container.findAll("img")
             ]
         else:
-            picture_urls = [
-                f"https:{soup.find('div', 'hdt-product__media').find('img')['src'].split('?')[0]}"
-            ]
+            picture_tag = soup.find("div", "hdt-product__media")
+            picture_urls = (
+                [f"https:{picture_tag.find('img')['src'].split('?')[0]}"]
+                if picture_tag
+                else None
+            )
+
         description = html_to_markdown(
             soup.find("div", "hdt-product-tab__content").text
         )
