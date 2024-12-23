@@ -236,7 +236,6 @@ def get_price_from_price_specification(product_data):
         price = []
 
         for offer in price_specification:
-            print(offer)
             if not "priceType" in offer:
                 price.append(offer["price"])
 

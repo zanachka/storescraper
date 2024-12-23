@@ -21,7 +21,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import (
+    get_price_from_price_specification,
+    session_with_proxy,
+    remove_words,
+)
 
 
 class NoeComputacion(StoreWithUrlExtensions):
@@ -52,9 +56,11 @@ class NoeComputacion(StoreWithUrlExtensions):
         )
         product_urls = []
         page = 1
+
         while True:
             if page > 12:
                 raise Exception("Page overflow: " + url_extension)
+
             url_webpage = (
                 "https://noecomputacion.com/tienda/page/{}/"
                 "?filter_cat={}&_pjax=.site-content".format(page, url_extension)
@@ -62,15 +68,21 @@ class NoeComputacion(StoreWithUrlExtensions):
             print(url_webpage)
             response = session.get(url_webpage)
             soup = BeautifulSoup(response.text, "lxml")
+
             if response.status_code == 404:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
+
                 break
+
             product_containers = soup.findAll("div", "product")
+
             for container in product_containers:
                 product_url = container.find("a")["href"]
                 product_urls.append(product_url)
+
             page += 1
+
         return product_urls
 
     @classmethod
@@ -89,9 +101,11 @@ class NoeComputacion(StoreWithUrlExtensions):
         json_data = json.loads(
             soup.findAll("script", {"type": "application/ld+json"})[-1].text
         )
+
         for entry in json_data["@graph"]:
             if entry["@type"] == "Product":
                 product_data = entry
+
                 break
         else:
             raise Exception("No JSON product data found")
@@ -99,11 +113,10 @@ class NoeComputacion(StoreWithUrlExtensions):
         name = product_data["name"][:250]
         sku = str(product_data["sku"])
         description = product_data["description"]
-
-        offer = product_data["offers"][0]
-        normal_price = Decimal(offer["price"])
+        normal_price = get_price_from_price_specification(product_data)
 
         offer_price_match = re.search(r"\$([\d|.]+)", description)
+
         if offer_price_match:
             offer_price_text = offer_price_match.groups()[0]
             offer_price = Decimal(remove_words(offer_price_text))
@@ -114,6 +127,7 @@ class NoeComputacion(StoreWithUrlExtensions):
             return []
 
         qty_input = soup.find("input", "input-text qty text")
+
         if qty_input:
             if qty_input["max"]:
                 stock = int(qty_input["max"])
