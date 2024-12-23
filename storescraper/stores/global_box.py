@@ -104,13 +104,14 @@ class Globalbox(StoreWithUrlExtensions):
                 raise Exception("page overflow: " + url_webpage)
 
             response = session.get(url_webpage, allow_redirects=True)
-            soup = BeautifulSoup(response.text, "lxml")
-            product_containers = soup.findAll("li", "product")
 
-            if not product_containers:
+            if response.url == "https://globalbox.cl/":
                 if page == 1:
                     logging.warning(f"Empty category: {url_extension}")
                 break
+
+            soup = BeautifulSoup(response.text, "lxml")
+            product_containers = soup.findAll("li", "product")
 
             for container in product_containers:
                 product_urls.append(
