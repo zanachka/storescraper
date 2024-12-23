@@ -157,7 +157,10 @@ class TruluStore(Store):
         else:
             picture_urls = [soup.find("meta", {"property": "og:image"})["content"]]
 
-        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+        description_tag = soup.find("div", {"id": "tab-description"}) or soup.find(
+            "div", {"id": "tab-additional_information"}
+        )
+        description = html_to_markdown(description_tag.text)
 
         p = Product(
             name,
