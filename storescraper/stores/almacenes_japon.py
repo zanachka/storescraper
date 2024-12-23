@@ -84,6 +84,9 @@ class AlmacenesJapon(Store):
             soup.find("template", {"data-varname": "__STATE__"}).find("script").text
         )
 
+        if len(product_data.keys()) == 0:
+            return []
+
         base_json_key = list(product_data.keys())[0]
         product_specs = product_data[base_json_key]
 
