@@ -24,16 +24,14 @@ class Electromillonaria(Store):
         while True:
             if page > 10:
                 raise Exception("Page overflow")
-            url = "https://electromillonaria.co/product-brand/lg/page/{}/".format(page)
+            url = f"https://electromillonaria-online.com/nueva-tienda/page/{page}/?post_type=product&filter_marca=lg"
             print(url)
             res = session.get(url)
             if res.status_code == 404:
                 break
             soup = BeautifulSoup(res.text, "lxml")
 
-            for product in soup.find("div", "main-products").findAll(
-                "section", "product"
-            ):
+            for product in soup.find("ul", "products").findAll("li", "product"):
                 product_url = product.find("a")["href"]
                 product_urls.append(product_url)
 
@@ -58,7 +56,9 @@ class Electromillonaria(Store):
         name = soup.find("h1", "product_title").text
         sku = str(soup.find("span", "sku").text.strip())
         price = Decimal(remove_words(soup.find("p", "price").findAll("bdi")[-1].text))
-        description = html_to_markdown(soup.find("div", "product-content").text)
+        description = html_to_markdown(
+            soup.find("div", "woocommerce-Tabs-panel--description").text
+        )
 
         p = Product(
             name,
