@@ -83,7 +83,6 @@ class HogarInnovar(Store):
 
         for keyword in keywords:
             if keyword in formatted_url:
-                print(formatted_url)
                 url_segments = formatted_url.split(keyword)
                 formatted_url = f"{url_segments[0].split('-')[-1]}{url_segments[1]}"
                 regex = r"([^?]+)\?variant=(\d+)"
@@ -92,6 +91,10 @@ class HogarInnovar(Store):
 
         sku = match.group(1)
         key = match.group(2)
+
+        if key == "42723201417327":
+            sku = "wk14bs6r"
+
         picture_urls = [
             f"https:{img['src'].split('?')[0]}"
             for img in soup.find("product-modal", "product-media-modal").findAll("img")
