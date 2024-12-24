@@ -129,6 +129,9 @@ class TiShop(StoreWithUrlExtensions):
                     remove_words(product_data_tags[i - 1].text.strip().lower())
                 )
 
+        if normal_price == 0:
+            return []
+
         stock = -1 if soup.find("form", {"id": "add_to_cart_form"}) else 0
         picture_urls_container = soup.find("div", "main-carousel")
         picture_urls = [img["src"] for img in picture_urls_container.findAll("img")]
