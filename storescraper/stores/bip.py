@@ -133,8 +133,12 @@ class Bip(StoreWithUrlExtensions):
         price_data = ajax_session.post(
             "https://bip.cl/home/viewProductAjax", "idProd=" + sku
         ).json()
+
         offer_price = Decimal(price_data["internet_price"].replace(".", ""))
         normal_price = Decimal(price_data["price"].replace(".", ""))
+
+        if normal_price == 0:
+            return []
 
         if normal_price < offer_price:
             offer_price = normal_price
