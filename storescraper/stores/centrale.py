@@ -117,7 +117,7 @@ class Centrale(StoreWithUrlExtensions):
         soup = BeautifulSoup(response.text, "lxml")
 
         product_data = json.loads(
-            soup.find("script", {"type": "application/ld+json"}).text
+            soup.findAll("script", {"type": "application/ld+json"})[-1].text
         )
 
         if "@graph" in product_data:
