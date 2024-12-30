@@ -370,6 +370,8 @@ class Ripley(Store):
                 try:
                     response = json.loads(http_response.text)
                 except Exception:
+                    if http_response.status_code == 404:
+                        break
                     raise Exception(http_response.text)
                 products = response["products"]
 
