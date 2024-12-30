@@ -29,6 +29,7 @@ from storescraper.categories import (
     PRINTER,
     MEMORY_CARD,
     PRINTER_SUPPLY,
+    WEARABLE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -41,7 +42,7 @@ class Netxa(StoreWithUrlExtensions):
         ["discos-de-estado-solido-internos", SOLID_STATE_DRIVE],
         ["discos-duros-externos", EXTERNAL_STORAGE_DRIVE],
         ["discos-duros-internos", STORAGE_DRIVE],
-        ["celulares-desbloqueados", CELL],
+        ["smartphones", CELL],
         ["cajas-gabinetes", COMPUTER_CASE],
         ["fuentes-de-poder", POWER_SUPPLY],
         ["procesadores", PROCESSOR],
@@ -68,6 +69,7 @@ class Netxa(StoreWithUrlExtensions):
         ["ratones", MOUSE],
         ["teclados-y-teclados-de-numeros", KEYBOARD],
         ["cartuchos-de-toner-e-ink-jet", PRINTER_SUPPLY],
+        ["smartwatches", WEARABLE],
     ]
 
     @classmethod
