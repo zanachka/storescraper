@@ -33,9 +33,7 @@ class ImportacionesRubi(Store):
             if page > 10:
                 raise Exception("Page overflow")
 
-            url = "https://importacionesrubi.com.pe/Lima-Promociones-Corporativas-LG/catalogsearch/result/index/?q=LG+LG&p={}".format(
-                page
-            )
+            url = f"https://importacionesrubi.com.pe/catalogsearch/result/index/?product_brand=112&q=LG+LG&p={page}"
             print(url)
 
             response = session.get(url)
@@ -85,7 +83,7 @@ class ImportacionesRubi(Store):
             soup.find("span", {"data-price-type": "finalPrice"})["data-price-amount"]
         )
 
-        picture_urls = [soup.find("img", "gallery-placeholder__image")["src"]]
+        picture_urls = [soup.find("img", "gallery-placeholder__image")["data-amsrc"]]
 
         p = Product(
             name,
