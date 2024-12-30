@@ -365,7 +365,12 @@ class Ripley(Store):
                     url += "&facet=Vendido%20por%3ARipley"
 
                 print(url)
-                response = json.loads(session.post(url).text)
+
+                http_response = session.post(url)
+                try:
+                    response = json.loads(http_response.text)
+                except Exception:
+                    raise Exception(http_response.text)
                 products = response["products"]
 
                 assert products

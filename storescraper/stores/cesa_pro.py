@@ -2,7 +2,6 @@ import logging
 from decimal import Decimal
 import re
 from bs4 import BeautifulSoup
-import validators
 
 from storescraper.categories import (
     CELL,
@@ -18,50 +17,41 @@ from storescraper.categories import (
     MONITOR,
     SOLID_STATE_DRIVE,
     MOUSE,
+    HEADPHONES,
+    KEYBOARD,
+    NOTEBOOK,
 )
 from storescraper.product import Product
-from storescraper.store import Store
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
 
 
-class CesaPro(Store):
-    @classmethod
-    def categories(cls):
-        return [
-            SOLID_STATE_DRIVE,
-            MOUSE,
-            CELL,
-            STORAGE_DRIVE,
-            POWER_SUPPLY,
-            COMPUTER_CASE,
-            RAM,
-            PROCESSOR,
-            MOTHERBOARD,
-            VIDEO_CARD,
-            CPU_COOLER,
-            GAMING_CHAIR,
-            MONITOR,
-        ]
+class CesaPro(StoreWithUrlExtensions):
+    url_extensions = [
+        ["accesorios", HEADPHONES],
+        ["audio", HEADPHONES],
+        ["celulares", CELL],
+        ["disco-duro", STORAGE_DRIVE],
+        ["solido", SOLID_STATE_DRIVE],
+        ["fuentes-de-poder", POWER_SUPPLY],
+        ["gabinetes", COMPUTER_CASE],
+        ["memoria", RAM],
+        ["notebook", RAM],
+        ["monitores", MONITOR],
+        ["mouse", MOUSE],
+        ["placa-madre", MOTHERBOARD],
+        ["tarjeta-madre", MOTHERBOARD],
+        ["procesadores", PROCESSOR],
+        ["sillas", GAMING_CHAIR],
+        ["tarjeta-de-video", VIDEO_CARD],
+        ["ventilacion", CPU_COOLER],
+        ["refrigeracion", CPU_COOLER],
+        ["varios", KEYBOARD],
+        ["computadores", NOTEBOOK],
+    ]
 
     @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        url_extensions = [
-            ["computacion/disco-duro", STORAGE_DRIVE],
-            ["computacion/disco-duro/solido", SOLID_STATE_DRIVE],
-            ["categoria-producto/computacion/fuentes-de-poder", POWER_SUPPLY],
-            ["categoria-producto/computacion/gabinetes", COMPUTER_CASE],
-            ["categoria-producto/computacion/memoria", RAM],
-            ["categoria-producto/computacion/monitores", MONITOR],
-            ["categoria-producto/computacion/mouse", MOUSE],
-            ["categoria-producto/computacion/placa-madre", MOTHERBOARD],
-            ["categoria-producto/computacion/tarjeta-madre", MOTHERBOARD],
-            ["categoria-producto/computacion/procesadores", PROCESSOR],
-            ["categoria-producto/computacion/sillas", GAMING_CHAIR],
-            ["categoria-producto/computacion/tarjeta-de-video", VIDEO_CARD],
-            ["categoria-producto/computacion/ventilacion", CPU_COOLER],
-            ["categoria-producto/celulares", CELL],
-        ]
-
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
         session.headers["content-type"] = (
             "application/x-www-form-urlencoded;charset=UTF-8"
@@ -69,35 +59,31 @@ class CesaPro(Store):
         session.headers["x-requested-with"] = "XMLHttpRequest"
         product_urls = []
 
-        for url_extension, local_category in url_extensions:
-            if local_category != category:
-                continue
+        page = 1
 
-            page = 1
+        while True:
+            if page > 10:
+                raise Exception("page overflow: " + url_extension)
 
-            while True:
-                if page > 10:
-                    raise Exception("page overflow: " + url_extension)
+            url_webpage = (
+                "https://cesapro.cl/index.php/categoria-produc"
+                "to/{}/page/{}/".format(url_extension, page)
+            )
+            print(url_webpage)
+            data = session.get(url_webpage).text
+            soup = BeautifulSoup(data, "lxml")
+            product_containers = soup.findAll("li", "product")
 
-                url_webpage = (
-                    "https://cesapro.cl/index.php/categoria-produc"
-                    "to/{}/page/{}/".format(url_extension, page)
-                )
-                print(url_webpage)
-                data = session.get(url_webpage).text
-                soup = BeautifulSoup(data, "lxml")
-                product_containers = soup.findAll("li", "product")
+            if not product_containers:
+                if page == 1:
+                    logging.warning("empty category: " + url_extension)
+                break
 
-                if not product_containers:
-                    if page == 1:
-                        logging.warning("empty category: " + url_extension)
-                    break
+            for container in product_containers:
+                product_url = container.find("a")["href"]
+                product_urls.append(product_url)
 
-                for container in product_containers:
-                    product_url = container.find("a")["href"]
-                    product_urls.append(product_url)
-
-                page += 1
+            page += 1
 
         return product_urls
 
