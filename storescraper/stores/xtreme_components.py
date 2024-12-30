@@ -3,7 +3,11 @@ from decimal import Decimal
 import json
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, html_to_markdown
+from storescraper.utils import (
+    get_price_from_price_specification,
+    session_with_proxy,
+    html_to_markdown,
+)
 from storescraper.categories import VIDEO_CARD
 
 
@@ -67,7 +71,7 @@ class XtremeComponents(StoreWithUrlExtensions):
 
         offer = product_data["offers"][0]
         stock = -1 if soup.find("a", "add-to-cart-button") else 0
-        price = Decimal(offer["price"])
+        price = get_price_from_price_specification(product_data)
         sku = str(product_data["sku"])
         description = html_to_markdown(product_data["description"])
         picture_urls = [
