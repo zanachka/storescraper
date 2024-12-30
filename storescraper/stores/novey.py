@@ -86,7 +86,11 @@ class Novey(Store):
             )
 
         stock_container = soup.find("div", "stock available")
-        stock = -1 if stock_container.text.strip() == "Disponible" else 0
+        stock = (
+            -1
+            if stock_container and stock_container.text.strip() == "Disponible"
+            else 0
+        )
         magento_scripts = soup.findAll("script", {"type": "text/x-magento-init"})
         pictures_data = None
 
