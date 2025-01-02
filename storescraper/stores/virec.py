@@ -31,23 +31,30 @@ class Virec(StoreWithUrlExtensions):
         session = cf_session_with_proxy(extra_args)
         product_urls = []
         page = 1
+
         while True:
             if page > 10:
                 raise Exception("Page overflow: " + url_extension)
+
             url_webpage = "https://www.virec.cl/categoria-producto/{}/page/{}/".format(
                 url_extension, page
             )
             print(url_webpage)
             response = session.get(url_webpage)
+
             if response.status_code == 404:
                 break
+
             soup = BeautifulSoup(response.text, "lxml")
             product_containers = soup.findAll("li", "product-type-simple")
+
             if not product_containers:
-                raise Exception("{} {}".format(response.status_code, response.text))
+                break
+
             for container in product_containers:
                 product_url = container.find("a")["href"]
                 product_urls.append(product_url)
+
             page += 1
 
         return product_urls
