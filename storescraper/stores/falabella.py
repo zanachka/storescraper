@@ -518,15 +518,15 @@ class Falabella(Store):
         ],
         ["cat1130010", [STEREO_SYSTEM], "Home > Tecnología-Audio > Tornamesas", 1],
         [
-            "cat9900007",
-            [SPACE_HEATER],
-            "Home > Electrohogar-Calefacción > Calefacción > Estufas Parafina Láser",
-            1,
-        ],
-        [
             "cat9910024",
             [SPACE_HEATER],
             "Home > Electrohogar-Calefacción > Calefacción > Estufas Gas",
+            1,
+        ],
+        [
+            "cat16250010",
+            [SPACE_HEATER],
+            "Home > Electrohogar-Calefacción > Calefacción > Estufas Parafina",
             1,
         ],
         [
@@ -536,9 +536,15 @@ class Falabella(Store):
             1,
         ],
         [
+            "CATG35044",
+            [SPACE_HEATER],
+            "Home > Electrohogar-Calefacción > Calefacción > Estufas a Leña",
+            1,
+        ],
+        [
             "cat9910027",
             [SPACE_HEATER],
-            "Home > Electrohogar-Calefacción > Calefacción > Estufas Pellet y Leña",
+            "Home > Electrohogar-Calefacción > Calefacción > Estufas a Pellet",
             1,
         ],
         [
