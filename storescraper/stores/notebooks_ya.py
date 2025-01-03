@@ -193,7 +193,7 @@ class NotebooksYa(StoreWithUrlExtensions):
         offer_price = Decimal(remove_words(price_tags[-2].text))
         normal_price = Decimal(remove_words(price_tags[-1].text))
 
-        if normal_price == 0 and stock == 0:
+        if (normal_price == 0 and stock == 0) or normal_price > Decimal("10000000000"):
             return []
 
         sku = soup.find("span", "sku").text.strip()
