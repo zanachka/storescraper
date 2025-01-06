@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from decimal import Decimal
 
 import validators
@@ -115,10 +116,11 @@ class Centrale(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-
-        product_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[-1].text
+        script_text = soup.findAll("script", {"type": "application/ld+json"})[-1].text
+        script_text = re.sub(
+            r'(?<=\s)"description":\s".*?"\s*,?', "", script_text, flags=re.DOTALL
         )
+        product_data = json.loads(script_text)
 
         if "@graph" in product_data:
             product_data = product_data["@graph"][-1]
@@ -138,8 +140,14 @@ class Centrale(StoreWithUrlExtensions):
             mpn_tag = soup.find("strong", text="NÚMERO DE PARTE:")
             part_number = mpn_tag.next.next.strip()
 
+        sku_tag = soup.find(
+            "div",
+            {
+                "style": "padding-top: 0px; padding-bottom:8px; margin: -12px 0px 0px 0px; text-align: left; font-size: 80%;"
+            },
+        )
+        sku = sku_tag.find("span").text.replace("ID: ", "").strip()
         name = product_data["name"].strip()
-        sku = product_data["sku"].strip()
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
 
         if soup.find("p", "stock in-stock"):

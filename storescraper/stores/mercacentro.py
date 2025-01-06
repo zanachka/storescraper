@@ -6,9 +6,8 @@ from bs4 import BeautifulSoup
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
-from curl_cffi import requests
 
-from storescraper.utils import cf_session_with_proxy
+from storescraper.utils import get_price_from_price_specification, cf_session_with_proxy
 
 
 class Mercacentro(Store):
@@ -55,7 +54,7 @@ class Mercacentro(Store):
         key = product_data["sku"]
         description = product_data["description"]
         ean = product_data["gtin13"]
-        price = Decimal(product_data["offers"]["lowPrice"])
+        price = get_price_from_price_specification(product_data)
 
         if product_data["offers"]["availability"] == "http://schema.org/InStock":
             stock = -1

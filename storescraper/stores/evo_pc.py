@@ -30,7 +30,7 @@ class EvoPc(StoreWithUrlExtensions):
         ["tarjetas-de-video", VIDEO_CARD],
         ["procesadores", PROCESSOR],
         ["memorias-ram", RAM],
-        ["teclado", KEYBOARD],
+        ["teclados", KEYBOARD],
         ["audifonos", HEADPHONES],
         ["monitor", MONITOR],
         ["mouse", MOUSE],

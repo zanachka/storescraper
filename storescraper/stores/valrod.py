@@ -12,11 +12,10 @@ from storescraper.categories import (
     MICROPHONE,
     MONITOR,
     COMPUTER_CASE,
-    MOTHERBOARD,
     MOUSE,
-    VIDEO_CARD,
-    GAMING_DESK,
     KITCHEN_APPLIANCE,
+    POWER_SUPPLY,
+    CPU_COOLER,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -27,16 +26,15 @@ class Valrod(Store):
     @classmethod
     def categories(cls):
         return [
-            HEADPHONES,
             GAMING_CHAIR,
-            MONITOR,
             COMPUTER_CASE,
-            VIDEO_CARD,
-            GAMING_DESK,
+            MONITOR,
+            POWER_SUPPLY,
+            CPU_COOLER,
+            CASE_FAN,
             MOUSE,
             KEYBOARD,
-            CASE_FAN,
-            MOTHERBOARD,
+            HEADPHONES,
             MICROPHONE,
             KITCHEN_APPLIANCE,
         ]
@@ -44,21 +42,18 @@ class Valrod(Store):
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         url_extensions = [
-            ["gamers/perifericos/mouse-y-mousepads", MOUSE],
-            ["gamers/teclados", KEYBOARD],
-            ["gamers/audifonos", HEADPHONES],
-            ["gamers/sillas-gamer", GAMING_CHAIR],
-            ["gamers/accesorios", COMPUTER_CASE],
-            ["gamers/monitores", MONITOR],
-            ["gamers/gabinetes", COMPUTER_CASE],
-            ["gamers/accesorios", COMPUTER_CASE],
-            ["gamers/hardware/tarjetas-de-video", VIDEO_CARD],
-            ["gamers/escritorios", GAMING_DESK],
-            ["gamers/tarjeta-de-video-y-coolers/coolers", CASE_FAN],
-            ["gamers/accesorios/placa-madre", MOTHERBOARD],
-            ["gamers/microfonos", MICROPHONE],
-            ["electrodomesticos-de-cocina", KITCHEN_APPLIANCE],
-            ["cafeteras-electricas-1", KITCHEN_APPLIANCE],
+            ["sillas-y-sofas", GAMING_CHAIR],
+            ["gabinetes", COMPUTER_CASE],
+            ["monitores", MONITOR],
+            ["hardware/fuentes-de-poder", POWER_SUPPLY],
+            ["hardware/disipadores", CPU_COOLER],
+            ["enfriadores-liquidos", CPU_COOLER],
+            ["hardware/ventiladores", CASE_FAN],
+            ["perifericos-y-accesorios/mouse-y-mousepads", MOUSE],
+            ["perifericos-y-accesorios/teclados", KEYBOARD],
+            ["perifericos-y-accesorios/audifonos", HEADPHONES],
+            ["perifericos-y-accesorios/accesorios", MICROPHONE],
+            ["hogar/cocina", KITCHEN_APPLIANCE],
         ]
         session = session_with_proxy(extra_args)
         product_urls = []
