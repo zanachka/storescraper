@@ -1,7 +1,5 @@
 from decimal import Decimal
 import json
-import logging
-import re
 
 from bs4 import BeautifulSoup
 
@@ -34,7 +32,7 @@ class Novey(Store):
             ]
         }
         session.headers = {
-            "x-algolia-api-key": "MTI2YzY4NTJhMmUwZDgxM2ZjNjI5ZmM0NmUyNWViZGQyOWE2NTc0ZmRlYjBiNzFmNmExMzBiOGE1NGNjMTdlZWZpbHRlcnM9Y2F0YWxvZ19wZXJtaXNzaW9ucy5jdXN0b21lcl9ncm91cF8wJTIwJTIxJTNEJTIwMCZ0YWdGaWx0ZXJzPSZ2YWxpZFVudGlsPTE3MzU5MDk1ODM=",
+            "x-algolia-api-key": "NjExNmMzODM2OTY2YjdkYWEyZWE5ZmNkMzAzMGIzODk2YjgzOGM1MTAzYTE5OGE0ODk5ZjBmOWNjYjZkZGFmYmZpbHRlcnM9Y2F0YWxvZ19wZXJtaXNzaW9ucy5jdXN0b21lcl9ncm91cF8wJTIwJTIxJTNEJTIwMCZ0YWdGaWx0ZXJzPSZ2YWxpZFVudGlsPTE3MzYyNjAwMjE=",
             "x-algolia-application-id": "ZCZRBTYD8I",
         }
         page = 0
