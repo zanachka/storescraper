@@ -120,6 +120,7 @@ class Centrale(StoreWithUrlExtensions):
         script_text = re.sub(
             r'(?<=\s)"description":\s".*?"\s*,?', "", script_text, flags=re.DOTALL
         )
+        script_text = re.sub(r"\s+", " ", script_text)
         product_data = json.loads(script_text)
 
         if "@graph" in product_data:
