@@ -228,9 +228,11 @@ CF_REQUEST_HEADERS = {
 def get_price_from_price_specification(product_data):
     offers = product_data["offers"]
 
-    assert len(offers) == 1
-
-    price_specification = product_data["offers"][0]["priceSpecification"]
+    if isinstance(offers, list):
+        assert len(offers) == 1
+        price_specification = offers[0]["priceSpecification"]
+    else:
+        price_specification = offers["priceSpecification"]
 
     if isinstance(price_specification, list):
         price = []
