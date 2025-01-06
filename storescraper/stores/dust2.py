@@ -114,6 +114,8 @@ class Dust2(StoreWithUrlExtensions):
             stock = 0
         else:
             stock = json_data["stock_quantity"] or 0
+            if stock < 0:
+                stock = 0
 
         offer_price = Decimal(json_data["price"]).quantize(0)
         normal_price = (offer_price / Decimal("0.93")).quantize(0)
