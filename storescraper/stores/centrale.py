@@ -115,10 +115,10 @@ class Centrale(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-
-        product_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[-1].text
-        )
+        script_text = soup.findAll("script", {"type": "application/ld+json"})[
+            -1
+        ].text.replace("\n", " ")
+        product_data = json.loads(script_text)
 
         if "@graph" in product_data:
             product_data = product_data["@graph"][-1]
