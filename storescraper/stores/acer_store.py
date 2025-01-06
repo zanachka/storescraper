@@ -24,14 +24,14 @@ from storescraper.utils import (
 class AcerStore(StoreWithUrlExtensions):
     url_extensions = [
         ["monitores", MONITOR],
-        ["outlet-monitores-pc", MONITOR],
+        # ["outlet-monitores-pc", MONITOR],
         ["mouse", MOUSE],
         ["headset", HEADPHONES],
         ["notebook-gamer", NOTEBOOK],
         ["notebook", NOTEBOOK],
         ["outlet-notebook-tradicional", NOTEBOOK],
         ["outlet-notebook-gamer", NOTEBOOK],
-        # ["outlet-ultralivianos", NOTEBOOK],
+        ["outlet-ultralivianos", NOTEBOOK],
         ["tablets", TABLET],
     ]
 
