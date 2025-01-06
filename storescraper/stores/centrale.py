@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from decimal import Decimal
 
 import validators
@@ -115,9 +116,10 @@ class Centrale(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        script_text = soup.findAll("script", {"type": "application/ld+json"})[
-            -1
-        ].text.replace("\n", " ")
+        script_text = soup.findAll("script", {"type": "application/ld+json"})[-1].text
+        script_text = re.sub(
+            r'(?<=\s)"description":\s".*?"\s*,?', "", script_text, flags=re.DOTALL
+        )
         product_data = json.loads(script_text)
 
         if "@graph" in product_data:
