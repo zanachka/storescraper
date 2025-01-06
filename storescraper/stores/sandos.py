@@ -134,7 +134,7 @@ class Sandos(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        response = session.get(url)
+        response = session.get(url, timeout=60)
         soup = BeautifulSoup(response.text, "lxml")
 
         name = soup.find("div", "pro-group mb-3").find("h2").text
