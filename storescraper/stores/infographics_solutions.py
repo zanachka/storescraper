@@ -7,7 +7,12 @@ from bs4 import BeautifulSoup
 
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import (
+    get_price_from_price_specification,
+    html_to_markdown,
+    remove_words,
+    session_with_proxy,
+)
 from storescraper.categories import (
     MOTHERBOARD,
     RAM,
@@ -141,8 +146,12 @@ class InfographicsSolutions(StoreWithUrlExtensions):
         if "name" in product_data:
             name = product_data["name"]
             sku = str(product_data["sku"])
-            offer_price = Decimal(product_data["offers"][0]["price"])
-            normal_price = round((offer_price * Decimal("1.1")).quantize(0), -1)
+            offer_price = get_price_from_price_specification(product_data)
+            normal_price = Decimal(
+                remove_words(
+                    soup.find("div", "wds-second price wds-below").text.split()[0]
+                )
+            )
         else:
             json_data_2 = json.loads(soup_jsons[0].text)["@graph"]
             for entry in json_data_2["@graph"]:

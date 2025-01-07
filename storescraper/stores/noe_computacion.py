@@ -95,7 +95,7 @@ class NoeComputacion(StoreWithUrlExtensions):
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
         )
-        response = session.get(url)
+        response = session.get(url, timeout=60)
         soup = BeautifulSoup(response.text, "lxml")
 
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
