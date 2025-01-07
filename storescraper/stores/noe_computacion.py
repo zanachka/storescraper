@@ -29,6 +29,8 @@ from storescraper.utils import (
 
 
 class NoeComputacion(StoreWithUrlExtensions):
+    preferred_products_for_url_concurrency = 3
+
     url_extensions = [
         ["199", ALL_IN_ONE],
         ["147", SOLID_STATE_DRIVE],
