@@ -284,6 +284,7 @@ from .tecno_master import TecnoMaster
 from .tecno_pro import TecnoPro
 from .tec_tec import TecTec
 from .tech_mark import TechMark
+from .tech_sale_chile import TechSaleChile
 from .techno_kings import TechnoKings
 from .thundertech import Thundertech
 from .tienda_amiga import TiendaAmiga
