@@ -53,7 +53,7 @@ class Mercacentro(Store):
         name = product_data["name"]
         key = product_data["sku"]
         description = product_data["description"]
-        ean = product_data["gtin13"]
+        ean = product_data["gtin"]
         price = get_price_from_price_specification(product_data)
 
         if product_data["offers"]["availability"] == "http://schema.org/InStock":
