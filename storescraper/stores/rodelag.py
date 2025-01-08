@@ -13,9 +13,7 @@ from storescraper.categories import TELEVISION
 class Rodelag(Store):
     @classmethod
     def categories(cls):
-        return [
-            TELEVISION
-        ]
+        return [TELEVISION]
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
@@ -29,24 +27,22 @@ class Rodelag(Store):
         page = 1
         while True:
             if page >= 15:
-                raise Exception('Page overflow')
+                raise Exception("Page overflow")
 
-            url = 'https://rodelag.com/collections/lg' \
-                '?page={}'.format(page)
+            url = "https://rodelag.com/collections/lg" "?page={}".format(page)
             print(url)
             response = session.get(url)
-            soup = BeautifulSoup(response.text, 'html5lib')
-            product_containers = soup.findAll('article', 'productitem')
+            soup = BeautifulSoup(response.text, "html5lib")
+            product_containers = soup.findAll("article", "productitem")
 
             if not product_containers:
                 if page == 1:
-                    logging.warning('Empty category:' + url)
+                    logging.warning("Empty category:" + url)
                 break
 
             for container in product_containers:
-                product_url = container.find('a')['href']
-                product_urls.append(
-                    'https://rodelag.com' + product_url)
+                product_url = container.find("a")["href"]
+                product_urls.append("https://rodelag.com" + product_url)
             page += 1
         return product_urls
 
@@ -55,32 +51,36 @@ class Rodelag(Store):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
-        soup = BeautifulSoup(response.text, 'html5lib')
+        soup = BeautifulSoup(response.text, "html5lib")
 
-        part_number_tag = soup.find('div', 'product-part_number')
+        part_number_tag = soup.find("div", "product-part_number")
         if part_number_tag:
-            part_number = part_number_tag.find('span').string.strip() or None
+            part_number = part_number_tag.find("span").string.strip() or None
         else:
             part_number = None
 
-        json_data = json.loads(soup.find(
-            'script', {'data-section-id': 'static-product'}).string)
-        json_product = json_data['product']
+        json_data = json.loads(
+            soup.find("script", {"data-section-id": "static-product"}).string
+        )
+        json_product = json_data["product"]
 
-        description = html_to_markdown(json_product['description'])
-        picture_urls = ['https:' + i for i in json_product['images']]
+        description = html_to_markdown(json_product["description"])
+        picture_urls = ["https:" + i for i in json_product["images"]]
 
-        json_data_variants = json_product['variants']
+        json_data_variants = json_product["variants"]
         assert len(json_data_variants) == 1
 
         v_data = json_data_variants[0]
-        sku = v_data['sku']
-        name = v_data['name']
-        if v_data['available']:
+        sku = v_data["sku"]
+        name = v_data["name"]
+        if v_data["available"]:
             stock = -1
         else:
             stock = 0
-        price = Decimal(v_data['price']) / Decimal(100)
+        price = Decimal(v_data["price"]) / Decimal(100)
+
+        if price < 1:
+            return []
 
         p = Product(
             name,
@@ -92,11 +92,11 @@ class Rodelag(Store):
             stock,
             price,
             price,
-            'USD',
+            "USD",
             sku=sku,
             part_number=part_number,
             picture_urls=picture_urls,
-            description=description
+            description=description,
         )
 
         return [p]
