@@ -1,4 +1,5 @@
 import json
+import time
 
 from decimal import Decimal
 from bs4 import BeautifulSoup
@@ -55,12 +56,30 @@ class Max(Store):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
+        session.headers["user-agent"] = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+        )
         response = session.get(url)
 
         if response.status_code in [404, 410]:
             return []
 
         soup = BeautifulSoup(response.text, "lxml")
+        tries = 0
+
+        while True:
+            data = soup.find("script", {"id": "__NEXT_DATA__"})
+
+            if data:
+                break
+
+            tries += 1
+
+            if tries > 4:
+                return []
+
+            time.sleep(10)
+
         product = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)[
             "props"
         ]["pageProps"]["product"]
@@ -87,7 +106,7 @@ class Max(Store):
         )
         description = ""
 
-        if "dimensions" in summary and summary["dimensions"]:
+        if summary["dimensions"]:
             description += "Dimensiones:\n"
 
             for dimension in summary["dimensions"]:
@@ -97,9 +116,8 @@ class Max(Store):
 
         description += "Especificaciones:\n"
 
-        if "specs" in summary:
-            for spec in summary["specs"]:
-                description += f"- {spec['label']}: {spec['value']}\n"
+        for spec in summary["specs"]:
+            description += f"- {spec['label']}: {spec['value']}\n"
 
         stock_info = json.loads(
             session.get(
@@ -107,9 +125,6 @@ class Max(Store):
                 headers=cls.headers,
             ).text
         )
-
-        if "status" not in stock_info:
-            return []
 
         stock = (
             0
