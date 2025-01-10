@@ -79,6 +79,8 @@ class HogarInnovar(Store):
             "-4k-uhd-nanocell-smart-tv",
             "-4k-uhd-qned-smart-tv",
             "-4k-uhd-led-smart-tv",
+            "-4k-uhd-smart-tv",
+            "-4k-uhd-oled-smart-tv",
             "-negro",
             "-blanco",
             "-gris",
