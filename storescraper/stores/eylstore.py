@@ -96,14 +96,21 @@ class Eylstore(StoreWithUrlExtensions):
         else:
             stock = -1
 
-        pricing_tag = soup.find("div", "wc_dynprice")
+        pricing_tag = soup.find("div", "wc_dynprice") or soup.find(
+            "div", "sticky-atc-price"
+        )
+
         price_tags = pricing_tag.findAll("span", "woocommerce-Price-amount")
 
         if not price_tags:
             return []
 
-        normal_price = Decimal(remove_words(price_tags[1].text))
-        offer_price = Decimal(remove_words(price_tags[0].text))
+        normal_price = Decimal(remove_words(price_tags[-1].text))
+        offer_price = (
+            Decimal(remove_words(price_tags[0].text))
+            if len(price_tags) > 1
+            else normal_price
+        )
 
         picture_urls = []
         picture_container = soup.find("div", "product-images-container")
