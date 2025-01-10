@@ -172,6 +172,9 @@ class TravelTienda(StoreWithUrlExtensions):
                         publication_entry["salePrices"]["tiendaBancoDeChile"]
                     )
 
+            if offer_price > normal_price:
+                offer_price = normal_price
+
             if len(skus_data) > 1:
                 # All the SKUs share the same part number according to the
                 # webpage, which is suspicious if there is more than one
