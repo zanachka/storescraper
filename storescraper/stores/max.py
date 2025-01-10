@@ -87,7 +87,7 @@ class Max(Store):
         )
         description = ""
 
-        if summary["dimensions"]:
+        if "dimensions" in summary and summary["dimensions"]:
             description += "Dimensiones:\n"
 
             for dimension in summary["dimensions"]:
