@@ -108,6 +108,9 @@ class Max(Store):
             ).text
         )
 
+        if "status" not in stock_info:
+            return []
+
         stock = (
             0
             if stock_info["status"] == "OUT_OF_STOCK"
