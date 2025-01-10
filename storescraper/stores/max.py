@@ -97,8 +97,9 @@ class Max(Store):
 
         description += "Especificaciones:\n"
 
-        for spec in summary["specs"]:
-            description += f"- {spec['label']}: {spec['value']}\n"
+        if "specs" in summary:
+            for spec in summary["specs"]:
+                description += f"- {spec['label']}: {spec['value']}\n"
 
         stock_info = json.loads(
             session.get(
