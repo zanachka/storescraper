@@ -81,10 +81,12 @@ class HogarInnovar(Store):
             "-4k-uhd-led-smart-tv",
             "-4k-uhd-smart-tv",
             "-4k-uhd-oled-smart-tv",
+            "4k-uhd-oled-smart-t",
             "-negro",
             "-blanco",
             "-gris",
             "-negra-con-inteligencia-artificial",
+            "-8k-smart-tv-con-thinq-ai",
         ]
 
         for keyword in keywords:
