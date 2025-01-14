@@ -26,6 +26,9 @@ class Max(Store):
 
         session = session_with_proxy(extra_args)
         session.headers["x-api-key"] = "ROGi1LWB3saRqFw4Xdqc4Z9jGWVxYLl9ZEZjbJu9"
+        session.headers["user-agent"] = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+        )
         product_urls = []
         page = 1
 
@@ -35,6 +38,7 @@ class Max(Store):
 
             api_endpoint = f"{cls.api_base_url}/v2/products?page={page}&search=lg"
             response = session.get(api_endpoint)
+
             json_data = response.json()
 
             if json_data["products"] == []:
