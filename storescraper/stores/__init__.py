@@ -60,6 +60,7 @@ from .dazbog_store import DazbogStore
 from .de_aires import DeAires
 from .all_tech_market import AllTechMarket
 from .de_prati import DePrati
+from .defstart import Defstart
 from .diamond_pc import DiamondPc
 from .diayta import Diayta
 from .digiplot import Digiplot
