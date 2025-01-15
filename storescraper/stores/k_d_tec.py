@@ -163,6 +163,10 @@ class KDTec(StoreWithUrlExtensions):
         sku = product_data.get("sku", None)
         description = product_data["description"]
         price_tags = soup.findAll("span", "woocommerce-Price-amount")
+
+        if not price_tags:
+            return []
+
         assert len(price_tags) == 2
 
         offer_price = Decimal(remove_words(price_tags[0].text))
