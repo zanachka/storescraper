@@ -87,10 +87,15 @@ class UltimateGamerStore(StoreWithUrlExtensions):
         for data in json_data:
             if data["@type"] == "Product":
                 product_data = data
+
                 break
 
         name = product_data["name"]
         normal_price = Decimal(product_data["offers"]["price"]).quantize(0)
+
+        if normal_price > Decimal("1000000000"):
+            return []
+
         offer_price = (normal_price * Decimal("0.96")).quantize(0)
         key = soup.find("meta", {"property": "og:id"})["content"]
 
