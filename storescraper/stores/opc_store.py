@@ -2,7 +2,7 @@ from decimal import Decimal
 import json
 import logging
 from bs4 import BeautifulSoup
-from storescraper.categories import ALL_IN_ONE, MONITOR, NOTEBOOK, TABLET
+from storescraper.categories import ALL_IN_ONE, MONITOR, NOTEBOOK, TABLET, PRINTER
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy
@@ -32,6 +32,10 @@ class OpcStore(StoreWithUrlExtensions):
         ["monitores", MONITOR],
         ["monitores-hp", MONITOR],
         ["monitores-lenovo", MONITOR],
+        ["tablet-1", TABLET],
+        ["open-box-2", TABLET],
+        ["lenovo-equipos-reacondicionados", ALL_IN_ONE],
+        ["impresoras", PRINTER],
     ]
 
     @classmethod
@@ -47,7 +51,7 @@ class OpcStore(StoreWithUrlExtensions):
             )
             data = session.get(url_webpage).text
             soup = BeautifulSoup(data, "lxml")
-            product_containers = soup.findAll("li", "grid__item")
+            product_containers = soup.findAll("li", "collection-product-card")
             if not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
