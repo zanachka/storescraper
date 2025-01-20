@@ -35,6 +35,7 @@ from storescraper.categories import (
     WATER_HEATER,
     KITCHEN_APPLIANCE,
     MOUSE,
+    PRINTER_SUPPLY,
 )
 from storescraper.store import Store
 from storescraper.product import Product
@@ -68,8 +69,8 @@ class Ripley(Store):
             1,
         ],
         [
-            "tecno/computacion/impresoras-y-tintas",
-            [PRINTER],
+            "tecno/computacion/impresoras",
+            [PRINTER_SUPPLY],
             "Tecno > Computación > Impresoras",
             1,
         ],
