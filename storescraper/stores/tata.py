@@ -66,7 +66,10 @@ class Tata(Store):
         offer = None
 
         for offer_option in offers:
-            if offer_option["seller"]["identifier"] == "1":
+            if (
+                offer_option["seller"]["identifier"] == "1"
+                and offer_option["price"] > 0
+            ):
                 offer = offer_option
                 break
 
@@ -74,10 +77,6 @@ class Tata(Store):
             return []
 
         price = Decimal(offer["price"]).quantize(Decimal("1.00"))
-
-        if price == 0:
-            return []
-
         stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
 
         p = Product(
