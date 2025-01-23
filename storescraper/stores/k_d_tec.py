@@ -41,6 +41,9 @@ from storescraper.utils import session_with_proxy, remove_words
 
 
 class KDTec(StoreWithUrlExtensions):
+    preferred_discover_urls_concurrency = 3
+    preferred_products_for_url_concurrency = 3
+
     url_extensions = [
         ["notebook-2", NOTEBOOK],
         ["notebook-gamer", NOTEBOOK],
