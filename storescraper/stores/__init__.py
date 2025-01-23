@@ -268,6 +268,7 @@ from .syd import Syd
 from .system_ti import SystemTi
 from .t_y_t_gamer import TyTGamer
 from .tauret import Tauret
+from .tata import Tata
 from .tecnoaxis import Tecnoaxis
 from .tecnocam import Tecnocam
 from .tecnofacil import Tecnofacil
