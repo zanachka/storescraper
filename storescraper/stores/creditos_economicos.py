@@ -34,15 +34,13 @@ class CreditosEconomicos(Store):
             url = "https://www.crecos.com/lg?_q=lg&map=ft&page=" "{}&sc=2".format(page)
             print(url)
 
-            soup = BeautifulSoup(session.get(url).text, "html5lib")
-            product_containers = json.loads(
-                "{" + re.search(r"__STATE__ = {(.+)}", soup.text).groups()[0] + "}"
-            )
-
+            soup = BeautifulSoup(session.get(url).text, "lxml")
+            state = soup.find("template", {"data-varname": "__STATE__"}).find("script")
+            product_containers = json.loads(state.text)
             r = re.compile(r"Product:sp-(\d+$)")
-
             product_container_keys = product_containers.keys()
             products_to_find = list(filter(r.match, product_container_keys))
+
             if not products_to_find:
                 if page == 1:
                     logging.warning("Empty category: " + category)
@@ -76,11 +74,9 @@ class CreditosEconomicos(Store):
         if response.status_code != 200:
             return []
 
-        soup = BeautifulSoup(response.text, "html5lib")
-        product_data = json.loads(
-            "{" + re.search(r"__STATE__ = {(.+)}", soup.text).groups()[0] + "}"
-        )
-
+        soup = BeautifulSoup(response.text, "lxml")
+        state = soup.find("template", {"data-varname": "__STATE__"}).find("script")
+        product_data = json.loads(state.text)
         base_json_keys = list(product_data.keys())
 
         if not base_json_keys:
