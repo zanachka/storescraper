@@ -142,7 +142,11 @@ class Infosep(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        response = session.get(url)
+
+        try:
+            response = session.get(url)
+        except ChunkedEncodingError:
+            return []
 
         if response.status_code == 404:
             return []
@@ -196,4 +200,5 @@ class Infosep(StoreWithUrlExtensions):
             picture_urls=picture_urls,
             description=description,
         )
+
         return [p]
