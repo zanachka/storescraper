@@ -176,7 +176,12 @@ class Wom(Store):
             stock_endoint = "https://store.wom.cl/ss/{}.json".format(
                 stock_reference.replace(".", "_")
             )
-            stock_json = json.loads(session.get(stock_endoint).text)
+            stock_endpoint_response = session.get(stock_endoint)
+
+            if stock_endpoint_response.status_code == 404:
+                continue
+
+            stock_json = json.loads(stock_endpoint_response.text)
 
             if stock_json["inventory"]:
                 stock = -1
