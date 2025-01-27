@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import get_price_from_price_specification, session_with_proxy
 
 
 class HogarYModa(Store):
@@ -68,7 +68,7 @@ class HogarYModa(Store):
         else:
             stock = 0
 
-        price = Decimal(product_data["offers"][0]["price"])
+        price = get_price_from_price_specification(product_data)
         description = product_data["description"]
         picture_urls = [x["data-src"] for x in soup.findAll("img", "owl-lazy")]
 
