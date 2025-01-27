@@ -82,6 +82,9 @@ class Olimpica(Store):
         runtime_match = re.search("__RUNTIME__ = (.+)", response.text)
         runtime_json = json.loads(runtime_match.groups()[0])
 
+        if "id" not in runtime_json["route"]["params"]:
+            return []
+
         product_data_tag = soup.find("template", {"data-varname": "__STATE__"})
         product_data = json.loads(str(product_data_tag.find("script").contents[0]))
 

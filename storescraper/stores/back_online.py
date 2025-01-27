@@ -44,7 +44,7 @@ class BackOnline(StoreWithUrlExtensions):
 
             page = 1
             while True:
-                if page >= 10:
+                if page >= 20:
                     raise Exception("Page overflow: " + url_extension)
 
                 url_webpage = "{}?page={}".format(collection_url, page)
@@ -98,7 +98,7 @@ class BackOnline(StoreWithUrlExtensions):
 
             name = product_data["name"]
             sku = product_data["sku"]
-            picture_urls = product_data["image"]
+            picture_urls = product_data.get("image")
             offer = product_data["offers"][0]
             key = str(re.search(r"variant=(\d+)", offer["url"]).groups()[0])
             stock = -1 if (offer["availability"] == "http://schema.org/InStock") else 0

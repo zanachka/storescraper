@@ -45,7 +45,7 @@ class TravelTienda(StoreWithUrlExtensions):
         ("714969430", GAMING_CHAIR),  # Tech > Gamer > Sillas y Escritorios
         ("1226813193", HEADPHONES),  # Tech > Gamer > Audífonos Gamer
         ("2547146328", MOUSE),  # Tech > Gamer > Periféricos
-        ("2881216585", VIDEO_GAME_CONSOLE),  # Tech > Gamer > Consolas y Ac
+        ("3670598540", VIDEO_GAME_CONSOLE),  # Tech > Videojuegos
         ("3121709090", HEADPHONES),  # Tech > Audio > Audífonos
         ("326296390", STEREO_SYSTEM),  # Tech > Audio > Audio Portátil
         ("742795275", STEREO_SYSTEM),  # Tech > Audio > Soundbar
@@ -171,6 +171,9 @@ class TravelTienda(StoreWithUrlExtensions):
                     offer_price = Decimal(
                         publication_entry["salePrices"]["tiendaBancoDeChile"]
                     )
+
+            if offer_price > normal_price:
+                offer_price = normal_price
 
             if len(skus_data) > 1:
                 # All the SKUs share the same part number according to the

@@ -25,9 +25,11 @@ class TechMark(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         product_urls = []
         page = 1
+
         while True:
-            if page > 10:
+            if page > 20:
                 raise Exception("Page overflow: " + url_extension)
+
             url_webpage = "https://www.tiendatechmark.cl/{}?page={}".format(
                 url_extension, page
             )
@@ -35,15 +37,19 @@ class TechMark(StoreWithUrlExtensions):
             response = session.get(url_webpage)
             soup = BeautifulSoup(response.text, "lxml")
             product_containers = soup.findAll("div", "product-block")
+
             if not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
+
                 break
+
             for container in product_containers:
                 product_url = (
                     "https://www.tiendatechmark.cl" + container.find("a")["href"]
                 )
                 product_urls.append(product_url)
+
             page += 1
 
         return product_urls
@@ -96,4 +102,5 @@ class TechMark(StoreWithUrlExtensions):
             part_number=sku,
             condition=condition,
         )
+
         return [p]

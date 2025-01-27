@@ -79,6 +79,14 @@ class HogarInnovar(Store):
             "-4k-uhd-nanocell-smart-tv",
             "-4k-uhd-qned-smart-tv",
             "-4k-uhd-led-smart-tv",
+            "-4k-uhd-smart-tv",
+            "-4k-uhd-oled-smart-tv",
+            "4k-uhd-oled-smart-t",
+            "-negro",
+            "-blanco",
+            "-gris",
+            "-negra-con-inteligencia-artificial",
+            "-8k-smart-tv-con-thinq-ai",
         ]
 
         for keyword in keywords:
@@ -91,9 +99,6 @@ class HogarInnovar(Store):
 
         sku = match.group(1)
         key = match.group(2)
-
-        if key == "42723201417327":
-            sku = "wk14bs6r"
 
         picture_urls = [
             f"https:{img['src'].split('?')[0]}"

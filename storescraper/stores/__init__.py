@@ -60,6 +60,7 @@ from .dazbog_store import DazbogStore
 from .de_aires import DeAires
 from .all_tech_market import AllTechMarket
 from .de_prati import DePrati
+from .defstart import Defstart
 from .diamond_pc import DiamondPc
 from .diayta import Diayta
 from .digiplot import Digiplot
@@ -267,6 +268,7 @@ from .syd import Syd
 from .system_ti import SystemTi
 from .t_y_t_gamer import TyTGamer
 from .tauret import Tauret
+from .tata import Tata
 from .tecnoaxis import Tecnoaxis
 from .tecnocam import Tecnocam
 from .tecnofacil import Tecnofacil
@@ -284,6 +286,7 @@ from .tecno_master import TecnoMaster
 from .tecno_pro import TecnoPro
 from .tec_tec import TecTec
 from .tech_mark import TechMark
+from .tech_sale_chile import TechSaleChile
 from .techno_kings import TechnoKings
 from .thundertech import Thundertech
 from .tienda_amiga import TiendaAmiga

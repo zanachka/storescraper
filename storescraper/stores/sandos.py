@@ -43,6 +43,8 @@ from storescraper.utils import session_with_proxy, remove_words
 
 
 class Sandos(StoreWithUrlExtensions):
+    preferred_products_for_url_concurrency = 3
+
     url_extensions = [
         [7, PROCESSOR],
         [8, PROCESSOR],

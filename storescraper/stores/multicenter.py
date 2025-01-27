@@ -11,7 +11,7 @@ from storescraper.utils import session_with_proxy, vtex_preflight
 
 
 class Multicenter(Store):
-    base_url = "https://www.multicenter.com.bo"
+    base_url = "https://www.multicenter.com"
 
     @classmethod
     def categories(cls):
@@ -51,7 +51,7 @@ class Multicenter(Store):
             }
 
             endpoint = (
-                "https://www.multicenter.com.bo/_v/segment/graphql/"
+                "https://www.multicenter.com/_v/segment/graphql/"
                 "v1?extensions={}".format(urllib.parse.quote(json.dumps(payload)))
             )
             response = session.get(endpoint).json()
@@ -62,7 +62,7 @@ class Multicenter(Store):
                 break
 
             for product_entry in product_entries:
-                product_url = "https://www.multicenter.com.bo/{}/p".format(
+                product_url = "https://www.multicenter.com/{}/p".format(
                     product_entry["linkText"]
                 )
                 product_urls.append(product_url)
@@ -116,4 +116,4 @@ class Multicenter(Store):
 
     @classmethod
     def preflight(cls, extra_args=None):
-        return vtex_preflight(extra_args, "https://www.multicenter.com.bo/electrohogar")
+        return vtex_preflight(extra_args, "https://www.multicenter.com/electrohogar")

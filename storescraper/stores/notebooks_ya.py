@@ -196,7 +196,8 @@ class NotebooksYa(StoreWithUrlExtensions):
         if (normal_price == 0 and stock == 0) or normal_price > Decimal("10000000000"):
             return []
 
-        sku = soup.find("span", "sku").text.strip()
+        sku_tag = soup.find("span", "sku")
+        sku = sku_tag.text.strip() if sku_tag else None
 
         picture_containers = soup.find("div", "product-image-slider").findAll(
             "div", "img-thumbnail"

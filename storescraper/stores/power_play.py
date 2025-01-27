@@ -1,6 +1,5 @@
 import json
 import re
-from decimal import Decimal
 
 from bs4 import BeautifulSoup
 from storescraper.categories import (
@@ -84,9 +83,12 @@ class PowerPlay(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         soup = BeautifulSoup(session.get(url).text, "lxml")
-        json_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[1].text
-        )
+        scripts = soup.findAll("script", {"type": "application/ld+json"})
+
+        if not scripts:
+            return []
+
+        json_data = json.loads(scripts[1].text)
 
         for item in json_data["@graph"]:
             if item["@type"] == "Product":
