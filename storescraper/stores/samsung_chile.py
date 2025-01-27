@@ -33,7 +33,7 @@ class SamsungChile(Store):
         ("01020000", TABLET, "Tablets", []),
         ("01030000", WEARABLE, "Smartwatches", []),
         ("01040000", HEADPHONES, "Galaxy Buds", []),
-        ("01050000", CELL_ACCESORY, "Accesorios", []),
+        # ("01050000", CELL_ACCESORY, "Accesorios", []),
         (
             "04010000",
             TELEVISION,
@@ -301,7 +301,7 @@ class SamsungChile(Store):
                     price = Decimal(0)
                 price = price.quantize(0)
 
-                if model["stockStatusText"] == "inStock":
+                if model["stockStatusText"] in ["inStock", "preOrder"]:
                     stock = -1
                 else:
                     stock = 0
