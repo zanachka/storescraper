@@ -63,36 +63,56 @@ class Tata(Store):
         picture_urls = product_data["image"]
         description = product_data["description"]
         offers = product_data["offers"]["offers"]
-        offer = None
+        products = []
+        sellers = {
+            "2319": "MultiahorroHogar",
+            "2183": "Multiahorro Hogar",
+            "1": "Tata",
+        }
 
-        for offer_option in offers:
-            if (
-                offer_option["seller"]["identifier"] == "1"
-                and offer_option["price"] > 0
-            ):
-                offer = offer_option
-                break
+        for offer in offers:
+            seller_id = offer["seller"]["identifier"]
+            price = offer["price"]
 
-        if not offer:
-            return []
+            if seller_id not in sellers.keys() or price == 0:
+                continue
 
-        price = Decimal(offer["price"]).quantize(Decimal("1.00"))
-        stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
+            seller = sellers[seller_id]
 
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            sku,
-            stock,
-            price,
-            price,
-            "UYU",
-            sku=sku,
-            picture_urls=picture_urls,
-            description=description,
-        )
+            if seller_id == "1":
+                currency = "UYU"
+                price = Decimal(price).quantize(Decimal("1.00"))
+            else:
+                price_endpoint = f"https://www.tata.com.uy/api/getMulticurrencyPrices?skuId={sku}&sellerId={seller_id}"
+                price_response = session.get(price_endpoint).json()[0]
+                discount_value = price_response["discountValue"]
+                price = (
+                    discount_value
+                    if discount_value != "NaN"
+                    else price_response["value"]
+                )
+                currency = "USD"
+                price = Decimal(float(price) / 100)
 
-        return [p]
+            stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
+
+            p = Product(
+                name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                sku,
+                stock,
+                price,
+                price,
+                currency=currency,
+                sku=sku,
+                picture_urls=picture_urls,
+                description=description,
+                seller=seller,
+            )
+
+            products.append(p)
+
+        return products
