@@ -165,7 +165,12 @@ class NotebookStore(StoreWithUrlExtensions):
         sku = soup.find("span", "sku_elem").text.strip()
 
         if not sku:
-            sku = re.search(r'"sku":"(.+?)"', response.text).groups()[0]
+            sku_tag = soup.find("th", text="SKU")
+
+            if sku_tag:
+                sku = sku_tag.find_next_sibling().text.strip()
+            else:
+                sku = re.search(r'"sku":"(.+?)"', response.text).groups()[0]
 
         key = soup.find("meta", {"property": "og:id"})["content"]
 
