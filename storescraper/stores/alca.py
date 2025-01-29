@@ -46,6 +46,10 @@ class Alca(StoreWithUrlExtensions):
             url_webpage = "https://www.alcaplus.cl/solotodo/{}/page/{}/".format(
                 url_extension, page
             )
+
+            if url_extension == "suministro":
+                url_webpage += "?instock_filter=1"
+
             print(url_webpage)
             data = session.get(url_webpage).text
             soup = BeautifulSoup(data, "lxml")
@@ -92,6 +96,10 @@ class Alca(StoreWithUrlExtensions):
                 assert len(product_data["offers"]) == 1
 
                 price = get_price_from_price_specification(product_data)
+
+                if price == 0:
+                    return []
+
                 picture_container = soup.find(
                     "figure", "woocommerce-product-gallery__wrapper"
                 )
