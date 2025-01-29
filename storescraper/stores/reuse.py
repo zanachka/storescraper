@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 from storescraper.categories import (
     CELL,
     NOTEBOOK,
-    ALL_IN_ONE,
     TABLET,
     HEADPHONES,
     WEARABLE,
@@ -72,7 +71,7 @@ class Reuse(StoreWithUrlExtensions):
         soup = BeautifulSoup(response.text, "lxml")
         product_json = json.loads(
             soup.find(
-                "script", {"data-section-id": "template--17204236714201__main"}
+                "script", {"data-section-id": "template--18401449148633__main"}
             ).text
         )["product"]
         description = html_to_markdown(product_json["description"])
