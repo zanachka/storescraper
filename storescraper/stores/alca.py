@@ -86,7 +86,7 @@ class Alca(StoreWithUrlExtensions):
                 key = key_tag["href"].split("=")[-1]
                 product_data = entry
                 name = product_data["name"]
-                sku = product_data["sku"][:50]
+                sku = product_data["sku"][:50] if "sku" in product_data else None
                 description = product_data["description"]
 
                 assert len(product_data["offers"]) == 1
