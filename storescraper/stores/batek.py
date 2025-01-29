@@ -71,11 +71,17 @@ class Batek(StoreWithUrlExtensions):
         name = soup.find("h1").text.strip()
         key = soup.find("input", {"name": "product-id"})["value"]
         add_to_cart_button = soup.find("button", "product-form__submit")
+
         if not add_to_cart_button or "disabled" in add_to_cart_button.attrs:
             stock = 0
         else:
             stock = -1
+
         price = Decimal(remove_words(soup.find("span", "price-item--sale").text))
+
+        if price == 0:
+            return []
+
         picture_urls = [
             "https:" + x["src"]
             for x in soup.find("div", "product-media-modal__content").findAll("img")
