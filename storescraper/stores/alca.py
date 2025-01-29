@@ -41,7 +41,7 @@ class Alca(StoreWithUrlExtensions):
         page = 1
 
         while True:
-            if page > 30:
+            if page > 80:
                 raise Exception("Page overflow: " + url_extension)
             url_webpage = "https://www.alcaplus.cl/solotodo/{}/page/{}/".format(
                 url_extension, page
