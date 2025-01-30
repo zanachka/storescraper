@@ -65,6 +65,10 @@ class Exito(Store):
         print(url)
         session = session_with_proxy(extra_args)
         res = session.get(url)
+
+        if res.status_code == 500:
+            return []
+
         soup = BeautifulSoup(res.text, "lxml")
         product_json = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)[
             "props"
