@@ -6,6 +6,7 @@ import time
 from collections import defaultdict
 from collections import OrderedDict
 from decimal import Decimal
+from pathlib import Path
 
 import validators
 
@@ -57,19 +58,19 @@ class Lider(Store):
     category_paths = [
         # TECNO
         ["Tecno/TV", [TELEVISION], "Tecno > TV", 1],
-        ["Tecno/TV/Smart_TV", [TELEVISION], "Tecno > TV > Smart TV", 1],
-        [
-            "Tecno/TV/Smart_TV_Hasta_50_Pulgadas",
-            [TELEVISION],
-            "Tecno > TV > Smart TV Hasta 50 Pulgadas",
-            1,
-        ],
-        [
-            "Tecno/TV/Smart_TV_Sobre_50_Pulgadas",
-            [TELEVISION],
-            "Tecno > TV > Smart TV Sobre 50 Pulgadas",
-            1,
-        ],
+        # ["Tecno/TV/Smart_TV", [TELEVISION], "Tecno > TV > Smart TV", 1],
+        # [
+        #     "Tecno/TV/Smart_TV_Hasta_50_Pulgadas",
+        #     [TELEVISION],
+        #     "Tecno > TV > Smart TV Hasta 50 Pulgadas",
+        #     1,
+        # ],
+        # [
+        #     "Tecno/TV/Smart_TV_Sobre_50_Pulgadas",
+        #     [TELEVISION],
+        #     "Tecno > TV > Smart TV Sobre 50 Pulgadas",
+        #     1,
+        # ],
         ["Tecno/TV/Home_Theater", [STEREO_SYSTEM], "Tecno > TV > Home Theater", 1],
         ["Tecno/TV/Proyectores", [PROJECTOR], "Tecno > TV > Proyectores", 1],
         ["Tecno/Audio", [STEREO_SYSTEM], "Tecno > Audio", 1],
@@ -407,28 +408,17 @@ class Lider(Store):
         session.headers = {
             "Content-Type": "application/json",
             "User-Agent": extra_args.get("user_agent", cls.DEFAULT_USER_AGENT),
-            "tenant": cls.tenant,
-            "x-channel": "BuySmart",
+            "x-o-bu": "LIDER-CL",
+            "x-o-mart": "B2C",
+            "x-o-vertical": "EA",
+            "X-APOLLO-OPERATION-NAME": "Browse",
         }
 
         product_entries = defaultdict(lambda: [])
-
-        if fast_mode:
-            sorters = [""]
-        else:
-            # It's important that the empty one goes first to ensure that the
-            # positioning information is preferable based on the default ordering
-            sorters = [
-                "",
-                "price_asc",
-                "price_desc",
-            ]
-        query_url = "https://apps.lider.cl/catalogo/bff/category"
-
-        if fast_mode:
-            facets = ["sold-by:Lider.cl"]
-        else:
-            facets = []
+        query_url = "https://www.lider.cl/orchestra/graphql/browse"
+        p = Path(__file__).with_name("lider_request.txt")
+        with p.open("r") as f:
+            graphql_query = f.read()
 
         for e in category_paths:
             category_id, local_categories, section_name, category_weight = e
@@ -437,58 +427,56 @@ class Lider(Store):
                 continue
 
             print(category_id)
+            page = 1
+            product_idx = 1
 
-            local_product_entries = {}
+            while True:
+                print(page)
+                graphql_variables = {
+                    "page": page,
+                    "prg": "desktop",
+                    "catId": "89057520_72573679_94067303",
+                    "sort": "best_match",
+                    "ps": 44,
+                    "fetchMarquee": True,
+                    "fetchSkyline": True,
+                    "fetchSbaTop": False,
+                    "fetchGallery": False,
+                    "fetchDac": False,
+                    "tenant": "CHILE_EA_GLASS",
+                }
 
-            for sorter in sorters:
-                print(sorter)
-                page = 1
+                if fast_mode:
+                    graphql_variables["facet"] = "ss_sellertype:Lider"
 
-                while True:
-                    print(page)
-                    query_params = {
-                        "categories": category_id,
-                        "page": page,
-                        "facets": facets,
-                        "sortBy": sorter,
-                        "hitsPerPage": 100,
-                    }
+                graphql_request_body = {
+                    "query": graphql_query,
+                    "variables": graphql_variables,
+                }
 
-                    serialized_params = json.dumps(query_params, ensure_ascii=False)
-                    response = session.post(
-                        query_url, serialized_params.encode("utf-8"), timeout=60
+                response = session.post(query_url, json=graphql_request_body)
+                data = json.loads(response.text)
+
+                products_data = data["data"]["search"]["searchResult"]["itemStacks"][0][
+                    "itemsV2"
+                ]
+
+                if not products_data:
+                    break
+
+                for entry in products_data:
+                    product_url = f"https://www.lider.cl{entry['canonicalUrl']}"
+                    print(product_url)
+                    product_entries[product_url].append(
+                        {
+                            "category_weight": category_weight,
+                            "section_name": section_name,
+                            "value": product_idx,
+                        }
                     )
-                    data = json.loads(response.text)
+                    product_idx += 1
 
-                    if "blockScript" in data:
-                        raise Exception("Blocked: " + str(data))
-
-                    if "products" not in data:
-                        logging.error("Invalid category: " + category_id)
-                        break
-
-                    if not data["products"]:
-                        if page == 1:
-                            logging.warning("Empty category: " + category_id)
-                        break
-
-                    for idx, entry in enumerate(data["products"]):
-                        product_url = (
-                            "https://www.lider.cl/{}/product/sku/{}/"
-                            "{}".format(
-                                cls.tenant, entry["sku"], entry.get("slug", "a")
-                            )
-                        )
-                        if product_url not in local_product_entries:
-                            local_product_entries[product_url] = {
-                                "category_weight": category_weight,
-                                "section_name": section_name,
-                                "value": idx + 1,
-                            }
-                    page += 1
-
-            for product_url, product_entry in local_product_entries.items():
-                product_entries[product_url].append(product_entry)
+                page += 1
 
         if fast_mode:
             # Since the fast mode filters the results, it messes up the position data, so remove it altogether
