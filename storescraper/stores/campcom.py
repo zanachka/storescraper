@@ -14,6 +14,7 @@ from storescraper.categories import (
     VIDEO_CARD,
     POWER_SUPPLY,
     CPU_COOLER,
+    RAM,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -42,7 +43,7 @@ class Campcom(Store):
     def discover_urls_for_category(cls, category, extra_args=None):
         category_paths = [
             ("componentes", MOUSE),
-            ("disco-solido-ssd", SOLID_STATE_DRIVE),
+            ("ssd", SOLID_STATE_DRIVE),
             ("mouse", MOUSE),
             ("perifericos", HEADPHONES),
             ("placas-madre", MOTHERBOARD),
@@ -51,6 +52,7 @@ class Campcom(Store):
             ("fuentes-de-poder", POWER_SUPPLY),
             ("placas-madre-mobo", MOTHERBOARD),
             ("refrigeracion-pcs", CPU_COOLER),
+            ("memoria-ram", RAM),
         ]
 
         session = session_with_proxy(extra_args)
