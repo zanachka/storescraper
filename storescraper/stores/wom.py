@@ -145,10 +145,7 @@ class Wom(Store):
 
         json_data = response.json()
 
-        if (
-            "SEMINUEVO"
-            in json_data["result"]["data"]["contentfulProduct"]["name"].upper()
-        ):
+        if "SEMI" in json_data["result"]["data"]["contentfulProduct"]["name"].upper():
             condition = "https://schema.org/RefurbishedCondition"
         else:
             condition = "https://schema.org/NewCondition"

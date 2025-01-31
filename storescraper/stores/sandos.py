@@ -173,8 +173,8 @@ class Sandos(StoreWithUrlExtensions):
 
         stock = 0
 
-        for p in soup.find("div", "timer").findAll("p"):
-            value = re.search(r"[\+\-]?\d+", p.get_text()).group()
+        for p in soup.findAll("div", "timer")[-1].findAll("p"):
+            value = re.search(r"[+\-]?\d+", p.get_text()).group()
             stock += int(value)
 
         img_tag = soup.find("img", "img-fluid image_zoom_cls-1")
