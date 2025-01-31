@@ -95,7 +95,7 @@ class MegaDriveStore(StoreWithUrlExtensions):
         )
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        product_data_container = soup.find("div", {"id": "product-details"})
+        product_data_container = soup.findAll("div", {"id": "product-details"})[-1]
 
         if "data-product" not in product_data_container.attrs:
             return []
