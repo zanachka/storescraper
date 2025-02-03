@@ -36,11 +36,14 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import html_to_markdown, cf_session_with_proxy
 from storescraper import banner_sections as bs
 
 
 class Lider(Store):
+    preferred_discover_urls_concurrency = 3
+    preferred_products_for_url_concurrency = 3
+
     USER_AGENTS = [
         "Mozilla/5.0 (Linux; Android 12; 220733SG Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.3",
         "Mozilla/5.0 (Linux; Android 10; HD1913) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
@@ -436,7 +439,7 @@ class Lider(Store):
 
                 while True:
                     extra_args = extra_args or {}
-                    session = session_with_proxy(extra_args)
+                    session = cf_session_with_proxy(extra_args)
                     session.headers = {
                         "Content-Type": "application/json",
                         "User-Agent": cls.USER_AGENTS[tries],
@@ -488,7 +491,7 @@ class Lider(Store):
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
         extra_args = extra_args or {}
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         session.headers["User-Agent"] = extra_args.get("user_agent", cls.USER_AGENTS[0])
         session.headers["tenant"] = cls.tenant
         product_urls = []
@@ -573,19 +576,18 @@ class Lider(Store):
         tries = 0
 
         while True:
-            extra_args = extra_args or {}
-            session = session_with_proxy(extra_args)
-            session.headers = {
-                "Content-Type": "application/json",
-                "User-Agent": extra_args.get("user_agent", cls.USER_AGENTS[tries]),
-                "x-o-bu": "LIDER-CL",
-                "x-o-mart": "B2C",
-                "x-o-vertical": "EA",
-                "X-APOLLO-OPERATION-NAME": "ItemById",
-            }
-            response = session.post(query_url, json=graphql_request_body)
-
             try:
+                extra_args = extra_args or {}
+                session = cf_session_with_proxy(extra_args)
+                session.headers = {
+                    "Content-Type": "application/json",
+                    "User-Agent": extra_args.get("user_agent", cls.USER_AGENTS[tries]),
+                    "x-o-bu": "LIDER-CL",
+                    "x-o-mart": "B2C",
+                    "x-o-vertical": "EA",
+                    "X-APOLLO-OPERATION-NAME": "ItemById",
+                }
+                response = session.post(query_url, json=graphql_request_body)
                 data = json.loads(response.text)["data"]
                 product_data = data["product"]
                 break
@@ -638,7 +640,7 @@ class Lider(Store):
         extra_args = extra_args or {}
         base_url = "https://apps.lider.cl/catalogo/bff/banners?v=2"
         destination_url_base = "https://www.lider.cl/{}"
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         session.headers["User-Agent"] = cls.USER_AGENTS[0]
         banners = []
         response = session.get(base_url)
