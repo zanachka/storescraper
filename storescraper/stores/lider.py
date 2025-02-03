@@ -1,5 +1,4 @@
 import json
-import time
 from collections import defaultdict
 from decimal import Decimal
 from pathlib import Path
@@ -42,14 +41,13 @@ from storescraper import banner_sections as bs
 
 
 class Lider(Store):
-    preferred_discover_urls_concurrency = 3
-    preferred_products_for_url_concurrency = 3
-
-    DEFAULT_USER_AGENT = (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0.0.0 Safari/537.3"
-    )
+    USER_AGENTS = [
+        "Mozilla/5.0 (Linux; Android 12; 220733SG Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.3",
+        "Mozilla/5.0 (Linux; Android 10; HD1913) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
+        "Mozilla/5.0 (Linux; Android 10; SM-G970F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 OPR/76.2.4027.73374",
+        "Mozilla/5.0 (Linux; Android 10; SM-N975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 OPR/76.2.4027.73374",
+        "Mozilla/5.0 (Linux; Android 10; Pixel 3 XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
+    ]
 
     tenant = "catalogo"
     category_paths = [
@@ -391,19 +389,7 @@ class Lider(Store):
     @classmethod
     def discover_entries_for_category(cls, category, extra_args=None):
         category_paths = cls.category_paths
-        extra_args = extra_args or {}
-        session = session_with_proxy(extra_args)
         fast_mode = extra_args.get("fast_mode", False)
-
-        session.headers = {
-            "Content-Type": "application/json",
-            "User-Agent": extra_args.get("user_agent", cls.DEFAULT_USER_AGENT),
-            "x-o-bu": "LIDER-CL",
-            "x-o-mart": "B2C",
-            "x-o-vertical": "EA",
-            "X-APOLLO-OPERATION-NAME": "Browse",
-        }
-
         product_entries = defaultdict(lambda: [])
         query_url = "https://www.lider.cl/orchestra/graphql/browse"
         p = Path(__file__).with_name("lider_request.txt")
@@ -446,11 +432,34 @@ class Lider(Store):
                     "variables": graphql_variables,
                 }
 
-                response = session.post(query_url, json=graphql_request_body)
-                data = json.loads(response.text)
-                products_data = data["data"]["search"]["searchResult"]["itemStacks"][0][
-                    "itemsV2"
-                ]
+                tries = 0
+
+                while True:
+                    extra_args = extra_args or {}
+                    session = session_with_proxy(extra_args)
+                    session.headers = {
+                        "Content-Type": "application/json",
+                        "User-Agent": cls.USER_AGENTS[tries],
+                        "x-o-bu": "LIDER-CL",
+                        "x-o-mart": "B2C",
+                        "x-o-vertical": "EA",
+                        "X-APOLLO-OPERATION-NAME": "Browse",
+                    }
+                    response = session.post(query_url, json=graphql_request_body)
+                    data = json.loads(response.text)
+
+                    try:
+                        products_data = data["data"]["search"]["searchResult"][
+                            "itemStacks"
+                        ][0]["itemsV2"]
+                        tries = 0
+                        break
+                    except Exception as e:
+                        exception = e
+                        tries += 1
+
+                    if tries > 4:
+                        raise exception
 
                 if not products_data:
                     break
@@ -480,9 +489,7 @@ class Lider(Store):
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
         extra_args = extra_args or {}
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = extra_args.get(
-            "user_agent", cls.DEFAULT_USER_AGENT
-        )
+        session.headers["User-Agent"] = extra_args.get("user_agent", cls.USER_AGENTS[0])
         session.headers["tenant"] = cls.tenant
         product_urls = []
 
@@ -522,16 +529,6 @@ class Lider(Store):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
 
-        extra_args = extra_args or {}
-        session = session_with_proxy(extra_args)
-        session.headers = {
-            "Content-Type": "application/json",
-            "User-Agent": extra_args.get("user_agent", cls.DEFAULT_USER_AGENT),
-            "x-o-bu": "LIDER-CL",
-            "x-o-mart": "B2C",
-            "x-o-vertical": "EA",
-            "X-APOLLO-OPERATION-NAME": "ItemById",
-        }
         sku = url.split("/")[-1]
         query_url = "https://www.lider.cl/orchestra/graphql/ip/{sku}"
         p = Path(__file__).with_name("lider_product_request.txt")
@@ -573,9 +570,31 @@ class Lider(Store):
         }
 
         graphql_request_body = {"query": graphql_query, "variables": graphql_variables}
-        response = session.post(query_url, json=graphql_request_body)
-        data = json.loads(response.text)["data"]
-        product_data = data["product"]
+        tries = 0
+
+        while True:
+            extra_args = extra_args or {}
+            session = session_with_proxy(extra_args)
+            session.headers = {
+                "Content-Type": "application/json",
+                "User-Agent": extra_args.get("user_agent", cls.USER_AGENTS[tries]),
+                "x-o-bu": "LIDER-CL",
+                "x-o-mart": "B2C",
+                "x-o-vertical": "EA",
+                "X-APOLLO-OPERATION-NAME": "ItemById",
+            }
+            response = session.post(query_url, json=graphql_request_body)
+
+            try:
+                data = json.loads(response.text)["data"]
+                product_data = data["product"]
+                break
+            except Exception as e:
+                exception = e
+                tries += 1
+
+            if tries > 4:
+                raise exception
 
         name = product_data["name"]
         key = product_data["offerId"]
@@ -616,7 +635,7 @@ class Lider(Store):
         base_url = "https://apps.lider.cl/catalogo/bff/banners?v=2"
         destination_url_base = "https://www.lider.cl/{}"
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = cls.DEFAULT_USER_AGENT
+        session.headers["User-Agent"] = cls.USER_AGENTS[0]
         banners = []
         response = session.get(base_url)
 
