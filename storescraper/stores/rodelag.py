@@ -71,12 +71,19 @@ class Rodelag(Store):
         assert len(json_data_variants) == 1
 
         v_data = json_data_variants[0]
-        sku = v_data["sku"]
+        key = v_data["sku"]  # sku
+        sku = soup.find("input", {"name": "id"}).get("value")  # key
+
+        if not key:
+            key = sku
+
         name = v_data["name"]
+
         if v_data["available"]:
             stock = -1
         else:
             stock = 0
+
         price = Decimal(v_data["price"]) / Decimal(100)
 
         if price < 1:
@@ -88,7 +95,7 @@ class Rodelag(Store):
             category,
             url,
             url,
-            sku,
+            key,
             stock,
             price,
             price,
