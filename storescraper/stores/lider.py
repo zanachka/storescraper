@@ -1,14 +1,7 @@
 import json
-import logging
-
-import time
-
 from collections import defaultdict
-from collections import OrderedDict
 from decimal import Decimal
 from pathlib import Path
-
-import validators
 
 from storescraper.categories import (
     AIR_CONDITIONER,
@@ -43,21 +36,23 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy, check_ean13
+from storescraper.utils import html_to_markdown, session_with_proxy
 from storescraper import banner_sections as bs
 
 
 class Lider(Store):
-    DEFAULT_USER_AGENT = (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0.0.0 Safari/537.3"
-    )
+    USER_AGENTS = [
+        "Mozilla/5.0 (Linux; Android 12; 220733SG Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.3",
+        "Mozilla/5.0 (Linux; Android 10; HD1913) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
+        "Mozilla/5.0 (Linux; Android 10; SM-G970F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 OPR/76.2.4027.73374",
+        "Mozilla/5.0 (Linux; Android 10; SM-N975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 OPR/76.2.4027.73374",
+        "Mozilla/5.0 (Linux; Android 10; Pixel 3 XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
+    ]
 
     tenant = "catalogo"
     category_paths = [
         # TECNO
-        ["Tecno/TV", [TELEVISION], "Tecno > TV", 1],
+        ["66849718_44699651_73841472", [TELEVISION], "Tecno > TV", 1],
         # ["Tecno/TV/Smart_TV", [TELEVISION], "Tecno > TV > Smart TV", 1],
         # [
         #     "Tecno/TV/Smart_TV_Hasta_50_Pulgadas",
@@ -71,263 +66,256 @@ class Lider(Store):
         #     "Tecno > TV > Smart TV Sobre 50 Pulgadas",
         #     1,
         # ],
-        ["Tecno/TV/Home_Theater", [STEREO_SYSTEM], "Tecno > TV > Home Theater", 1],
-        ["Tecno/TV/Proyectores", [PROJECTOR], "Tecno > TV > Proyectores", 1],
-        ["Tecno/Audio", [STEREO_SYSTEM], "Tecno > Audio", 1],
+        ["66849718_44699651_64332442", [STEREO_SYSTEM], "Tecno > TV > Home Theater", 1],
+        ["66849718_44699651_68838150", [PROJECTOR], "Tecno > TV > Proyectores", 1],
+        ["66849718_14621386", [STEREO_SYSTEM], "Tecno > Audio", 1],
         [
-            "Tecno/Audio/Equipos_de_Música_y_Karaoke",
+            "66849718_14621386_88231649",
             [STEREO_SYSTEM],
             "Tecno > Audio > Equipos de Música y Karaoke",
             1,
         ],
         [
-            "Tecno/Audio/Soundbars_y_Home_Theater",
+            "66849718_14621386_95114916",
             [STEREO_SYSTEM],
             "Tecno > Audio > Equipos de Música y Karaoke",
             1,
         ],
         [
-            "Tecno/Audio/Audio_Portable",
+            "66849718_14621386_49644492",
             [STEREO_SYSTEM],
             "Tecno > Audio > Audio Portable",
             1,
         ],
         [
-            "Tecno/Audio/Micro_y_Mini_Componentes",
+            "66849718_14621386_25354977",
             [STEREO_SYSTEM],
             "Tecno > Audio > Micro y Mini Componentes",
             1,
         ],
-        ["Tecno/Audio/Audífonos", [HEADPHONES], "Tecno > Audio > Audífonos", 1],
+        ["66849718_14621386_31940338", [HEADPHONES], "Tecno > Audio > Audífonos", 1],
         [
-            "Tecno/Audio/Tornamesas_y_Vinilos",
+            "66849718_14621386_27642866",
             [STEREO_SYSTEM],
             "Tecno > Audio > Tornamesas y Vinilos",
             1,
         ],
-        ["Tecno/Audio/Audio_HI-FI", [STEREO_SYSTEM], "Tecno > Audio > Audio HI-FI", 1],
         [
-            "Tecno/Smart_Home/Proyectores",
-            [PROJECTOR],
-            "Tecno > Smart Home > Proyectores",
+            "66849718_14621386_98336174",
+            [STEREO_SYSTEM],
+            "Tecno > Audio > Audio HI-FI",
             1,
         ],
         [
-            "Tecno/Videojuegos/Consolas",
+            "66849718_44699651_68838150",
+            [PROJECTOR],
+            "Tecno > TV > Proyectores",
+            1,
+        ],
+        [
+            "66849718_80980590_45869788",
             [VIDEO_GAME_CONSOLE],
             "Tecno > Videojuegos > Consolas",
             1,
         ],
         [
-            "Tecno/Videojuegos/Nintendo",
+            "66849718_80980590_97449970",
             [VIDEO_GAME_CONSOLE],
             "Tecno > Videojuegos > Nintendo",
             1,
         ],
         [
-            "Tecno/Videojuegos/PlayStation",
+            "66849718_80980590_45368401",
             [VIDEO_GAME_CONSOLE],
             "Tecno > Videojuegos > PlayStation",
             1,
         ],
         [
-            "Tecno/Videojuegos/XBOX",
+            "66849718_80980590_47691134",
             [VIDEO_GAME_CONSOLE],
             "Tecno > Videojuegos > XBOX",
             1,
         ],
         # CELULARES
-        ["Celulares/Telefonía", [CELL], "Celulares > Celulares y Teléfonos", 1],
+        ["34388900_60412644", [CELL], "Celulares > Celulares y Teléfonos", 1],
         [
-            "Celulares/Relojes_Inteligentes",
+            "34388900_13662451",
             [WEARABLE],
             "Celulares > Smartwatches y Wearables",
             1,
         ],
         # COMPUTACION
         [
-            "Computación/Computadores/Notebooks",
+            "89057520_72573679_94067303",
             [NOTEBOOK],
             "Computación > Computadores > Notebooks",
             1,
         ],
         [
-            "Computación/Computadores/Tablets",
+            "89057520_72573679_62826909",
             [TABLET],
             "Computación > Computadores > Tablets",
             1,
         ],
         [
-            "Computación/Computadores/Computadores_All_in_One",
+            "89057520_72573679_56612565",
             [ALL_IN_ONE],
             "Computación > Computadores > Computadores All in One",
             1,
         ],
         [
-            "Tecno/Computación/Monitores",
+            "89057520_28386364_21832538",
             [MONITOR],
-            "Computación > Computadores > Monitores y Proyectores",
+            "Computación > Accesorios Computación > Monitores y Proyectores",
             1.0,
         ],
         [
-            "Computación/Computadores/Accesorios_Computación",
+            "89057520_28386364",
             [MOUSE],
             "Computación > Computadores > Accesorios Computación",
             1.0,
         ],
         [
-            "Computación/Mundo_Gamer/Computación_Gamer",
+            "89057520_92341690_33654871",
             [NOTEBOOK],
             "Computación > Mundo Gamer > Computación Gamer",
             1.0,
         ],
         [
-            "Computación/Mundo_Gamer/Mouse_y_Teclados",
+            "89057520_92341690_99170494",
             [KEYBOARD],
             "Computación > Mundo Gamer > Mouse y Teclados",
             1.0,
         ],
         [
-            "Computación/Mundo_Gamer/Audífonos",
+            "89057520_92341690_27961626",
             [HEADPHONES],
             "Computación > Mundo Gamer > Audífonos",
             1.0,
         ],
         [
-            "Computación/Mundo_Gamer/Consolas",
-            [VIDEO_GAME_CONSOLE],
-            "Computación > Mundo Gamer > Consolas",
-            1.0,
-        ],
-        [
-            "Computación/Mundo_Gamer/Sillas_Gamer",
+            "89057520_92341690_04804406",
             [GAMING_CHAIR],
             "Computación > Mundo Gamer > Sillas Gamer",
             1,
         ],
         [
-            "Computación/Impresión/Impresoras_y_Multifuncionales",
+            "89057520_18938454_77669169",
             [PRINTER],
             "Computación > Impresión > Impresoras y Multifuncionales",
             1.0,
         ],
         [
-            "Computación/Impresión/Impresoras_Láser",
-            [PRINTER],
-            "Computación > Impresión > Impresoras Láser",
-            1.0,
-        ],
-        [
-            "Computación/Almacenamiento/Discos_Duros",
+            "89057520_98848773_69232935",
             [EXTERNAL_STORAGE_DRIVE],
             "Computación > Almacenamiento > Discos Duros",
             1.0,
         ],
         [
-            "Computación/Almacenamiento/Discos_Duros_SSD",
+            "89057520_98848773_37896447",
             [SOLID_STATE_DRIVE],
             "Computación > Almacenamiento > Discos Duros SSD",
             1.0,
         ],
         [
-            "Computación/Almacenamiento/Tarjetas_de_Memoria",
+            "89057520_98848773_32568051",
             [MEMORY_CARD],
             "Computación > Almacenamiento > Tarjetas de Memoria",
             1.0,
         ],
         [
-            "Computación/Almacenamiento/Pendrives",
+            "89057520_98848773_93306813",
             [USB_FLASH_DRIVE],
             "Computación > Almacenamiento > Pendrives",
             1.0,
         ],
         # ELECTROHOGAR
         [
-            "Electrohogar/Refrigeración",
+            "23989399_93795889",
             [REFRIGERATOR],
             "Electrohogar > Refrigeración",
             1.0,
         ],
         [
-            "Electrohogar/Refrigeración/No_Frost",
+            "23989399_93795889_28605677",
             [REFRIGERATOR],
             "Electrohogar > Refrigeración > No Frost",
             1.0,
         ],
         [
-            "Electrohogar/Refrigeración/Frío_Directo",
+            "23989399_93795889_24472802",
             [REFRIGERATOR],
             "Electrohogar > Refrigeración > Frio Directo",
             1.0,
         ],
         [
-            "Electrohogar/Refrigeración/Side_By_Side",
+            "23989399_93795889_98442409",
             [REFRIGERATOR],
             "Electrohogar > Refrigeración > Side By Side",
             1.0,
         ],
         [
-            "Electrohogar/Refrigeración/Freezer",
+            "23989399_93795889_83823051",
             [REFRIGERATOR],
             "Electrohogar > Refrigeración > Freezer",
             1.0,
         ],
         [
-            "Electrohogar/Refrigeración/Frigobar",
+            "23989399_93795889_10449779",
             [REFRIGERATOR],
             "Electrohogar > Refrigeración > Frigobar",
             1.0,
         ],
         [
-            "Electrohogar/Lavado_y_Planchado",
+            "23989399_75788044",
             [WASHING_MACHINE],
             "Electrohogar > Lavado y Planchado",
             1.0,
         ],
         [
-            "Electrohogar/Lavado_y_Planchado/Lavadoras",
+            "23989399_75788044_27277508",
             [WASHING_MACHINE],
             "Electrohogar > Lavado y Planchado > Lavadoras",
             1.0,
         ],
         [
-            "Electrohogar/Lavado_y_Planchado/Lavadoras_Secadoras",
+            "23989399_75788044_75760841",
             [WASHING_MACHINE],
             "Electrohogar > Lavado y Planchado > Lavadoras Secadoras",
             1.0,
         ],
         [
-            "Electrohogar/Lavado_y_Planchado/Secadoras",
+            "23989399_75788044_83679483",
             [WASHING_MACHINE],
             "Electrohogar > Lavado y Planchado > Secadoras",
             1.0,
         ],
         [
-            "Electrohogar/Lavado_y_Planchado/Lavavajillas",
+            "23989399_75788044_84624586",
             [DISH_WASHER],
             "Electrohogar > Lavado y Planchado > Lavavajillas",
             1.0,
         ],
         [
-            "Electrohogar/Aspirado_y_Limpieza",
+            "23989399_85011192",
             [VACUUM_CLEANER],
             "Electrohogar > Aspiradoras y Limpieza",
             1.0,
         ],
         [
-            "Electrohogar/Electrodomésticos_Cocina/Hornos_Eléctricos",
+            "23989399_53512871_73118366",
             [OVEN],
             "Electrohogar > Electrodomésticos Cocina > Hornos Eléctricos",
             1.0,
         ],
         [
-            "Electrohogar/Electrodomésticos_Cocina/Microondas",
+            "23989399_53512871_12048011",
             [OVEN],
             "Electrohogar > Electrodomésticos Cocina > Microondas",
             1.0,
         ],
         [
-            "Electrohogar/Cocinas/Hornos_Empotrables",
+            "23989399_74640407_68912278",
             [OVEN],
             "Electrohogar > Cocinas > Hornos Empotrables",
             1.0,
@@ -339,9 +327,9 @@ class Lider(Store):
         #     1.0,
         # ],
         [
-            "Electrohogar/Climatización/Ventilación/Aire_Acondicionado",
+            "23989399_29216192_32962208",
             [AIR_CONDITIONER],
-            "Electrohogar > Climatización > Ventilación > Aire Acondicionado",
+            "Electrohogar > Climatización > Ventilación",
             1.0,
         ],
         # [
@@ -351,13 +339,13 @@ class Lider(Store):
         #     1.0,
         # ],
         [
-            "Electrohogar/Electrodomésticos_Cocina",
+            "23989399_53512871",
             [KITCHEN_APPLIANCE],
             "Electrohogar > Electrodomésticos Cocina",
             1.0,
         ],
         [
-            "Computación/Impresión/Tintas_y_Toners",
+            "89057520_18938454_30849678",
             [PRINTER_SUPPLY],
             "Computación > Impresión > Tintas y Toners",
             1.0,
@@ -401,22 +389,11 @@ class Lider(Store):
     @classmethod
     def discover_entries_for_category(cls, category, extra_args=None):
         category_paths = cls.category_paths
-        extra_args = extra_args or {}
-        session = session_with_proxy(extra_args)
         fast_mode = extra_args.get("fast_mode", False)
-
-        session.headers = {
-            "Content-Type": "application/json",
-            "User-Agent": extra_args.get("user_agent", cls.DEFAULT_USER_AGENT),
-            "x-o-bu": "LIDER-CL",
-            "x-o-mart": "B2C",
-            "x-o-vertical": "EA",
-            "X-APOLLO-OPERATION-NAME": "Browse",
-        }
-
         product_entries = defaultdict(lambda: [])
         query_url = "https://www.lider.cl/orchestra/graphql/browse"
         p = Path(__file__).with_name("lider_request.txt")
+
         with p.open("r") as f:
             graphql_query = f.read()
 
@@ -432,10 +409,11 @@ class Lider(Store):
 
             while True:
                 print(page)
+
                 graphql_variables = {
                     "page": page,
                     "prg": "desktop",
-                    "catId": "89057520_72573679_94067303",
+                    "catId": category_id,
                     "sort": "best_match",
                     "ps": 44,
                     "fetchMarquee": True,
@@ -454,12 +432,34 @@ class Lider(Store):
                     "variables": graphql_variables,
                 }
 
-                response = session.post(query_url, json=graphql_request_body)
-                data = json.loads(response.text)
+                tries = 0
 
-                products_data = data["data"]["search"]["searchResult"]["itemStacks"][0][
-                    "itemsV2"
-                ]
+                while True:
+                    extra_args = extra_args or {}
+                    session = session_with_proxy(extra_args)
+                    session.headers = {
+                        "Content-Type": "application/json",
+                        "User-Agent": cls.USER_AGENTS[tries],
+                        "x-o-bu": "LIDER-CL",
+                        "x-o-mart": "B2C",
+                        "x-o-vertical": "EA",
+                        "X-APOLLO-OPERATION-NAME": "Browse",
+                    }
+                    response = session.post(query_url, json=graphql_request_body)
+                    data = json.loads(response.text)
+
+                    try:
+                        products_data = data["data"]["search"]["searchResult"][
+                            "itemStacks"
+                        ][0]["itemsV2"]
+                        tries = 0
+                        break
+                    except Exception as e:
+                        exception = e
+                        tries += 1
+
+                    if tries > 4:
+                        raise exception
 
                 if not products_data:
                     break
@@ -489,9 +489,7 @@ class Lider(Store):
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
         extra_args = extra_args or {}
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = extra_args.get(
-            "user_agent", cls.DEFAULT_USER_AGENT
-        )
+        session.headers["User-Agent"] = extra_args.get("user_agent", cls.USER_AGENTS[0])
         session.headers["tenant"] = cls.tenant
         product_urls = []
 
@@ -530,96 +528,86 @@ class Lider(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        extra_args = extra_args or {}
-        session = session_with_proxy(extra_args)
-        session.headers = {
-            "User-Agent": extra_args.get("user_agent", cls.DEFAULT_USER_AGENT),
-            "tenant": cls.tenant,
+
+        sku = url.split("/")[-1]
+        query_url = "https://www.lider.cl/orchestra/graphql/ip/{sku}"
+        p = Path(__file__).with_name("lider_product_request.txt")
+
+        with p.open("r") as f:
+            graphql_query = f.read()
+
+        graphql_variables = {
+            "pageType": "ItemPageGlobal",
+            "tenant": "CHILE_EA_GLASS",
+            "iId": sku,
+            "fBBAd": True,
+            "eLLBBAds": False,
+            "fSL": True,
+            "fIdml": True,
+            "fMrkDscrp": False,
+            "fRev": True,
+            "fFit": True,
+            "fSeo": True,
+            "fP13": True,
+            "fAff": True,
+            "fMq": True,
+            "fGalAd": False,
+            "fSCar": True,
+            "fDac": False,
+            "spVid": False,
+            "spSBA": False,
+            "fBB": True,
+            "eItIb": True,
+            "fIlc": False,
+            "fSId": True,
+            "eSb": True,
+            "eCc": False,
+            "eSsm": False,
+            "enableRelatedSearch": False,
+            "enableDetailedBeacon": False,
+            "sV": False,
+            "sVC": False,
         }
-        sku_id = url.split("/")[-2]
 
-        query_url = "https://apps.lider.cl/catalogo/bff/products/{}".format(sku_id)
+        graphql_request_body = {"query": graphql_query, "variables": graphql_variables}
+        tries = 0
 
-        response = session.get(query_url)
+        while True:
+            extra_args = extra_args or {}
+            session = session_with_proxy(extra_args)
+            session.headers = {
+                "Content-Type": "application/json",
+                "User-Agent": extra_args.get("user_agent", cls.USER_AGENTS[tries]),
+                "x-o-bu": "LIDER-CL",
+                "x-o-mart": "B2C",
+                "x-o-vertical": "EA",
+                "X-APOLLO-OPERATION-NAME": "ItemById",
+            }
+            response = session.post(query_url, json=graphql_request_body)
 
-        if response.status_code in [500]:
-            parsed_extra_args = extra_args or {}
-            retries = parsed_extra_args.pop("retries", 5)
+            try:
+                data = json.loads(response.text)["data"]
+                product_data = data["product"]
+                break
+            except Exception as e:
+                exception = e
+                tries += 1
 
-            if retries:
-                time.sleep(5)
-                parsed_extra_args["retries"] = retries - 1
-                return cls.products_for_url(
-                    url, category=category, extra_args=parsed_extra_args
-                )
-            else:
-                return []
+            if tries > 4:
+                raise exception
 
-        entry = json.loads(response.text)
+        name = product_data["name"]
+        key = product_data["offerId"]
+        normal_price = Decimal(product_data["priceInfo"]["currentPrice"]["price"])
+        offer_price = normal_price
+        sku = product_data["usItemId"]
+        picture_urls = [img["url"] for img in product_data["imageInfo"]["allImages"]]
+        seller = product_data["sellerDisplayName"]
+        stock = -1 if product_data["availabilityStatus"] == "IN_STOCK" else 0
+        description = html_to_markdown(data["idml"]["longDescription"])
 
-        if not entry.get("success", True):
-            return []
-
-        name = "{} {}".format(entry["brand"], entry["displayName"])
-        ean = entry["gtin13"]
-
-        if not check_ean13(ean):
-            ean = None
-
-        key = str(entry["sku"])
-        sku = entry["itemNumber"]
-        normal_price = Decimal(entry["price"]["BasePriceSales"]).quantize(
-            Decimal("1.00")
-        )
-        offer_price_container = entry["price"]["BasePriceTLMC"]
-
-        if offer_price_container:
-            offer_price = Decimal(offer_price_container)
-            if not offer_price:
-                offer_price = normal_price
-
-            if offer_price > normal_price:
-                offer_price = normal_price
-        else:
-            offer_price = normal_price
-
-        specs = OrderedDict()
-        for spec in entry.get("filters", []):
-            specs.update(spec)
-
-        part_number = specs.get("Modelo")
-        if part_number:
-            part_number = part_number[:49]
-
-        description = None
-        if "longDescription" in entry:
-            description = entry["longDescription"]
-
-        if description:
-            description = html_to_markdown(description)
-
-        picture_urls = [
-            img for img in entry["images"]["availableImages"] if validators.url(img)
-        ]
-
-        if "REACONDICIONADO" in name.upper():
-            condition = "https://schema.org/RefurbishedCondition"
-        else:
-            condition = "https://schema.org/NewCondition"
-
-        seller = entry.get("winningOffer", {}).get("sellerName", None) or None
-
-        if seller:
-            stock = 0
-        elif entry["available"]:
-            stock = -1
-        else:
-            stock = 0
-
-        # The preflight method verified that the LiveChat widget is being
-        # loaded, and the Google Tag Manager logic that Lider uses to trigger
-        # the wiodget makes sure that we only need to check for the brand.
-        has_virtual_assistant = entry["brand"] == "LG"
+        for spec in data["idml"]["specifications"]:
+            description += f"{spec['name']}: {spec['value']}\n"
 
         return [
             Product(
@@ -634,12 +622,9 @@ class Lider(Store):
                 offer_price,
                 "CLP",
                 sku=sku,
-                ean=ean,
-                part_number=part_number,
+                part_number=sku,
                 picture_urls=picture_urls,
                 description=description,
-                has_virtual_assistant=has_virtual_assistant,
-                condition=condition,
                 seller=seller,
             )
         ]
@@ -650,7 +635,7 @@ class Lider(Store):
         base_url = "https://apps.lider.cl/catalogo/bff/banners?v=2"
         destination_url_base = "https://www.lider.cl/{}"
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = cls.DEFAULT_USER_AGENT
+        session.headers["User-Agent"] = cls.USER_AGENTS[0]
         banners = []
         response = session.get(base_url)
 
