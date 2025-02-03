@@ -37,6 +37,7 @@ class Campcom(Store):
             VIDEO_CARD,
             POWER_SUPPLY,
             CPU_COOLER,
+            RAM,
         ]
 
     @classmethod
