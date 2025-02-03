@@ -121,7 +121,11 @@ class Dust2(StoreWithUrlExtensions):
         normal_price = (offer_price / Decimal("0.93")).quantize(0)
         sku = json_data["sku"]
         picture_urls = [x["src"] for x in json_data["images"]]
-        description = html_to_markdown(json_data["description"])
+        description = (
+            html_to_markdown(json_data["description"])
+            if json_data["description"]
+            else None
+        )
 
         p = Product(
             name,
