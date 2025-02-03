@@ -603,7 +603,11 @@ class Lider(Store):
         sku = product_data["usItemId"]
         picture_urls = [img["url"] for img in product_data["imageInfo"]["allImages"]]
         seller = product_data["sellerDisplayName"]
-        stock = -1 if product_data["availabilityStatus"] == "IN_STOCK" else 0
+        stock = (
+            -1
+            if (product_data["availabilityStatus"] == "IN_STOCK" and seller == "Lider")
+            else 0
+        )
         description = html_to_markdown(data["idml"]["longDescription"])
 
         for spec in data["idml"]["specifications"]:
