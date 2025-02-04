@@ -600,7 +600,12 @@ class Lider(Store):
 
         name = product_data["name"]
         key = product_data["offerId"]
-        normal_price = Decimal(product_data["priceInfo"]["currentPrice"]["price"])
+        price_data = product_data["priceInfo"]["currentPrice"]
+
+        if not price_data:
+            return []
+
+        normal_price = Decimal(price_data["price"])
         offer_price = normal_price
         sku = product_data["usItemId"]
         picture_urls = [
