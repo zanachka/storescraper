@@ -1,8 +1,8 @@
 import json
+import validators
 from collections import defaultdict
 from decimal import Decimal
 from pathlib import Path
-
 from storescraper.categories import (
     AIR_CONDITIONER,
     ALL_IN_ONE,
@@ -603,7 +603,11 @@ class Lider(Store):
         normal_price = Decimal(product_data["priceInfo"]["currentPrice"]["price"])
         offer_price = normal_price
         sku = product_data["usItemId"]
-        picture_urls = [img["url"] for img in product_data["imageInfo"]["allImages"]]
+        picture_urls = [
+            img["url"]
+            for img in product_data["imageInfo"]["allImages"]
+            if validators.url(img["url"])
+        ]
         seller = product_data["sellerDisplayName"]
         stock = (
             -1
