@@ -31,7 +31,7 @@ class Entel(Store):
             endpoints = [
                 "equipo-plan",
                 "celulares",
-                "ofertas",
+                # "ofertas",
                 "equipos-5g",
                 "seminuevos",
             ]
@@ -56,7 +56,7 @@ class Entel(Store):
                     product_entries[product_url].append(
                         {
                             "category_weight": 1,
-                            "section_name": "Equipos",
+                            "section_name": endpoint,
                             "value": idx + 1,
                         }
                     )
