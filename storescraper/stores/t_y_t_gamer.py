@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from datetime import date
 
 from bs4 import BeautifulSoup
 from decimal import Decimal
@@ -106,9 +107,22 @@ class TyTGamer(StoreWithUrlExtensions):
         )
         json_data = res.json()["product"]
 
+        availability_date_str = json_data["availability_date"]
+        if availability_date_str:
+            availability_date_match = re.match(
+                r"(\d+)-(\d+)-(\d+)", availability_date_str
+            )
+            year, month, day = availability_date_match.groups()
+            availability_date = date(int(year), int(month), int(day))
+        else:
+            availability_date = None
+
         name = json_data["name"]
         key = str(json_data["id"])
-        if json_data["seo_availability"] == "https://schema.org/InStock":
+
+        if availability_date and availability_date > date.today():
+            stock = 0
+        elif json_data["seo_availability"] == "https://schema.org/InStock":
             stock = -1
         else:
             stock = 0
