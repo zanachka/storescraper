@@ -27,6 +27,7 @@ from storescraper.categories import (
     VIDEO_CARD,
     VIDEO_GAME_CONSOLE,
     PRINTER_SUPPLY,
+    USB_FLASH_DRIVE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -61,6 +62,7 @@ class DiamondPc(StoreWithUrlExtensions):
         ["celulares-y-accesorios/audifonos-inalambricos", HEADPHONES],
         ["consolas", VIDEO_GAME_CONSOLE],
         ["suministros", PRINTER_SUPPLY],
+        ["pendrive-usb", USB_FLASH_DRIVE],
     ]
 
     @classmethod
@@ -155,6 +157,10 @@ class DiamondPc(StoreWithUrlExtensions):
                 stock = (
                     0 if product["max_qty"] == "" or imported else product["max_qty"]
                 )
+
+                if stock == 0 and product["is_in_stock"] == True:
+                    stock = -1
+
                 offer_price = Decimal(product["display_price"])
                 normal_price = (offer_price * Decimal("1.08")).quantize(0)
                 picture_urls = [product["image"]["url"]]
