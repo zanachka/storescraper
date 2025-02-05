@@ -1,8 +1,4 @@
-import json
 from decimal import Decimal
-
-from bs4 import BeautifulSoup
-
 from storescraper.product import Product
 from storescraper.store import Store
 from storescraper.utils import html_to_markdown, session_with_proxy
@@ -28,7 +24,7 @@ class Sukasa(Store):
         product_urls = []
         page = 1
         while True:
-            endpoint = "https://api.comohogar.com//catalog-api/products-es/all-by-category-tree?page={}&pageSize=10&active=true&brandId=60966430-ee8d-11ed-b56d-005056010420".format(
+            endpoint = "https://api.comohogar.com/catalog-api/products-es/all-by-category-tree?page={}&pageSize=10&active=true&brandId=60966430-ee8d-11ed-b56d-005056010420".format(
                 page
             )
             print(endpoint)
@@ -39,7 +35,7 @@ class Sukasa(Store):
                 break
 
             for product in products_data[0]["products"]:
-                product_url = "https://www.sukasa.com/productos/{}?id={}".format(
+                product_url = "https://www.sukasa.com/productos/{}/{}".format(
                     product["slug"], product["id"]
                 )
                 if product_url not in product_urls:
@@ -56,10 +52,8 @@ class Sukasa(Store):
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.3"
         )
 
-        product_id = url.split("?id=")[1]
-        endpoint = (
-            "https://api.comohogar.com//catalog-api/products/portal/" + product_id
-        )
+        product_id = url.split("/")[-1]
+        endpoint = "https://api.comohogar.com/catalog-api/products/portal/" + product_id
         response = session.get(endpoint)
         product_data = response.json()
         name = product_data["name"]
@@ -75,7 +69,9 @@ class Sukasa(Store):
         normal_price = Decimal(str(product_data["cmItmPvpNafIva"])).quantize(
             Decimal("0.01")
         )
-        picture_urls = [x["resourceUrl"] for x in product_data["resources"]]
+        picture_urls = [
+            x["resourceUrl"] for x in product_data["resources"] if x["type"] != "url"
+        ]
         description = html_to_markdown(product_data["longDescription"])
 
         p = Product(
