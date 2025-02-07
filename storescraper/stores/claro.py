@@ -10,12 +10,9 @@ from storescraper.utils import session_with_proxy, remove_words
 
 
 class Claro(Store):
-    planes_url = (
-        "https://www.clarochile.cl/personas/servicios/"
-        "servicios-moviles/postpago/planes-y-precios/"
-    )
+    planes_url = "https://api-prod-cl.prod.clarodigital.net/api/CL_MS_FE_PLANES_DESTACADOS/getPlanesDestacadosXCategoria"
     prepago_url = (
-        "https://www.clarochile.cl/personas/servicios/" "servicios-moviles/prepago/"
+        "https://www.clarochile.cl/personas/servicios/servicios-moviles/prepago/"
     )
     equipos_url = "https://www.clarochile.cl/personas/ofertaplanconequipo/"
 
@@ -126,35 +123,29 @@ class Claro(Store):
 
     @classmethod
     def _planes(cls, url, extra_args):
+        payload = {
+            "fc_tipo_plan": "PLN",
+            "fi_servicio": 60,
+            "fc_tipo": "Personas-Servicios-Moviles-PlanesMoviles-Individuales",
+            "fc_familia": "60",
+        }
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
-        )
-        session.headers["Accept-Language"] = "en"
-        data_url = (
-            "https://digital.clarochile.cl/wcm-inyect/" "landing-postpago/content.html"
-        )
-
-        soup = BeautifulSoup(session.get(data_url).text, "lxml")
-
+        response = json.loads(session.post(url, json=payload).text)
         products = []
-
         portabilidad_modes = [
             "",
             " Portabilidad",
         ]
-
         leasing_modes = [" (sin cuota de arriendo)", " (con cuota de arriendo)"]
 
-        for container in soup.findAll("div", "card-box"):
-            plan_name = container.find("h1").text.strip()
+        for plan in response:
+            plan_name = plan["fc_TEXTO_CAJA"].strip()
             plan_name = " ".join(plan_name.split())
-            plan_price = Decimal(remove_words(container.findAll("h2")[1].text.strip()))
+            plan_price = Decimal(plan["fi_PRECIO_PLAN"])
 
             for portability_mode in portabilidad_modes:
                 for leasing_mode in leasing_modes:
                     name = "{}{}{}".format(plan_name, portability_mode, leasing_mode)
-                    key = "{}{}{}".format(plan_name, portability_mode, leasing_mode)
 
                     products.append(
                         Product(
@@ -163,7 +154,7 @@ class Claro(Store):
                             "CellPlan",
                             url,
                             url,
-                            key,
+                            name,
                             -1,
                             plan_price,
                             plan_price,
