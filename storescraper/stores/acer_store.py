@@ -1,6 +1,4 @@
-import base64
 import json
-import re
 
 from bs4 import BeautifulSoup
 from decimal import Decimal
@@ -10,7 +8,6 @@ from storescraper.categories import (
     MOUSE,
     HEADPHONES,
     TABLET,
-    WEARABLE,
 )
 
 from storescraper.product import Product
@@ -24,14 +21,11 @@ from storescraper.utils import (
 class AcerStore(StoreWithUrlExtensions):
     url_extensions = [
         ["monitores", MONITOR],
-        ["outlet-monitores-pc", MONITOR],
+        ["outlet-seminuevos", NOTEBOOK],
         ["mouse", MOUSE],
         ["headset", HEADPHONES],
         ["notebook-gamer", NOTEBOOK],
         ["notebook", NOTEBOOK],
-        # ["outlet-notebook-tradicional", NOTEBOOK],
-        # ["outlet-notebook-gamer", NOTEBOOK],
-        # ["outlet-ultralivianos", NOTEBOOK],
         ["tablets", TABLET],
     ]
 
