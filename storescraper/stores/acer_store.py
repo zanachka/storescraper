@@ -29,9 +29,9 @@ class AcerStore(StoreWithUrlExtensions):
         ["headset", HEADPHONES],
         ["notebook-gamer", NOTEBOOK],
         ["notebook", NOTEBOOK],
-        ["outlet-notebook-tradicional", NOTEBOOK],
+        # ["outlet-notebook-tradicional", NOTEBOOK],
         # ["outlet-notebook-gamer", NOTEBOOK],
-        ["outlet-ultralivianos", NOTEBOOK],
+        # ["outlet-ultralivianos", NOTEBOOK],
         ["tablets", TABLET],
     ]
 
