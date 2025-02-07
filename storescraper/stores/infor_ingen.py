@@ -28,6 +28,7 @@ from storescraper.utils import session_with_proxy
 
 
 class InforIngen(StoreWithUrlExtensions):
+    USER_AGENT = "SoloTodoBot"
     url_extensions = [
         ["placas-madres", MOTHERBOARD],
         ["procesadores", PROCESSOR],
@@ -52,6 +53,7 @@ class InforIngen(StoreWithUrlExtensions):
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
         product_urls = []
         session = session_with_proxy(extra_args)
+        session.headers["User-Agent"] = cls.USER_AGENT
         page = 1
 
         while True:
@@ -86,6 +88,7 @@ class InforIngen(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
+        session.headers["User-Agent"] = cls.USER_AGENT
         response = session.get(url)
 
         if response.status_code == 404:
