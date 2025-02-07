@@ -627,7 +627,85 @@ class MercadoLibreChile(Store):
         ("MLC10871", "Tintas", PRINTER_SUPPLY),
     ]
 
-    sellers_blacklist = ["REUSE", "REUSE CL", "DREAMTEC-CHILE", "Dreamtec"]
+    seller_whitelist = [
+        "Acer",
+        "ACER STORE",
+        "ADATA",
+        "Anker",
+        "ANKERTIENDAOFICIAL2024",
+        "ANOVO ANDES",
+        "AOC",
+        "Apple",
+        "ASUS",
+        "BENQ",
+        "BENQ_CHILE",
+        "Black+Decker",
+        "Black+Decker Home",
+        "Blanik",
+        "BLANIK OFICIAL",
+        "Blik",
+        "BLIKTECHNICA",
+        "Bose",
+        "Brother",
+        "Caixun",
+        "CAIXUN",
+        "Crucial",
+        "Epson",
+        "Garmin",
+        "Gasei",
+        "GASEI S.A.",
+        "Hamilton Beach",
+        "Harman Kardon",
+        "Harman Professional",
+        "Hisense",
+        "Honor",
+        "HP",
+        "HP TIENDAOFICIAL",
+        "Huawei",
+        "JBL",
+        "Kärcher",
+        "Kensington",
+        "KINGSTON",
+        "KINGSTONCHILE",
+        "Kitchen Center",
+        "Lenovo",
+        "LENOVOAGENCIAENCHILE",
+        "LG",
+        "Libero",
+        "Logitech",
+        "Logitech G",
+        "Mabe",
+        "MABE CHILE",
+        "Mademsa",
+        "Master G",
+        "Mercado Envios",
+        "Mercado Libre",
+        "Mercado Libre Electronica",
+        "MERCADOLIBRE ELECTRONICA_CL",
+        "Midea",
+        "MIDEA CARRIER",
+        "MISTORECHILE",
+        "Nintendo",
+        "Oster",
+        "Philips",
+        "Philips TV & Sound",
+        "PlayStation",
+        "Razer",
+        "RAZER OFICIAL",
+        "Redragon",
+        "Samsung",
+        "SAMSUNG_CHILE",
+        "Sandisk",
+        "Sennheiser",
+        "Sindelen",
+        "SINDELEN",
+        "Thomas",
+        "Thorben",
+        "TIENDAOFICIAL HUAWEICL",
+        "Toshiba",
+        "Western Digital",
+        "Xiaomi",
+    ]
 
     @classmethod
     def categories(cls):
@@ -870,7 +948,7 @@ class MercadoLibreChile(Store):
             )
             seller_info = json.loads(api_session.get(seller_endpoint).text)
             seller = seller_info["nickname"]
-            stock = 0 if seller in cls.sellers_blacklist else -1
+            stock = -1 if seller in cls.seller_whitelist else 0
             picture_urls = [p["url"] for p in variation_data["pictures"]]
 
             products.append(
@@ -902,7 +980,7 @@ class MercadoLibreChile(Store):
         seller = data["initialState"]["components"]["track"]["analytics_event"][
             "custom_dimensions"
         ]["customDimensions"]["collectorNickname"]
-        stock = 0 if seller in cls.sellers_blacklist else -1
+        stock = -1 if seller in cls.seller_whitelist else 0
         sku = data["initialState"]["id"]
         base_name = data["initialState"]["schema"][0]["name"]
         price = Decimal(data["initialState"]["schema"][0]["offers"]["price"]).quantize(
