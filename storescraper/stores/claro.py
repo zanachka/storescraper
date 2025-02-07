@@ -141,9 +141,15 @@ class Claro(Store):
         for plan in response:
             plan_name = plan["fc_TEXTO_CAJA"].strip()
             plan_name = " ".join(plan_name.split())
-            plan_price = Decimal(plan["fi_PRECIO_PLAN"])
 
             for portability_mode in portabilidad_modes:
+                normal_price = plan["fc_PRECIO_TACHADO"]
+
+                if normal_price != "" and portability_mode == "":
+                    plan_price = Decimal(normal_price)
+                else:
+                    plan_price = Decimal(plan["fi_PRECIO_PLAN"])
+
                 for leasing_mode in leasing_modes:
                     name = "{}{}{}".format(plan_name, portability_mode, leasing_mode)
 
