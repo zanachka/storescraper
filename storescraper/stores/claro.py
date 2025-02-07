@@ -141,6 +141,7 @@ class Claro(Store):
         for plan in response:
             plan_name = plan["fc_TEXTO_CAJA"].strip()
             plan_name = " ".join(plan_name.split())
+            plan_url = f"https://www.clarochile.cl/{plan['fc_URL_PLANES']}"
 
             for portability_mode in portabilidad_modes:
                 normal_price = plan["fc_PRECIO_TACHADO"]
@@ -158,7 +159,7 @@ class Claro(Store):
                             name,
                             cls.__name__,
                             "CellPlan",
-                            url,
+                            plan_url,
                             url,
                             name,
                             -1,
