@@ -108,6 +108,9 @@ class MegaBytes(StoreWithUrlExtensions):
         else:
             stock = 0
 
+        if "priceSpecification" not in offer:
+            return []
+
         offer_price = get_price_from_price_specification(product_data)
         price_container = soup.find("div", "summary-inner").find("table")
 
