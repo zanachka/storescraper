@@ -106,6 +106,10 @@ class TiShop(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         session = session_with_proxy(extra_args)
         response = session.get(url)
+
+        if response.status_code == 404:
+            return []
+
         soup = BeautifulSoup(response.text, "lxml")
 
         product_data_container = soup.findAll("section")[1]
