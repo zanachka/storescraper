@@ -613,16 +613,24 @@ class Lider(Store):
             for img in product_data["imageInfo"]["allImages"]
             if validators.url(img["url"])
         ]
-        seller = product_data["sellerDisplayName"]
+        seller_name = product_data["sellerDisplayName"]
         stock = (
             -1
-            if (product_data["availabilityStatus"] == "IN_STOCK" and seller == "Lider")
+            if (
+                product_data["availabilityStatus"] == "IN_STOCK"
+                and seller_name == "Lider"
+            )
             else 0
         )
         description = html_to_markdown(data["idml"]["longDescription"])
 
         for spec in data["idml"]["specifications"]:
             description += f"{spec['name']}: {spec['value']}\n"
+
+        if seller_name == "Lider":
+            seller = None
+        else:
+            seller = seller_name
 
         return [
             Product(
