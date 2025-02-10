@@ -948,7 +948,9 @@ class MercadoLibreChile(Store):
             )
             seller_info = json.loads(api_session.get(seller_endpoint).text)
             seller = seller_info["nickname"]
-            stock = -1 if seller in cls.seller_whitelist else 0
+            stock = (
+                -1 if not cls.seller_whitelist or seller in cls.seller_whitelist else 0
+            )
             picture_urls = [p["url"] for p in variation_data["pictures"]]
 
             products.append(
@@ -980,7 +982,7 @@ class MercadoLibreChile(Store):
         seller = data["initialState"]["components"]["track"]["analytics_event"][
             "custom_dimensions"
         ]["customDimensions"]["collectorNickname"]
-        stock = -1 if seller in cls.seller_whitelist else 0
+        stock = -1 if not cls.seller_whitelist or seller in cls.seller_whitelist else 0
         sku = data["initialState"]["id"]
         base_name = data["initialState"]["schema"][0]["name"]
         price = Decimal(data["initialState"]["schema"][0]["offers"]["price"]).quantize(

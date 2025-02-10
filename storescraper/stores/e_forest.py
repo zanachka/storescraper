@@ -28,6 +28,8 @@ from storescraper.utils import session_with_proxy
 
 
 class EForest(MercadoLibreChile):
+    seller_whitelist = None
+
     @classmethod
     def categories(cls):
         return [
