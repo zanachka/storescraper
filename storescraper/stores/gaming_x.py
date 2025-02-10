@@ -7,8 +7,6 @@ from storescraper.utils import session_with_proxy
 
 
 class GamingX(MercadoLibreChile):
-    seller_whitelist = None
-
     @classmethod
     def categories(cls):
         return [NOTEBOOK]

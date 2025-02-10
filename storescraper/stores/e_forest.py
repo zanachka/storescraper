@@ -28,8 +28,6 @@ from storescraper.utils import session_with_proxy
 
 
 class EForest(MercadoLibreChile):
-    seller_whitelist = None
-
     @classmethod
     def categories(cls):
         return [
@@ -118,10 +116,10 @@ class EForest(MercadoLibreChile):
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
-        # Remove the seller because we consider MecadoLibreLg to be a
-        # standalone retailer, in particular because the LG WTB system
-        # only displays entries without a seller (not from marketplaces)
-        # and we want to consider MercadoLibreLG for that.
+        # Remove the seller because we consider EForest to be a
+        # standalone retailer.
+        extra_args = extra_args or {}
+        extra_args["skip_whitelist"] = True
         products = super().products_for_url(
             url, category=category, extra_args=extra_args
         )

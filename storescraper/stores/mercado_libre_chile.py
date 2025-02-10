@@ -861,13 +861,17 @@ class MercadoLibreChile(Store):
                 return []
 
         if url.startswith("https://articulo.mercadolibre."):
-            return cls.retrieve_type2_products(session, url, soup, category, data)
+            return cls.retrieve_type2_products(
+                session, url, soup, category, data, extra_args
+            )
         elif url.startswith("https://www.mercadolibre."):
             return cls.retrieve_type3_products(data, soup, extra_args, category)
         else:
             # Another scraper with embedded ML pages
             try:
-                return cls.retrieve_type2_products(session, url, soup, category, data)
+                return cls.retrieve_type2_products(
+                    session, url, soup, category, data, extra_args
+                )
             except Exception:
                 return cls.retrieve_type3_products(data, soup, extra_args, category)
 
@@ -914,6 +918,7 @@ class MercadoLibreChile(Store):
             review_avg_score = None
 
         products = []
+        skip_whitelist = extra_args and extra_args.get("skip_whitelist", False)
 
         for variation in variations:
             sku = variation
@@ -948,9 +953,7 @@ class MercadoLibreChile(Store):
             )
             seller_info = json.loads(api_session.get(seller_endpoint).text)
             seller = seller_info["nickname"]
-            stock = (
-                -1 if not cls.seller_whitelist or seller in cls.seller_whitelist else 0
-            )
+            stock = -1 if skip_whitelist or seller in cls.seller_whitelist else 0
             picture_urls = [p["url"] for p in variation_data["pictures"]]
 
             products.append(
@@ -977,12 +980,13 @@ class MercadoLibreChile(Store):
         return products
 
     @classmethod
-    def retrieve_type2_products(cls, session, url, soup, category, data):
+    def retrieve_type2_products(cls, session, url, soup, category, data, extra_args):
         print("Type2")
         seller = data["initialState"]["components"]["track"]["analytics_event"][
             "custom_dimensions"
         ]["customDimensions"]["collectorNickname"]
-        stock = -1 if not cls.seller_whitelist or seller in cls.seller_whitelist else 0
+        skip_whitelist = extra_args and extra_args.get("skip_whitelist", False)
+        stock = -1 if skip_whitelist or seller in cls.seller_whitelist else 0
         sku = data["initialState"]["id"]
         base_name = data["initialState"]["schema"][0]["name"]
         price = Decimal(data["initialState"]["schema"][0]["offers"]["price"]).quantize(
@@ -1134,6 +1138,7 @@ class MercadoLibreChile(Store):
 
         extra_args = extra_args or {}
         retries = extra_args.get("retries", 3)
+        extra_args["skip_whitelist"] = True
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, "
