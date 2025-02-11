@@ -17,7 +17,7 @@ from storescraper.categories import (
     VIDEO_CARD,
     RAM,
     SOLID_STATE_DRIVE,
-    NOTEBOOK,
+    STEREO_SYSTEM,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -26,22 +26,21 @@ from storescraper.utils import session_with_proxy, remove_words, html_to_markdow
 
 class CentralGamer(StoreWithUrlExtensions):
     url_extensions = [
-        ["open-box/tarjetas-de-video-openbox", VIDEO_CARD],
-        ["open-box/sillas-open-box", GAMING_CHAIR],
-        ["sillas-gamer-y-alfombras", GAMING_CHAIR],
-        ["monitores-gamers", MONITOR],
-        ["audifonos-gamer", HEADPHONES],
-        ["teclados-gamer", KEYBOARD],
-        ["mouses-gamer", MOUSE],
-        ["tarjetas-de-video", VIDEO_CARD],
-        ["placas-madre-pc", MOTHERBOARD],
-        ["procesadores", PROCESSOR],
-        ["todo-para-pc-gamer/memoria-ram", RAM],
-        ["almacenamiento-para-pc", SOLID_STATE_DRIVE],
-        ["gabinetes-gamer", COMPUTER_CASE],
-        ["todo-para-pc-gamer/refrigeracion", CPU_COOLER],
-        ["fuentes-de-poder", POWER_SUPPLY],
-        ["notebooks-gamers", NOTEBOOK],
+        ["componentes-pc/almacenamiento", SOLID_STATE_DRIVE],
+        ["componentes-pc/fuentes-de-poder", POWER_SUPPLY],
+        ["componentes-pc/gabinetes-gamer", COMPUTER_CASE],
+        ["componentes-pc/placas-madre", MOTHERBOARD],
+        ["componentes-pc/procesadores", PROCESSOR],
+        ["componentes-pc/memorias-ram", RAM],
+        ["componentes-pc/tarjetas-de-video", VIDEO_CARD],
+        ["componentes-pc/refrigeracion-pc", CPU_COOLER],
+        ["perifericos/audifonos-gamer", HEADPHONES],
+        ["perifericos/mouse-gamer", MOUSE],
+        ["perifericos/parlantes", STEREO_SYSTEM],
+        ["perifericos/teclado-gamer", KEYBOARD],
+        ["monitores/monitores-gamer", MONITOR],
+        ["mobiliario-gamer/sillas-gamer", GAMING_CHAIR],
+        ["mobiliario-gamer/sillones-gamer", GAMING_CHAIR],
     ]
 
     @classmethod
@@ -52,19 +51,23 @@ class CentralGamer(StoreWithUrlExtensions):
         while True:
             if page > 10:
                 raise Exception("page overflow: " + url_extension)
-            url_webpage = "https://www.centralgamer.cl/{}?page={}".format(
+            url_webpage = "https://centralgamer.cl/{}/page/{}".format(
                 url_extension, page
             )
+            print(url_webpage)
             data = session.get(url_webpage).text
             soup = BeautifulSoup(data, "lxml")
-            product_containers = soup.findAll("div", "product-block__wrapper")
+            # import ipdb
+
+            # ipdb.set_trace()
+            product_containers = soup.findAll("div", "product-wrapper")
             if not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
                 break
             for container in product_containers:
                 product_url = container.find("a")["href"]
-                product_urls.append("https://www.centralgamer.cl" + product_url)
+                product_urls.append(product_url)
             page += 1
         return product_urls
 
@@ -74,56 +77,20 @@ class CentralGamer(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        name = soup.find("h1", "product-heading__title").text
-        form = soup.find("form", "product-form")
-        if form:
-            key = form["action"].split("/")[-1]
-        else:
-            key = soup.find("meta", {"property": "og:id"})["content"]
-        span_sku = soup.find("span", "product-heading__detail--sku")
-        if span_sku:
-            sku = span_sku.text.replace("SKU: ", "")
-        else:
-            sku = None
+        name = soup.find("h2", "heading").text
+        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
+        stock_text = soup.find("meta", {"property": "og:availability"})["content"]
+        stock = -1 if stock_text == "instock" else 0
+        prices_html_tag = soup.find("div", "precio-info-raw")
+        prices_html = BeautifulSoup(prices_html_tag.text, "lxml")
+        price_tags = prices_html.findAll("span", "woocommerce-Price-amount")
+        normal_price = Decimal(remove_words(price_tags[0].text))
+        offer_price = Decimal(remove_words(price_tags[1].text))
+        sku = soup.find("span", "sku").text.strip()
+        picture_tags = soup.findAll("div", "swiper-slide zoom")
+        picture_urls = [x["data-src"] for x in picture_tags]
+        description = html_to_markdown(str(soup.find("div", "entry-product-section")))
 
-        description = html_to_markdown(str(soup.find("div", "product-description")))
-        stock_tag = soup.find("meta", {"property": "product:availability"})
-
-        if "PREVENTA" in description.upper():
-            stock = 0
-        elif stock_tag["content"] == "instock":
-            stock = -1
-        else:
-            stock = 0
-
-        price_tags = soup.findAll("h2", "product-heading__pricing")
-
-        if len(price_tags) % 2 == 0:
-            if "product-heading__pricing--has-discount" in price_tags[0]["class"]:
-                offer_price = Decimal(remove_words(price_tags[0].find("span").text))
-                normal_price = Decimal(remove_words(price_tags[1].find("span").text))
-            else:
-                offer_price = Decimal(remove_words(price_tags[0].text))
-                normal_price = Decimal(remove_words(price_tags[1].text))
-        elif len(price_tags) % 1 == 1:
-            if "product-heading__pricing--has-discount" in price_tags[0]["class"]:
-                offer_price = Decimal(remove_words(price_tags[0].find("span").text))
-            else:
-                offer_price = Decimal(remove_words(price_tags[0].text))
-            normal_price = offer_price
-        else:
-            raise Exception("Invalid price tags")
-
-        if not normal_price or not offer_price:
-            return []
-
-        picture_slider = soup.find("div", "product-gallery__slider")
-        if picture_slider:
-            picture_urls = [
-                tag["src"].split("?")[0] for tag in picture_slider.findAll("img")
-            ]
-        else:
-            picture_urls = [soup.find("div", "product-gallery").find("img")["data-src"]]
         p = Product(
             name,
             cls.__name__,
