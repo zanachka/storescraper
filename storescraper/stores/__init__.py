@@ -228,6 +228,7 @@ from .plaza_lama import PlazaLama
 from .plaza_vea import PlazaVea
 from .play_factory import PlayFactory
 from .play_power import PlayPower
+from .player_pro import PlayerPro
 from .portal_del_aire import PortalDelAire
 from .portatil_chile import PortatilChile
 from .power_play import PowerPlay
