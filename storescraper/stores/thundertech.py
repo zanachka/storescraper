@@ -139,7 +139,10 @@ class Thundertech(StoreWithUrlExtensions):
             for x in soup.findAll("img", "product-gallery__image")
             if validators.url(x["data-src"])
         ]
-        description = html_to_markdown(soup.find("div", "product-description").text)
+        description_tag = soup.find("div", "product-description")
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
+        )
 
         p = Product(
             name,
