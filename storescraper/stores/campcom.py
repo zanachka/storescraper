@@ -1,12 +1,8 @@
-from decimal import Decimal
-import json
-import logging
 import re
+from decimal import Decimal
 
-from bs4 import BeautifulSoup
 
 from storescraper.categories import (
-    MOUSE,
     SOLID_STATE_DRIVE,
     HEADPHONES,
     MOTHERBOARD,
@@ -17,77 +13,32 @@ from storescraper.categories import (
     RAM,
 )
 from storescraper.product import Product
-from storescraper.store import Store
-from storescraper.utils import (
-    get_price_from_price_specification,
-    html_to_markdown,
-    session_with_proxy,
-)
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
+from storescraper.utils import session_with_proxy
 
 
-class Campcom(Store):
-    @classmethod
-    def categories(cls):
-        return [
-            MOUSE,
-            SOLID_STATE_DRIVE,
-            HEADPHONES,
-            MOTHERBOARD,
-            PROCESSOR,
-            VIDEO_CARD,
-            POWER_SUPPLY,
-            CPU_COOLER,
-            RAM,
-        ]
+class Campcom(StoreWithUrlExtensions):
+    url_extensions = [
+        ("PROCESADORES", PROCESSOR),
+        ("PLACAS MADRE", MOTHERBOARD),
+        ("TARJETAS DE VIDEO", VIDEO_CARD),
+        ("REFRIGERACIÓN", CPU_COOLER),
+        ("FUENTES DE PODER", POWER_SUPPLY),
+        ("OTROS", HEADPHONES),
+        ("RAM", RAM),
+        ("SSD", SOLID_STATE_DRIVE),
+    ]
 
     @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        category_paths = [
-            ("componentes", MOUSE),
-            ("ssd", SOLID_STATE_DRIVE),
-            ("mouse", MOUSE),
-            ("perifericos", HEADPHONES),
-            ("placas-madre", MOTHERBOARD),
-            ("procesadores", PROCESSOR),
-            ("tarjetas-de-video", VIDEO_CARD),
-            ("fuentes-de-poder", POWER_SUPPLY),
-            ("placas-madre-mobo", MOTHERBOARD),
-            ("refrigeracion-pcs", CPU_COOLER),
-            ("memoria-ram", RAM),
-        ]
-
-        session = session_with_proxy(extra_args)
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         product_urls = []
+        for entry in extra_args["products"]:
 
-        for category_path, local_category in category_paths:
-            if local_category != category:
+            if entry["prd_categoria"] != url_extension:
                 continue
-
-            page = 1
-            while True:
-                if page > 10:
-                    raise Exception("Page overflow: " + category_path)
-                url_webpage = (
-                    "https://campcom.cl/categoria-producto/{}/"
-                    "page/{}/".format(category_path, page)
-                )
-                print(url_webpage)
-                response = session.get(url_webpage)
-
-                if response.status_code == 404:
-                    if page == 1:
-                        logging.warning("Empty category: " + url_webpage)
-
-                    break
-
-                soup = BeautifulSoup(response.text, "lxml")
-                product_containers = soup.findAll("li", "type-product")
-
-                for container in product_containers:
-                    product_url = container.find("a")["href"]
-                    product_urls.append(product_url)
-
-                page += 1
+            slug = entry["prd_title"].lower().replace(" ", "-")
+            product_url = f"https://campcom.cl/producto/{slug}"
+            product_urls.append(product_url)
 
         return product_urls
 
@@ -95,45 +46,31 @@ class Campcom(Store):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        response = session.get(url)
+        match = re.search(r"https://campcom.cl/producto/(.+)", url)
+        slug = match.groups()[0]
+        print(slug)
+        # hardcoded for now
+        title = "Procesador Intel Core Ultra 5-245K"
 
-        soup = BeautifulSoup(response.text, "lxml")
-
-        if "Error 404: Página no encontrada" in soup.text:
-            return []
-
-        key = soup.find("link", {"rel": "shortlink"})["href"].split("=")[-1]
-        soup_json = soup.findAll("script", {"type": "application/ld+json"})
-
-        json_data = json.loads(soup_json[-1].text)
-
-        if "name" not in json_data:
-            return []
-
-        name = json_data["name"]
-        sku = str(json_data["sku"])
-        price = get_price_from_price_specification(json_data)
-        stock_span = soup.find("span", "stock in-stock")
-
-        if soup.find("p", "available-on-backorder") or soup.find(
-            "p", "stock out-of-stock"
-        ):
-            stock = 0
-        elif stock_span:
-            stock = int(re.search(r"\d+", stock_span.text).group())
+        for entry in extra_args["products"]:
+            if entry["prd_title"] == title:
+                matching_entry = entry
+                break
         else:
-            stock = -1
+            raise Exception("No matching product found")
 
-        picture_urls = []
-        picture_container = soup.find("div", "woocommerce-product-gallery__wrapper")
-
-        for a in picture_container.findAll("a"):
-            if a["href"] != "":
-                picture_urls.append(a["href"])
-
-        description = html_to_markdown(
-            soup.find("div", "woocommerce-Tabs-panel--description").text
-        )
+        endpoint = f"https://campcom.cl/api/v2/products/{matching_entry['prd_id']}"
+        product_data = session.get(endpoint).json()
+        name = product_data["prd_title"]
+        key = str(product_data["prd_id"])
+        stock = product_data["prd_quantity"]
+        offer_price = Decimal(product_data["prd_price"])
+        normal_price = (offer_price * Decimal("1.04")).quantize(0)
+        sku = product_data["prd_sku"]
+        picture_urls = [
+            f"https://campcom.cl/api/files/productos/{product_data['prd_image']}"
+        ]
+        description = product_data["prd_description"]
 
         p = Product(
             name,
@@ -143,8 +80,8 @@ class Campcom(Store):
             url,
             key,
             stock,
-            price,
-            price,
+            normal_price,
+            offer_price,
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
@@ -152,3 +89,9 @@ class Campcom(Store):
         )
 
         return [p]
+
+    @classmethod
+    def preflight(cls, extra_args=None):
+        session = session_with_proxy(extra_args)
+        products_json = session.get("https://campcom.cl/api/v2/products").json()["list"]
+        return {"products": products_json}
