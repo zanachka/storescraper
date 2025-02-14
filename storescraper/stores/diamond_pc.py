@@ -31,7 +31,12 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import remove_words, session_with_proxy, html_to_markdown
+from storescraper.utils import (
+    get_price_from_price_specification,
+    remove_words,
+    session_with_proxy,
+    html_to_markdown,
+)
 
 
 class DiamondPc(StoreWithUrlExtensions):
@@ -183,7 +188,7 @@ class DiamondPc(StoreWithUrlExtensions):
 
             return products
 
-        offer_price = Decimal(product_data["offers"][0]["price"]).quantize(0)
+        offer_price = get_price_from_price_specification(product_data)
         second_price = soup.find("div", "wds-second price wds-below")
 
         if second_price:
