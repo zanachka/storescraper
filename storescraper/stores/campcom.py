@@ -13,7 +13,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import session_with_proxy, html_to_markdown
 
 
 class Campcom(StoreWithUrlExtensions):
@@ -56,12 +56,12 @@ class Campcom(StoreWithUrlExtensions):
         key = str(product_data["prd_id"])
         stock = product_data["prd_quantity"]
         offer_price = Decimal(product_data["prd_price"])
-        normal_price = (offer_price * Decimal("1.04")).quantize(0)
+        normal_price = Decimal(matching_entry["prd_price_tarjeta"]).quantize(0)
         sku = product_data["prd_sku"]
         picture_urls = [
             f"https://campcom.cl/api/files/productos/{product_data['prd_image'].replace(' ', '%20')}"
         ]
-        description = product_data["prd_description"]
+        description = html_to_markdown(product_data["prd_description"])
 
         p = Product(
             name,
