@@ -1,4 +1,3 @@
-import re
 from decimal import Decimal
 
 
@@ -33,42 +32,34 @@ class Campcom(StoreWithUrlExtensions):
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         product_urls = []
         for entry in extra_args["products"]:
-
             if entry["prd_categoria"] != url_extension:
                 continue
-            slug = entry["prd_title"].lower().replace(" ", "-")
-            product_url = f"https://campcom.cl/producto/{slug}"
-            product_urls.append(product_url)
+            product_urls.append(entry["prd_url"])
 
         return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
-        match = re.search(r"https://campcom.cl/producto/(.+)", url)
-        slug = match.groups()[0]
-        print(slug)
-        # hardcoded for now
-        title = "Procesador Intel Core Ultra 5-245K"
 
         for entry in extra_args["products"]:
-            if entry["prd_title"] == title:
+            if entry["prd_url"] == url:
                 matching_entry = entry
                 break
         else:
             raise Exception("No matching product found")
 
+        session = session_with_proxy(extra_args)
         endpoint = f"https://campcom.cl/api/v2/products/{matching_entry['prd_id']}"
         product_data = session.get(endpoint).json()
-        name = product_data["prd_title"]
+        name = product_data["prd_title"].strip()
         key = str(product_data["prd_id"])
         stock = product_data["prd_quantity"]
         offer_price = Decimal(product_data["prd_price"])
         normal_price = (offer_price * Decimal("1.04")).quantize(0)
         sku = product_data["prd_sku"]
         picture_urls = [
-            f"https://campcom.cl/api/files/productos/{product_data['prd_image']}"
+            f"https://campcom.cl/api/files/productos/{product_data['prd_image'].replace(' ', '%20')}"
         ]
         description = product_data["prd_description"]
 
@@ -93,5 +84,7 @@ class Campcom(StoreWithUrlExtensions):
     @classmethod
     def preflight(cls, extra_args=None):
         session = session_with_proxy(extra_args)
-        products_json = session.get("https://campcom.cl/api/v2/products").json()["list"]
+        products_json = session.get(
+            "https://campcom.cl/api/v2/products/solotodo"
+        ).json()["list"]
         return {"products": products_json}
