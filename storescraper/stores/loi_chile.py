@@ -1,6 +1,8 @@
 import logging
 from decimal import Decimal
 import math
+
+import validators
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
@@ -120,15 +122,20 @@ class LoiChile(StoreWithUrlExtensions):
         if not offer_price or offer_price > price:
             offer_price = price
 
+        slug = soup.find("link", {"rel": "canonical"})["href"].split("/")[-1]
         picture_urls = []
         picture_response = session.get(
-            f"https://loi.com.uy/index.php?ctrl=productos&urlseo=smart-tv-lg-4k-43ur7800psb"
+            f"https://loichile.cl/index.php?ctrl=productos&urlseo={slug}"
         )
 
         for picture in picture_response.json()["multimedia"]:
-            picture_urls.append(
-                f"https://{cls.IMAGE_DOMAIN}.cloudfront.net/{picture['url']}"
+            picture_url = (
+                f"https://{cls.IMAGE_DOMAIN}.cloudfront.net/{picture['url']}".replace(
+                    " ", "%20"
+                )
             )
+            if validators.url(picture_url):
+                picture_urls.append(picture_url)
 
         description = html_to_markdown(
             soup.find("div", {"id": "contenedor-ficha"}).text
