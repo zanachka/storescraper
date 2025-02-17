@@ -831,7 +831,7 @@ class Falabella(Store):
         brand = product_data["brandName"] or "Genérico"
         base_name = "{} {}".format(brand, product_data["name"])
         # Remove weird unicode characters
-        base_name = base_name.encode("ascii", "ignore").decode("ascii")
+        # base_name = base_name.encode("ascii", "ignore").decode("ascii")
 
         products = []
 
@@ -974,10 +974,10 @@ class Falabella(Store):
                 for x in model["medias"]
                 if validators.url(x["url"])
             ]
-            model_name = model["name"].encode("ascii", "ignore").decode("ascii")
+            # model_name = model["name"].encode("ascii", "ignore").decode("ascii")
 
             p = Product(
-                "{} ({})".format(base_name, model_name)[:200],
+                "{} ({})".format(base_name, model["name"])[:200],
                 cls.__name__,
                 category,
                 sku_url,
