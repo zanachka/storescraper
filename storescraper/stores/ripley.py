@@ -584,7 +584,7 @@ class Ripley(Store):
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
-        session = cls.get_session(extra_args)(extra_args)
+        session = cls.get_session(extra_args)
         session.headers["Content-Type"] = "application/json"
 
         filters = []
