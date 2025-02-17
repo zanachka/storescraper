@@ -334,6 +334,13 @@ class Easy(Store):
             return []
 
         description = html_to_markdown(response["description"])
+        description += "\n"
+
+        specs_keys_blacklist = response.get("allSpecificationsGroups", [])
+        for key, value in response.get("specifications", {}).items():
+            if key in specs_keys_blacklist:
+                continue
+            description += f"{key}: {', '.join([str(x) for x in value])}\n"
 
         p = Product(
             name,

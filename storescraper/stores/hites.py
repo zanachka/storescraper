@@ -479,7 +479,7 @@ class Hites(Store):
         ]
 
         product_entries = defaultdict(lambda: [])
-        session = requests.Session(impersonate="chrome120")
+        session = cls.get_session()
 
         for e in category_paths:
             category_path, local_categories, section_name, category_weight = e
@@ -547,7 +547,7 @@ class Hites(Store):
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
-        session = requests.Session(impersonate="chrome120")
+        session = cls.get_session()
         product_urls = []
 
         page = 1
@@ -585,7 +585,7 @@ class Hites(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = requests.Session(impersonate="chrome120")
+        session = cls.get_session()
         response = session.get(url, timeout=60)
 
         if response.status_code in [404, 410]:
@@ -809,7 +809,7 @@ class Hites(Store):
             #  'tecnologia/audio/soundbar-y-home-theater']
         ]
 
-        session = requests.Session(impersonate="chrome120")
+        session = cls.get_session()
         banners = []
 
         for section, subsection, subsection_type, url_suffix in sections_data:
@@ -849,3 +849,7 @@ class Hites(Store):
                         }
                     )
         return banners
+
+    @classmethod
+    def get_session(cls, extra_args=None):
+        return requests.Session(impersonate="chrome120")
