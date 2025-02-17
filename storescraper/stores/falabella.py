@@ -815,37 +815,16 @@ class Falabella(Store):
             return []
 
         product_data = page_props["productData"]
-        specification_tag = soup.find("div", "productInfoContainer")
         long_description = product_data["longDescription"]
 
         if long_description:
-            description_soup = BeautifulSoup(unescape(long_description), "lxml")
+            description_soup = BeautifulSoup(unescape(long_description), "html5lib")
+            description = html_to_markdown(str(description_soup))
         else:
-            description_soup = None
+            description = ""
 
-        panels = [specification_tag, description_soup]
-        video_urls = []
-        description = ""
-
-        for panel in panels:
-            if not panel:
-                continue
-
-            description += html_to_markdown(str(panel))
-
-            for iframe in panel.findAll("iframe"):
-                if "src" not in iframe.attrs:
-                    continue
-
-                match = re.search(r"//www.youtube.com/embed/(.+)\?", iframe["src"])
-                if not match:
-                    match = re.search(r"//www.youtube.com/embed/(.+)", iframe["src"])
-                if match:
-                    video_url = "https://www.youtube.com/watch?v={}".format(
-                        match.groups()[0].strip()
-                    )
-                    if validators.url(video_url):
-                        video_urls.append(video_url)
+        for spec in product_data["attributes"]["specifications"]:
+            description += f"\n{spec['name']}: {spec['value']}"
 
         slug = product_data["slug"]
         publication_id = product_data["id"]
@@ -1010,7 +989,6 @@ class Falabella(Store):
                 "CLP",
                 sku=sku,
                 picture_urls=picture_urls,
-                video_urls=video_urls,
                 review_count=review_count,
                 review_avg_score=review_avg_score,
                 condition=condition,
