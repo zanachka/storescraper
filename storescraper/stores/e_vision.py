@@ -12,37 +12,33 @@ from storescraper.utils import session_with_proxy
 class EVision(Store):
     @classmethod
     def categories(cls):
-        return [
-            WASHING_MACHINE
-        ]
+        return [WASHING_MACHINE]
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
-        url_extensions = [
-            WASHING_MACHINE
-        ]
+        url_extensions = [WASHING_MACHINE]
+
         session = session_with_proxy(extra_args)
-        session.headers['user-agent'] = 'curl/7.68.0'
+        session.headers["user-agent"] = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
+        )
+        session.headers["content-type"] = "text/plain;charset=UTF-8"
         product_urls = []
+        payload = '{"keyword": "lg", "apifor": "web"}'
 
         for local_category in url_extensions:
             if local_category != category:
                 continue
 
-            url_webpage = 'https://www.evisionstore.com/api/product/' \
-                          'onlineproducts-react.php'
-            res = session.get(url_webpage)
-            product_containers = json.loads(res.text)['online_products_all']
+            url_webpage = "https://api.evisionstore.com/v1/search-products"
+            res = session.post(url_webpage, payload)
+            products = json.loads(res.text)["data"]["search_data"]
 
-            if not product_containers:
-                raise Exception('Empty')
-
-            for container in product_containers:
-                if container['brand'] != 'lg':
+            for product in products:
+                if product["brand"] != "lg":
                     continue
-                product_url = 'https://www.evisionstore.com/producto/' + \
-                              container['modelo']
-                product_urls.append(product_url)
+
+                product_urls.append(product["product_link"])
 
         return product_urls
 
@@ -50,36 +46,36 @@ class EVision(Store):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        session.headers['user-agent'] = 'curl/7.68.0'
-        url_request = 'https://www.evisionstore.com/api/product/view-react.php'
-        data = json.dumps({'model_number': url.split('producto/')[1]})
+        session.headers["user-agent"] = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
+        )
+        session.headers["content-type"] = "text/plain;charset=UTF-8"
+        data = {"model_number": url.split("/")[-1], "source_type": "web"}
+        response = session.post(
+            "https://api.evisionstore.com/v1/product-detail",
+            json.dumps(data),
+        )
+        response_data = json.loads(response.text)
 
-        max_tries = 3
-        while max_tries > 0:
-            try:
-                response = session.post(url_request, data=data).text
-                break
-            except Exception:
-                max_tries -= 1
-                if max_tries == 0:
-                    return []
-                time.sleep(3)
+        if not "data" in response_data:
+            return []
 
-        json_container = json.loads(response)
-        name = json_container['product_view'][0]['product_name']
-        sku = json_container['product_view'][0]['product_id']
-        if json_container['product_view'][0]['allow_purchase'] == '0':
+        product_data = response_data["data"]["product_view"][0]
+        name = product_data["product_name"]
+        sku = str(product_data["product_id"])
+
+        if product_data["allow_purchase"] == "0":
             stock = 0
         else:
             stock = -1
 
-        price = Decimal(json_container['product_view'][0]['price']
-                        .replace('$', '').replace(',', '').strip())
+        price = Decimal(product_data["price"].replace("$", "").replace(",", "").strip())
 
-        picture_urls = [json_container['product_view'][0]['product_image']]
+        if price == 0:
+            return []
 
-        description = json_container['product_view'][0][
-            'short_description'].strip()
+        picture_urls = [product_data["product_image"]]
+        description = product_data["short_description"].strip()
 
         p = Product(
             name,
@@ -91,10 +87,10 @@ class EVision(Store):
             stock,
             price,
             price,
-            'USD',
+            "USD",
             sku=sku,
             picture_urls=picture_urls,
-            description=description
+            description=description,
         )
 
         return [p]
