@@ -7,7 +7,7 @@ from celery.utils.log import get_task_logger
 
 
 from .product import Product
-from .utils import get_store_class_by_name, chunks
+from .utils import get_store_class_by_name, chunks, session_with_proxy
 
 logger = get_task_logger(__name__)
 
@@ -431,6 +431,13 @@ class Store:
         # is merged with the "extra_args" available in the "discover" methods
         # above or products_for_url.
         return {}
+
+    @classmethod
+    def get_session(cls, extra_args=None):
+        # Returns the requests session that should be used for the HTTP requests
+        # made by the scraper. This is useful for tools outside storescraper that
+        # may want to fetch the raw HTTP response for some product or category path
+        return session_with_proxy(extra_args)
 
     ##########################################################################
     # Utility methods

@@ -342,7 +342,7 @@ class Ripley(Store):
     @classmethod
     def discover_entries_for_category(cls, category, extra_args=None):
         category_paths = cls.category_paths
-        session = cf_session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         fast_mode = extra_args and extra_args.get("fast_mode", False)
         product_entries = defaultdict(lambda: [])
 
@@ -415,11 +415,7 @@ class Ripley(Store):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
 
-        session = cf_session_with_proxy(extra_args)
-
-        if extra_args and "user-agent" in extra_args:
-            session.headers["user-agent"] = extra_args["user-agent"]
-
+        session = cls.get_session(extra_args)
         response = session.get(url, allow_redirects=True, timeout=60).text
         soup = BeautifulSoup(response, "lxml")
         product_data = re.search(r"window.__PRELOADED_STATE__ = (.+);", response)
@@ -588,14 +584,12 @@ class Ripley(Store):
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
-        session = cf_session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)(extra_args)
         session.headers["Content-Type"] = "application/json"
 
         filters = []
 
         if extra_args:
-            if "user-agent" in extra_args:
-                session.headers["user-agent"] = extra_args["user-agent"]
             if "brand_filter" in extra_args:
                 filters.append(
                     {
@@ -804,10 +798,7 @@ class Ripley(Store):
                     url, section, subsection, subsection_type, extra_args
                 )
             elif subsection_type == bs.SUBSECTION_TYPE_MOSAIC:
-                session = cf_session_with_proxy(extra_args)
-
-                if extra_args and "user-agent" in extra_args:
-                    session.headers["user-agent"] = extra_args["user-agent"]
+                session = cls.get_session(extra_args)
 
                 response = session.get(url)
                 soup = BeautifulSoup(response.text, "lxml")
@@ -853,11 +844,8 @@ class Ripley(Store):
 
     @classmethod
     def get_owl_banners(cls, url, section, subsection, subsection_type, extra_args):
-        session = cf_session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         banners = []
-
-        if extra_args and "user-agent" in extra_args:
-            session.headers["user-agent"] = extra_args["user-agent"]
 
         if subsection_type == bs.SUBSECTION_TYPE_HOME:
             response = session.get(
@@ -1007,3 +995,7 @@ class Ripley(Store):
             page += 1
 
         return reviews
+
+    @classmethod
+    def get_session(cls, extra_args=None):
+        return cf_session_with_proxy(extra_args)
