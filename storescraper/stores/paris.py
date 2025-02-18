@@ -434,7 +434,9 @@ class Paris(Store):
                 video_urls.extend(flix_videos)
                 flixmedia_id = mpn
 
-        description = html_to_markdown(str(soup.find("ul", "pdp-product-info")))
+        description = html_to_markdown(
+            str(soup.find("table", "table-data-product-details"))
+        )
 
         reviews_endpoint = (
             "https://api.bazaarvoice.com/data/display/"

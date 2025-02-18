@@ -148,6 +148,9 @@ def session_with_proxy(extra_args):
         if "user-agent" in extra_args:
             session.headers["User-Agent"] = extra_args["user-agent"]
 
+        if "verify" in extra_args:
+            session.verify = extra_args["verify"]
+
     return session
 
 

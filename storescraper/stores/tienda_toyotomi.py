@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from decimal import Decimal
 
 from storescraper.product import Product
-from storescraper.store import Store
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy
 from storescraper.categories import (
     AIR_CONDITIONER,
@@ -16,64 +16,52 @@ from storescraper.categories import (
 )
 
 
-class TiendaToyotomi(Store):
-    @classmethod
-    def categories(cls):
-        return [AIR_CONDITIONER, OVEN, VACUUM_CLEANER, SPACE_HEATER, KITCHEN_APPLIANCE]
+class TiendaToyotomi(StoreWithUrlExtensions):
+    url_extensions = [
+        ["calefaccion", SPACE_HEATER],
+        ["ventilacion/aire-acondicionado", AIR_CONDITIONER],
+        ["electrodomesticos", KITCHEN_APPLIANCE],
+        ["electro-hogar/electrodomesticos/aspiradoras", VACUUM_CLEANER],
+        ["electro-hogar/electrodomesticos/hornos-electricos", OVEN],
+        ["electro-hogar/electrodomesticos/microondas", OVEN],
+    ]
 
     @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        category_paths = [
-            ["calefaccion", SPACE_HEATER],
-            ["ventilacion/aire-acondicionado", AIR_CONDITIONER],
-            ["electrodomesticos", KITCHEN_APPLIANCE],
-            ["electro-hogar/electrodomesticos/aspiradoras", VACUUM_CLEANER],
-            ["electro-hogar/electrodomesticos/hornos-electricos", OVEN],
-            ["electro-hogar/electrodomesticos/microondas", OVEN],
-        ]
-
-        session = session_with_proxy(extra_args)
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
+        session = cls.get_session(extra_args)
         product_urls = []
+        page = 1
 
-        for category_path, local_category in category_paths:
-            if local_category != category:
-                continue
+        while True:
+            if page >= 15:
+                raise Exception("Page overflow")
 
-            page = 1
+            category_url = "https://toyotomi.cl/product-category/{}/" "page/{}".format(
+                url_extension, page
+            )
+            print(category_url)
 
-            while True:
-                if page >= 15:
-                    raise Exception("Page overflow")
+            soup = BeautifulSoup(session.get(category_url).text, "lxml")
 
-                category_url = (
-                    "https://toyotomi.cl/product-category/{}/"
-                    "page/{}".format(category_path, page)
-                )
-                print(category_url)
+            product_containers = soup.findAll("li", "product")
 
-                soup = BeautifulSoup(
-                    session.get(category_url, verify=False).text, "lxml"
-                )
+            if not product_containers:
+                if page == 1:
+                    logging.warning("Empty path: {}".format(category_url))
+                break
 
-                product_containers = soup.findAll("li", "product")
+            for container in product_containers:
+                product_url = container.find("a")["href"]
+                product_urls.append(product_url)
 
-                if not product_containers:
-                    if page == 1:
-                        logging.warning("Empty path: {}".format(category_url))
-                    break
-
-                for container in product_containers:
-                    product_url = container.find("a")["href"]
-                    product_urls.append(product_url)
-
-                page += 1
+            page += 1
 
         return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
-        session = session_with_proxy(extra_args)
-        soup = BeautifulSoup(session.get(url, verify=False).text, "lxml")
+        session = cls.get_session(extra_args)
+        soup = BeautifulSoup(session.get(url).text, "lxml")
 
         data = soup.findAll("script", {"type": "application/ld+json"})[-1]
 
@@ -121,3 +109,9 @@ class TiendaToyotomi(Store):
         )
 
         return [p]
+
+    @classmethod
+    def get_session(cls, extra_args=None):
+        extra_args = extra_args or {}
+        extra_args["verify"] = False
+        return session_with_proxy(extra_args)
