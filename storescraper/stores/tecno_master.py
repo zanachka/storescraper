@@ -186,7 +186,9 @@ class TecnoMaster(Store):
         description_tag = soup.find("div", {"id": "tab-description"}) or soup.find(
             "div", "woocommerce-product-details__short-description"
         )
-        description = html_to_markdown(description_tag.text)
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
+        )
 
         p = Product(
             name,
