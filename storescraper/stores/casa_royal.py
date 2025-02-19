@@ -133,7 +133,13 @@ class CasaRoyal(StoreWithUrlExtensions):
         key = product_specs["productId"]
         name = product_specs["productName"]
         sku = product_specs["productReference"]
-        description = html_to_markdown(product_specs.get("description", None))
+        description = html_to_markdown(
+            str(
+                soup.find(
+                    "div", "vtex-flex-layout-0-x-flexRowContent--product-specifications"
+                )
+            )
+        )
 
         pricing_key = "${}.items.0.sellers.0.commertialOffer".format(base_json_key)
         pricing_data = product_data[pricing_key]
