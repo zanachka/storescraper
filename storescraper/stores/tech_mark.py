@@ -73,6 +73,10 @@ class TechMark(StoreWithUrlExtensions):
         price = Decimal(
             soup.find("meta", {"property": "product:price:amount"})["content"]
         )
+
+        if price == 0:
+            return []
+
         picture_urls = [
             x.find("img")["src"] for x in soup.findAll("div", "carousel-item")
         ]
