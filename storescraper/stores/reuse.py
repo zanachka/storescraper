@@ -88,6 +88,10 @@ class Reuse(StoreWithUrlExtensions):
             key = str(variant["id"])
             stock = -1 if variant["available"] else 0
             price = Decimal(variant["price"] / 100)
+
+            if price > Decimal("100000000"):
+                continue
+
             picture_urls = [
                 "https:" + tag.split("?v")[0] for tag in product_json["images"]
             ]
