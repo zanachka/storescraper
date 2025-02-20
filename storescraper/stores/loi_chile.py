@@ -137,9 +137,16 @@ class LoiChile(StoreWithUrlExtensions):
             if validators.url(picture_url):
                 picture_urls.append(picture_url)
 
-        description = html_to_markdown(
-            soup.find("div", {"id": "contenedor-ficha"}).text
+        description_endpoint = f"https://loichile.cl/index.php?ctrl=productos&act=obtenerPlantillaConAtributos&productoId={sku}"
+        description_response = session.get(description_endpoint)
+        description_soup = BeautifulSoup(
+            description_response.content.decode("unicode-escape")
+            .replace(r"\/", "/")
+            .strip()[1:-1],
+            "lxml",
         )
+
+        description = html_to_markdown(str(description_soup))
 
         p = Product(
             name,

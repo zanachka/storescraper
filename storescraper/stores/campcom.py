@@ -32,7 +32,7 @@ class Campcom(StoreWithUrlExtensions):
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         product_urls = []
         for entry in extra_args["products"]:
-            if entry["prd_categoria"] != url_extension or entry["prd_url"] == None:
+            if entry["prd_categoria"] != url_extension or entry["prd_url"] is None:
                 continue
 
             product_urls.append(entry["prd_url"])
