@@ -59,10 +59,7 @@ class PlayPower(StoreWithUrlExtensions):
                     soup.find("div", "product__description").text
                 )
 
-                if (
-                    variant["available"]
-                    and "compra internacional" not in description.lower()
-                ):
+                if variant["available"] and "internacional" not in description.lower():
                     stock = -1
                 else:
                     stock = 0
