@@ -78,28 +78,55 @@ class BodegaOportunidades(StoreWithUrlExtensions):
         soup = BeautifulSoup(response.text, "lxml")
         products = []
         products_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[2].text
+            soup.find("script", {"type": "application/ld+json"}).text
+        )
+        name = products_data["name"]
+        picture_urls = [
+            f"https:{img['src']}"
+            for img in soup.find("div", "product-gallery__carousel-wrapper").findAll(
+                "img"
+            )
+        ]
+        description = html_to_markdown(products_data["description"])
+        condition = (
+            "https://schema.org/NewCondition"
+            if "Estado del producto : Nuevo" in description
+            else "https://schema.org/RefurbishedCondition"
         )
 
-        for offer in products_data["offers"]:
-            name = products_data["name"]
-            key = offer["url"].split("?variant=")[1]
-            sku = offer.get("sku", None)
+        if "hasVariant" in products_data:
+            for variant in products_data["hasVariant"]:
+                name = variant["name"]
+                key = variant["@id"].split("?variant=")[-1].split("#variant")[0]
+                sku = variant.get("sku")
+                offer = variant["offers"]
+                price = Decimal(offer["price"])
+                stock = (
+                    -1 if offer["availability"] == "http://schema.org/InStock" else 0
+                )
+                p = Product(
+                    name,
+                    cls.__name__,
+                    category,
+                    url,
+                    url,
+                    key,
+                    stock,
+                    price,
+                    price,
+                    "CLP",
+                    sku=sku,
+                    picture_urls=picture_urls,
+                    description=description,
+                    condition=condition,
+                )
+                products.append(p)
+        else:
+            sku = products_data.get("sku", None)
+            offer = products_data["offers"]
+            key = offer["url"].split("?variant=")[-1].split("#variant")[0]
             price = Decimal(offer["price"])
-            stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
-            picture_urls = [
-                f"https:{img['src']}"
-                for img in soup.find(
-                    "div", "product-gallery__carousel-wrapper"
-                ).findAll("img")
-            ]
-            description = html_to_markdown(products_data["description"])
-
-            if "Estado del producto : Nuevo" in description:
-                condition = "https://schema.org/NewCondition"
-            else:
-                condition = "https://schema.org/RefurbishedCondition"
-
+            stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
             p = Product(
                 name,
                 cls.__name__,
