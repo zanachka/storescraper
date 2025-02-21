@@ -262,6 +262,7 @@ from .sodimac import Sodimac
 from .sodimac_peru import SodimacPeru
 from .sodimac_uruguay import SodimacUruguay
 from .sony_store import SonyStore
+from .sotecno import Sotecno
 from .sp_digital import SpDigital
 from .spider import Spider
 from .sukasa import Sukasa
