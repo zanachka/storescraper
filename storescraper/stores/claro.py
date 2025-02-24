@@ -4,6 +4,8 @@ from decimal import Decimal
 
 import pyjson5
 from bs4 import BeautifulSoup
+
+from storescraper.categories import CELL, CELL_PLAN
 from storescraper.product import Product
 from storescraper.store import Store
 from storescraper.utils import session_with_proxy, remove_words
@@ -26,13 +28,13 @@ class Claro(Store):
 
     @classmethod
     def categories(cls):
-        return ["Cell", "CellPlan"]
+        return [CELL, CELL_PLAN]
 
     @classmethod
     def discover_entries_for_category(cls, category, extra_args=None):
         discovered_entries = defaultdict(lambda: [])
 
-        if category == "CellPlan":
+        if category == CELL_PLAN:
             discovered_entries[cls.prepago_url].append(
                 {"category_weight": 1, "section_name": "Planes", "value": 1}
             )
@@ -40,7 +42,7 @@ class Claro(Store):
             discovered_entries[cls.planes_url].append(
                 {"category_weight": 1, "section_name": "Planes", "value": 2}
             )
-        if category == "Cell":
+        if category == CELL:
             cell_urls = cls._discover_cells(extra_args)
             for idx, cell_url in enumerate(cell_urls):
                 discovered_entries[cell_url].append(
@@ -117,7 +119,7 @@ class Claro(Store):
             products.extend(planes)
         else:
             # Celular
-            cells = cls._celular_postpago(url, extra_args)
+            cells = cls._celular_postpago(url, category, extra_args)
             products.extend(cells)
         return products
 
@@ -158,7 +160,7 @@ class Claro(Store):
                         Product(
                             name,
                             cls.__name__,
-                            "CellPlan",
+                            CELL_PLAN,
                             plan_url,
                             url,
                             name,
@@ -172,8 +174,9 @@ class Claro(Store):
         return products
 
     @classmethod
-    def _celular_postpago(cls, url, extra_args):
+    def _celular_postpago(cls, url, category, extra_args):
         print(url)
+        extra_args = extra_args or {}
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
@@ -224,7 +227,11 @@ class Claro(Store):
 
             combination_type = data["attrSwatchFlujo"]
 
-            if combination_type in ["PE_MIGRA", "REB", "RET", ""]:
+            combination_types = extra_args.get(
+                "combination_types", ["PRE", "PE_LN", "PEB", "PE_PORTA"]
+            )
+
+            if combination_type not in combination_types:
                 # Renovación or Default
                 continue
 
@@ -248,7 +255,7 @@ class Claro(Store):
                     Product(
                         name,
                         cls.__name__,
-                        "Cell",
+                        category,
                         url,
                         url,
                         "{} - {}".format(product_id, "Claro Prepago"),
@@ -270,7 +277,7 @@ class Claro(Store):
                         Product(
                             name,
                             cls.__name__,
-                            "Cell",
+                            category,
                             url,
                             url,
                             "{} - {}".format(product_id, cell_plan_name),
@@ -304,7 +311,7 @@ class Claro(Store):
                         Product(
                             name,
                             cls.__name__,
-                            "Cell",
+                            category,
                             url,
                             url,
                             "{} - {}".format(product_id, cell_plan_name),
@@ -328,7 +335,7 @@ class Claro(Store):
                         Product(
                             name,
                             cls.__name__,
-                            "Cell",
+                            category,
                             url,
                             url,
                             "{} - {}".format(product_id, cell_plan_name),
@@ -342,6 +349,23 @@ class Claro(Store):
                             allow_zero_prices=True,
                         )
                     )
+            elif combination_type == "":
+                # Default (Accesories)
+                products.append(
+                    Product(
+                        name,
+                        cls.__name__,
+                        category,
+                        url,
+                        url,
+                        str(product_id),
+                        stock,
+                        price,
+                        price,
+                        "CLP",
+                        picture_urls=picture_urls,
+                    )
+                )
             else:
                 raise Exception("Invalid switch:" + combination_type)
 
