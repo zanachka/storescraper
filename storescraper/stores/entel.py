@@ -119,6 +119,9 @@ class Entel(Store):
             base_plan_name = plan_data["product_name"]
             price = Decimal(plan_data["product_price"])
 
+            if price == 0:
+                continue
+
             for suffix in ["", " Portabilidad"]:
                 name = f"{base_plan_name}{suffix}"
                 products.append(

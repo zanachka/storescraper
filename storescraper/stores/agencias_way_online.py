@@ -96,6 +96,7 @@ class AgenciasWayOnline(Store):
         key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
         name = soup.find("h2", "product_title").text
         containers = soup.find_all("div", class_="elementor-widget-container")
+        model = None
 
         for container in containers:
             bold_tag = container.find("b")
@@ -109,10 +110,23 @@ class AgenciasWayOnline(Store):
                 elif text == "modelo:":
                     model = text_value
 
-        name = f"{model} - {name}"
-        price = Decimal(
-            remove_words(soup.find("p", "price").find("bdi").text, blacklist=["Q", ","])
-        )
+        if not model:
+            name = soup.find("h2", "entry-title").text
+            price = Decimal(
+                remove_words(
+                    soup.find("p", "price").findAll("bdi")[1].text, blacklist=["Q", ","]
+                )
+            )
+            part_number = None
+        else:
+            name = f"{model} - {name}"
+            price = Decimal(
+                remove_words(
+                    soup.find("p", "price").find("bdi").text, blacklist=["Q", ","]
+                )
+            )
+            part_number = model
+
         stock_tag = soup.find("span", "awl-inner-text")
         stock = 0 if stock_tag and stock_tag.text.lower() == "¡agotado!" else -1
         description_tag = soup.findAll("div", "elementor-widget-n-accordion")[1]
@@ -134,7 +148,7 @@ class AgenciasWayOnline(Store):
             sku=sku,
             picture_urls=picture_urls,
             description=description,
-            part_number=model,
+            part_number=part_number,
         )
 
         return [p]
