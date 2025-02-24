@@ -7,7 +7,6 @@ from storescraper.utils import (
     session_with_proxy,
     html_to_markdown,
     remove_words,
-    get_price_from_price_specification,
 )
 from storescraper.categories import (
     STORAGE_DRIVE,
