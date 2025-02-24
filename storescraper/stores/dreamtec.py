@@ -14,6 +14,7 @@ from storescraper.categories import (
     MOUSE,
     UPS,
     PRINTER_SUPPLY,
+    STORAGE_DRIVE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -40,6 +41,7 @@ class Dreamtec(StoreWithUrlExtensions):
         ["plotter", PRINTER],
         ["ups", UPS],
         ["insumos-impresora", PRINTER_SUPPLY],
+        ["desktop", STORAGE_DRIVE],
     ]
 
     @classmethod
