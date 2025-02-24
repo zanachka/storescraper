@@ -55,4 +55,8 @@ class TiendaClaro(StoreWithUrlExtensions):
         extra_args["combination_types"] = ["PRE", ""]
 
         products = Claro.products_for_url(url, category, extra_args)
+
+        for product in products:
+            product.cell_monthly_payment = None
+
         return products

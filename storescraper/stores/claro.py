@@ -264,6 +264,7 @@ class Claro(Store):
                         price,
                         "CLP",
                         cell_plan_name="Claro Prepago",
+                        cell_monthly_payment=Decimal(0),
                         picture_urls=picture_urls,
                     )
                 )
