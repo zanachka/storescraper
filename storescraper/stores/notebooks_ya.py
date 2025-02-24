@@ -1,3 +1,4 @@
+import math
 import json
 import logging
 from decimal import Decimal
@@ -31,7 +32,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words, html_to_markdown
+from storescraper.utils import (
+    session_with_proxy,
+    get_price_from_price_specification,
+    html_to_markdown,
+)
 
 
 class NotebooksYa(StoreWithUrlExtensions):
@@ -168,47 +173,27 @@ class NotebooksYa(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
-        raw_soup = BeautifulSoup(response.text, "lxml")
-        content_tag = raw_soup.find("script", {"type": "text/template"})
-
-        if not content_tag:
-            raise Exception(response.text)
-
-        soup = BeautifulSoup(json.loads(content_tag.text), "lxml")
-        name = soup.find("h2").text.strip()
-        key = raw_soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
-        stock_text = soup.find("span", "stock").text.lower()
-        stock = (
-            0
-            if stock_text in ["agotado", "out of stock"]
-            else int(stock_text.split()[0])
+        soup = BeautifulSoup(response.text, "lxml")
+        json_data = json.loads(
+            soup.findAll("script", {"type": "application/ld+json"})[1].text
         )
-        price_tags = soup.findAll("span", "woocommerce-Price-amount")
 
-        if not price_tags:
-            return []
+        for entry in json_data["@graph"]:
+            if entry["@type"] == "Product":
+                product_data = entry
+                break
 
-        assert len(price_tags) in [2, 3]
+        name = product_data["name"]
+        assert len(product_data["offers"]) == 1
 
-        offer_price = Decimal(remove_words(price_tags[-2].text))
-        normal_price = Decimal(remove_words(price_tags[-1].text))
-
-        if (normal_price == 0 and stock == 0) or normal_price > Decimal("10000000000"):
-            return []
-
-        sku_tag = soup.find("span", "sku")
-        sku = sku_tag.text.strip() if sku_tag else None
-
-        picture_containers = soup.find("div", "product-image-slider").findAll(
-            "div", "img-thumbnail"
-        )
-        picture_urls = []
-
-        for picture in picture_containers:
-            picture_url = picture.find("img")["href"]
-            picture_urls.append(picture_url)
-
-        description = html_to_markdown(str(soup.find("div", "description")))
+        offer = product_data["offers"][0]
+        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
+        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        offer_price = get_price_from_price_specification(product_data)
+        normal_price = Decimal(math.ceil(offer_price * Decimal(1.03)))
+        sku = product_data["sku"]
+        picture_urls = [a["href"] for a in soup.findAll("a", "swiper-slide-imglink")]
+        description = html_to_markdown(str(soup.find("div", {"id": "tab-description"})))
 
         p = Product(
             name,
