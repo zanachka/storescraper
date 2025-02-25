@@ -76,9 +76,11 @@ class GestionYEquipos(StoreWithUrlExtensions):
 
         products = []
         variants_tags = soup.findAll("script", {"type": "application/json"})
+
         if len(variants_tags) > 4:
             variants_json = json.loads(variants_tags[4].text)
             picture_urls = ["https:" + x for x in variants_json["product"]["images"]]
+
             for variant in variants_json["product"]["variants"]:
                 key = str(variant["id"])
                 variant_url = url + "?variant={}".format(key)
@@ -104,12 +106,15 @@ class GestionYEquipos(StoreWithUrlExtensions):
                     condition=condition,
                 )
                 products.append(p)
+
+            return products
         else:
             json_container = soup.findAll("script", {"type": "application/ld+json"})[-1]
             json_data = json.loads(json_container.text)
             picture_urls = [
                 "https:" + x["href"] for x in soup.findAll("a", "media--cover")
             ]
+
         if "hasVariant" in json_data:
             for variant in json_data["hasVariant"]:
                 name = variant["name"]
@@ -138,7 +143,6 @@ class GestionYEquipos(StoreWithUrlExtensions):
                     description=description,
                     condition=condition,
                 )
-
                 products.append(p)
         else:
             key = soup.find("input", {"name": "id"})["value"]
