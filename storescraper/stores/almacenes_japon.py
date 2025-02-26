@@ -142,5 +142,5 @@ class AlmacenesJapon(Store):
     def preflight(cls, extra_args=None):
         return vtex_preflight(
             extra_args,
-            "https://www.almacenesjapon.com/tecnologia/TV-y-Video/LEDS-y-Smart-TV",
+            "https://www.almacenesjapon.com/audio",
         )

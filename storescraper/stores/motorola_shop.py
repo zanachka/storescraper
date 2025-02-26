@@ -107,7 +107,9 @@ class MotorolaShop(StoreWithUrlExtensions):
                 return []
 
             picture_urls = [
-                json_product[image["id"]]["imageUrl"].split("?v=")[0]
+                json_product[image["id"]]["imageUrl"]
+                .split("?v=")[0]
+                .replace(" ", "%20")
                 for image in product["images"]
             ]
 

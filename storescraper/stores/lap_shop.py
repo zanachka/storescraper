@@ -11,10 +11,9 @@ from storescraper.utils import html_to_markdown, session_with_proxy, remove_word
 
 class LapShop(StoreWithUrlExtensions):
     url_extensions = [
-        ["26-27-29-31", MONITOR],
-        ["21", HEADPHONES],
-        ["22", STEREO_SYSTEM],
-        ["33", MOUSE],
+        ["monitores-business", MONITOR],
+        ["monitores-gamer", MONITOR],
+        ["outlet", MONITOR],
     ]
 
     @classmethod
@@ -25,10 +24,10 @@ class LapShop(StoreWithUrlExtensions):
         while True:
             if page > 10:
                 raise Exception("page overflow")
+
             url_webpage = (
-                "https://lapshop.cl/page/{}/?post_type=product&"
-                "filters=product_cat[{}]"
-            ).format(page, url_extension)
+                f"https://tienda.lapshop.cl/collections/{url_extension}/page/{page}"
+            )
             print(url_webpage)
             res = session.get(url_webpage)
             soup = BeautifulSoup(res.text, "lxml")

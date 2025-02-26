@@ -32,7 +32,7 @@ from storescraper.utils import session_with_proxy, html_to_markdown
 class MegaDriveStore(StoreWithUrlExtensions):
     url_extensions = [
         ["59-tarjetas-graficas", VIDEO_CARD],
-        ["77-disco-ssd", SOLID_STATE_DRIVE],
+        ["77-discos-ssd", SOLID_STATE_DRIVE],
         ["78-discos-hdd", STORAGE_DRIVE],
         ["79-discos-externos-y-cofres", EXTERNAL_STORAGE_DRIVE],
         ["80-memorias", RAM],
@@ -63,6 +63,7 @@ class MegaDriveStore(StoreWithUrlExtensions):
         )
         product_urls = []
         page = 1
+
         while True:
             if page > 10:
                 raise Exception("page overflow: " + url_extension)
@@ -70,8 +71,8 @@ class MegaDriveStore(StoreWithUrlExtensions):
                 url_extension, page
             )
             print(url_webpage)
-            data = session.get(url_webpage).text
-            soup = BeautifulSoup(data, "lxml")
+            data = session.get(url_webpage)
+            soup = BeautifulSoup(data.text, "lxml")
             product_containers = soup.find("section", {"id": "products"}).findAll(
                 "article"
             )
