@@ -178,6 +178,12 @@ class TecnoMas(StoreWithUrlExtensions):
         description_tag = soup.find("meta", {"property": "og:description"})
         description = description_tag["content"] if description_tag else None
 
+        if soup.find("span", text="Mejorado"):
+            name = f"[MODIFICADO POR TIENDA] {name}"
+            part_number = f"[MODIFICADO POR TIENDA] {sku}"
+        else:
+            part_number = sku
+
         p = Product(
             name,
             cls.__name__,
@@ -190,7 +196,7 @@ class TecnoMas(StoreWithUrlExtensions):
             offer_price,
             "CLP",
             sku=sku,
-            part_number=sku,
+            part_number=part_number,
             picture_urls=picture_urls,
             condition=condition,
             description=description,
