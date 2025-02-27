@@ -87,10 +87,10 @@ class Tekmachine(StoreWithUrlExtensions):
             offer_price = normal_price
 
         picture_urls = [
-            tag["data-large_image"]
-            for tag in soup.find(
+            a["href"]
+            for a in soup.find(
                 "figure", "woocommerce-product-gallery__wrapper"
-            ).findAll("img")
+            ).findAll("a")
         ]
 
         description_tag = soup.find("div", {"id": "tab-description"})
