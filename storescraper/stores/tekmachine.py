@@ -60,7 +60,7 @@ class Tekmachine(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
-        soup = BeautifulSoup(response.text, "lxml")
+        soup = BeautifulSoup(response.text, "html5lib")
         name = soup.find("h1", "product_title").text.strip()
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
         sku_tag = soup.find("span", "sku")
@@ -87,8 +87,10 @@ class Tekmachine(StoreWithUrlExtensions):
             offer_price = normal_price
 
         picture_urls = [
-            tag["src"]
-            for tag in soup.find("div", "woocommerce-product" "-gallery").findAll("img")
+            tag["data-large_image"]
+            for tag in soup.find(
+                "figure", "woocommerce-product-gallery__wrapper"
+            ).findAll("img")
         ]
 
         description_tag = soup.find("div", {"id": "tab-description"})
