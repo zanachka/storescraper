@@ -196,7 +196,7 @@ class TecnoMas(StoreWithUrlExtensions):
             offer_price,
             "CLP",
             sku=sku,
-            part_number=part_number,
+            part_number=part_number if len(part_number) < 51 else None,
             picture_urls=picture_urls,
             condition=condition,
             description=description,
