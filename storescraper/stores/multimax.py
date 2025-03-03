@@ -64,16 +64,22 @@ class Multimax(Store):
         soup = BeautifulSoup(response.text, "lxml")
         name = soup.find("h1", "product_name").text.strip()
         sku = soup.find("div", "clearfix")["data-product-id"]
+
         if soup.find("h2", text="Agotado"):
             stock = 0
         else:
             stock = -1
+
         price = Decimal(
             soup.find("div", "modal_price subtitle")
             .find("span", "money")
             .text.replace("$", "")
             .replace(",", "")
         )
+
+        if price == 0:
+            return []
+
         picture_urls = [
             "https:" + tag["src"]
             for tag in soup.find("div", "product-" "gallery").findAll(
