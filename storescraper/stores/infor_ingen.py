@@ -67,8 +67,6 @@ class InforIngen(StoreWithUrlExtensions):
             if page > 1:
                 url_webpage += f"page/{page}/"
 
-            url_webpage += "?post_type=product&type_aws=true&stock_status=instock"
-
             print(url_webpage)
             response = session.get(url_webpage)
 
