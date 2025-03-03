@@ -254,6 +254,7 @@ from .shop_box import ShopBox
 from .sicot import Sicot
 from .siman_el_salvador import SimanElSalvador
 from .siman_nicaragua import SimanNicaragua
+from .sindelen import Sindelen
 from .sipo_online import SipoOnline
 from .smart_deal import SmartDeal
 from .smart_mobile import SmartMobile
