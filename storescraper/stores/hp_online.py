@@ -46,6 +46,10 @@ class HpOnline(Store):
             ["tinta-toner", PRINTER_SUPPLY],
         ]
         session = session_with_proxy(extra_args)
+        session.headers["Content-Type"] = (
+            "application/x-www-form-urlencoded; charset=UTF-8"
+        )
+        session.headers["X-Requested-With"] = "XMLHttpRequest"
         product_urls = []
 
         for category_path, local_category in category_paths:
@@ -53,39 +57,33 @@ class HpOnline(Store):
                 continue
 
             page = 1
-            do = True
 
-            while do:
+            while True:
                 if page > 40:
-                    raise Exception("page overflow: " + category_path)
-                category_url = (
-                    "https://www.hp.com/cl-es/shop"
-                    "/{}.html?product_list_limit=36&p={}".format(category_path, page)
-                )
-                soup = BeautifulSoup(session.get(category_url).text, "lxml")
-                product_cells = soup.findAll("div", "product-item-info")
-                toolbars = soup.findAll("span", "toolbar-number")
-
-                if int(toolbars[0].text) == 1 and page != 1:
                     break
+                    # raise Exception("page overflow: " + category_path)
+                category_url = f"https://www.hp.com/cl-es/shop/{category_path}.html?product_list_limit=36&p={page}"
+                print(category_url)
+                response = session.post(category_url, "filter_ajax=true")
+                json_response = response.json()
+                soup = BeautifulSoup(json_response["productlist"], "lxml")
+                product_cells = soup.findAll("li", "product")
 
                 if not product_cells:
                     if page == 1:
                         logging.warning("Empty category: " + category_url)
                     break
 
+                new_products_found = False
+
                 for cell in product_cells:
-                    product_url = cell.find("div", "product-item-photo-box").find("a")[
-                        "href"
-                    ]
+                    product_url = cell.find("a", "product-item-link")["href"]
 
-                    if product_url in product_urls:
-                        do = False
-                        break
+                    if product_url not in product_urls:
+                        new_products_found = True
+                        product_urls.append(product_url)
 
-                    product_urls.append(product_url)
-
-                if len(toolbars) == 2:
+                if not new_products_found or not product_cells:
                     break
 
                 page += 1

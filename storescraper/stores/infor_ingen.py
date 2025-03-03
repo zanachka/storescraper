@@ -61,9 +61,13 @@ class InforIngen(StoreWithUrlExtensions):
                 raise Exception("Page overflow: " + url_extension)
 
             url_webpage = (
-                "https://store.infor-ingen.com/"
-                "categoria-producto/{}/page/{}/".format(url_extension, page)
+                f"https://store.infor-ingen.com/categoria-producto/{url_extension}/"
             )
+
+            if page > 1:
+                url_webpage += f"page/{page}/"
+
+            url_webpage += "?post_type=product&type_aws=true&stock_status=instock"
 
             print(url_webpage)
             response = session.get(url_webpage)
