@@ -1,4 +1,5 @@
 import base64
+import math
 import json
 from decimal import Decimal
 
@@ -88,9 +89,10 @@ class MotorolaShop(StoreWithUrlExtensions):
                 "AvailableQuantity"
             ]
             price = Decimal(
-                json_product[f"${variation_key}.sellers.0.commertialOffer"]["Price"]
+                math.ceil(
+                    json_product[f"${variation_key}.sellers.0.commertialOffer"]["Price"]
+                )
             )
-
             description = {}
 
             for entry in json_product:
