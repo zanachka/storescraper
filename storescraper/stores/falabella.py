@@ -977,7 +977,7 @@ class Falabella(Store):
             # model_name = model["name"].encode("ascii", "ignore").decode("ascii")
 
             p = Product(
-                "{} ({})".format(base_name, model["name"])[:200],
+                model["name"][:200],
                 cls.__name__,
                 category,
                 sku_url,
