@@ -103,7 +103,11 @@ class MegaBytes(StoreWithUrlExtensions):
         sku = str(product_data["sku"])
         offer = product_data["offers"][0]
 
-        if offer["availability"] == "http://schema.org/InStock":
+        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
+
+        if "entregas" in description.lower():
+            stock = 0
+        elif offer["availability"] == "http://schema.org/InStock":
             stock = -1
         else:
             stock = 0
@@ -136,7 +140,6 @@ class MegaBytes(StoreWithUrlExtensions):
             for tag in soup.find("div", "woocommerce-product-gallery").findAll("img")
             if "data-src" in tag.attrs
         ]
-        description = html_to_markdown(soup.find("div", {"id": "tab-description"}).text)
 
         p = Product(
             name,
