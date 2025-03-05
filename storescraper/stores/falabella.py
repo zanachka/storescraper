@@ -577,6 +577,12 @@ class Falabella(Store):
             "Home > Tecnología-Computadores > Impresoras y Tintas > Tintas y Toners",
             1,
         ],
+        [
+            "cat2069",
+            [PERFUME],
+            "Home > Belleza y salud > Perfumes",
+            1,
+        ],
     ]
 
     @classmethod

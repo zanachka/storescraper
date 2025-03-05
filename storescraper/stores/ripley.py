@@ -36,6 +36,7 @@ from storescraper.categories import (
     KITCHEN_APPLIANCE,
     MOUSE,
     PRINTER_SUPPLY,
+    PERFUME,
 )
 from storescraper.store import Store
 from storescraper.product import Product
@@ -325,6 +326,12 @@ class Ripley(Store):
             "tecno/smart-home/asistentes-virtuales",
             [STEREO_SYSTEM],
             "Tecno > Smart Home > Asistentes Virtuales",
+            1,
+        ],
+        [
+            "belleza/perfumeria?s=mdco",
+            [PERFUME],
+            "Belleza > Perfumería",
             1,
         ],
     ]

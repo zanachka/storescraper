@@ -37,6 +37,7 @@ from storescraper.categories import (
     AIR_CONDITIONER,
     KITCHEN_APPLIANCE,
     PRINTER_SUPPLY,
+    PERFUME,
 )
 from storescraper.flixmedia import flixmedia_video_urls
 from storescraper.product import Product
@@ -179,6 +180,7 @@ class Paris(Store):
         ["linea-blanca/climatizacion/tratamiento-aire/", AIR_CONDITIONER, 1],
         ["linea-blanca/electrodomesticos/", KITCHEN_APPLIANCE, 1],
         ["tecnologia/impresoras/insumos-accesorios/", PRINTER_SUPPLY, 1],
+        ["belleza/perfumes/", PERFUME, 1],
     ]
 
     @classmethod
