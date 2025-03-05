@@ -124,3 +124,5 @@ DISH_WASHER = "DishWasher"
 CELL_ACCESORY = "CellAccesory"
 # Cocinas
 STOVE = "Stove"
+# Perfumes
+PERFUME = "Perfume"
