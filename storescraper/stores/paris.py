@@ -363,7 +363,7 @@ class Paris(Store):
         product_data = json.loads(product_match.groups()[0])
 
         brand = product_data.get("brand", "Unknown")
-        name = "{} - {}".format(brand, product_data["name"])
+        name = "{} - {}".format(brand, product_data["name"]).strip()
         sku = product_data["id"]
 
         normal_price = None
