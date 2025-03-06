@@ -718,142 +718,31 @@ class Hites(Store):
 
     @classmethod
     def banners(cls, extra_args=None):
-        base_url = "https://www.hites.com/{}"
-
-        sections_data = [
-            # [bs.HOME, 'Home', bs.SUBSECTION_TYPE_HOME, ''],
-            [
-                bs.TELEVISIONS,
-                "TV Video",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "tecnologia/tv-video",
-            ],
-            [
-                bs.TELEVISIONS,
-                "Smart TV LG",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "tecnologia/tv-video/smart-tv-lg",
-            ],
-            [
-                bs.TELEVISIONS,
-                "Smart TV Samsung",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "tecnologia/tv-video/smart-tv-samsung",
-            ],
-            [
-                bs.TELEVISIONS,
-                "Smart TV Hisense",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "tecnologia/tv-video/smart-tv-hisense",
-            ],
-            [
-                bs.TELEVISIONS,
-                "Smart TV Premium",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "tecnologia/tv-video/smart-tv-premium",
-            ],
-            [
-                bs.CELLS,
-                "Smartphone",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "celulares/smartphones",
-            ],
-            [
-                bs.CELLS,
-                "Smartphone-Smartphone",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "celulares/smartphones/smartphone",
-            ],
-            [
-                bs.CELLS,
-                "Smartphone Liberados",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "celulares/smartphones/celulares-liberados",
-            ],
-            [
-                bs.REFRIGERATION,
-                "Refrigeradores",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "electro-hogar/refrigeradores",
-            ],
-            [
-                bs.REFRIGERATION,
-                "No Frost",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "electro-hogar/refrigeradores/refrigerador-no-frost",
-            ],
-            [
-                bs.REFRIGERATION,
-                "Side by Side",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "electro-hogar/refrigeradores/refrigerador-side-by-side",
-            ],
-            [
-                bs.WASHING_MACHINES,
-                "Lavado y Secado",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "electro-hogar/lavado-y-secado",
-            ],
-            [
-                bs.WASHING_MACHINES,
-                "Lavadoras",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "electro-hogar/lavado-y-secado/lavadoras",
-            ],
-            [
-                bs.WASHING_MACHINES,
-                "Lavadoras-Secadoras",
-                bs.SUBSECTION_TYPE_MOSAIC,
-                "electro-hogar/lavado-y-secado/lavadoras-secadoras",
-            ],
-            # [bs.WASHING_MACHINES, 'Secadoras', bs.SUBSECTION_TYPE_MOSAIC,
-            #  'electro-hogar/lavado-y-secado/secadoras'],
-            [bs.AUDIO, "Audio", bs.SUBSECTION_TYPE_MOSAIC, "tecnologia/audio"],
-            # [bs.AUDIO, 'Minicomponentes', bs.SUBSECTION_TYPE_MOSAIC,
-            #  'tecnologia/audio/minicomponentes'],
-            # [bs.AUDIO, 'Soundbar y Home Theater', bs.SUBSECTION_TYPE_MOSAIC,
-            #  'tecnologia/audio/soundbar-y-home-theater']
-        ]
-
         session = cls.get_session()
         banners = []
+        url = "https://www.hites.com"
+        response = session.get(url)
+        soup = BeautifulSoup(response.text, "lxml")
+        banners_container = soup.findAll("div", "clp-hero-banner")
 
-        for section, subsection, subsection_type, url_suffix in sections_data:
-            url = base_url.format(url_suffix)
-            print(url)
+        for index, banner in enumerate(banners_container):
+            destination_urls = [a["href"] for a in banner.findAll("a")]
+            destination_urls = list(set(destination_urls))
+            picture_container = banner.find("picture")
+            picture_url = picture_container.findAll("source")[1]["srcset"]
+            banners.append(
+                {
+                    "url": url,
+                    "picture_url": picture_url,
+                    "destination_urls": destination_urls,
+                    "key": picture_url,
+                    "position": index + 1,
+                    "section": bs.HOME,
+                    "subsection": bs.HOME,
+                    "type": bs.SUBSECTION_TYPE_HOME,
+                }
+            )
 
-            if subsection_type == bs.SUBSECTION_TYPE_MOSAIC:
-                response = session.get(url)
-                soup = BeautifulSoup(response.text, "lxml")
-
-                banners_container = soup.find("section").findAll(
-                    "div", "espot", recursive=False
-                )
-
-                for index, banner in enumerate(banners_container):
-                    destination_urls = [d["href"] for d in banner.findAll("a")]
-
-                    destination_urls = list(set(destination_urls))
-
-                    picture_container = banner.find("picture")
-                    picture_source = picture_container.find("source")
-
-                    if not picture_source:
-                        continue
-
-                    picture_url = picture_source["srcset"]
-                    banners.append(
-                        {
-                            "url": url,
-                            "picture_url": picture_url,
-                            "destination_urls": destination_urls,
-                            "key": picture_url,
-                            "position": index + 1,
-                            "section": section,
-                            "subsection": subsection,
-                            "type": subsection_type,
-                        }
-                    )
         return banners
 
     @classmethod
