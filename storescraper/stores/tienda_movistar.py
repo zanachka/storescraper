@@ -20,10 +20,10 @@ class TiendaMovistar(Movistar):
     variations = []
     category_paths = [
         ("celulares", CELL),
-        ("outlet/celulares-reacondicionados", CELL),
-        ("outlet/tablets", TABLET),
-        ("outlet/smartwatch", WEARABLE),
-        ("outlet/accesorios", HEADPHONES),
+        ("equipos-reacondicionados/celulares-reacondicionados", CELL),
+        ("equipos-reacondicionados/tablets", TABLET),
+        ("equipos-reacondicionados/smartwatch", WEARABLE),
+        ("equipos-reacondicionados/accesorios", HEADPHONES),
         ("smartwatch", WEARABLE),
         ("tablets", TABLET),
         ("audifonos", HEADPHONES),
