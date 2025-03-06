@@ -51,6 +51,9 @@ class TiendaMovistar(Movistar):
     def products_for_url(cls, url, category=None, extra_args=None):
         products = super(TiendaMovistar, cls).products_for_url(url)
 
+        if products == []:
+            return []
+
         session = session_with_proxy(extra_args)
         session.headers["Content-Type"] = (
             "application/x-www-form-urlencoded; charset=UTF-8"
