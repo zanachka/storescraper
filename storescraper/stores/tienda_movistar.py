@@ -23,7 +23,7 @@ class TiendaMovistar(Movistar):
         ("equipos-reacondicionados/celulares-reacondicionados", CELL),
         ("equipos-reacondicionados/tablets", TABLET),
         ("equipos-reacondicionados/smartwatch", WEARABLE),
-        ("equipos-reacondicionados/accesorios", HEADPHONES),
+        ("equipos-reacondicionados/accesorios-seminuevos", HEADPHONES),
         ("smartwatch", WEARABLE),
         ("tablets", TABLET),
         ("audifonos", HEADPHONES),
