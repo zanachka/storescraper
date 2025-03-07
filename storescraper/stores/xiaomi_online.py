@@ -13,7 +13,7 @@ from storescraper.categories import (
     WEARABLE,
     VACUUM_CLEANER,
     STEREO_SYSTEM,
-    KITCHEN_APPLIANCE,
+    AI,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -39,7 +39,7 @@ class XiaomiOnline(StoreWithUrlExtensions):
         ],
         [
             "hogar-inteligente/electrodomesticos/electrodomesticos-de-cocina",
-            KITCHEN_APPLIANCE,
+            AI,
         ],
     ]
 

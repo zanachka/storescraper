@@ -28,7 +28,7 @@ from storescraper.categories import (
     USB_FLASH_DRIVE,
     VIDEO_CARD,
     VIDEO_GAME_CONSOLE,
-    KITCHEN_APPLIANCE,
+    AI,
     PRINTER_SUPPLY,
 )
 from storescraper.product import Product
@@ -64,7 +64,7 @@ class TiShop(StoreWithUrlExtensions):
         ["107", POWER_SUPPLY],
         ["52", PROCESSOR],
         ["81", VIDEO_CARD],
-        ["60?q[navbar_items_id_eq_any][]=72", KITCHEN_APPLIANCE],
+        ["60?q[navbar_items_id_eq_any][]=72", AI],
         ["59?q[navbar_items_id_eq_any][]=37", PRINTER_SUPPLY],
     ]
 

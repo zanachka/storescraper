@@ -21,7 +21,7 @@ from storescraper.categories import (
     GAMING_CHAIR,
     TABLET,
     UPS,
-    KITCHEN_APPLIANCE,
+    AI,
 )
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy
@@ -45,7 +45,7 @@ class DigitalChoice(StoreWithUrlExtensions):
         ["tablas-digitalizadoras-y-tablets", TABLET],
         ["ups-baterias-y-cargadores", UPS],
         ["open-box", MONITOR],
-        ["electrodomesticos", KITCHEN_APPLIANCE],
+        ["electrodomesticos", AI],
     ]
 
     @classmethod

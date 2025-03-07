@@ -33,7 +33,7 @@ from storescraper.categories import (
     WASHING_MACHINE,
     WEARABLE,
     WATER_HEATER,
-    KITCHEN_APPLIANCE,
+    AI,
     PRINTER_SUPPLY,
 )
 
@@ -73,7 +73,7 @@ class Hites(Store):
             DISH_WASHER,
             GAMING_CHAIR,
             WATER_HEATER,
-            KITCHEN_APPLIANCE,
+            AI,
             PRINTER_SUPPLY,
         ]
 
@@ -466,7 +466,7 @@ class Hites(Store):
             ],
             [
                 "electro-hogar/electrodomesticos-cocina",
-                [KITCHEN_APPLIANCE],
+                [AI],
                 "Inicio > Electro Hogar > Electrodomésticos Cocina",
                 1,
             ],

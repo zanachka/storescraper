@@ -6,7 +6,7 @@ import re
 from bs4 import BeautifulSoup
 from storescraper.categories import (
     AIR_CONDITIONER,
-    KITCHEN_APPLIANCE,
+    AI,
     OVEN,
     REFRIGERATOR,
     SPACE_HEATER,
@@ -28,7 +28,7 @@ class OutletMedina(Store):
             SPACE_HEATER,
             TELEVISION,
             AIR_CONDITIONER,
-            KITCHEN_APPLIANCE,
+            AI,
         }
 
     @classmethod
@@ -45,8 +45,8 @@ class OutletMedina(Store):
             ["63-termoventiladores", SPACE_HEATER],
             ["78-televisores", TELEVISION],
             ["85-aire-acondicionado", AIR_CONDITIONER],
-            ["20-electrodomesticos", KITCHEN_APPLIANCE],
-            ["112-multi-ollas", KITCHEN_APPLIANCE],
+            ["20-electrodomesticos", AI],
+            ["112-multi-ollas", AI],
         ]
 
         session = session_with_proxy(extra_args)

@@ -78,10 +78,10 @@ GAMING_DESK = "GamingDesk"
 CASE_FAN = "CaseFan"
 # Abarrotes
 GROCERIES = "Groceries"
-# Electrodomésticos pequeños (hervidores, sandwicheras, etc)
-KITCHEN_APPLIANCE = "KitchenAppliance"
 # Insumos para impresoras (Tintas, toners)
 PRINTER_SUPPLY = "PrinterSupply"
+# Categorías indexadas con inteligencia artificial
+AI = "AI"
 
 #########################
 # Legacy (no usar)

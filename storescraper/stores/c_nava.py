@@ -30,7 +30,7 @@ from storescraper.categories import (
     VIDEO_CARD,
     UPS,
     TELEVISION,
-    KITCHEN_APPLIANCE,
+    AI,
     PRINTER_SUPPLY,
 )
 from storescraper.product import Product
@@ -69,7 +69,7 @@ class CNava(Store):
             GAMING_CHAIR,
             UPS,
             TELEVISION,
-            KITCHEN_APPLIANCE,
+            AI,
             PRINTER_SUPPLY,
         ]
 
@@ -104,7 +104,7 @@ class CNava(Store):
             ["hogar/sillas-gamer", GAMING_CHAIR],
             ["equipos/ups", UPS],
             ["televisores", TELEVISION],
-            ["electrodomesticos", KITCHEN_APPLIANCE],
+            ["electrodomesticos", AI],
             ["impresoras-y-multifuncionales/suministros1", PRINTER_SUPPLY],
         ]
 

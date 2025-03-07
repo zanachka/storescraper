@@ -41,7 +41,7 @@ from storescraper.categories import (
     PROJECTOR,
     CELL,
     VIDEO_GAME_CONSOLE,
-    KITCHEN_APPLIANCE,
+    AI,
     PRINTER_SUPPLY,
 )
 
@@ -105,7 +105,7 @@ class SpDigital(StoreWithUrlExtensions):
         ["barra-y-sistema-de-sonido", STEREO_SYSTEM],
         ["audio-y-musica-audio-profesional-microfono-profesional", MICROPHONE],
         ["otras-categorias-celular-y-accesorios-smartphones", CELL],
-        ["electrodomésticos", KITCHEN_APPLIANCE],
+        ["electrodomésticos", AI],
         ["hogar-y-oficina-impresoras-tinta-para-impresora", PRINTER_SUPPLY],
         ["hogar-y-oficina-impresoras-toner-cartridge-laser", PRINTER_SUPPLY],
         ["botellas-de-tinta", PRINTER_SUPPLY],

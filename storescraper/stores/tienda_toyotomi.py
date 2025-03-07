@@ -12,7 +12,7 @@ from storescraper.categories import (
     OVEN,
     VACUUM_CLEANER,
     SPACE_HEATER,
-    KITCHEN_APPLIANCE,
+    AI,
 )
 
 
@@ -20,7 +20,7 @@ class TiendaToyotomi(StoreWithUrlExtensions):
     url_extensions = [
         ["calefaccion", SPACE_HEATER],
         ["ventilacion/aire-acondicionado", AIR_CONDITIONER],
-        ["electrodomesticos", KITCHEN_APPLIANCE],
+        ["electrodomesticos", AI],
         ["electro-hogar/electrodomesticos/aspiradoras", VACUUM_CLEANER],
         ["electro-hogar/electrodomesticos/hornos-electricos", OVEN],
         ["electro-hogar/electrodomesticos/microondas", OVEN],

@@ -27,7 +27,7 @@ from storescraper.categories import (
     WATER_HEATER,
     STOVE,
     AIR_CONDITIONER,
-    KITCHEN_APPLIANCE,
+    AI,
     PRINTER_SUPPLY,
 )
 from storescraper.product import Product
@@ -328,13 +328,13 @@ class AbcDin(Store):
         ],
         [
             "electrodomesticos",
-            [KITCHEN_APPLIANCE],
+            [AI],
             "Línea Blanca / Electrodomésticos",
             1,
         ],
         [
             "parrillas-electricas",
-            [KITCHEN_APPLIANCE],
+            [AI],
             "Línea Blanca / Cocina / Parrillas Eléctricas",
             1,
         ],

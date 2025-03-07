@@ -14,7 +14,7 @@ from storescraper.categories import (
     EXTERNAL_STORAGE_DRIVE,
     TABLET,
     WEARABLE,
-    KITCHEN_APPLIANCE,
+    AI,
 )
 
 
@@ -26,7 +26,7 @@ class NewHorizons(StoreWithUrlExtensions):
         ["teclado-y-mouse", KEYBOARD],
         ["tablets-y-telefonos", TABLET],
         ["wearables", WEARABLE],
-        ["electro-domesticos", KITCHEN_APPLIANCE],
+        ["electro-domesticos", AI],
     ]
 
     @classmethod

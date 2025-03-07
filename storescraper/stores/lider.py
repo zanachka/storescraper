@@ -11,7 +11,7 @@ from storescraper.categories import (
     EXTERNAL_STORAGE_DRIVE,
     GAMING_CHAIR,
     KEYBOARD,
-    KITCHEN_APPLIANCE,
+    AI,
     MEMORY_CARD,
     MONITOR,
     NOTEBOOK,
@@ -343,7 +343,7 @@ class Lider(Store):
         # ],
         [
             "23989399_53512871",
-            [KITCHEN_APPLIANCE],
+            [AI],
             "Electrohogar > Electrodomésticos Cocina",
             1.0,
         ],
@@ -385,7 +385,7 @@ class Lider(Store):
             SOLID_STATE_DRIVE,
             DISH_WASHER,
             WATER_HEATER,
-            KITCHEN_APPLIANCE,
+            AI,
             PRINTER_SUPPLY,
         ]
 
