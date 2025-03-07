@@ -20,10 +20,10 @@ class TiendaMovistar(Movistar):
     variations = []
     category_paths = [
         ("celulares", CELL),
-        ("outlet/celulares-reacondicionados", CELL),
-        ("outlet/tablets", TABLET),
-        ("outlet/smartwatch", WEARABLE),
-        ("outlet/accesorios", HEADPHONES),
+        ("equipos-reacondicionados/celulares-reacondicionados", CELL),
+        ("equipos-reacondicionados/tablets", TABLET),
+        ("equipos-reacondicionados/smartwatch", WEARABLE),
+        ("equipos-reacondicionados/accesorios-seminuevos", HEADPHONES),
         ("smartwatch", WEARABLE),
         ("tablets", TABLET),
         ("audifonos", HEADPHONES),
@@ -50,6 +50,9 @@ class TiendaMovistar(Movistar):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         products = super(TiendaMovistar, cls).products_for_url(url)
+
+        if products == []:
+            return []
 
         session = session_with_proxy(extra_args)
         session.headers["Content-Type"] = (

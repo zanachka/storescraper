@@ -934,8 +934,12 @@ class MercadoLibreChile(Store):
                 endpoint += "?{}".format(
                     official_store_or_seller_filter.replace(":", "=")
                 )
+            variation_response = api_session.get(endpoint)
 
-            variation_data = json.loads(api_session.get(endpoint).text)
+            if variation_response.status_code == 403:
+                continue
+
+            variation_data = json.loads(variation_response.text)
 
             if variation_data.get("status", None) != "active":
                 continue

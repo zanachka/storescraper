@@ -197,7 +197,12 @@ class Movistar(Store):
             raise Exception("No base name found")
 
         sku = soup.find("div", {"itemprop": "sku"}).text.strip()
-        breadcrumbs = soup.find("ul", "items").findAll("li")
+        breadcrumb_items = soup.find("ul", "items")
+
+        if not breadcrumb_items:
+            return []
+
+        breadcrumbs = breadcrumb_items.findAll("li")
 
         for breadcrumb in breadcrumbs:
             breadcrumb_link = breadcrumb.find("a")
