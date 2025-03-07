@@ -97,6 +97,19 @@ class AppleStore(StoreWithUrlExtensions):
                         ]["currentPrice"]["raw_amount"]
                     ).quantize(0)
 
+                summary_response = json.loads(
+                    session.get(
+                        f"https://www.apple.com/cl/shop/updateSummary?product={mpn}"
+                    ).text
+                )
+                stock = (
+                    -1
+                    if summary_response["body"]["response"]["summarySection"][
+                        "summary"
+                    ]["isBuyable"]
+                    else 0
+                )
+
                 p = Product(
                     name,
                     cls.__name__,
@@ -104,7 +117,7 @@ class AppleStore(StoreWithUrlExtensions):
                     url,
                     url,
                     mpn,
-                    -1,
+                    stock,
                     price,
                     price,
                     "CLP",
