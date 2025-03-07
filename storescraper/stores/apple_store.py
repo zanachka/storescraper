@@ -97,16 +97,16 @@ class AppleStore(StoreWithUrlExtensions):
                         ]["currentPrice"]["raw_amount"]
                     ).quantize(0)
 
-                summary_response = json.loads(
-                    session.get(
-                        f"https://www.apple.com/cl/shop/updateSummary?product={mpn}"
-                    ).text
+                summary_response = session.get(
+                    f"https://www.apple.com/cl/shop/updateSummary?product={mpn}"
                 )
+
                 stock = (
                     -1
-                    if summary_response["body"]["response"]["summarySection"][
-                        "summary"
-                    ]["isBuyable"]
+                    if summary_response.status_code == 500
+                    or json.loads(summary_response.text)["body"]["response"][
+                        "summarySection"
+                    ]["summary"]["isBuyable"]
                     else 0
                 )
 
