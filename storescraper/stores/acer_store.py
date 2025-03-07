@@ -24,7 +24,7 @@ class AcerStore(StoreWithUrlExtensions):
         ["outlet-seminuevos", NOTEBOOK],
         ["mouse", MOUSE],
         ["headset", HEADPHONES],
-        ["notebook-gamer", NOTEBOOK],
+        # ["notebook-gamer", NOTEBOOK],
         ["notebook", NOTEBOOK],
         ["tablets", TABLET],
     ]
