@@ -1,6 +1,13 @@
 from .mercado_libre_chile import MercadoLibreChile
-from ..categories import STEREO_SYSTEM, TELEVISION, REFRIGERATOR, \
-    WASHING_MACHINE, CELL, MONITOR, CELL_ACCESORY
+from ..categories import (
+    STEREO_SYSTEM,
+    TELEVISION,
+    REFRIGERATOR,
+    WASHING_MACHINE,
+    CELL,
+    MONITOR,
+    CELL_ACCESORY,
+)
 from ..utils import session_with_proxy
 
 
@@ -17,15 +24,23 @@ class MercadoLibreLg(MercadoLibreChile):
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         categories_codes = {
-            STEREO_SYSTEM: ['MLC1010'],
-            TELEVISION: ['MLC1002'],
+            STEREO_SYSTEM: ["MLC1010"],
+            TELEVISION: ["MLC1002"],
         }
         session = session_with_proxy(extra_args)
+        session.headers["Authorization"] = "Bearer {}".format(
+            extra_args["access_token"]
+        )
         product_urls = []
         for category_code in categories_codes[category]:
             product_urls.extend(
-                cls.get_products(session, category, category_code,
-                                 official_store_id=cls.official_store_id))
+                cls.get_products(
+                    session,
+                    category,
+                    category_code,
+                    official_store_id=cls.official_store_id,
+                )
+            )
 
         return product_urls
 
@@ -36,7 +51,8 @@ class MercadoLibreLg(MercadoLibreChile):
         # only displays entries without a seller (not from marketplaces)
         # and we want to consider MercadoLibreLG for that.
         products = super().products_for_url(
-            url, category=category, extra_args=extra_args)
+            url, category=category, extra_args=extra_args
+        )
 
         for product in products:
             product.seller = None

@@ -778,6 +778,7 @@ class MercadoLibreChile(Store):
             url = "{}&offset={}".format(base_url, offset)
             response = session.get(url)
             product_containers = json.loads(response.text)
+
             if not product_containers["results"]:
                 if offset == 0:
                     logging.warning("Empty category: " + category or "Unkown")
@@ -825,6 +826,9 @@ class MercadoLibreChile(Store):
     def discover_urls_for_category(cls, category, extra_args=None):
         print(category)
         session = session_with_proxy(extra_args)
+        session.headers["Authorization"] = "Bearer {}".format(
+            extra_args["access_token"]
+        )
         product_urls = []
         for category_code, category_name, real_category in cls.categories_code:
             if real_category == category:
