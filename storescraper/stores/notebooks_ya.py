@@ -1,6 +1,7 @@
 import math
 import json
 import logging
+import re
 from decimal import Decimal
 
 from bs4 import BeautifulSoup
@@ -189,7 +190,10 @@ class NotebooksYa(StoreWithUrlExtensions):
         offer = product_data["offers"][0]
         key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
-        offer_price = get_price_from_price_specification(product_data)
+        gtag = soup.find("script", {"id": "gla-gtag-events-js-extra"})
+        gtag_text = re.search(r"var glaGtagData = ({.*?});", gtag.string, re.S).group(1)
+        data = json.loads(gtag_text)
+        offer_price = Decimal(data["products"][str(key)]["price"])
         normal_price = Decimal(math.ceil(offer_price * Decimal(1.03)))
         sku = product_data["sku"]
         picture_urls = [a["href"] for a in soup.findAll("a", "swiper-slide-imglink")]
