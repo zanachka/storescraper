@@ -31,7 +31,7 @@ class InvasionGamer(StoreWithUrlExtensions):
         ["gabinetes", COMPUTER_CASE],
         ["procesadores", PROCESSOR],
         ["memorias-ram", RAM],
-        ["placas-madre", MOTHERBOARD],
+        ["placas-madres", MOTHERBOARD],
         ["tarjeta-de-video", VIDEO_CARD],
         ["ssd-y-almacenamiento", SOLID_STATE_DRIVE],
         ["refrigeracion", CPU_COOLER],
