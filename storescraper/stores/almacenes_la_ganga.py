@@ -58,11 +58,8 @@ class AlmacenesLaGanga(Store):
         name = soup.find("span", {"itemprop": "name"}).text.strip()
         sku = soup.find("div", {"itemprop": "sku"}).text
         price = Decimal(soup.find("meta", {"itemprop": "price"})["content"])
-        stock = (
-            -1
-            if soup.find("div", "stock available").text.strip().lower() == "en stock"
-            else 0
-        )
+        stock_tag = soup.find("div", "stock available")
+        stock = -1 if stock_tag and stock_tag.text.strip().lower() == "en stock" else 0
         part_number = soup.find("td", {"data-th": "Modelo"}).text.strip()
         description = html_to_markdown(
             soup.find("div", {"itemprop": "description"}).text
