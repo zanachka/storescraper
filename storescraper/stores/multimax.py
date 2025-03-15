@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import session_with_proxy, html_to_markdown
 
 
 class Multimax(Store):
@@ -86,6 +86,9 @@ class Multimax(Store):
                 "img", "lazyloaded"
             )
         ]
+        description_tag = soup.find("div", "description")
+        description = html_to_markdown(str(description_tag))
+
         p = Product(
             name,
             cls.__name__,
@@ -99,6 +102,7 @@ class Multimax(Store):
             "USD",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
 
         return [p]
