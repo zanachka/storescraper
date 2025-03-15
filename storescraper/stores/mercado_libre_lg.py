@@ -2,11 +2,6 @@ from .mercado_libre_chile import MercadoLibreChile
 from ..categories import (
     STEREO_SYSTEM,
     TELEVISION,
-    REFRIGERATOR,
-    WASHING_MACHINE,
-    CELL,
-    MONITOR,
-    CELL_ACCESORY,
 )
 from ..utils import session_with_proxy
 

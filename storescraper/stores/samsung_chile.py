@@ -8,7 +8,6 @@ from storescraper.categories import (
     TABLET,
     WEARABLE,
     HEADPHONES,
-    CELL_ACCESORY,
     TELEVISION,
     STEREO_SYSTEM,
     REFRIGERATOR,
@@ -33,7 +32,6 @@ class SamsungChile(Store):
         ("01020000", TABLET, "Tablets", []),
         ("01030000", WEARABLE, "Smartwatches", []),
         ("01040000", HEADPHONES, "Galaxy Buds", []),
-        # ("01050000", CELL_ACCESORY, "Accesorios", []),
         (
             "04010000",
             TELEVISION,

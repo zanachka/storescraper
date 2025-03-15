@@ -2,7 +2,6 @@ from .mercado_libre_chile import MercadoLibreChile
 from storescraper.categories import (
     STEREO_SYSTEM,
     TELEVISION,
-    CELL_ACCESORY,
     CELL,
     WEARABLE,
     VACUUM_CLEANER,
@@ -26,7 +25,6 @@ class MercadoLibreSamsung(MercadoLibreChile):
         return [
             STEREO_SYSTEM,
             TELEVISION,
-            CELL_ACCESORY,
             CELL,
             WEARABLE,
             STEREO_SYSTEM,
@@ -46,14 +44,6 @@ class MercadoLibreSamsung(MercadoLibreChile):
         categories_codes = {
             STEREO_SYSTEM: ["MLC1010"],  # Audio
             TELEVISION: ["MLC1002"],  # Televisores
-            CELL_ACCESORY: [
-                "MLC3813",  # Accesorios para Celulares
-                "MLC431414",  # Accesorios para TV
-                "MLC179816",  # Repuestos y Accesorios (Refrigeración)
-                "MLC174295",  # Extractores y Purificadores
-                "MLC176937",  # Repuestos y Accesorios (Climatización)
-                "MLC85756",  # Accesorios (Tablet)
-            ],
             CELL: ["MLC1055"],  # Celulares y Smartphones
             WEARABLE: ["MLC417704"],  # Smartwatches y accesorios
             VACUUM_CLEANER: [
