@@ -76,8 +76,6 @@ MICROPHONE = "Microphone"
 GAMING_DESK = "GamingDesk"
 # Ventiladores para gabinetes de PC desktop
 CASE_FAN = "CaseFan"
-# Abarrotes
-GROCERIES = "Groceries"
 # Insumos para impresoras (Tintas, toners)
 PRINTER_SUPPLY = "PrinterSupply"
 # Categorías indexadas con inteligencia artificial
