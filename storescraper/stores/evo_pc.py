@@ -93,6 +93,7 @@ class EvoPc(StoreWithUrlExtensions):
         name = product_data["name"]
         offer = product_data["offers"][0]
         sku = product_data["sku"]
+        sku = sku if len(sku) <= 50 else None
         key_tag = soup.find("button", {"name": "add-to-cart"})
 
         if key_tag:
