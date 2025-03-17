@@ -39,6 +39,7 @@ from storescraper.store import Store
 from storescraper.utils import (
     html_to_markdown,
     session_with_proxy,
+    cf_session_with_proxy,
 )
 from storescraper import banner_sections as bs
 
@@ -582,6 +583,10 @@ class Lider(Store):
             try:
                 extra_args = extra_args or {}
                 session = session_with_proxy(extra_args)
+
+                if tries > 1:
+                    session = cf_session_with_proxy(extra_args)
+
                 session.headers = {
                     "Content-Type": "application/json",
                     "User-Agent": extra_args.get("user_agent", cls.USER_AGENTS[tries]),
