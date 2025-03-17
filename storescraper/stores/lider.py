@@ -39,7 +39,6 @@ from storescraper.store import Store
 from storescraper.utils import (
     html_to_markdown,
     session_with_proxy,
-    cf_session_with_proxy,
 )
 from storescraper import banner_sections as bs
 
@@ -444,23 +443,16 @@ class Lider(Store):
                 while True:
                     extra_args = extra_args or {}
                     session = session_with_proxy(extra_args)
-                    tries = 0
-
-                    while tries < 2:
-                        session.headers = {
-                            "Content-Type": "application/json",
-                            "User-Agent": cls.USER_AGENTS[tries],
-                            "x-o-bu": "LIDER-CL",
-                            "x-o-mart": "B2C",
-                            "x-o-vertical": "EA",
-                            "X-APOLLO-OPERATION-NAME": "Browse",
-                        }
-                        response = session.post(query_url, json=graphql_request_body)
-                        data = json.loads(response.text)
-
-                        if "blockScript" in data:
-                            session = cf_session_with_proxy(extra_args)
-                            tries += 1
+                    session.headers = {
+                        "Content-Type": "application/json",
+                        "User-Agent": cls.USER_AGENTS[tries],
+                        "x-o-bu": "LIDER-CL",
+                        "x-o-mart": "B2C",
+                        "x-o-vertical": "EA",
+                        "X-APOLLO-OPERATION-NAME": "Browse",
+                    }
+                    response = session.post(query_url, json=graphql_request_body)
+                    data = json.loads(response.text)
 
                     try:
                         products_data = data["data"]["search"]["searchResult"][
