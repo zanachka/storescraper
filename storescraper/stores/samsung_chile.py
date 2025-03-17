@@ -33,7 +33,6 @@ class SamsungChile(Store):
         ("01020000", TABLET, "Tablets", []),
         ("01030000", WEARABLE, "Smartwatches", []),
         ("01040000", HEADPHONES, "Galaxy Buds", []),
-        # ("01050000", CELL_ACCESORY, "Accesorios", []),
         (
             "04010000",
             TELEVISION,
@@ -255,6 +254,7 @@ class SamsungChile(Store):
         description_tags = [
             soup.find("div", {"id": "benefit"}),
             soup.find("div", {"id": "specs"}),
+            soup.find("section", {"id": "specs"}),
         ]
         description = ""
 
@@ -263,6 +263,7 @@ class SamsungChile(Store):
                 description += tag.text
 
         description = html_to_markdown(description) if description != "" else None
+        print(description)
         products = []
 
         for product in json_data["productList"]:
