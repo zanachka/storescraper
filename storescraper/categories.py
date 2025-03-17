@@ -120,8 +120,6 @@ OPTICAL_DISK_PLAYER = "OpticalDiskPlayer"
 PROJECTOR = "Projector"
 # Lavavajillas
 DISH_WASHER = "DishWasher"
-# Accesorios de celular (carcasas, cables)
-CELL_ACCESORY = "CellAccesory"
 # Cocinas
 STOVE = "Stove"
 # Perfumes

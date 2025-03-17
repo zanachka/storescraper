@@ -9,46 +9,53 @@ from storescraper.categories import PRINTER, PRINTER_SUPPLY
 
 class CanonTiendaOnline(StoreWithUrlExtensions):
     url_extensions = [
-        ["146501", PRINTER],  # Impresoras y Multifuncionales Tinta
-        ["59581", PRINTER],  # Impresoras Portátiles
-        ["59509", PRINTER],  # Impresoras y Multifuncionales Láser
-        ["147513", PRINTER],  # Impresoras Formato Ancho
-        ["59551", PRINTER_SUPPLY],  # Tinta
-        ["59582", PRINTER_SUPPLY],  # Suministros Impresoras Portátiles
-        ["59550", PRINTER_SUPPLY],  # Toner
-        ["168502", PRINTER_SUPPLY],  # Toner Caja Dañada
+        [
+            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-tinta",
+            PRINTER,
+        ],  # Impresoras y Multifuncionales Tinta
+        [
+            "impresoras-y-multifuncionales/impresoras-portatiles",
+            PRINTER,
+        ],  # Impresoras Portátiles
+        [
+            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-laser",
+            PRINTER,
+        ],  # Impresoras y Multifuncionales Láser
+        [
+            "impresoras-y-multifuncionales/impresoras-formato-ancho",
+            PRINTER,
+        ],  # Impresoras Formato Ancho
+        ["tinta-papel-y-toner/tinta", PRINTER_SUPPLY],  # Tinta
+        [
+            "tinta-papel-y-toner/suministros-impresoras-portatiles",
+            PRINTER_SUPPLY,
+        ],  # Suministros Impresoras Portátiles
+        ["tinta-papel-y-toner/toner", PRINTER_SUPPLY],  # Toner
     ]
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
         product_urls = []
         session = session_with_proxy(extra_args)
-        index = 0
-        page_size = 72
+        page = 1
 
         while True:
-            if index > 1000:
+            if page > 100:
                 raise Exception("Page overflow")
 
-            body = {"pageSize": page_size, "beginIndex": index, "storeId": 12351}
-            url = f"https://www.canontiendaonline.cl/ProductListingView?categoryId={url_extension}"
-            print(url, index)
-
-            response = session.post(url, body)
+            url = f"https://www.canontiendaonline.cl/es_cl/{url_extension}?p={page}"
+            print(url)
+            response = session.get(url)
             soup = BeautifulSoup(response.text, "lxml")
-            products = soup.find("div", "product_listing_container").findAll(
-                "div", "product"
-            )
+            products = soup.findAll("div", "product-item-left")
 
             if not products:
                 break
 
             for product in products:
-                product_urls.append(
-                    f"https://www.canontiendaonline.cl{product.find('a')['href']}"
-                )
+                product_urls.append(product.find("a", "product")["href"])
 
-            index += page_size
+            page += 1
 
         return product_urls
 
@@ -57,22 +64,18 @@ class CanonTiendaOnline(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         soup = BeautifulSoup(session.get(url).text, "html5lib")
-        entry_params = soup.find("input", {"id": "catEntryParams"})["value"]
 
-        key = re.search(r"id:\s*'(\d+)'", entry_params).group(1)
         name = soup.find("span", {"itemprop": "name"}).text
-        price = Decimal(remove_words(soup.find("span", {"itemprop": "price"}).text))
-        description = soup.find("p", {"itemprop": "description"}).text.strip()
-        stock = (
-            -1
-            if soup.find("span", {"itemprop": "availability"}).text.strip()
-            == "Disponible"
-            else 0
-        )
-        sku = soup.find("span", "sku").text.split("SKU")[1].strip()
+        sku = soup.find("div", {"itemprop": "sku"}).text
+        price = Decimal(soup.find("meta", {"itemprop": "price"})["content"])
+        key = soup.find("form", {"id": "product_addtocart_form"}).find(
+            "input", {"name": "product"}
+        )["value"]
+        stock = -1 if soup.find("div", "stock available") else 0
+        description_tag = soup.find("div", {"itemprop": "description"})
+        description = description_tag.text if description_tag else None
         picture_urls = [
-            f"https://www.canontiendaonline.cl{a.find('img')['src']}"
-            for a in soup.findAll("a", "launch-prod-view")
+            soup.find("img", {"alt": "main product photo"})["src"].replace(" ", "%20")
         ]
 
         p = Product(

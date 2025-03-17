@@ -8,7 +8,6 @@ from storescraper.categories import (
     TABLET,
     WEARABLE,
     HEADPHONES,
-    CELL_ACCESORY,
     TELEVISION,
     STEREO_SYSTEM,
     REFRIGERATOR,

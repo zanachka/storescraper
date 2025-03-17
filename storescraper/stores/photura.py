@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import session_with_proxy, html_to_markdown
 
 
 class Photura(Store):
@@ -63,6 +63,8 @@ class Photura(Store):
             "https:" + x["href"]
             for x in soup.findAll("a", "product-gallery__thumbnail")
         ]
+        description_tag = soup.find("div", "product-block-list__item--description")
+        description = html_to_markdown(str(description_tag))
 
         p = Product(
             name,
@@ -78,5 +80,6 @@ class Photura(Store):
             sku=sku,
             part_number=sku,
             picture_urls=picture_urls,
+            description=description,
         )
         return [p]

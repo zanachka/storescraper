@@ -40,7 +40,7 @@ class TravelTienda(StoreWithUrlExtensions):
         ("2722336774", TELEVISION),  # Tech > TV > Televisores
         ("2234300147", STEREO_SYSTEM),  # Tech > TV > Sistemas de Sonido TV
         ("2934181475", TABLET),  # Tech > Comp. > Tablets
-        ("3415774358", NOTEBOOK),  # Tech > Comp. > Notebook
+        # ("3415774358", NOTEBOOK),  # Tech > Comp. > Notebook
         ("3213133197", PRINTER),  # Tech > Computación > Domótica & Acc.
         ("714969430", GAMING_CHAIR),  # Tech > Gamer > Sillas y Escritorios
         ("1226813193", HEADPHONES),  # Tech > Gamer > Audífonos Gamer
@@ -68,6 +68,7 @@ class TravelTienda(StoreWithUrlExtensions):
         ("2661527844", DISH_WASHER),  # Lavavajillas
         # ("1318662286", OVEN),  # Empotrados
         ("1864719901", OVEN),  # Empotrados
+        ("1004133923", MONITOR),  # Tecnología > Gamer > Monitores y Notebooks Gamer
         ("2343511074", AI),  # Electro Hogar > Electrodomésticos
     ]
 

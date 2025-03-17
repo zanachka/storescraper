@@ -75,12 +75,17 @@ class TecnoBoss(StoreWithUrlExtensions):
         name = product_data["product"]["name"]
         key = str(variant["id"])
         stock = variant["stock"]
-        price = Decimal(variant["price_discount"])
+        price = Decimal(variant["price_with_discount"])
         description = soup.find("meta", {"property": "og:description"})["content"]
         picture_urls = [
             picture.find("img")["src"]
             for picture in soup.findAll("picture", "product-gallery__picture")
         ]
+        condition = (
+            "https://schema.org/RefurbishedCondition"
+            if "reacondicionado" in description.lower()
+            else "https://schema.org/NewCondition"
+        )
 
         p = Product(
             name,
@@ -93,6 +98,7 @@ class TecnoBoss(StoreWithUrlExtensions):
             price,
             price,
             "CLP",
+            condition=condition,
             picture_urls=picture_urls,
             description=description,
         )

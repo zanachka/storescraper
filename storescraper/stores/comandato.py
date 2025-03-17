@@ -75,7 +75,10 @@ class Comandato(Store):
             Decimal("0.01")
         )
 
-        picture_urls = [a["zoom"] for a in soup.findAll("a", {"id": "botaoZoom"})]
+        picture_urls = [
+            a["zoom"].replace(" ", "%20")
+            for a in soup.findAll("a", {"id": "botaoZoom"})
+        ]
 
         description = html_to_markdown(str(soup.find("div", {"id": "caracteristicas"})))
 

@@ -1,11 +1,9 @@
 import json
-from bs4 import BeautifulSoup
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy
 from storescraper.categories import (
     STOVE,
     OVEN,
-    CELL_ACCESORY,
     REFRIGERATOR,
     AI,
     VACUUM_CLEANER,
@@ -22,7 +20,7 @@ class Sindelen(StoreWithUrlExtensions):
         ("10022/hornos-electricos", OVEN),
         ("10023/hornos-electricos", OVEN),
         ("10026/hornos-electricos", OVEN),
-        ("10012/campanas", CELL_ACCESORY),
+        ("10012/campanas", AI),
         ("10116/Refrigeracion", REFRIGERATOR),
         ("10154/batidoras-y-picadoras", AI),
         ("10155/licuadoras-y-extractores", AI),
@@ -35,16 +33,16 @@ class Sindelen(StoreWithUrlExtensions):
         ("10073/soup-maker", AI),
         ("10074/robot-de-cocina", AI),
         ("10036/aspiradoras", VACUUM_CLEANER),
-        ("10037/enceradoras-y-mopas", CELL_ACCESORY),
+        ("10037/enceradoras-y-mopas", AI),
         ("10159/lavadoras-y-secadoras", WASHING_MACHINE),
-        ("10034/planchas", CELL_ACCESORY),
-        ("10050/secadores-de-pelo", CELL_ACCESORY),
+        ("10034/planchas", AI),
+        ("10050/secadores-de-pelo", AI),
         ("10042/calefonts", WATER_HEATER),
         ("10040/enfriadores", AIR_CONDITIONER),
-        ("10043/calienta-camas", CELL_ACCESORY),
+        ("10043/calienta-camas", AI),
         ("10160/estufas", SPACE_HEATER),
         ("10046/calefactores-electricos", SPACE_HEATER),
-        ("10041/ventiladores", CELL_ACCESORY),
+        ("10041/ventiladores", AI),
     ]
 
     @classmethod

@@ -143,7 +143,7 @@ class TecnoMas(StoreWithUrlExtensions):
         soup = BeautifulSoup(response.text, "lxml")
         name = soup.find("h1").text.strip()[:250]
         key = soup.find("input", {"id": "product_id"})["value"]
-        sku = soup.find("p", {"id": "sku-" + key}).text.replace("SKU: ", "").strip()
+        sku = soup.find("h2", {"id": "sku-" + key}).text.replace("SKU: ", "").strip()
 
         stock_text = soup.find("p", {"id": "stock-" + key}).text.strip()
         print(stock_text)

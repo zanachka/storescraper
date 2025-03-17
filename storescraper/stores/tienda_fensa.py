@@ -62,9 +62,6 @@ class TiendaFensa(StoreWithUrlExtensions):
 
             if done:
                 if page == 1:
-                    import ipdb
-
-                    ipdb.set_trace()
                     logging.warning("Empty category: " + url_webpage)
                 break
             page += 1
