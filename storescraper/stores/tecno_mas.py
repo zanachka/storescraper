@@ -166,7 +166,10 @@ class TecnoMas(StoreWithUrlExtensions):
         offer_price = Decimal(remove_words(offer_price_tag.text))
 
         normal_price_tag = soup.find("span", {"id": "webpay-price-" + key})
-        normal_price = Decimal(remove_words(normal_price_tag.text))
+        if normal_price_tag:
+            normal_price = Decimal(remove_words(normal_price_tag.text))
+        else:
+            normal_price = offer_price
         slides = soup.findAll("div", "swiper-slide")
         picture_urls = []
 
