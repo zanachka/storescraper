@@ -58,17 +58,20 @@ class Jetstereo(Store):
         response = session.get(url, verify=False)
         soup = BeautifulSoup(response.text, "lxml")
         scripts = soup.findAll("script")
-        product_json = None
 
         for script in scripts:
             if "saleStatus" in script.text:
                 product_script = script.text
                 break
+        else:
+            raise Exception("No product script tag found")
 
         for entry in re.findall(r"({.*})", product_script):
             if "saleStatus" in entry:
                 product_entry = entry
                 break
+        else:
+            raise Exception("No product entry tag found")
 
         product_json = json.loads(
             product_entry.replace('\\\\"', "")
@@ -92,6 +95,7 @@ class Jetstereo(Store):
             urllib.parse.quote(picture_url, safe="://")
             for picture_url in product_json["allImages"]["full"]
         ]
+        description = product_json["description"]["description"]
 
         p = Product(
             name,
@@ -107,6 +111,7 @@ class Jetstereo(Store):
             sku=sku,
             picture_urls=picture_urls,
             part_number=part_number,
+            description=description,
         )
 
         return [p]
