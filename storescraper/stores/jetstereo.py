@@ -69,16 +69,13 @@ class Jetstereo(Store):
                 product_entry = entry
                 break
 
-        try:
-            product_json = json.loads(
-                product_entry.replace('\\\\"', "")
-                .replace("\\", "")
-                .split(
-                    '],["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML"'
-                )[0]
-            )["product"]
-        except:
-            return []
+        product_json = json.loads(
+            product_entry.replace('\\\\"', "")
+            .replace("\\", "")
+            .split(
+                '],["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML"'
+            )[0]
+        )["product"]
 
         name = product_json["name"]
         sku = str(product_json["id"])
