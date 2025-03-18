@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import urllib
 from decimal import Decimal
 
@@ -12,6 +13,7 @@ from storescraper.categories import TELEVISION
 
 
 class Jetstereo(Store):
+    preferred_products_for_url_concurrency = 3
     base_url = "https://www.jetstereo.com"
 
     @classmethod
@@ -54,10 +56,30 @@ class Jetstereo(Store):
         session = session_with_proxy(extra_args)
         response = session.get(url, verify=False)
         soup = BeautifulSoup(response.text, "lxml")
+        scripts = soup.findAll("script")
+        product_json = None
 
-        product_json = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)[
-            "props"
-        ]["pageProps"]["product"]
+        for script in scripts:
+            if "saleStatus" in script.text:
+                product_script = script.text
+                break
+
+        for entry in re.findall(r"({.*})", product_script):
+            if "saleStatus" in entry:
+                product_entry = entry
+                break
+
+        try:
+            product_json = json.loads(
+                product_entry.replace('\\\\"', "")
+                .replace("\\", "")
+                .split(
+                    '],["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML"'
+                )[0]
+            )["product"]
+        except:
+            return []
+
         name = product_json["name"]
         sku = str(product_json["id"])
         part_number = product_json["sku"]
@@ -66,6 +88,7 @@ class Jetstereo(Store):
             stock = -1
         else:
             stock = 0
+
         price = Decimal(product_json["price"]["sale"]).quantize(Decimal(".01"))
         picture_urls = [
             urllib.parse.quote(picture_url, safe="://")
