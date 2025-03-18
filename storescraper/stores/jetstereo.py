@@ -13,7 +13,8 @@ from storescraper.categories import TELEVISION
 
 
 class Jetstereo(Store):
-    preferred_products_for_url_concurrency = 3
+    preferred_discover_urls_concurrency = 1
+    preferred_products_for_url_concurrency = 1
     base_url = "https://www.jetstereo.com"
 
     @classmethod
