@@ -254,6 +254,7 @@ class SamsungChile(Store):
             soup.find("div", {"id": "benefit"}),
             soup.find("div", {"id": "specs"}),
             soup.find("section", {"id": "specs"}),
+            soup.find("div", "feature-benefit"),
         ]
         description = ""
 
