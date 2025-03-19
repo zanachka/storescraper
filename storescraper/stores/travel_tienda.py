@@ -140,12 +140,13 @@ class TravelTienda(StoreWithUrlExtensions):
         products = []
         skus_data = page_json["catalogRepository"]["skus"]
 
+        description = ""
+
         if publication_entry.get("longDescription", None):
-            description = html_to_markdown(publication_entry["longDescription"])
-        elif publication_entry.get("x_especificaciones", None):
-            description = html_to_markdown(publication_entry["x_especificaciones"])
-        else:
-            description = None
+            description += html_to_markdown(publication_entry["longDescription"])
+
+        if publication_entry.get("x_especificaciones", None):
+            description += html_to_markdown(publication_entry["x_especificaciones"])
 
         for sku, sku_data in skus_data.items():
             name = sku_data["displayName"]
@@ -206,7 +207,7 @@ class TravelTienda(StoreWithUrlExtensions):
                 sku=sku,
                 picture_urls=picture_urls,
                 part_number=part_number,
-                description=description,
+                description=description or None,
             )
             products.append(p)
 
