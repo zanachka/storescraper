@@ -8,7 +8,7 @@ from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy
 from storescraper.categories import (
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     OVEN,
     VACUUM_CLEANER,
     SPACE_HEATER,
@@ -19,7 +19,7 @@ from storescraper.categories import (
 class TiendaToyotomi(StoreWithUrlExtensions):
     url_extensions = [
         ["calefaccion", SPACE_HEATER],
-        ["ventilacion/aire-acondicionado", AIR_CONDITIONER],
+        ["ventilacion/aire-acondicionado", SPLIT_AIR_CONDITIONER],
         ["electrodomesticos", AI],
         ["electro-hogar/electrodomesticos/aspiradoras", VACUUM_CLEANER],
         ["electro-hogar/electrodomesticos/hornos-electricos", OVEN],

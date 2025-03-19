@@ -5,7 +5,7 @@ import re
 
 from bs4 import BeautifulSoup
 from storescraper.categories import (
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     AI,
     OVEN,
     REFRIGERATOR,
@@ -27,7 +27,7 @@ class OutletMedina(Store):
             OVEN,
             SPACE_HEATER,
             TELEVISION,
-            AIR_CONDITIONER,
+            SPLIT_AIR_CONDITIONER,
             AI,
         }
 
@@ -44,7 +44,7 @@ class OutletMedina(Store):
             ["21-estufas", SPACE_HEATER],
             ["63-termoventiladores", SPACE_HEATER],
             ["78-televisores", TELEVISION],
-            ["85-aire-acondicionado", AIR_CONDITIONER],
+            ["85-aire-acondicionado", SPLIT_AIR_CONDITIONER],
             ["20-electrodomesticos", AI],
             ["112-multi-ollas", AI],
         ]

@@ -4,7 +4,7 @@ from collections import defaultdict
 from decimal import Decimal
 from pathlib import Path
 from storescraper.categories import (
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     ALL_IN_ONE,
     CELL,
     DISH_WASHER,
@@ -335,7 +335,7 @@ class Lider(Store):
         # ],
         [
             "23989399_29216192_32962208",
-            [AIR_CONDITIONER],
+            [SPLIT_AIR_CONDITIONER],
             "Electrohogar > Climatización > Ventilación",
             1.0,
         ],
@@ -380,7 +380,7 @@ class Lider(Store):
             ALL_IN_ONE,
             PROJECTOR,
             SPACE_HEATER,
-            AIR_CONDITIONER,
+            SPLIT_AIR_CONDITIONER,
             MOUSE,
             KEYBOARD,
             HEADPHONES,

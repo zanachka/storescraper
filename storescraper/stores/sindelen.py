@@ -9,7 +9,7 @@ from storescraper.categories import (
     VACUUM_CLEANER,
     WASHING_MACHINE,
     WATER_HEATER,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     SPACE_HEATER,
 )
 
@@ -38,7 +38,7 @@ class Sindelen(StoreWithUrlExtensions):
         ("10034/planchas", AI),
         ("10050/secadores-de-pelo", AI),
         ("10042/calefonts", WATER_HEATER),
-        ("10040/enfriadores", AIR_CONDITIONER),
+        ("10040/enfriadores", SPLIT_AIR_CONDITIONER),
         ("10043/calienta-camas", AI),
         ("10160/estufas", SPACE_HEATER),
         ("10046/calefactores-electricos", SPACE_HEATER),

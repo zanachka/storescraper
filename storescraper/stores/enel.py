@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from bs4 import BeautifulSoup
 
-from storescraper.categories import AIR_CONDITIONER
+from storescraper.categories import SPLIT_AIR_CONDITIONER
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, session_with_proxy
@@ -11,7 +11,7 @@ from storescraper.utils import html_to_markdown, session_with_proxy
 
 class Enel(StoreWithUrlExtensions):
     url_extensions = [
-        ["aire-acondicionado/split-muro.list.html", AIR_CONDITIONER],
+        ["aire-acondicionado/split-muro.list.html", SPLIT_AIR_CONDITIONER],
     ]
 
     @classmethod

@@ -12,7 +12,7 @@ from storescraper.categories import (
     CELL,
     TELEVISION,
     OPTICAL_DISK_PLAYER,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     STOVE,
     OVEN,
     WASHING_MACHINE,

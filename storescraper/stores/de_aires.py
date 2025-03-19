@@ -6,14 +6,14 @@ from decimal import Decimal
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy, html_to_markdown
-from storescraper.categories import AIR_CONDITIONER
+from storescraper.categories import SPLIT_AIR_CONDITIONER
 
 
 class DeAires(StoreWithUrlExtensions):
     # ONLY CONSIDERS LG PRODUCTS
 
     url_extensions = [
-        ["categoria-producto/lg", AIR_CONDITIONER],
+        ["categoria-producto/lg", SPLIT_AIR_CONDITIONER],
     ]
 
     @classmethod

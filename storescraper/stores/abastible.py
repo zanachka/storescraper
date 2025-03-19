@@ -2,7 +2,7 @@ import re
 import time
 from decimal import Decimal
 from bs4 import BeautifulSoup
-from storescraper.categories import AIR_CONDITIONER
+from storescraper.categories import SPLIT_AIR_CONDITIONER
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, session_with_proxy
@@ -10,7 +10,7 @@ from storescraper.utils import html_to_markdown, session_with_proxy
 
 class Abastible(StoreWithUrlExtensions):
     url_extensions = [
-        ["ac-lg-dual-inverter", AIR_CONDITIONER],
+        ["ac-lg-dual-inverter", SPLIT_AIR_CONDITIONER],
     ]
 
     @classmethod

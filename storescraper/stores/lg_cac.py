@@ -13,7 +13,7 @@ from ..categories import (
     DISH_WASHER,
     WASHING_MACHINE,
     VACUUM_CLEANER,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     MONITOR,
 )
 
@@ -67,8 +67,8 @@ class LgCac(LgV5):
             ("CT20188013", VACUUM_CLEANER, True),
             ("CT20188013", VACUUM_CLEANER, False),
             # Aire acondicionado residencial
-            ("CT30014140", AIR_CONDITIONER, True),
-            ("CT30014140", AIR_CONDITIONER, False),
+            ("CT30014140", SPLIT_AIR_CONDITIONER, True),
+            ("CT30014140", SPLIT_AIR_CONDITIONER, False),
             # Deshumidificador
             # ('CT32021782', 'AirConditioner', True),
             # Monitores

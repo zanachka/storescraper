@@ -7,7 +7,7 @@ from storescraper.categories import (
     MONITOR,
     PROJECTOR,
     DISH_WASHER,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     HEADPHONES,
     OVEN,
     STOVE,
@@ -47,5 +47,5 @@ class LgCo(LgV6):
             # Monitores
             ("CT52002009", MONITOR),
             # Aires acondicionados
-            ("CT52002010", AIR_CONDITIONER),
+            ("CT52002010", SPLIT_AIR_CONDITIONER),
         ]

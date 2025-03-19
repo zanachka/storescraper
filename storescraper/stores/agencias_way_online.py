@@ -13,7 +13,7 @@ from storescraper.categories import (
     REFRIGERATOR,
     WASHING_MACHINE,
     STOVE,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
 )
 
 
@@ -27,7 +27,7 @@ class AgenciasWayOnline(Store):
             TELEVISION,
             STEREO_SYSTEM,
             REFRIGERATOR,
-            AIR_CONDITIONER,
+            SPLIT_AIR_CONDITIONER,
             WASHING_MACHINE,
             STOVE,
         ]

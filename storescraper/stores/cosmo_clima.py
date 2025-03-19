@@ -6,7 +6,7 @@ from decimal import Decimal
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy, html_to_markdown
-from storescraper.categories import AIR_CONDITIONER
+from storescraper.categories import SPLIT_AIR_CONDITIONER
 
 
 class CosmoClima(StoreWithUrlExtensions):
@@ -16,7 +16,7 @@ class CosmoClima(StoreWithUrlExtensions):
         [
             "aire-acondicionado/aire-acondicionado-residencial/split-muro-multisplit-anwo-clark-hisense-samsung-"
             "kendal-lg-airolite-splendid-fujitsu-9000-12000-18000-24000-btu?filter[cfv][42869][]=117715",
-            AIR_CONDITIONER,
+            SPLIT_AIR_CONDITIONER,
         ],
     ]
 

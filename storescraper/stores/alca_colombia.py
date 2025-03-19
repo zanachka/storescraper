@@ -5,7 +5,7 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     OVEN,
     REFRIGERATOR,
     STEREO_SYSTEM,
@@ -24,7 +24,7 @@ from storescraper.utils import (
 class AlcaColombia(StoreWithUrlExtensions):
     url_extensions = [
         ["smart_tv", TELEVISION],
-        ["aires", AIR_CONDITIONER],
+        ["aires", SPLIT_AIR_CONDITIONER],
         ["cocina", OVEN],
         ["lavadoras-y-secadoras", WASHING_MACHINE],
         ["refrigeracion", REFRIGERATOR],

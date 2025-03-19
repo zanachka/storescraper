@@ -26,7 +26,7 @@ from storescraper.categories import (
     VIDEO_GAME_CONSOLE,
     WATER_HEATER,
     STOVE,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     AI,
     PRINTER_SUPPLY,
 )
@@ -298,7 +298,7 @@ class AbcDin(Store):
         ],
         [
             "aires-acondicionados",
-            [AIR_CONDITIONER],
+            [SPLIT_AIR_CONDITIONER],
             "Línea Blanca / Climatización / Aires Acondicionados",
             1,
         ],

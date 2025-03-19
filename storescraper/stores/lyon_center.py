@@ -1,7 +1,7 @@
 import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
-from storescraper.categories import AIR_CONDITIONER
+from storescraper.categories import SPLIT_AIR_CONDITIONER
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import (
@@ -13,7 +13,7 @@ from storescraper.utils import (
 
 class LyonCenter(StoreWithUrlExtensions):
     url_extensions = [
-        ["lg", AIR_CONDITIONER],
+        ["lg", SPLIT_AIR_CONDITIONER],
     ]
 
     @classmethod

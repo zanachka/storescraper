@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from storescraper.categories import (
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     ALL_IN_ONE,
     CELL,
     HEADPHONES,
@@ -38,7 +38,7 @@ class Oechsle(PeruStores):
         "lavasecas y centros de lavado": WASHING_MACHINE,
         "secadoras": WASHING_MACHINE,
         "hornos microondas": OVEN,
-        "aires acondicionados": AIR_CONDITIONER,
+        "aires acondicionados": SPLIT_AIR_CONDITIONER,
         "audífonos on ear": HEADPHONES,
         "audífonos inalámbricos bluetooth": HEADPHONES,
     }

@@ -11,7 +11,7 @@ from ..categories import (
     DISH_WASHER,
     WASHING_MACHINE,
     VACUUM_CLEANER,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
 )
 
 
@@ -44,11 +44,11 @@ class LgPa(LgV6):
             # Aspiradoras
             ("CT52006982", VACUUM_CLEANER),
             # Todas las Soluciones de Cuidado del Aire
-            ("CT52006983", AIR_CONDITIONER),
+            ("CT52006983", SPLIT_AIR_CONDITIONER),
             # Aire Acondicionado Split Inverter
-            ("CT52007022", AIR_CONDITIONER),
+            ("CT52007022", SPLIT_AIR_CONDITIONER),
             # Aire Acondicionado Portátil
-            ("CT52007023", AIR_CONDITIONER),
+            ("CT52007023", SPLIT_AIR_CONDITIONER),
             # Todos los Monitores
             ("CT52006985", MONITOR),
             # Todos los Medical Display

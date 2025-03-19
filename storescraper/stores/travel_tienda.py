@@ -20,7 +20,7 @@ from storescraper.categories import (
     GAMING_CHAIR,
     REFRIGERATOR,
     OVEN,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     VIDEO_GAME_CONSOLE,
     WASHING_MACHINE,
     VACUUM_CLEANER,
@@ -57,7 +57,7 @@ class TravelTienda(StoreWithUrlExtensions):
         ("2074305120", REFRIGERATOR),  # Home > Electrohogar > Refrigeración
         ("1073939402", OVEN),
         ("779019428", OVEN),
-        ("110098225", AIR_CONDITIONER),
+        ("110098225", SPLIT_AIR_CONDITIONER),
         ("4005764418", WASHING_MACHINE),
         ("3421645721", PRINTER),  # Tecnología > Computación > Accesorios de Computacion
         ("375810843", MONITOR),  # Tecnología > Computación > Monitores

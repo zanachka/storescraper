@@ -15,7 +15,7 @@ from storescraper.categories import (
     OVEN,
     DISH_WASHER,
     VACUUM_CLEANER,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     MONITOR,
     PROJECTOR,
 )
@@ -118,7 +118,7 @@ class SamsungChile(Store):
         ),
         (
             "08050000",
-            AIR_CONDITIONER,
+            SPLIT_AIR_CONDITIONER,
             "Soluciones de Aire",
             [
                 ("filter1=03z01", "A/C Split"),

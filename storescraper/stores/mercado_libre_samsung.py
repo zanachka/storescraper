@@ -6,7 +6,7 @@ from storescraper.categories import (
     WEARABLE,
     VACUUM_CLEANER,
     REFRIGERATOR,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     OVEN,
     WASHING_MACHINE,
     TABLET,
@@ -30,7 +30,7 @@ class MercadoLibreSamsung(MercadoLibreChile):
             STEREO_SYSTEM,
             VACUUM_CLEANER,
             REFRIGERATOR,
-            AIR_CONDITIONER,
+            SPLIT_AIR_CONDITIONER,
             OVEN,
             WASHING_MACHINE,
             TABLET,
@@ -52,7 +52,7 @@ class MercadoLibreSamsung(MercadoLibreChile):
             REFRIGERATOR: [
                 "MLC9456",  # Refrigeradores
             ],
-            AIR_CONDITIONER: [
+            SPLIT_AIR_CONDITIONER: [
                 "MLC29800",  # Aires Acondicionados
                 "MLC409431",  # Salud y Equipamiento Médico
             ],

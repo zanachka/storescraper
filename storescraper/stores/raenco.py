@@ -14,7 +14,7 @@ class Raenco(Store):
     def categories(cls):
         return [
             REFRIGERATOR,
-            AIR_CONDITIONER,
+            SPLIT_AIR_CONDITIONER,
             TELEVISION,
             STEREO_SYSTEM,
             OVEN,
@@ -30,7 +30,7 @@ class Raenco(Store):
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         category_filters = [
-            ["aires-acondicionados.html", AIR_CONDITIONER],
+            ["aires-acondicionados.html", SPLIT_AIR_CONDITIONER],
             ["audio-y-video/tv.html", TELEVISION],
             ["audio-y-video/equipos-de-sonido.html", STEREO_SYSTEM],
             ["electrodomesticos/microondas.html", OVEN],

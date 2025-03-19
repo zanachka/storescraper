@@ -11,7 +11,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     REFRIGERATOR,
     WASHING_MACHINE,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     OVEN,
 )
 from storescraper.product import Product

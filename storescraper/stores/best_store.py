@@ -28,7 +28,7 @@ from storescraper.categories import (
     GAMING_CHAIR,
     WEARABLE,
     PRINTER,
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     SOLID_STATE_DRIVE,
     VIDEO_GAME_CONSOLE,
     STORAGE_DRIVE,
@@ -76,7 +76,7 @@ class BestStore(StoreWithUrlExtensions):
         ["174-impresoras-y-escaneres-impresoras-laser", PRINTER],
         ["144-impresoras-y-escaneres-impresoras-multifuncionales", PRINTER],
         ["1028-plotters", PRINTER],
-        ["254-climatizacion", AIR_CONDITIONER],
+        ["254-climatizacion", SPLIT_AIR_CONDITIONER],
         ["302-videojuegos-consolas", VIDEO_GAME_CONSOLE],
     ]
 

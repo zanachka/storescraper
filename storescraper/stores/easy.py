@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from storescraper import banner_sections as bs
 
 from storescraper.categories import (
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     OVEN,
     REFRIGERATOR,
     SPACE_HEATER,
@@ -34,7 +34,7 @@ class Easy(Store):
             OVEN,
             VACUUM_CLEANER,
             WASHING_MACHINE,
-            AIR_CONDITIONER,
+            SPLIT_AIR_CONDITIONER,
             SPACE_HEATER,
             VIDEO_GAME_CONSOLE,
             WATER_HEATER,
@@ -169,14 +169,14 @@ class Easy(Store):
             [
                 "electrohogar-y-climatizacion/ventilacion/aire-acondicionado-"
                 "portatil",
-                [AIR_CONDITIONER],
+                [SPLIT_AIR_CONDITIONER],
                 "Inicio > Electrohogar y Climatización > Ventilación > "
                 "Aire acondicionado portátil",
                 1,
             ],
             [
                 "electrohogar-y-climatizacion/ventilacion/aire-acondicionado-" "split",
-                [AIR_CONDITIONER],
+                [SPLIT_AIR_CONDITIONER],
                 "Inicio > Electrohogar y Climatización > Ventilación > "
                 "Aire Acondicionado split",
                 1,
@@ -184,7 +184,7 @@ class Easy(Store):
             [
                 "electrohogar-y-climatizacion/ventilacion/purificadores-y-"
                 "humidificadores",
-                [AIR_CONDITIONER],
+                [SPLIT_AIR_CONDITIONER],
                 "Inicio > Electrohogar y Climatización > Ventilación > "
                 "Purificadores y humidificadores",
                 1,

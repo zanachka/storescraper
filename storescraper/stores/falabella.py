@@ -488,7 +488,7 @@ class Falabella(Store):
         ],
         [
             "cat2019",
-            [AIR_CONDITIONER],
+            [SPLIT_AIR_CONDITIONER],
             "Home > Electrohogar-Climatización > Aire acondicionado",
             1,
         ],

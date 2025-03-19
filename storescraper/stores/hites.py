@@ -7,7 +7,7 @@ from curl_cffi import requests
 from bs4 import BeautifulSoup
 from decimal import Decimal
 from storescraper.categories import (
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     ALL_IN_ONE,
     CELL,
     DISH_WASHER,
@@ -67,7 +67,7 @@ class Hites(Store):
             EXTERNAL_STORAGE_DRIVE,
             MONITOR,
             PROJECTOR,
-            AIR_CONDITIONER,
+            SPLIT_AIR_CONDITIONER,
             USB_FLASH_DRIVE,
             WEARABLE,
             DISH_WASHER,
@@ -228,13 +228,13 @@ class Hites(Store):
             ],
             [
                 "electro-hogar/climatizacion",
-                [AIR_CONDITIONER],
+                [SPLIT_AIR_CONDITIONER],
                 "Inicio > Electro Hogar > Climatización",
                 0,
             ],
             [
                 "electro-hogar/climatizacion/f/aire-acondicionado",
-                [AIR_CONDITIONER],
+                [SPLIT_AIR_CONDITIONER],
                 "Inicio > Electro Hogar > Climatizacioń >  " "Aire Acondicionado",
                 1,
             ],

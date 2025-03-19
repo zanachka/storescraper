@@ -2,7 +2,7 @@ from decimal import Decimal
 import logging
 
 from storescraper.categories import (
-    AIR_CONDITIONER,
+    SPLIT_AIR_CONDITIONER,
     ALL_IN_ONE,
     CELL,
     HEADPHONES,
@@ -121,7 +121,7 @@ class PlazaVea(PeruStores):
         "secadoras": WASHING_MACHINE,
         "cocinas de pie": OVEN,
         "hornos microondas": OVEN,
-        "aire acondicionado": AIR_CONDITIONER,
+        "aire acondicionado": SPLIT_AIR_CONDITIONER,
         "audífonos": HEADPHONES,
     }
     international_produt_code = "10178"
