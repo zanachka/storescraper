@@ -40,6 +40,7 @@ class Lifemax(StoreWithUrlExtensions):
         ["Impresoras-de-Inyeccion-de-Tinta", PRINTER],
         ["all-in-one", ALL_IN_ONE],
         ["discos-ssd-unidad-estado-solido", SOLID_STATE_DRIVE],
+        ["discos-ssd-internos", SOLID_STATE_DRIVE],
         ["discos-duros-externos", EXTERNAL_STORAGE_DRIVE],
         ["discos-ssd-externos", EXTERNAL_STORAGE_DRIVE],
         ["disco-duro-interno", STORAGE_DRIVE],
