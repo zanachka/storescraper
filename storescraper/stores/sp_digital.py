@@ -7,7 +7,11 @@ from decimal import Decimal
 
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import (
+    html_to_markdown,
+    session_with_proxy,
+    cf_session_with_proxy,
+)
 from storescraper.categories import (
     GAMING_CHAIR,
     WEARABLE,
@@ -155,7 +159,7 @@ class SpDigital(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
@@ -219,6 +223,12 @@ class SpDigital(StoreWithUrlExtensions):
                 if attr["values"] and attr["values"][0]["slug"] != "nuevo":
                     condition = "https://schema.org/RefurbishedCondition"
 
+        description = ""
+
+        for attribute in page_data["content"]["attributes"]:
+            if attribute["values"]:
+                description += f"{attribute['attribute']['name']}: {attribute['values'][0]['name']}\n"
+
         if page_data["content"]["description"]:
             description_json = json.loads(page_data["content"]["description"])
 
@@ -226,22 +236,18 @@ class SpDigital(StoreWithUrlExtensions):
                 description_tag = BeautifulSoup(
                     description_json["blocks"][0]["data"]["text"], "lxml"
                 )
-                description = html_to_markdown(description_tag.text)
-            else:
-                description = None
-        else:
-            description = None
+                description += html_to_markdown(description_tag.text)
 
-        if not description or description.strip() == "":
-            for meta in page_data["content"]["metadata"]:
-                if meta["key"] == "specs":
-                    description = {}
-                    meta_values = json.loads(meta["value"])
+        for meta in page_data["content"]["metadata"]:
+            if meta["key"] == "specs":
+                meta_description = {}
+                meta_values = json.loads(meta["value"])
 
-                    for value in meta_values["values"]:
-                        description[value[4]] = value[5]
+                for value in meta_values["values"]:
+                    meta_description[value[4]] = value[5]
 
-                    description = json.dumps(description)
+                if meta_description:
+                    description += json.dumps(meta_description)
 
         picture_urls = [x["url"] for x in page_data["content"]["media"]]
 
