@@ -88,6 +88,8 @@ ACCESORIES = "Accesories"
 DISH_WASHER = "DishWasher"
 # Cocinas
 STOVE = "Stove"
+# Calefones
+WATER_HEATER = "WaterHeater"
 
 
 #########################
@@ -114,8 +116,6 @@ VIDEO_CAMERA = "VideoCamera"
 CAMERA = "Camera"
 # Cooler de tarjetas de video
 VGA_COOLER = "VgaCooler"
-# Calefones
-WATER_HEATER = "WaterHeater"
 
 #########################
 # Reservados (no usar normalmente)
