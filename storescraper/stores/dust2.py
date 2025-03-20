@@ -1,4 +1,5 @@
 import re
+from bs4 import BeautifulSoup
 from decimal import Decimal
 from storescraper.categories import (
     PRINTER,
@@ -30,7 +31,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
 
 
 class Dust2(StoreWithUrlExtensions):
@@ -76,55 +77,59 @@ class Dust2(StoreWithUrlExtensions):
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = "PostmanRuntime/7.29.3"
-        endpoint = (
-            "https://dust2.gg/page-data/categoria-producto/{}/page-data.json".format(
-                url_extension
-            )
-        )
-        print(endpoint)
-        response = session.get(endpoint)
-        json_response = response.json()
-
+        page = 1
         product_urls = []
-        for node in (
-            json_response["result"]["pageContext"]["category"]["products"] or []
-        ):
-            product_urls.append("https://dust2.gg/producto/{}/".format(node["slug"]))
+
+        while True:
+            url = f"https://dust2.gg/categoria-producto/{url_extension}/page/{page}/"
+            print(url)
+            response = session.get(url)
+
+            if response.status_code == 404:
+                break
+
+            soup = BeautifulSoup(response.text, "lxml")
+            products = soup.find_all("div", "productCard")
+
+            for product in products:
+                product_urls.append(product.find("a", "product-link")["href"])
+
+            page += 1
+
         return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = "PostmanRuntime/7.29.3"
-        slug = re.search(r"/producto/(.+)/", url).groups()[0]
-        endpoint = "https://dust2.gg/page-data/producto/{}/page-data.json".format(slug)
-        print(endpoint)
-        response = session.get(endpoint)
+        response = session.get(url)
+        soup = BeautifulSoup(response.text, "lxml")
 
-        if response.status_code == 404:
-            return []
+        name = soup.find(
+            "div", "Content__singleProduct--right-productName"
+        ).text.strip()
+        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
+        stock = (
+            0 if soup.find("div", "out-of-stock") or "preventa" in name.lower() else -1
+        )
+        offer_price = Decimal(
+            remove_words(
+                soup.find("div", "singleProduct__right--productPrice-cash").text
+            )
+        )
+        normal_price = Decimal(
+            remove_words(
+                soup.find("div", "singleProduct__right--productPrice-card").text
+            )
+        )
+        sku = soup.find("div", "Content__singleProduct--right-productSKU").text.strip()
+        picture_urls = [
+            slide.find("img")["src"]
+            for slide in soup.find_all("div", "zoomProductImage_slider-slide")
+        ]
 
-        json_data = response.json()["result"]["pageContext"]["product"]
-        name = json_data["name"]
-        key = str(json_data["id"])
-
-        if "PREVENTA" in name:
-            stock = 0
-        else:
-            stock = json_data["stock_quantity"] or 0
-            if stock < 0:
-                stock = 0
-
-        offer_price = Decimal(json_data["price"]).quantize(0)
-        normal_price = (offer_price / Decimal("0.93")).quantize(0)
-        sku = json_data["sku"]
-        picture_urls = [x["src"] for x in json_data["images"]]
-        description = (
-            html_to_markdown(json_data["description"])
-            if json_data["description"]
-            else None
+        description = html_to_markdown(
+            soup.find("div", "Content__reportError--body-description").text
         )
 
         p = Product(
@@ -139,7 +144,8 @@ class Dust2(StoreWithUrlExtensions):
             offer_price,
             "CLP",
             sku=sku,
-            picture_urls=picture_urls,
+            picture_urls=picture_urls if picture_urls != [""] else None,
             description=description,
         )
+
         return [p]
