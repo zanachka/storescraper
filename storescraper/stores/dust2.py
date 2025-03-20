@@ -122,7 +122,11 @@ class Dust2(StoreWithUrlExtensions):
                 soup.find("div", "singleProduct__right--productPrice-card").text
             )
         )
-        sku = soup.find("div", "Content__singleProduct--right-productSKU").text.strip()
+        sku = (
+            soup.find("div", "Content__singleProduct--right-productSKU")
+            .find("span")
+            .text.strip()
+        )
         picture_urls = [
             slide.find("img")["src"]
             for slide in soup.find_all("div", "zoomProductImage_slider-slide")
