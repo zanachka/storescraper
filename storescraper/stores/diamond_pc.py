@@ -160,7 +160,13 @@ class DiamondPc(StoreWithUrlExtensions):
             )
 
             for product in variations:
-                variation_name = f"{name} - {''.join(product['attributes'].values())}"
+                if product["attributes"] != []:
+                    variation_name = (
+                        f"{name} - {''.join(product['attributes'].values())}"
+                    )
+                else:
+                    variation_name = name
+
                 key = str(product["variation_id"])
                 sku = product.get("sku", None)
                 stock = (
@@ -173,6 +179,7 @@ class DiamondPc(StoreWithUrlExtensions):
                 offer_price = Decimal(product["display_price"])
                 normal_price = (offer_price * Decimal("1.08")).quantize(0)
                 picture_urls = [product["image"]["url"]]
+
                 p = Product(
                     variation_name,
                     cls.__name__,
@@ -186,7 +193,7 @@ class DiamondPc(StoreWithUrlExtensions):
                     "CLP",
                     description=description,
                     sku=sku,
-                    picture_urls=picture_urls,
+                    picture_urls=picture_urls if picture_urls != [""] else None,
                 )
                 products.append(p)
 
