@@ -209,6 +209,7 @@ from .nuevatec import Nuevatec
 from .olier import Olier
 from .olimpica import Olimpica
 from .omnisport import Omnisport
+from .osoji import Osoji
 from .opc_store import OpcStore
 from .oportutek import Oportutek
 from .oechsle import Oechsle
