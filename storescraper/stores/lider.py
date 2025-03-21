@@ -443,7 +443,11 @@ class Lider(Store):
 
                 while True:
                     extra_args = extra_args or {}
-                    session = session_with_proxy(extra_args)
+                    if tries > 1:
+                        session = cf_session_with_proxy(extra_args)
+                    else:
+                        session = session_with_proxy(extra_args)
+
                     session.headers = {
                         "Content-Type": "application/json",
                         "User-Agent": cls.USER_AGENTS[tries],
