@@ -74,7 +74,7 @@ class Nuevatec(StoreWithUrlExtensions):
         while True:
             if page > 10:
                 raise Exception("Page overflow: " + url_extension)
-            url_webpage = "https://www.nuevatec.cl/{}/" "page/{}/".format(
+            url_webpage = "https://nuevatec.cl/{}/" "page/{}/".format(
                 url_extension, page
             )
             print(url_webpage)
