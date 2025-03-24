@@ -185,6 +185,9 @@ class NotebookStore(StoreWithUrlExtensions):
         ).quantize(0)
         offer_price = (normal_price * Decimal("0.966")).quantize(Decimal(0))
 
+        if normal_price > Decimal(100000000) or offer_price > Decimal(100000000):
+            return []
+
         picture_urls = [
             x["src"]
             for x in soup.find("div", "product-images").findAll("img")
