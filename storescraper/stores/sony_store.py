@@ -7,7 +7,6 @@ from decimal import Decimal
 
 from storescraper.categories import (
     TELEVISION,
-    CAMERA,
     STEREO_SYSTEM,
     OPTICAL_DISK_PLAYER,
     HEADPHONES,
@@ -22,7 +21,6 @@ class SonyStore(Store):
     def categories(cls):
         return [
             TELEVISION,
-            CAMERA,
             STEREO_SYSTEM,
             OPTICAL_DISK_PLAYER,
             HEADPHONES,
@@ -32,7 +30,6 @@ class SonyStore(Store):
     def discover_urls_for_category(cls, category, extra_args=None):
         url_extensions = [
             ["televisores-y-teatro-en-casa/televisores", TELEVISION],
-            ["camaras/cyber-shot", CAMERA],
             ["audio/sistemas-de-audio", STEREO_SYSTEM],
             [
                 "televisores-y-teatro-en-casa/reproductores-de-blu-ray-disc" "-y-dvd",

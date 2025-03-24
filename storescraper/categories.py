@@ -108,14 +108,6 @@ LIGHT_TUBE = "LightTube"
 LIGHT_PROJECTOR = "LightProjector"
 # Juegos de video
 VIDEO_GAME = "VideoGame"
-# Camaras profesionales
-D_S_L_R = "DSLR"
-# Camaras de video
-VIDEO_CAMERA = "VideoCamera"
-# Camaras digitales de fotografia
-CAMERA = "Camera"
-# Cooler de tarjetas de video
-VGA_COOLER = "VgaCooler"
 
 #########################
 # Reservados (no usar normalmente)

@@ -504,18 +504,6 @@ class Falabella(Store):
             "Home > Electrohogar-Aspirado y Limpieza > Aspiradoras",
             1,
         ],
-        [
-            "cat70028",
-            [CAMERA],
-            "Home > Tecnología-Fotografía > Cámaras Compactas",
-            1,
-        ],
-        [
-            "cat70029",
-            [CAMERA],
-            "Home > Tecnología-Fotografía > Cámaras Semiprofesionales",
-            1,
-        ],
         ["cat1130010", [STEREO_SYSTEM], "Home > Tecnología-Audio > Tornamesas", 1],
         [
             "cat9910024",
