@@ -108,14 +108,17 @@ class UltimateGamerStore(StoreWithUrlExtensions):
                 else 0
             )
 
-        description = html_to_markdown(soup.find("div", "description").text)
+        description_tag = soup.find("div", "description")
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
+        )
 
         pictures_container = soup.find(
             "swiper-slider", {"product-gallery__slider--main"}
         )
 
         if not pictures_container:
-            picture_urls = [product_data["image"]]
+            picture_urls = [product_data["image"]] if "image" in product_data else []
         else:
             picture_urls = [
                 img["src"]
