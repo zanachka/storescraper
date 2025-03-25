@@ -80,8 +80,13 @@ class UltimateGamerStore(StoreWithUrlExtensions):
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
         data = soup.find("script", {"type": "application/ld+json"}).text
-        clean_data = re.sub(r'"description":\s*"[^"]*",\s*', "", data)
-        json_data = json.loads(clean_data)
+        clean_data = re.sub(r"\s+", " ", data)
+
+        try:
+            json_data = json.loads(clean_data)
+        except:
+            return []
+
         product_data = None
 
         for data in json_data:
@@ -99,7 +104,11 @@ class UltimateGamerStore(StoreWithUrlExtensions):
         offer_price = (normal_price * Decimal("0.96")).quantize(0)
         key = soup.find("meta", {"property": "og:id"})["content"]
 
-        if "PREVENTA" in name.upper() or "PREVENTA" in url.upper():
+        if (
+            "PREVENTA" in name.upper()
+            or "PREVENTA" in url.upper()
+            or soup.find("div", "future-pickup")
+        ):
             stock = 0
         else:
             stock = (
