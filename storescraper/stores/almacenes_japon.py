@@ -115,9 +115,12 @@ class AlmacenesJapon(Store):
         picture_ids = [x["id"] for x in picture_list_node["images"]]
 
         picture_urls = []
+
         for picture_id in picture_ids:
             picture_node = product_data[picture_id]
-            picture_urls.append(picture_node["imageUrl"].split("?")[0])
+            picture_urls.append(
+                picture_node["imageUrl"].split("?")[0].replace(" ", "%20")
+            )
 
         p = Product(
             name,
