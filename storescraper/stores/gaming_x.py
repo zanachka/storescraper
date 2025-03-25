@@ -74,8 +74,8 @@ class GamingX(StoreWithUrlExtensions):
             )
             picture_urls = [
                 slide.find("a")["href"]
-                for slide in soup.find("div", "js-swiper-product").find_all(
-                    "div", "swiper-slide"
+                for slide in soup.findAll(
+                    "div", "js-product-slide swiper-slide slider-slide"
                 )
             ]
 
