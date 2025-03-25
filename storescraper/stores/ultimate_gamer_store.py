@@ -104,11 +104,7 @@ class UltimateGamerStore(StoreWithUrlExtensions):
         offer_price = (normal_price * Decimal("0.96")).quantize(0)
         key = soup.find("meta", {"property": "og:id"})["content"]
 
-        if (
-            "PREVENTA" in name.upper()
-            or "PREVENTA" in url.upper()
-            or soup.find("div", "future-pickup")
-        ):
+        if "PREVENTA" in name.upper() or "PREVENTA" in url.upper():
             stock = 0
         else:
             stock = (
