@@ -846,8 +846,14 @@ class Falabella(Store):
         review_avg_score = review_data["reviewSummary"]["primaryRating"]["average"]
 
         is_international_shipping = product_data["internationalShipping"]["applicable"]
+        base_model_name = f"{product_data['brandName']} {product_data['name']}"
 
         for model in product_data["variants"]:
+            if len(product_data["variants"]) > 1:
+                model_name = f"{base_model_name} - {model['name']}"
+            else:
+                model_name = base_model_name
+
             sku = model["id"]
             sku_url = (
                 "https://www.falabella.com/falabella-cl/product/{}/{}/"
@@ -971,7 +977,7 @@ class Falabella(Store):
             # model_name = model["name"].encode("ascii", "ignore").decode("ascii")
 
             p = Product(
-                model["name"][:200],
+                model_name[:200],
                 cls.__name__,
                 category,
                 sku_url,
