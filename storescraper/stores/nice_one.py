@@ -1,7 +1,4 @@
-import html
-import json
 import logging
-import re
 
 from bs4 import BeautifulSoup
 from decimal import Decimal
@@ -25,54 +22,33 @@ from storescraper.categories import (
     ALL_IN_ONE,
 )
 from storescraper.product import Product
-from storescraper.store import Store
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, session_with_proxy
 
 
-class NiceOne(Store):
-    @classmethod
-    def categories(cls):
-        return [
-            STORAGE_DRIVE,
-            COMPUTER_CASE,
-            ALL_IN_ONE,
-            MOUSE,
-            HEADPHONES,
-            MOTHERBOARD,
-            MONITOR,
-            PROCESSOR,
-            VIDEO_CARD,
-            RAM,
-            POWER_SUPPLY,
-            CPU_COOLER,
-            NOTEBOOK,
-            CASE_FAN,
-            TABLET,
-            GAMING_CHAIR,
-        ]
+class NiceOne(StoreWithUrlExtensions):
+    url_extensions = [
+        ["22-discos-duros", STORAGE_DRIVE],
+        ["24-gabinetes", COMPUTER_CASE],
+        ["26-computadores-armados", ALL_IN_ONE],
+        ["29-mouse-teclados", MOUSE],
+        ["32-parlantes-audio", HEADPHONES],
+        ["33-placas-madre", MOTHERBOARD],
+        ["34-procesadores", PROCESSOR],
+        ["39-tarjetas-graficas", VIDEO_CARD],
+        ["27-memorias", RAM],
+        ["23-fuentes-de-poder", POWER_SUPPLY],
+        ["28-monitores", MONITOR],
+        ["61-disipador-por-aire", CPU_COOLER],
+        ["62-watercooling", CPU_COOLER],
+        ["63-ventiladores", CASE_FAN],
+        ["30-notebooks", NOTEBOOK],
+        ["68-tablets", TABLET],
+        ["73-sillas-gamer", GAMING_CHAIR],
+    ]
 
     @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        category_urls = [
-            ["22-discos-duros", STORAGE_DRIVE],
-            ["24-gabinetes", COMPUTER_CASE],
-            ["26-computadores-armados", ALL_IN_ONE],
-            ["29-mouse-teclados", MOUSE],
-            ["32-parlantes-audio", HEADPHONES],
-            ["33-placas-madre", MOTHERBOARD],
-            ["34-procesadores", PROCESSOR],
-            ["39-tarjetas-graficas", VIDEO_CARD],
-            ["27-memorias", RAM],
-            ["23-fuentes-de-poder", POWER_SUPPLY],
-            ["28-monitores", MONITOR],
-            ["61-disipador-por-aire", CPU_COOLER],
-            ["62-watercooling", CPU_COOLER],
-            ["63-ventiladores", CASE_FAN],
-            ["30-notebooks", NOTEBOOK],
-            ["68-tablets", TABLET],
-            ["73-sillas-gamer", GAMING_CHAIR],
-        ]
-
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
         session.headers["user-agent"] = (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) "
@@ -82,33 +58,29 @@ class NiceOne(Store):
         )
 
         product_urls = []
-        for category_path, local_category in category_urls:
-            if local_category != category:
-                continue
+        page = 1
 
-            page = 1
+        while True:
+            page_url = "https://n1g.cl/Home/{}?page={}".format(url_extension, page)
 
-            while True:
-                page_url = "https://n1g.cl/Home/{}?page={}".format(category_path, page)
+            if page > 10:
+                raise Exception("page overflow: " + page_url)
 
-                if page > 10:
-                    raise Exception("page overflow: " + page_url)
+            soup = BeautifulSoup(session.get(page_url).text, "lxml")
 
-                soup = BeautifulSoup(session.get(page_url).text, "lxml")
+            product_cells = soup.findAll("article", "product-miniature")
 
-                product_cells = soup.findAll("article", "product-miniature")
+            if not product_cells:
+                if page == 1:
+                    logging.warning("Empty category: {}".format(url_extension))
 
-                if not product_cells:
-                    if page == 1:
-                        logging.warning("Empty category: {}".format(category_path))
+                break
 
-                    break
+            for cell in product_cells:
+                product_url = cell.find("a")["href"]
+                product_urls.append(product_url)
 
-                for cell in product_cells:
-                    product_url = cell.find("a")["href"]
-                    product_urls.append(product_url)
-
-                page += 1
+            page += 1
 
         return product_urls
 
@@ -145,6 +117,10 @@ class NiceOne(Store):
             normal_price = offer_price
 
         description = html_to_markdown(str(soup.find("div", "product_desc")))
+        description += html_to_markdown(str(soup.find("div", {"id": "description"})))
+
+        print(description)
+
         pictures_containers = soup.findAll("img", "js-thumb")
 
         if pictures_containers:
