@@ -1,3 +1,4 @@
+import json
 import re
 from decimal import Decimal
 from bs4 import BeautifulSoup
@@ -7,7 +8,6 @@ from storescraper.categories import (
     RAM,
     CELL,
     TABLET,
-    WEARABLE,
     ALL_IN_ONE,
     USB_FLASH_DRIVE,
     MEMORY_CARD,
@@ -167,6 +167,12 @@ class MyShop(StoreWithUrlExtensions):
             x["data-image"] for x in soup.findAll("a", "elevatezoom-gallery")
         ]
         description = html_to_markdown(str(soup.find("div", "product_d_inner")))
+
+        extended_description_tag = soup.find("input", {"id": "ObjectoJSON"})
+        extended_description_json = json.loads(extended_description_tag["value"])
+        description += html_to_markdown(
+            extended_description_json["PRODUCTO"]["descripcion"]
+        )
 
         if "REACON" in name.upper():
             condition = "https://schema.org/RefurbishedCondition"
