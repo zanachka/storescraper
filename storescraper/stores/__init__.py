@@ -172,6 +172,7 @@ from .marcimex import Marcimex
 from .max import Max
 from .mega_bytes import MegaBytes
 from .mega_drive_store import MegaDriveStore
+from .mega_ofertas import MegaOfertas
 from .mercacentro import Mercacentro
 from .mercado_libre_chile import MercadoLibreChile
 from .mercado_libre_colombia_lg import MercadoLibreColombiaLg
