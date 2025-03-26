@@ -91,6 +91,10 @@ class PlayerPro(StoreWithUrlExtensions):
             )
         )
         normal_price = Decimal(offer["price"])
+
+        if normal_price == 0 or offer_price == 0:
+            return []
+
         picture_urls = [
             picture.find("img")["src"]
             for picture in soup.findAll("picture", "product-gallery__picture")
