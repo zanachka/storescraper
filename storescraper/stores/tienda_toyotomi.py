@@ -6,7 +6,7 @@ from decimal import Decimal
 
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import session_with_proxy, html_to_markdown
 from storescraper.categories import (
     SPLIT_AIR_CONDITIONER,
     OVEN,
@@ -86,6 +86,7 @@ class TiendaToyotomi(StoreWithUrlExtensions):
             stock = 0
 
         description = json_data["description"]
+        description += html_to_markdown(str(soup.find("div", "product_specifications")))
 
         if "image" not in json_data.keys():
             return []
