@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from decimal import Decimal
+from requests.exceptions import TooManyRedirects
 
 from storescraper.categories import (
     NOTEBOOK,
@@ -248,7 +249,11 @@ class SamsungChile(Store):
         response = session.get(endpoint)
         json_data = json.loads(response.text)["response"]["resultData"]
 
-        response = session.get(url)
+        try:
+            response = session.get(url)
+        except TooManyRedirects:
+            return []
+
         soup = BeautifulSoup(response.text, "lxml")
         description_tags = [
             soup.find("div", {"id": "benefit"}),
@@ -263,7 +268,6 @@ class SamsungChile(Store):
                 description += tag.text
 
         description = html_to_markdown(description) if description != "" else None
-        print(description)
         products = []
 
         for product in json_data["productList"]:
