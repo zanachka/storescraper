@@ -965,6 +965,13 @@ class MercadoLibreChile(Store):
             seller = seller_info["nickname"]
             stock = -1 if skip_whitelist or seller in cls.seller_whitelist else 0
             picture_urls = [p["url"] for p in variation_data["pictures"]]
+            description = ", ".join(
+                [
+                    f"{attribute['name']}: {attribute['value_name']}"
+                    for attribute in variation_data["attributes"]
+                ]
+                + [variation_data["short_description"]["content"]]
+            )
 
             products.append(
                 Product(
@@ -983,7 +990,7 @@ class MercadoLibreChile(Store):
                     picture_urls=picture_urls,
                     review_count=review_count,
                     review_avg_score=review_avg_score,
-                    description="Type3",
+                    description=f"{description} - Type3",
                 )
             )
 
