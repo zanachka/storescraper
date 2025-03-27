@@ -78,8 +78,6 @@ GAMING_CHAIR = "GamingChair"
 CASE_FAN = "CaseFan"
 # Insumos para impresoras (Tintas, toners)
 PRINTER_SUPPLY = "PrinterSupply"
-# Categorías indexadas con inteligencia artificial
-AI = "AI"
 # Aspiradoras
 VACUUM_CLEANER = "VacuumCleaner"
 # Accesorios
@@ -90,6 +88,30 @@ DISH_WASHER = "DishWasher"
 STOVE = "Stove"
 # Calefones
 WATER_HEATER = "WaterHeater"
+# Batidoras
+MIXER = "Mixer"
+# Cafeteras
+COFFE_MAKER = "CoffeeMaker"
+# Exprimidores y sacajugos
+JUICER = "Juicer"
+# Hervidores
+KETTLE = "Kettle"
+# Licuadoras
+BLENDER = "Blender"
+# Ollas eléctricas
+ELECTRIC_POT = "ElectricPot"
+# Parrillas eléctricas
+ELECTRIC_GRILL = "ElectricGrill"
+# Preparadores de alimentos
+FOOD_PROCESSOR = "FoodProcessor"
+# Robots de cocina
+COOKING_ROBOT = "CookingRobot"
+# Sandwicheras y wafleras
+SANDWICH_MAKER = "SandwichMaker"
+# Termos
+STORAGE_WATER_HEATER = "StorageWaterHeater"
+# Tostadores
+TOASTER = "Toaster"
 
 
 #########################
@@ -108,6 +130,8 @@ LIGHT_TUBE = "LightTube"
 LIGHT_PROJECTOR = "LightProjector"
 # Juegos de video
 VIDEO_GAME = "VideoGame"
+# AI
+AI = "AI"
 
 #########################
 # Reservados (no usar normalmente)
