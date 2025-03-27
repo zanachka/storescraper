@@ -1,4 +1,5 @@
 import json
+import re
 from decimal import Decimal
 from bs4 import BeautifulSoup
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -76,9 +77,18 @@ class Sindelen(StoreWithUrlExtensions):
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
 
+        key = soup.find("div", "wishlist-btn")["data-idproduct"]
+        sku_container = soup.find("span", {"data-id-product": True})
+
+        if sku_container:
+            sku = re.search(
+                r"addToCartCReferenceFull\('(.+)',", sku_container["onclick"]
+            ).groups()[0]
+        else:
+            sku = soup.find("span", "sku").text.split()[-1]
+
         name = soup.find("h1", {"itemprop": "name"}).text.strip()
-        sku = soup.find("span", "sku").text.split()[-1]
-        stock = -1 if soup.find("body", "product-available-for-order") else 0
+        stock = -1 if sku_container else 0
         price = Decimal(remove_words(soup.find("div", "current-price").text))
         description = html_to_markdown(soup.find("div", "product-resume").text)
         picture_urls = [
@@ -94,7 +104,7 @@ class Sindelen(StoreWithUrlExtensions):
             category,
             url,
             url,
-            sku,
+            key,
             stock,
             price,
             price,
