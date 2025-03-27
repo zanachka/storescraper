@@ -1,16 +1,26 @@
 import json
+from decimal import Decimal
+from bs4 import BeautifulSoup
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.product import Product
+from storescraper.utils import session_with_proxy, remove_words, html_to_markdown
 from storescraper.categories import (
+    ACCESORIES,
     STOVE,
     OVEN,
     REFRIGERATOR,
-    AI,
     VACUUM_CLEANER,
     WASHING_MACHINE,
     WATER_HEATER,
     SPLIT_AIR_CONDITIONER,
     SPACE_HEATER,
+    MIXER,
+    BLENDER,
+    COFFE_MAKER,
+    AIR_FRYER,
+    ELECTRIC_POT,
+    TOASTER,
+    COOKING_ROBOT,
 )
 
 
@@ -20,29 +30,29 @@ class Sindelen(StoreWithUrlExtensions):
         ("10022/hornos-electricos", OVEN),
         ("10023/hornos-electricos", OVEN),
         ("10026/hornos-electricos", OVEN),
-        ("10012/campanas", AI),
+        ("10012/campanas", ACCESORIES),
         ("10116/Refrigeracion", REFRIGERATOR),
-        ("10154/batidoras-y-picadoras", AI),
-        ("10155/licuadoras-y-extractores", AI),
-        ("10156/cafeteras-y-hervidores", AI),
-        ("10157/freidoras-y-parrillas", AI),
-        ("10027/ollas-electricas", AI),
-        ("10158/tostadores-y-sandwicheras", AI),
-        ("10071/cocedor-de-huevos", AI),
-        ("10072/maquina-para-hacer-pan", AI),
-        ("10073/soup-maker", AI),
-        ("10074/robot-de-cocina", AI),
+        ("10154/batidoras-y-picadoras", MIXER),
+        ("10155/licuadoras-y-extractores", BLENDER),
+        ("10156/cafeteras-y-hervidores", COFFE_MAKER),
+        ("10157/freidoras-y-parrillas", AIR_FRYER),
+        ("10027/ollas-electricas", ELECTRIC_POT),
+        ("10158/tostadores-y-sandwicheras", TOASTER),
+        ("10071/cocedor-de-huevos", ACCESORIES),
+        ("10072/maquina-para-hacer-pan", ACCESORIES),
+        ("10073/soup-maker", ACCESORIES),
+        ("10074/robot-de-cocina", COOKING_ROBOT),
         ("10036/aspiradoras", VACUUM_CLEANER),
-        ("10037/enceradoras-y-mopas", AI),
+        ("10037/enceradoras-y-mopas", ACCESORIES),
         ("10159/lavadoras-y-secadoras", WASHING_MACHINE),
-        ("10034/planchas", AI),
-        ("10050/secadores-de-pelo", AI),
+        ("10034/planchas", ACCESORIES),
+        ("10050/secadores-de-pelo", ACCESORIES),
         ("10042/calefonts", WATER_HEATER),
         ("10040/enfriadores", SPLIT_AIR_CONDITIONER),
-        ("10043/calienta-camas", AI),
+        ("10043/calienta-camas", ACCESORIES),
         ("10160/estufas", SPACE_HEATER),
         ("10046/calefactores-electricos", SPACE_HEATER),
-        ("10041/ventiladores", AI),
+        ("10041/ventiladores", ACCESORIES),
     ]
 
     @classmethod
@@ -58,3 +68,41 @@ class Sindelen(StoreWithUrlExtensions):
             product_urls.append(product["product_url"])
 
         return product_urls
+
+    @classmethod
+    def products_for_url(cls, url, category=None, extra_args=None):
+        print(url)
+        session = session_with_proxy(extra_args)
+        response = session.get(url)
+        soup = BeautifulSoup(response.text, "lxml")
+
+        name = soup.find("h1", {"itemprop": "name"}).text.strip()
+        sku = soup.find("span", "sku").text.split()[-1]
+        stock = -1 if soup.find("body", "product-available-for-order") else 0
+        price = Decimal(remove_words(soup.find("div", "current-price").text))
+        description = html_to_markdown(soup.find("div", "product-resume").text)
+        picture_urls = [
+            img["data-image-large-src"]
+            for img in soup.find("div", {"id": "slider-product-img-container"}).findAll(
+                "img"
+            )
+        ]
+
+        p = Product(
+            name,
+            cls.__name__,
+            category,
+            url,
+            url,
+            sku,
+            stock,
+            price,
+            price,
+            "CLP",
+            part_number=sku,
+            sku=sku,
+            picture_urls=picture_urls,
+            description=description,
+        )
+
+        return [p]
