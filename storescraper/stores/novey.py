@@ -1,8 +1,7 @@
 from decimal import Decimal
 import json
-
+import re
 from bs4 import BeautifulSoup
-
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
@@ -22,25 +21,39 @@ class Novey(Store):
             return []
 
         session = session_with_proxy(extra_args)
+        response = session.get(
+            "https://www.novey.com.pa/productos-tv-audio-electronica-y-celulares/televisores-smart-tv"
+        )
+        soup = BeautifulSoup(response.text, "lxml")
+
+        for script in soup.find_all("script"):
+            if script.string and script.string.startswith("window.algoliaConfig"):
+                algolia_json_content = re.search(
+                    r"window\.algoliaConfig\s*=\s*(\{.*\});", script.string
+                ).group(1)
+                algolia_data = json.loads(algolia_json_content)
+                algolia_application_id = algolia_data["applicationId"]
+                algolia_api_key = algolia_data["apiKey"]
+                break
+
         product_urls = []
         payload = {
             "requests": [
                 {
-                    "indexName": "magento2_prod_novey_panama_products",
+                    "indexName": "magento2_prod_new1_novey_panama_products",
                     "params": "hitsPerPage=300&page=0&query=lg",
                 }
             ]
         }
         session.headers = {
-            "x-algolia-api-key": "YjgxZjUwZDBmZTI4NGVkZmRiMjBlNDM5ZDYzZmY0ZjcwZTdkMzBmODIzYzBiN2U2ODE5YTdmZmUxNjRkNjBiYmZpbHRlcnM9Y2F0YWxvZ19wZXJtaXNzaW9ucy5jdXN0b21lcl9ncm91cF8wJTIwJTIxJTNEJTIwMCZ0YWdGaWx0ZXJzPSZ2YWxpZFVudGlsPTE3NDMwODI5MDg=",
-            "x-algolia-application-id": "ZCZRBTYD8I",
+            "x-algolia-api-key": algolia_api_key,
+            "x-algolia-application-id": algolia_application_id,
         }
         page = 0
 
         while True:
             url = "https://zczrbtyd8i-dsn.algolia.net/1/indexes/*/queries"
             payload["requests"][0]["params"] = f"hitsPerPage=300&page={page}&query=lg"
-            print(url)
             response = json.loads(session.post(url, json=payload).text)
             products = response["results"][0]["hits"]
 
