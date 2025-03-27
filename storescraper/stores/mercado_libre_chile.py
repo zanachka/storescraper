@@ -1064,6 +1064,10 @@ class MercadoLibreChile(Store):
                 else:
                     key = variation["id"]
 
+                picture_urls = [
+                    f"https://http2.mlstatic.com/D_NQ_NP_{variation['picture']['id']}-O.webp"
+                ]
+
                 products.append(
                     Product(
                         name,
@@ -1082,6 +1086,7 @@ class MercadoLibreChile(Store):
                         review_count=review_count,
                         review_avg_score=review_avg_score,
                         description="{} Type2".format(description),
+                        picture_urls=picture_urls,
                     )
                 )
         else:
