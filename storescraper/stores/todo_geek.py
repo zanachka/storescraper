@@ -3,11 +3,7 @@ import json
 import logging
 import re
 from bs4 import BeautifulSoup
-from storescraper.categories import (
-    VIDEO_CARD,
-    VIDEO_GAME_CONSOLE,
-    CELL,
-)
+from storescraper.categories import VIDEO_CARD, VIDEO_GAME_CONSOLE, CELL, NOTEBOOK
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
@@ -18,6 +14,7 @@ class TodoGeek(StoreWithUrlExtensions):
         ["celulares", CELL],
         ["tarjetas-graficas", VIDEO_CARD],
         ["consolas", VIDEO_GAME_CONSOLE],
+        ["notebooks", NOTEBOOK],
     ]
 
     @classmethod
