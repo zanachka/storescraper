@@ -98,7 +98,7 @@ class PowerPlay(StoreWithUrlExtensions):
 
                 key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
                 name = product_data["name"]
-                sku = product_data["sku"]
+                sku = str(product_data["sku"])
                 normal_price = get_price_from_price_specification(product_data)
                 gallery = soup.find(
                     "div", "woocommerce-product-gallery__wrapper"
