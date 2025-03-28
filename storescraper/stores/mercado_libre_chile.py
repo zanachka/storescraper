@@ -738,7 +738,6 @@ class MercadoLibreChile(Store):
             PRINTER,
             VIDEO_CARD,
             MOTHERBOARD,
-            AI,
             OVEN,
         ]
         # return [i for i in set(cls.categories_name.values()) if i]
