@@ -1046,6 +1046,7 @@ class MercadoLibreChile(Store):
                     review_avg_score = float(x["reviews"]["rating"])
 
         products = []
+        gallery = data["initialState"]["components"]["gallery"]["pictures"]
 
         if picker:
             picker_id = picker["id"]
@@ -1072,7 +1073,8 @@ class MercadoLibreChile(Store):
                     key = variation["id"]
 
                 picture_urls = [
-                    f"https://http2.mlstatic.com/D_NQ_NP_{variation['picture']['id']}-O.webp"
+                    f"https://http2.mlstatic.com/D_NQ_NP_{picture['id']}-O.webp"
+                    for picture in gallery
                 ]
 
                 products.append(
