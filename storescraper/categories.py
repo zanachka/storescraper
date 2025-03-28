@@ -91,7 +91,6 @@ STOVE = "Stove"
 # Calefones
 WATER_HEATER = "WaterHeater"
 
-
 #########################
 # Legacy (no usar)
 #########################
@@ -102,12 +101,6 @@ MICROPHONE = "Microphone"
 GAMING_DESK = "GamingDesk"
 # Lectores de DVD / Blu-ray para PCs desktop
 OPTICAL_DRIVE = "OpticalDrive"
-# Tubos de iluminación LED
-LIGHT_TUBE = "LightTube"
-# Proyectores de luz LED
-LIGHT_PROJECTOR = "LightProjector"
-# Juegos de video
-VIDEO_GAME = "VideoGame"
 
 #########################
 # Reservados (no usar normalmente)
