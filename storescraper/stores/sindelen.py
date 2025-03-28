@@ -90,7 +90,8 @@ class Sindelen(StoreWithUrlExtensions):
         name = soup.find("h1", {"itemprop": "name"}).text.strip()
         stock = -1 if sku_container else 0
         price = Decimal(remove_words(soup.find("div", "current-price").text))
-        description = html_to_markdown(soup.find("div", "product-resume").text)
+        description = html_to_markdown(soup.find("div", {"id": "digiResume"}).text)
+        print(description)
         picture_urls = [
             img["data-image-large-src"]
             for img in soup.find("div", {"id": "slider-product-img-container"}).findAll(
