@@ -13,7 +13,7 @@ from storescraper.categories import (
     USB_FLASH_DRIVE,
     GAMING_CHAIR,
     HEADPHONES,
-    AI,
+    ACCESORIES,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -32,7 +32,7 @@ class VStore(StoreWithUrlExtensions):
         ["gamer", KEYBOARD],
         ["smartwatch", WEARABLE],
         ["conexion-y-video", MONITOR],
-        ["electrodomesticos", AI],
+        ["electrodomesticos", ACCESORIES],
     ]
 
     @classmethod

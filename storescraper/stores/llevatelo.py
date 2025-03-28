@@ -20,7 +20,7 @@ from storescraper.categories import (
     MONITOR,
     NOTEBOOK,
     DISH_WASHER,
-    AI,
+    ACCESORIES,
 )
 
 
@@ -41,7 +41,7 @@ class Llevatelo(Store):
             MONITOR,
             NOTEBOOK,
             DISH_WASHER,
-            AI,
+            ACCESORIES,
         ]
 
     @classmethod
@@ -62,7 +62,7 @@ class Llevatelo(Store):
             ("computacion/monitores", MONITOR),
             ("tecnologia/notebooks", NOTEBOOK),
             ("linea-blanca/lavavajillas", DISH_WASHER),
-            ("electrodomesticos", AI),
+            ("electrodomesticos", ACCESORIES),
         ]
 
         session = session_with_proxy(extra_args)

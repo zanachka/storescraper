@@ -10,7 +10,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     TELEVISION,
     NOTEBOOK,
-    AI,
+    ACCESORIES,
 )
 from .movistar import Movistar
 from ..utils import session_with_proxy
@@ -32,7 +32,7 @@ class TiendaMovistar(Movistar):
         ("smarthome", TELEVISION),
         ("accesorios/parlantes-bluetooth", STEREO_SYSTEM),
         ("notebooks", NOTEBOOK),
-        ("smarthome", AI),
+        ("smarthome", ACCESORIES),
     ]
 
     @classmethod

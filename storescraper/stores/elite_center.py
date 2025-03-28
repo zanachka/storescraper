@@ -36,7 +36,7 @@ from storescraper.categories import (
     PRINTER,
     CELL,
     WEARABLE,
-    AI,
+    ACCESORIES,
     PRINTER_SUPPLY,
 )
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -77,7 +77,7 @@ class EliteCenter(StoreWithUrlExtensions):
         ["celulares-desbloqueados", CELL],
         ["trackers-de-actividad", WEARABLE],
         ["relojes", WEARABLE],
-        ["electrodomesticos", AI],
+        ["electrodomesticos", ACCESORIES],
         ["cartuchos-de-toner-e-ink-jet", PRINTER_SUPPLY],
     ]
 

@@ -9,7 +9,7 @@ from ..categories import (
     REFRIGERATOR,
     STOVE,
     OVEN,
-    AI,
+    ACCESORIES,
     DISH_WASHER,
     WASHING_MACHINE,
     VACUUM_CLEANER,
@@ -55,7 +55,7 @@ class LgCac(LgV5):
             ("CT20188009", OVEN, True),
             ("CT20188009", OVEN, False),
             # Campanas (consideradas como accesorios)
-            ("CT32021842", AI, True),
+            ("CT32021842", ACCESORIES, True),
             # Lavaplatos
             ("CT30015420", DISH_WASHER, True),
             # Lavadoras y secadoras

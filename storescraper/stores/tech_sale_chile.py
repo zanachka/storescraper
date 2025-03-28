@@ -13,7 +13,7 @@ from storescraper.categories import (
     NOTEBOOK,
     HEADPHONES,
     MOUSE,
-    AI,
+    ACCESORIES,
     VIDEO_GAME_CONSOLE,
     WEARABLE,
 )
@@ -25,7 +25,7 @@ class TechSaleChile(StoreWithUrlExtensions):
         ["computadores-y-tablets", NOTEBOOK],
         ["audio-y-video", HEADPHONES],
         ["accesorios-y-perifericos", MOUSE],
-        ["hogar-y-seguridad", AI],
+        ["hogar-y-seguridad", ACCESORIES],
         ["consolas-y-accesorios", VIDEO_GAME_CONSOLE],
         ["sin-categorizar", WEARABLE],
     ]

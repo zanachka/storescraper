@@ -13,7 +13,7 @@ from storescraper.categories import (
     MONITOR,
     WEARABLE,
     VACUUM_CLEANER,
-    AI,
+    ACCESORIES,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -29,7 +29,7 @@ class MiStore(StoreWithUrlExtensions):
         ["monitores", MONITOR],
         ["ecosystem/smartwatch-bands", WEARABLE],
         ["ecosystem/electrohogar/aspiradoras", VACUUM_CLEANER],
-        ["cocina-2", AI],
+        ["cocina-2", ACCESORIES],
     ]
 
     @classmethod

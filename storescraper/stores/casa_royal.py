@@ -14,7 +14,8 @@ from storescraper.categories import (
     WEARABLE,
     VIDEO_GAME_CONSOLE,
     MICROPHONE,
-    AI,
+    ACCESORIES,
+    ELECTRIC_GRILL,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -49,8 +50,8 @@ class CasaRoyal(StoreWithUrlExtensions):
             KEYBOARD,
         ],
         ["audio/microfonos", MICROPHONE],
-        ["hogar/parrillas-y-accesorios/parrillas", AI],
-        ["electro/electrodomesticos", AI],
+        ["hogar/parrillas-y-accesorios/parrillas", ELECTRIC_GRILL],
+        ["electro/electrodomesticos", ACCESORIES],
     ]
 
     @classmethod

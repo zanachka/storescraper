@@ -16,7 +16,7 @@ from storescraper.categories import (
     VIDEO_GAME_CONSOLE,
     WATER_HEATER,
     STOVE,
-    AI,
+    ACCESORIES,
 )
 
 from storescraper.product import Product
@@ -218,7 +218,7 @@ class Easy(Store):
             ],
             [
                 "electrohogar-y-climatizacion/electrodomesticos",
-                [AI],
+                [ACCESORIES],
                 "Electrohogar y Climatización > Electrodomésticos",
                 1,
             ],
