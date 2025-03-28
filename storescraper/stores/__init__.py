@@ -150,6 +150,7 @@ from .la_curacao import LaCuracao
 from .la_polar import LaPolar
 from .lady_lee import LadyLee
 from .lap_shop import LapShop
+from .laser_chile import LaserChile
 from .lenovo_chile import LenovoChile
 from .lg_cl import LgCl
 from .lg_co import LgCo
