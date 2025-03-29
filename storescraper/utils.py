@@ -98,6 +98,7 @@ def html_to_markdown(html, baseurl=""):
         return " **{}** ".format(match.groups()[0].strip())
 
     result = re.sub(r"\*\*(.+?)\*\*", strip_bold_content, result)
+    result = re.sub(r"!\[([^\]]*)\]\(data:image\/.*;base64,[^\)]+\)", "", result)
 
     return result
 
