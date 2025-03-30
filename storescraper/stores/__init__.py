@@ -218,7 +218,6 @@ from .oechsle import Oechsle
 from .outlet_medina import OutletMedina
 from .panafoto import Panafoto
 from .paris import Paris
-from .paris_fast import ParisFast
 from .pc_com import PcCom
 from .pc_express import PcExpress
 from .pc_factory import PcFactory

@@ -1,11 +1,8 @@
 import json
 import logging
-import re
-import urllib
 from collections import defaultdict
 from decimal import Decimal
 
-import validators
 from bs4 import BeautifulSoup
 from dateutil.parser import parse
 
@@ -39,10 +36,9 @@ from storescraper.categories import (
     PRINTER_SUPPLY,
     PERFUME,
 )
-from storescraper.flixmedia import flixmedia_video_urls
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy
 from storescraper import banner_sections as bs
 
 
@@ -192,10 +188,6 @@ class Paris(Store):
         fast_mode = extra_args and extra_args.get("fast_mode", False)
 
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = cls.USER_AGENT
-        session.headers["apiKey"] = "cl-ccom-parisapp-plp"
-        session.headers["platform"] = "web"
-
         product_entries = defaultdict(lambda: [])
 
         for e in category_paths:
@@ -218,7 +210,6 @@ class Paris(Store):
             category_group_id = soup.find("div", {"data-cnstrc-filter-value": True})[
                 "data-cnstrc-filter-value"
             ]
-            print(category_group_id)
 
             page = 1
 
@@ -319,123 +310,56 @@ class Paris(Store):
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = cls.USER_AGENT
         response = session.get(url)
-
-        if response.status_code in [410, 404]:
-            return []
-
         soup = BeautifulSoup(response.text, "lxml")
+        sku = soup.find("div", {"data-cnstrc-item-id": True})["data-cnstrc-item-id"]
 
-        product_match = re.search(
-            r"window.productJSON = ([\s\S]+)window.device", response.text
+        payload = {"term": sku, "pagination": {"pageSize": 30}}
+        response = session.post(
+            "https://be-paris-backend-cl-ms-api.ccom.paris.cl/products/",
+            json=payload,
         )
-        if not product_match:
-            return []
-        product_data = json.loads(product_match.groups()[0])
 
-        brand = product_data.get("brand", "Unknown")
-        name = "{} - {}".format(brand, product_data["name"]).strip()
-        sku = product_data["id"]
+        json_response = response.json()
 
-        normal_price = None
-        offer_price = None
-        list_price = None
-
-        for price_entry in product_data["prices"]:
-            if price_entry["priceBookId"] == "clp-internet-prices":
-                normal_price = Decimal(remove_words(price_entry["price"]))
-            elif price_entry["priceBookId"] == "clp-cencosud-prices":
-                offer_price = Decimal(remove_words(price_entry["price"]))
-            elif price_entry["priceBookId"] == "clp-list-prices":
-                list_price = Decimal(remove_words(price_entry["price"]))
-
-        if normal_price is None:
-            normal_price = list_price
-
-        if normal_price is None:
+        if not json_response["results"]:
             return []
 
-        if offer_price is None or offer_price > normal_price:
+        assert len(json_response["results"]) == 1
+        product_data = json_response["results"][0]
+        name = f"{product_data['brand']} {product_data['name']['es-CL']}"
+
+        sellers = product_data["sellers"]
+        assert len(sellers) == 1
+        seller = sellers[0] if sellers[0] != "Paris" else None
+
+        master_variant = product_data["masterVariant"]
+        normal_price = Decimal(master_variant["prices"]["offer"]["value"]["centAmount"])
+        if "paymentMethod" in master_variant["prices"]:
+            offer_price = Decimal(
+                master_variant["prices"]["paymentMethod"]["value"]["centAmount"]
+            )
+        else:
             offer_price = normal_price
 
-        if normal_price > Decimal("100000000") or offer_price > Decimal("100000000"):
-            return []
+        picture_urls = [x["url"] for x in master_variant["images"]]
 
-        image_groups = product_data["image_groups"]
-        if image_groups:
-            picture_urls = [
-                x["link"]
-                for x in image_groups[0]["images"]
-                if validators.url(x["link"])
-            ]
-        else:
-            picture_urls = None
+        stock = 0 if seller else -1
 
-        raw_seller = product_data["seller"]
-
-        if raw_seller == "Paris.cl":
-            seller = None
-        else:
-            seller = raw_seller
-
-        if seller:
-            stock = 0
-        elif product_data["orderable"]:
-            stock = -1
-        else:
-            stock = 0
-
-        video_urls = []
-        for iframe in soup.findAll("iframe"):
-            if "src" not in iframe.attrs:
-                continue
-            match = re.match("https://www.youtube.com/embed/(.+)", iframe["src"])
-            if match:
-                video_urls.append(
-                    "https://www.youtube.com/watch?v={}".format(match.groups()[0])
-                )
-
-        flixmedia_id = None
-
-        flixmedia_tag = soup.find(
-            "script", {"src": "//media.flixfacts.com/js/loader.js"}
-        )
-        if flixmedia_tag:
-            mpn = flixmedia_tag["data-flix-mpn"].strip()
-            flix_videos = flixmedia_video_urls(mpn)
-            if flix_videos is not None:
-                video_urls.extend(flix_videos)
-                flixmedia_id = mpn
-
-        description = html_to_markdown(
-            str(soup.find("table", "table-data-product-details"))
+        description_tags = soup.findAll("details", "ui-rounded-lg")
+        description = "\n".join(
+            [html_to_markdown(str(panel)) for panel in description_tags]
         )
 
-        reviews_endpoint = (
-            "https://api.bazaarvoice.com/data/display/"
-            "0.2alpha/product/summary?PassKey=cawhDUNXMzzke7y"
-            "V6JTnIiPm8Eh0hP8s7Oqzo57qihXkk&productid="
-            "{}&contentType=reviews&rev=0".format(sku)
-        )
-        review_data = json.loads(session.get(reviews_endpoint).text)
-        review_count = review_data["reviewSummary"]["numReviews"]
-        review_avg_score = review_data["reviewSummary"]["primaryRating"]["average"]
-
-        conditions_dict = {
-            "REACONDICIONADO": "https://schema.org/RefurbishedCondition",
-            "SEGUNDA MANO": "https://schema.org/UsedCondition",
-        }
-
-        condition = "https://schema.org/NewCondition"
-        for promotion in product_data["promotions"]:
-            for label in promotion["labels"]:
-                for condition_text, condition_cadidate in conditions_dict.items():
-                    if condition_text in label.upper():
-                        condition = condition_cadidate
+        review_count = product_data.get("countRating", 0)
+        if "averageRating" in product_data:
+            review_avg_score = float(product_data["averageRating"])
+        else:
+            review_avg_score = None
 
         if "REACONDICIONADO" in name.upper():
             condition = "https://schema.org/RefurbishedCondition"
-
-        has_virtual_assistant = brand == "LG"
+        else:
+            condition = "https://schema.org/NewCondition"
 
         p = Product(
             name[:200],
@@ -451,12 +375,9 @@ class Paris(Store):
             sku=sku,
             description=description,
             picture_urls=picture_urls,
-            video_urls=video_urls,
-            flixmedia_id=flixmedia_id,
             review_count=review_count,
             review_avg_score=review_avg_score,
             seller=seller,
-            has_virtual_assistant=has_virtual_assistant,
             condition=condition,
         )
 
@@ -500,32 +421,3 @@ class Paris(Store):
             raise Exception("No banners for Home section: " + base_url)
 
         return banners
-
-    @classmethod
-    def reviews_for_sku(cls, sku):
-        print(sku)
-        session = session_with_proxy(None)
-        reviews = []
-
-        reviews_endpoint = (
-            "https://api.bazaarvoice.com/data/batch.json?pass"
-            "key=caKNy0lDYfGnjpRhD27b7ZtxiSbxdwBcuuIEwXCyc9Zr"
-            "M&apiversion=5.5&resource.q0=reviews&filter.q0=p"
-            "roductid%3Aeq%3A{}&limit.q0=100".format(sku)
-        )
-        review_data = json.loads(session.get(reviews_endpoint).text)
-
-        for entry in review_data["BatchedResults"]["q0"]["Results"]:
-            review_date = parse(entry["SubmissionTime"])
-
-            review = {
-                "store": "Paris",
-                "sku": sku,
-                "rating": float(entry["Rating"]),
-                "text": entry["ReviewText"],
-                "date": review_date.isoformat(),
-            }
-
-            reviews.append(review)
-
-        return reviews
