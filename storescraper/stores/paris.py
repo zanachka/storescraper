@@ -4,7 +4,6 @@ from collections import defaultdict
 from decimal import Decimal
 
 from bs4 import BeautifulSoup
-from dateutil.parser import parse
 
 from storescraper.categories import (
     GAMING_CHAIR,
@@ -345,9 +344,12 @@ class Paris(Store):
         picture_urls = [x["url"] for x in master_variant["images"]]
         stock = 0 if seller else -1
 
-        description = html_to_markdown(product_data["description"]["es-CL"])
+        if "description" in product_data:
+            description = html_to_markdown(product_data["description"]["es-CL"])
+        else:
+            description = ""
 
-        for attribute in master_variant["attributes"]:
+        for attribute in master_variant.get("attributes", []):
             description += f"\n{attribute['name']}: {str(attribute['value'])}"
 
         review_count = product_data.get("countRating", 0)
