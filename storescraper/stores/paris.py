@@ -309,11 +309,9 @@ class Paris(Store):
         print(url)
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = cls.USER_AGENT
-        response = session.get(url)
-        soup = BeautifulSoup(response.text, "lxml")
-        sku = soup.find("div", {"data-cnstrc-item-id": True})["data-cnstrc-item-id"]
+        search_term = url.split("-")[-1].replace(".html", "")
 
-        payload = {"term": sku, "pagination": {"pageSize": 30}}
+        payload = {"term": search_term, "pagination": {"pageSize": 30}}
         response = session.post(
             "https://be-paris-backend-cl-ms-api.ccom.paris.cl/products/",
             json=payload,
@@ -331,11 +329,9 @@ class Paris(Store):
         sellers = product_data["sellers"]
         assert len(sellers) == 1
         seller = sellers[0] if sellers[0] != "Paris" else None
-
         master_variant = product_data["masterVariant"]
-
+        sku = master_variant["sku"]
         normal_price_key = "offer" if "offer" in master_variant["prices"] else "regular"
-
         normal_price = Decimal(
             master_variant["prices"][normal_price_key]["value"]["centAmount"]
         )
@@ -347,13 +343,12 @@ class Paris(Store):
             offer_price = normal_price
 
         picture_urls = [x["url"] for x in master_variant["images"]]
-
         stock = 0 if seller else -1
 
-        description_tags = soup.findAll("details", "ui-rounded-lg")
-        description = "\n".join(
-            [html_to_markdown(str(panel)) for panel in description_tags]
-        )
+        description = html_to_markdown(product_data["description"]["es-CL"])
+
+        for attribute in master_variant["attributes"]:
+            description += f"\n{attribute['name']}: {str(attribute['value'])}"
 
         review_count = product_data.get("countRating", 0)
         if "averageRating" in product_data:
