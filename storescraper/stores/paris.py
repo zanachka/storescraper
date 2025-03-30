@@ -48,7 +48,7 @@ from storescraper import banner_sections as bs
 
 class Paris(Store):
     USER_AGENT = "solotodobot"
-    RESULTS_PER_PAGE = 24
+    RESULTS_PER_PAGE = 200
 
     category_paths = [
         ["tecnologia/computadores/tablets/", TABLET, 1],
@@ -93,16 +93,9 @@ class Paris(Store):
         ["tecnologia/wearables/smartwatches-ninos/", WEARABLE, 1],
         ["tecnologia/wearables/smartband/", WEARABLE, 1],
         ["tecnologia/consolas-videojuegos/", VIDEO_GAME_CONSOLE, 0],
-        ["tecnologia/consolas-videojuegos/playstation2/", VIDEO_GAME_CONSOLE, 1],
-        ["tecnologia/consolas-videojuegos/nintendo/", VIDEO_GAME_CONSOLE, 1],
-        ["tecnologia/consolas-videojuegos/xbox/", VIDEO_GAME_CONSOLE, 1],
-        ["tecnologia/consolas-videojuegos/consolas-nintendo/", VIDEO_GAME_CONSOLE, 1],
-        [
-            "tecnologia/consolas-videojuegos/consolas-playstation/",
-            VIDEO_GAME_CONSOLE,
-            1,
-        ],
-        ["tecnologia/consolas-videojuegos/consolas-xbox/", VIDEO_GAME_CONSOLE, 1],
+        ["tecnologia/consolas-videojuegos/playstation-marca/", VIDEO_GAME_CONSOLE, 1],
+        ["tecnologia/consolas-videojuegos/nintendo-marca/", VIDEO_GAME_CONSOLE, 1],
+        ["tecnologia/consolas-videojuegos/xbox-marca/", VIDEO_GAME_CONSOLE, 1],
         ["tecnologia/impresoras/", PRINTER, 1],
         ["tecnologia/impresoras/laser/", PRINTER, 1],
         ["tecnologia/impresoras/tinta/", PRINTER, 1],
@@ -128,17 +121,17 @@ class Paris(Store):
             1,
         ],
         ["linea-blanca/refrigeracion/refrigeradores/", REFRIGERATOR, 1],
-        ["linea-blanca/refrigeracion/refrigeradores/no-frost/", REFRIGERATOR, 1],
+        ["linea-blanca/refrigeracion/no-frost/", REFRIGERATOR, 1],
         ["linea-blanca/refrigeracion/frigobar-cavas/", REFRIGERATOR, 1],
         ["linea-blanca/equipamiento-industrial/refrigeracion/", REFRIGERATOR, 1],
         ["linea-blanca/lavado-secado/", WASHING_MACHINE, 1],
         [
-            "linea-blanca/lavado-secado/todas/?prefn1=lavadoTipodeCarga&prefv1=Frontal",
+            "linea-blanca/lavado-secado/lavadoras-carga-frontal",
             WASHING_MACHINE,
             1,
         ],
         [
-            "linea-blanca/lavado-secado/todas/?prefn1=lavadoTipodeCarga&prefv1=Superior",
+            "linea-blanca/lavado-secado/lavadoras-carga-superior",
             WASHING_MACHINE,
             1,
         ],
@@ -215,80 +208,57 @@ class Paris(Store):
             logging.info("Obtaining base section data from " + base_url)
             response = session.get(base_url)
             soup = BeautifulSoup(response.text, "lxml")
-            breadcrumbs_tag = soup.find("div", "PLPbreadcrumbs")
+            breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
             breadcrumbs = []
-            for link_tag in breadcrumbs_tag.find_all("a", "breadcrumb-element"):
+            for link_tag in breadcrumbs_tag.find_all("a"):
                 breadcrumbs.append(link_tag.text.strip())
 
-            breadcrumbs_detail_tag = breadcrumbs_tag.find(
-                "span", "breadcrumb-result-text"
-            )
-            if breadcrumbs_detail_tag:
-                breadcrumbs.append(breadcrumbs_detail_tag.text.strip())
-            added_filters_breadcrumbs_tag = soup.find("div", "clear-refinement")
-            if added_filters_breadcrumbs_tag:
-                for added_filters_breadcrumb in added_filters_breadcrumbs_tag.findAll(
-                    "span"
-                ):
-                    filter_breadcrumb = added_filters_breadcrumb.text.strip()
-                    if filter_breadcrumb:
-                        breadcrumbs.append(filter_breadcrumb)
+            breadcrumbs.append(soup.find("span", {"aria-current": "page"}).text.strip())
             section_name = " > ".join(breadcrumbs)
+            category_group_id = soup.find("div", {"data-cnstrc-filter-value": True})[
+                "data-cnstrc-filter-value"
+            ]
+            print(category_group_id)
 
-            parsed_url = urllib.parse.urlparse(base_url)
-            url_params = urllib.parse.parse_qs(parsed_url.query)
-
-            category_id_match = re.search(
-                r'dw\.ac\.applyContext\(\{category: "(.+)"', response.text
-            )
-            filters = []
-            if category_id_match:
-                filters = ["cgid=" + category_id_match.groups()[0]]
-
-            filter_idx = 1
-            while True:
-                label_name = "prefn" + str(filter_idx)
-                if label_name in url_params:
-                    filter_name = url_params[label_name][0]
-                    filter_value = url_params["prefv" + str(filter_idx)][0]
-                    filters.append("{}={}".format(filter_name, filter_value))
-                else:
-                    break
-                filter_idx += 1
-
-            parsed_url = urllib.parse.urlparse(base_url)
-            if parsed_url.query.strip():
-                filters.append(parsed_url.query)
-
-            if fast_mode:
-                filters.append("isMarketplace=Paris")
-
-            page = 0
+            page = 1
 
             while True:
                 if page > (15000 / cls.RESULTS_PER_PAGE):
                     raise Exception("Page overflow: " + category_path)
 
-                filter_strings = []
-                for idx, filter_str in enumerate(filters):
-                    filter_strings.append("refine_{}={}".format(idx + 1, filter_str))
-                filters_query = "&".join(filter_strings)
+                payload = {
+                    "filters": [
+                        {"key": "group_id", "stringValues": [category_group_id]}
+                    ],
+                    "pagination": {"page": page, "pageSize": cls.RESULTS_PER_PAGE},
+                    "sortBy": "relevance",
+                    "serviceAbility": {
+                        "sameDayDelivery": False,
+                        "nextDayDelivery": False,
+                        "storePickUp": False,
+                    },
+                    "sponsoredProducts": True,
+                }
 
-                endpoint = "https://cl-ccom-parisapp-plp.ecomm.cencosud.cl/v2/getServicePLP/0/{}/24?{}".format(
-                    page * cls.RESULTS_PER_PAGE, filters_query
+                if fast_mode:
+                    payload["filters"].append(
+                        {"key": "isMarketplace", "stringValues": ["false"]}
+                    )
+
+                response = session.post(
+                    "https://be-paris-backend-cl-ms-api.ccom.paris.cl/products/",
+                    json=payload,
                 )
-                logging.info(endpoint)
-                response = session.get(endpoint)
 
                 json_response = response.json()
-                containers_data = json_response["payload"]["data"]
+                containers_data = json_response["results"]
 
-                if "hits" not in containers_data:
+                if not containers_data:
                     break
 
-                for idx, container in enumerate(containers_data["hits"]):
-                    product_url = "https://www.paris.cl/product-{}.html".format(
-                        container["product_id"]
+                for idx, container in enumerate(containers_data):
+                    product_url = (
+                        f"https://www.paris.cl/{container['slug']['es-CL']}.html"
                     )
 
                     product_entries[product_url].append(
