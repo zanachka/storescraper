@@ -10,27 +10,41 @@ from storescraper.categories import PRINTER, PRINTER_SUPPLY
 class CanonTiendaOnline(StoreWithUrlExtensions):
     url_extensions = [
         [
-            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-tinta",
+            "impresoras-y-multifuncionales",
             PRINTER,
-        ],  # Impresoras y Multifuncionales Tinta
-        [
-            "impresoras-y-multifuncionales/impresoras-portatiles",
-            PRINTER,
-        ],  # Impresoras Portátiles
-        [
-            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-laser",
-            PRINTER,
-        ],  # Impresoras y Multifuncionales Láser
+        ],
         [
             "impresoras-y-multifuncionales/impresoras-formato-ancho",
             PRINTER,
-        ],  # Impresoras Formato Ancho
-        ["tinta-papel-y-toner/tinta", PRINTER_SUPPLY],  # Tinta
+        ],
+        [
+            "impresoras-y-multifuncionales/impresoras-portatiles",
+            PRINTER,
+        ],
+        [
+            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-laser",
+            PRINTER,
+        ],
+        [
+            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-tinta",
+            PRINTER,
+        ],
+        [
+            "tinta-papel-y-toner",
+            PRINTER_SUPPLY,
+        ],
+        [
+            "tinta-papel-y-toner/tinta",
+            PRINTER_SUPPLY,
+        ],
+        [
+            "tinta-papel-y-toner/toner",
+            PRINTER_SUPPLY,
+        ],
         [
             "tinta-papel-y-toner/suministros-impresoras-portatiles",
             PRINTER_SUPPLY,
-        ],  # Suministros Impresoras Portátiles
-        ["tinta-papel-y-toner/toner", PRINTER_SUPPLY],  # Toner
+        ],
     ]
 
     @classmethod
@@ -78,6 +92,11 @@ class CanonTiendaOnline(StoreWithUrlExtensions):
             soup.find("img", {"alt": "main product photo"})["src"].replace(" ", "%20")
         ]
 
+        if "DAÑADA" in name.upper():
+            condition = "https://schema.org/DamagedCondition"
+        else:
+            condition = "https://schema.org/NewCondition"
+
         p = Product(
             name,
             cls.__name__,
@@ -93,6 +112,7 @@ class CanonTiendaOnline(StoreWithUrlExtensions):
             part_number=sku,
             description=description,
             picture_urls=picture_urls,
+            condition=condition,
         )
 
         return [p]
