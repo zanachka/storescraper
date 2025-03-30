@@ -18,7 +18,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import get_price_from_price_specification, session_with_proxy
+from storescraper.utils import (
+    get_price_from_price_specification,
+    session_with_proxy,
+    html_to_markdown,
+)
 
 
 class Clie(StoreWithUrlExtensions):
@@ -87,7 +91,7 @@ class Clie(StoreWithUrlExtensions):
         picture_urls = (
             [product_data["image"]] if validators.url(product_data["image"]) else None
         )
-        description = product_data["description"]
+        description = html_to_markdown(str(soup.find("div", {"id": "tab-description"})))
 
         p = Product(
             name,

@@ -14,6 +14,7 @@ from storescraper.categories import (
     KEYBOARD_MOUSE_COMBO,
     EXTERNAL_STORAGE_DRIVE,
     PRINTER_SUPPLY,
+    HEADPHONES,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -35,6 +36,7 @@ class AgilStore(StoreWithUrlExtensions):
         ["5606", POWER_SUPPLY],  # Fuente Poder
         ["5530", PRINTER_SUPPLY],  # Toner
         ["5531", PRINTER_SUPPLY],  # Cartuchos de Tinta
+        ["5591", HEADPHONES],  # Audífonos
     ]
 
     @classmethod

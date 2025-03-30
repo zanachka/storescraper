@@ -13,7 +13,7 @@ from storescraper.categories import (
     MONITOR,
     COMPUTER_CASE,
     MOUSE,
-    AI,
+    ACCESORIES,
     POWER_SUPPLY,
     CPU_COOLER,
 )
@@ -36,7 +36,7 @@ class Valrod(Store):
             KEYBOARD,
             HEADPHONES,
             MICROPHONE,
-            AI,
+            ACCESORIES,
         ]
 
     @classmethod
@@ -53,7 +53,7 @@ class Valrod(Store):
             ["perifericos-y-accesorios/teclados", KEYBOARD],
             ["perifericos-y-accesorios/audifonos", HEADPHONES],
             ["perifericos-y-accesorios/accesorios", MICROPHONE],
-            ["hogar/cocina", AI],
+            ["hogar/cocina", ACCESORIES],
         ]
         session = session_with_proxy(extra_args)
         product_urls = []

@@ -28,7 +28,7 @@ from storescraper.categories import (
     USB_FLASH_DRIVE,
     VIDEO_CARD,
     VIDEO_GAME_CONSOLE,
-    AI,
+    ACCESORIES,
     PRINTER_SUPPLY,
 )
 from storescraper.product import Product
@@ -64,7 +64,7 @@ class TiShop(StoreWithUrlExtensions):
         ["107", POWER_SUPPLY],
         ["52", PROCESSOR],
         ["81", VIDEO_CARD],
-        ["60?q[navbar_items_id_eq_any][]=72", AI],
+        ["60?q[navbar_items_id_eq_any][]=72", ACCESORIES],
         ["59?q[navbar_items_id_eq_any][]=37", PRINTER_SUPPLY],
     ]
 
@@ -114,7 +114,9 @@ class TiShop(StoreWithUrlExtensions):
 
         product_data_container = soup.findAll("section")[1]
         product_data_tags = product_data_container.findAll("div")
-        name = product_data_tags[1].text.strip()
+        brand = soup.find("meta", {"name": "author"})["content"]
+        model_name = product_data_tags[1].text.strip()
+        name = f"{brand} {model_name}"
         sku = product_data_tags[2].text.strip()
         key = soup.find("input", {"id": "line_item_product_id"}).get("value")
 

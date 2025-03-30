@@ -555,7 +555,7 @@ class Falabella(Store):
         ],
         [
             "cat2034",
-            [AI],
+            [ACCESORIES],
             "Home > Electrohogar - Electrodomésticos cocina",
             1,
         ],

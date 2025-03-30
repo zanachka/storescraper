@@ -35,7 +35,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     PRINTER,
     VIDEO_GAME_CONSOLE,
-    AI,
+    ACCESORIES,
     PRINTER_SUPPLY,
 )
 from storescraper.product import Product
@@ -107,7 +107,7 @@ class NotebookStore(StoreWithUrlExtensions):
         ["apple-tv/airpods", HEADPHONES],
         ["apple/articulos/perifericos", KEYBOARD],
         ["apple/articulos/monitores-studio", MONITOR],
-        ["equipos/wellness-home/home", AI],
+        ["equipos/wellness-home/home", ACCESORIES],
         ["impresion/consumibles-y-media/cartuchos", PRINTER_SUPPLY],
     ]
 

@@ -35,7 +35,7 @@ from storescraper.categories import (
     OVEN,
     SPACE_HEATER,
     SPLIT_AIR_CONDITIONER,
-    AI,
+    ACCESORIES,
     PRINTER_SUPPLY,
     PERFUME,
 )
@@ -178,7 +178,7 @@ class Paris(Store):
         ["linea-blanca/climatizacion/aires-acondicionado/", SPLIT_AIR_CONDITIONER, 1],
         ["linea-blanca/climatizacion/ventilacion/", SPLIT_AIR_CONDITIONER, 1],
         ["linea-blanca/climatizacion/tratamiento-aire/", SPLIT_AIR_CONDITIONER, 1],
-        ["linea-blanca/electrodomesticos/", AI, 1],
+        ["linea-blanca/electrodomesticos/", ACCESORIES, 1],
         ["tecnologia/impresoras/insumos-accesorios/", PRINTER_SUPPLY, 1],
         ["belleza/perfumes/", PERFUME, 1],
     ]

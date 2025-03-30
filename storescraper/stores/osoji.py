@@ -4,23 +4,23 @@ from decimal import Decimal
 import json
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, html_to_markdown, remove_words
-from storescraper.categories import VACUUM_CLEANER, AI
+from storescraper.utils import session_with_proxy, html_to_markdown
+from storescraper.categories import VACUUM_CLEANER, ACCESORIES, COOKING_ROBOT, AIR_FRYER
 
 
 class Osoji(StoreWithUrlExtensions):
     url_extensions = [
         ["como-elegir-mi-aspiradora-robot/", VACUUM_CLEANER],
         ["como-elegir-mi-aspiradora-inalambrica/", VACUUM_CLEANER],
-        ["shop/escobilla-electrica-b100/", AI],
-        ["como-elegir-el-mejor-robot-limpia-vidrios", AI],
-        ["shop/mopa-electrica-m400/", AI],
-        ["robots-cocina-osojimix/", AI],
-        ["shop/freidora-de-aire-y-horno-de-pizza-osoji-12-lts-air-fryer/", AI],
-        ["shop/irrigador-bucal-osoji-f100/", AI],
-        ["shop/cepillo-electrico-t100/", AI],
-        ["todos-los-robots/accesorios/", AI],
-        ["secadores-de-pelo/", AI],
+        ["shop/escobilla-electrica-b100/", ACCESORIES],
+        ["como-elegir-el-mejor-robot-limpia-vidrios", ACCESORIES],
+        ["shop/mopa-electrica-m400/", ACCESORIES],
+        ["robots-cocina-osojimix/", COOKING_ROBOT],
+        ["shop/freidora-de-aire-y-horno-de-pizza-osoji-12-lts-air-fryer/", AIR_FRYER],
+        ["shop/irrigador-bucal-osoji-f100/", ACCESORIES],
+        ["shop/cepillo-electrico-t100/", ACCESORIES],
+        ["todos-los-robots/accesorios/", ACCESORIES],
+        ["secadores-de-pelo/", ACCESORIES],
     ]
 
     @classmethod

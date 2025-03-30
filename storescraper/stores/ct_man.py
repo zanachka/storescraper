@@ -33,7 +33,7 @@ from storescraper.categories import (
     UPS,
     STEREO_SYSTEM,
     WEARABLE,
-    AI,
+    ACCESORIES,
     PRINTER_SUPPLY,
 )
 from storescraper.product import Product
@@ -88,7 +88,7 @@ class CtMan(StoreWithUrlExtensions):
         ["types/botella-de-tinta", PRINTER_SUPPLY],
         ["types/toner", PRINTER_SUPPLY],
         ["types/cartucho-de-tinta", PRINTER_SUPPLY],
-        ["collections/electrodomesticos", AI],
+        ["collections/electrodomesticos", ACCESORIES],
     ]
 
     @classmethod

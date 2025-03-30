@@ -26,7 +26,7 @@ from storescraper.categories import (
     VACUUM_CLEANER,
     SPACE_HEATER,
     DISH_WASHER,
-    AI,
+    ACCESORIES,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -69,7 +69,7 @@ class TravelTienda(StoreWithUrlExtensions):
         # ("1318662286", OVEN),  # Empotrados
         ("1864719901", OVEN),  # Empotrados
         ("1004133923", MONITOR),  # Tecnología > Gamer > Monitores y Notebooks Gamer
-        ("2343511074", AI),  # Electro Hogar > Electrodomésticos
+        ("2343511074", ACCESORIES),  # Electro Hogar > Electrodomésticos
     ]
 
     @classmethod

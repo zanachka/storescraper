@@ -31,7 +31,7 @@ from storescraper.categories import (
     UPS,
     USB_FLASH_DRIVE,
     VIDEO_CARD,
-    AI,
+    ACCESORIES,
     PRINTER_SUPPLY,
 )
 from storescraper.product import Product
@@ -68,7 +68,7 @@ class Digiplot(Store):
             MEMORY_CARD,
             ALL_IN_ONE,
             TELEVISION,
-            AI,
+            ACCESORIES,
             PRINTER_SUPPLY,
         ]
 
@@ -118,7 +118,7 @@ class Digiplot(Store):
             ["ups-y-alargador-elec/ups-sobre-1000va", UPS],
             ["video/tarjetas-video", VIDEO_CARD],
             ["sillas/sillas-gamer", GAMING_CHAIR],
-            ["electrohogar/electrodomesticos", AI],
+            ["electrohogar/electrodomesticos", ACCESORIES],
             ["oficina-insumos/tinta-recarga", PRINTER_SUPPLY],
             ["oficina-insumos/toner-original", PRINTER_SUPPLY],
             ["oficina-insumos/cartridge-brother-orig", PRINTER_SUPPLY],

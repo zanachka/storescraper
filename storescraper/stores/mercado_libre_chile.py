@@ -8,6 +8,7 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
+    ACCESORIES,
     CELL,
     NOTEBOOK,
     STEREO_SYSTEM,
@@ -37,7 +38,6 @@ from storescraper.categories import (
     MICROPHONE,
     VIDEO_CARD,
     MOTHERBOARD,
-    AI,
     PRINTER_SUPPLY,
 )
 from storescraper.product import Product
@@ -93,7 +93,7 @@ class MercadoLibreChile(Store):
         ("MLC1012", "Audio Portátil y Accesorios", STEREO_SYSTEM),
         ("MLC3697", "Audífonos", HEADPHONES),
         ("MLC440071", "Artefactos de Cuidado Personal", None),
-        ("MLC1581", "Pequeños Electrodomésticos", AI),
+        ("MLC1581", "Pequeños Electrodomésticos", ACCESORIES),
         ("MLC1667", "Cámaras Web", None),
         ("MLC430630", "Mouses y Teclados", None),
         ("MLC1053", "Telefonía Fija e Inalámbrica", None),
@@ -738,7 +738,6 @@ class MercadoLibreChile(Store):
             PRINTER,
             VIDEO_CARD,
             MOTHERBOARD,
-            AI,
             OVEN,
         ]
         # return [i for i in set(cls.categories_name.values()) if i]
@@ -1046,6 +1045,7 @@ class MercadoLibreChile(Store):
                     review_avg_score = float(x["reviews"]["rating"])
 
         products = []
+        gallery = data["initialState"]["components"]["gallery"]["pictures"]
 
         if picker:
             picker_id = picker["id"]
@@ -1072,7 +1072,8 @@ class MercadoLibreChile(Store):
                     key = variation["id"]
 
                 picture_urls = [
-                    f"https://http2.mlstatic.com/D_NQ_NP_{variation['picture']['id']}-O.webp"
+                    f"https://http2.mlstatic.com/D_NQ_NP_{picture['id']}-O.webp"
+                    for picture in gallery
                 ]
 
                 products.append(

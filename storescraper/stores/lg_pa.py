@@ -7,7 +7,7 @@ from ..categories import (
     REFRIGERATOR,
     STOVE,
     OVEN,
-    AI,
+    ACCESORIES,
     DISH_WASHER,
     WASHING_MACHINE,
     VACUUM_CLEANER,
@@ -36,7 +36,7 @@ class LgPa(LgV6):
             # Microonas
             ("CT52007013", OVEN),
             # Campanas
-            ("CT52007014", AI),
+            ("CT52007014", ACCESORIES),
             # Lavaplatos
             ("CT52006980", DISH_WASHER),
             # Todas las lavadoras y secadoras
@@ -52,19 +52,19 @@ class LgPa(LgV6):
             # Todos los Monitores
             ("CT52006985", MONITOR),
             # Todos los Medical Display
-            ("CT52007043", AI),
+            ("CT52007043", ACCESORIES),
             # Information Display
-            ("CT52007045", AI),
+            ("CT52007045", ACCESORIES),
             # Accesorios para TV
-            ("CT52007855", AI),
+            ("CT52007855", ACCESORIES),
             # Accesorios para Audio y Video
-            ("CT52007856", AI),
+            ("CT52007856", ACCESORIES),
             # Accesorios para Refrigeradora
-            ("CT52007857", AI),
+            ("CT52007857", ACCESORIES),
             # Accesorios para Lavadora y Secadora
-            ("CT52007858", AI),
+            ("CT52007858", ACCESORIES),
             # Accesorios para Cocina
-            ("CT52007859", AI),
+            ("CT52007859", ACCESORIES),
             # Accesorios para Aire Acondicionado
-            ("CT52007860", AI),
+            ("CT52007860", ACCESORIES),
         ]

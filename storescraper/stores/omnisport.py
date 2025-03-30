@@ -4,78 +4,51 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 
 from storescraper.product import Product
-from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
+from storescraper.utils import session_with_proxy, html_to_markdown
 from storescraper.categories import (
     TELEVISION,
-    STEREO_SYSTEM,
-    CELL,
-    REFRIGERATOR,
-    OVEN,
-    SPLIT_AIR_CONDITIONER,
-    WASHING_MACHINE,
-    OPTICAL_DISK_PLAYER,
-    STOVE,
-    VACUUM_CLEANER,
 )
 
 
-class Omnisport(Store):
-    @classmethod
-    def categories(cls):
-        return [
-            TELEVISION,
-            STEREO_SYSTEM,
-            CELL,
-            REFRIGERATOR,
-            OVEN,
-            SPLIT_AIR_CONDITIONER,
-            WASHING_MACHINE,
-            OPTICAL_DISK_PLAYER,
-            STOVE,
-            VACUUM_CLEANER,
-        ]
+class Omnisport(StoreWithUrlExtensions):
+    url_extensions = [["lg", TELEVISION]]
 
     @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         # KEEPS ONLY LG PRODUCTS
 
-        category_filters = [TELEVISION]
         session = session_with_proxy(extra_args)
         product_urls = []
+        page = 1
 
-        for local_category in category_filters:
-            if local_category != category:
-                continue
+        while True:
+            if page >= 20:
+                raise Exception("Page overflow")
 
-            page = 1
+            url = f"https://www.omnisport.com/marcas/{url_extension}?page={page}"
+            print(url)
 
-            while True:
-                if page >= 20:
-                    raise Exception("Page overflow")
+            res = session.get(url, verify=False)
 
-                url = "https://www.omnisport.com/marcas/lg?page={}" "".format(page)
-                print(url)
+            if res.url != url:
+                break
 
-                res = session.get(url, verify=False)
+            soup = BeautifulSoup(res.text, "lxml")
+            containers = soup.findAll("div", "lg:w-1/3")
 
-                if res.url != url:
-                    break
+            if not containers:
+                break
 
-                soup = BeautifulSoup(res.text, "lxml")
-                containers = soup.findAll("div", "lg:w-1/3")
+            for container in containers:
+                if "lg" in container.find("p", "text-black").text.lower():
+                    product_url = container.find("a", "link-basic")["href"]
+                    if product_url not in product_urls:
+                        product_urls.append(product_url)
 
-                if not containers:
-                    break
+            page += 1
 
-                for container in containers:
-                    if "lg" in container.find("p", "text-black").text.lower():
-                        link = container.find("a", "link-basic")
-                        product_urls.append(link["href"])
-
-                page += 1
-
-        return list(set(product_urls))
+        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -95,6 +68,10 @@ class Omnisport(Store):
         else:
             picture_urls = [soup.find("div", "md:w-2/5").find("img")["src"]]
 
+        description = html_to_markdown(
+            str(soup.find("div", {"id": "product-description"}).parent)
+        )
+
         p = Product(
             name,
             cls.__name__,
@@ -108,14 +85,7 @@ class Omnisport(Store):
             "USD",
             sku=sku,
             picture_urls=picture_urls,
+            description=description,
         )
 
         return [p]
-
-    @staticmethod
-    def fix_price(price):
-        fixed_price = price
-        if price.count(".") > 1:
-            split_price = price.split(".")
-            fixed_price = split_price[0] + "." + split_price[1]
-        return Decimal(fixed_price.replace("$", "").replace(",", ""))
