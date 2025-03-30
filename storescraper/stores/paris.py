@@ -333,7 +333,12 @@ class Paris(Store):
         seller = sellers[0] if sellers[0] != "Paris" else None
 
         master_variant = product_data["masterVariant"]
-        normal_price = Decimal(master_variant["prices"]["offer"]["value"]["centAmount"])
+
+        normal_price_key = "offer" if "offer" in master_variant["prices"] else "regular"
+
+        normal_price = Decimal(
+            master_variant["prices"][normal_price_key]["value"]["centAmount"]
+        )
         if "paymentMethod" in master_variant["prices"]:
             offer_price = Decimal(
                 master_variant["prices"]["paymentMethod"]["value"]["centAmount"]
