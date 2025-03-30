@@ -338,6 +338,8 @@ class Paris(Store):
             offer_price = Decimal(
                 master_variant["prices"]["paymentMethod"]["value"]["centAmount"]
             )
+            if offer_price > normal_price:
+                offer_price = normal_price
         else:
             offer_price = normal_price
 
