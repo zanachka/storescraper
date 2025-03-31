@@ -1,4 +1,3 @@
-import json
 import logging
 from collections import defaultdict
 from decimal import Decimal
@@ -57,6 +56,7 @@ from storescraper import banner_sections as bs
 class Paris(Store):
     USER_AGENT = "solotodobot"
     RESULTS_PER_PAGE = 200
+    preferred_products_for_url_concurrency = 6
 
     category_paths = [
         ["tecnologia/computadores/tablets/", TABLET, 1],
@@ -446,20 +446,17 @@ class Paris(Store):
 
         res = session.get(base_url)
         soup = BeautifulSoup(res.text, "lxml")
-        page_json = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)
+        slide_containers = soup.find_all("div", "flex-none rounded-lg relative")
 
-        for idx, banner_entry in enumerate(
-            page_json["props"]["pageProps"]["dehydratedState"]["queries"][0]["state"][
-                "data"
-            ]["data"]["data"]["content"][0]["items"]
-        ):
-            picture_url = banner_entry["image"]
+        for idx, banner_entry in enumerate(slide_containers):
+            destination_url = banner_entry.find("a")
+            picture_url = destination_url.find("source")["srcset"]
 
             banners.append(
                 {
                     "url": base_url,
                     "picture_url": picture_url,
-                    "destination_urls": [banner_entry["link"][:500]],
+                    "destination_urls": [destination_url["href"]],
                     "key": picture_url,
                     "position": idx + 1,
                     "section": bs.HOME,
