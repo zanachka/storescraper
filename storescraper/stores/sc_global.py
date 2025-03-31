@@ -101,7 +101,7 @@ class ScGlobal(StoreWithUrlExtensions):
         part_number_tag = soup.find("span", {"itemprop": "sku"})
         if not part_number_tag:
             return []
-        part_number = part_number_tag.text.strip()
+        part_number = part_number_tag.text.strip().split("-", 1)[1]
         add_to_cart_button = soup.find("button", "add-to-cart")
 
         if add_to_cart_button.get("disabled") is None:
