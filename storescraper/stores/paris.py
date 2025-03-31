@@ -247,7 +247,12 @@ class Paris(Store):
             response = session.get(base_url)
             soup = BeautifulSoup(response.text, "lxml")
             breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
+
+            if not breadcrumbs_tag:
+                raise Exception(response.text)
+
             breadcrumbs = []
+
             for link_tag in breadcrumbs_tag.find_all("a"):
                 breadcrumbs.append(link_tag.text.strip())
 
