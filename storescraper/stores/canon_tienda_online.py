@@ -82,6 +82,10 @@ class CanonTiendaOnline(StoreWithUrlExtensions):
         name = soup.find("span", {"itemprop": "name"}).text
         sku = soup.find("div", {"itemprop": "sku"}).text
         price = Decimal(soup.find("meta", {"itemprop": "price"})["content"])
+
+        if price == 0:
+            return []
+
         key = soup.find("form", {"id": "product_addtocart_form"}).find(
             "input", {"name": "product"}
         )["value"]
