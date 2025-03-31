@@ -1,13 +1,9 @@
 import json
 import logging
-import re
-import urllib
 from collections import defaultdict
 from decimal import Decimal
 
-import validators
 from bs4 import BeautifulSoup
-from dateutil.parser import parse
 
 from storescraper.categories import (
     GAMING_CHAIR,
@@ -39,16 +35,15 @@ from storescraper.categories import (
     PRINTER_SUPPLY,
     PERFUME,
 )
-from storescraper.flixmedia import flixmedia_video_urls
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy
 from storescraper import banner_sections as bs
 
 
 class Paris(Store):
     USER_AGENT = "solotodobot"
-    RESULTS_PER_PAGE = 24
+    RESULTS_PER_PAGE = 200
 
     category_paths = [
         ["tecnologia/computadores/tablets/", TABLET, 1],
@@ -93,16 +88,9 @@ class Paris(Store):
         ["tecnologia/wearables/smartwatches-ninos/", WEARABLE, 1],
         ["tecnologia/wearables/smartband/", WEARABLE, 1],
         ["tecnologia/consolas-videojuegos/", VIDEO_GAME_CONSOLE, 0],
-        ["tecnologia/consolas-videojuegos/playstation2/", VIDEO_GAME_CONSOLE, 1],
-        ["tecnologia/consolas-videojuegos/nintendo/", VIDEO_GAME_CONSOLE, 1],
-        ["tecnologia/consolas-videojuegos/xbox/", VIDEO_GAME_CONSOLE, 1],
-        ["tecnologia/consolas-videojuegos/consolas-nintendo/", VIDEO_GAME_CONSOLE, 1],
-        [
-            "tecnologia/consolas-videojuegos/consolas-playstation/",
-            VIDEO_GAME_CONSOLE,
-            1,
-        ],
-        ["tecnologia/consolas-videojuegos/consolas-xbox/", VIDEO_GAME_CONSOLE, 1],
+        ["tecnologia/consolas-videojuegos/playstation-marca/", VIDEO_GAME_CONSOLE, 1],
+        ["tecnologia/consolas-videojuegos/nintendo-marca/", VIDEO_GAME_CONSOLE, 1],
+        ["tecnologia/consolas-videojuegos/xbox-marca/", VIDEO_GAME_CONSOLE, 1],
         ["tecnologia/impresoras/", PRINTER, 1],
         ["tecnologia/impresoras/laser/", PRINTER, 1],
         ["tecnologia/impresoras/tinta/", PRINTER, 1],
@@ -128,17 +116,17 @@ class Paris(Store):
             1,
         ],
         ["linea-blanca/refrigeracion/refrigeradores/", REFRIGERATOR, 1],
-        ["linea-blanca/refrigeracion/refrigeradores/no-frost/", REFRIGERATOR, 1],
+        ["linea-blanca/refrigeracion/no-frost/", REFRIGERATOR, 1],
         ["linea-blanca/refrigeracion/frigobar-cavas/", REFRIGERATOR, 1],
         ["linea-blanca/equipamiento-industrial/refrigeracion/", REFRIGERATOR, 1],
         ["linea-blanca/lavado-secado/", WASHING_MACHINE, 1],
         [
-            "linea-blanca/lavado-secado/todas/?prefn1=lavadoTipodeCarga&prefv1=Frontal",
+            "linea-blanca/lavado-secado/lavadoras-carga-frontal",
             WASHING_MACHINE,
             1,
         ],
         [
-            "linea-blanca/lavado-secado/todas/?prefn1=lavadoTipodeCarga&prefv1=Superior",
+            "linea-blanca/lavado-secado/lavadoras-carga-superior",
             WASHING_MACHINE,
             1,
         ],
@@ -199,10 +187,6 @@ class Paris(Store):
         fast_mode = extra_args and extra_args.get("fast_mode", False)
 
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = cls.USER_AGENT
-        session.headers["apiKey"] = "cl-ccom-parisapp-plp"
-        session.headers["platform"] = "web"
-
         product_entries = defaultdict(lambda: [])
 
         for e in category_paths:
@@ -215,80 +199,56 @@ class Paris(Store):
             logging.info("Obtaining base section data from " + base_url)
             response = session.get(base_url)
             soup = BeautifulSoup(response.text, "lxml")
-            breadcrumbs_tag = soup.find("div", "PLPbreadcrumbs")
+            breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
             breadcrumbs = []
-            for link_tag in breadcrumbs_tag.find_all("a", "breadcrumb-element"):
+            for link_tag in breadcrumbs_tag.find_all("a"):
                 breadcrumbs.append(link_tag.text.strip())
 
-            breadcrumbs_detail_tag = breadcrumbs_tag.find(
-                "span", "breadcrumb-result-text"
-            )
-            if breadcrumbs_detail_tag:
-                breadcrumbs.append(breadcrumbs_detail_tag.text.strip())
-            added_filters_breadcrumbs_tag = soup.find("div", "clear-refinement")
-            if added_filters_breadcrumbs_tag:
-                for added_filters_breadcrumb in added_filters_breadcrumbs_tag.findAll(
-                    "span"
-                ):
-                    filter_breadcrumb = added_filters_breadcrumb.text.strip()
-                    if filter_breadcrumb:
-                        breadcrumbs.append(filter_breadcrumb)
+            breadcrumbs.append(soup.find("span", {"aria-current": "page"}).text.strip())
             section_name = " > ".join(breadcrumbs)
+            category_group_id = soup.find("div", {"data-cnstrc-filter-value": True})[
+                "data-cnstrc-filter-value"
+            ]
 
-            parsed_url = urllib.parse.urlparse(base_url)
-            url_params = urllib.parse.parse_qs(parsed_url.query)
-
-            category_id_match = re.search(
-                r'dw\.ac\.applyContext\(\{category: "(.+)"', response.text
-            )
-            filters = []
-            if category_id_match:
-                filters = ["cgid=" + category_id_match.groups()[0]]
-
-            filter_idx = 1
-            while True:
-                label_name = "prefn" + str(filter_idx)
-                if label_name in url_params:
-                    filter_name = url_params[label_name][0]
-                    filter_value = url_params["prefv" + str(filter_idx)][0]
-                    filters.append("{}={}".format(filter_name, filter_value))
-                else:
-                    break
-                filter_idx += 1
-
-            parsed_url = urllib.parse.urlparse(base_url)
-            if parsed_url.query.strip():
-                filters.append(parsed_url.query)
-
-            if fast_mode:
-                filters.append("isMarketplace=Paris")
-
-            page = 0
+            page = 1
 
             while True:
                 if page > (15000 / cls.RESULTS_PER_PAGE):
                     raise Exception("Page overflow: " + category_path)
 
-                filter_strings = []
-                for idx, filter_str in enumerate(filters):
-                    filter_strings.append("refine_{}={}".format(idx + 1, filter_str))
-                filters_query = "&".join(filter_strings)
+                payload = {
+                    "filters": [
+                        {"key": "group_id", "stringValues": [category_group_id]}
+                    ],
+                    "pagination": {"page": page, "pageSize": cls.RESULTS_PER_PAGE},
+                    "sortBy": "relevance",
+                    "serviceAbility": {
+                        "sameDayDelivery": False,
+                        "nextDayDelivery": False,
+                        "storePickUp": False,
+                    },
+                    "sponsoredProducts": True,
+                }
 
-                endpoint = "https://cl-ccom-parisapp-plp.ecomm.cencosud.cl/v2/getServicePLP/0/{}/24?{}".format(
-                    page * cls.RESULTS_PER_PAGE, filters_query
+                if fast_mode:
+                    payload["filters"].append(
+                        {"key": "isMarketplace", "stringValues": ["false"]}
+                    )
+
+                response = session.post(
+                    "https://be-paris-backend-cl-ms-api.ccom.paris.cl/products/",
+                    json=payload,
                 )
-                logging.info(endpoint)
-                response = session.get(endpoint)
 
                 json_response = response.json()
-                containers_data = json_response["payload"]["data"]
+                containers_data = json_response["results"]
 
-                if "hits" not in containers_data:
+                if not containers_data:
                     break
 
-                for idx, container in enumerate(containers_data["hits"]):
-                    product_url = "https://www.paris.cl/product-{}.html".format(
-                        container["product_id"]
+                for idx, container in enumerate(containers_data):
+                    product_url = (
+                        f"https://www.paris.cl/{container['slug']['es-CL']}.html"
                     )
 
                     product_entries[product_url].append(
@@ -348,124 +308,62 @@ class Paris(Store):
         print(url)
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = cls.USER_AGENT
-        response = session.get(url)
+        search_term = url.split("-")[-1].replace(".html", "")
 
-        if response.status_code in [410, 404]:
-            return []
-
-        soup = BeautifulSoup(response.text, "lxml")
-
-        product_match = re.search(
-            r"window.productJSON = ([\s\S]+)window.device", response.text
+        payload = {"term": search_term, "pagination": {"pageSize": 30}}
+        response = session.post(
+            "https://be-paris-backend-cl-ms-api.ccom.paris.cl/products/",
+            json=payload,
         )
-        if not product_match:
-            return []
-        product_data = json.loads(product_match.groups()[0])
 
-        brand = product_data.get("brand", "Unknown")
-        name = "{} - {}".format(brand, product_data["name"]).strip()
-        sku = product_data["id"]
+        json_response = response.json()
 
-        normal_price = None
-        offer_price = None
-        list_price = None
-
-        for price_entry in product_data["prices"]:
-            if price_entry["priceBookId"] == "clp-internet-prices":
-                normal_price = Decimal(remove_words(price_entry["price"]))
-            elif price_entry["priceBookId"] == "clp-cencosud-prices":
-                offer_price = Decimal(remove_words(price_entry["price"]))
-            elif price_entry["priceBookId"] == "clp-list-prices":
-                list_price = Decimal(remove_words(price_entry["price"]))
-
-        if normal_price is None:
-            normal_price = list_price
-
-        if normal_price is None:
+        if not json_response["results"]:
             return []
 
-        if offer_price is None or offer_price > normal_price:
+        assert len(json_response["results"]) == 1
+        product_data = json_response["results"][0]
+        name = f"{product_data['brand']} {product_data['name']['es-CL']}"
+
+        sellers = product_data["sellers"]
+        assert len(sellers) == 1
+        seller = sellers[0] if sellers[0] != "Paris" else None
+        master_variant = product_data["masterVariant"]
+        sku = master_variant["sku"]
+        normal_price_key = "offer" if "offer" in master_variant["prices"] else "regular"
+        normal_price = Decimal(
+            master_variant["prices"][normal_price_key]["value"]["centAmount"]
+        )
+        if "paymentMethod" in master_variant["prices"]:
+            offer_price = Decimal(
+                master_variant["prices"]["paymentMethod"]["value"]["centAmount"]
+            )
+            if offer_price > normal_price:
+                offer_price = normal_price
+        else:
             offer_price = normal_price
 
-        if normal_price > Decimal("100000000") or offer_price > Decimal("100000000"):
-            return []
+        picture_urls = [x["url"] for x in master_variant["images"]]
+        stock = 0 if seller else -1
 
-        image_groups = product_data["image_groups"]
-        if image_groups:
-            picture_urls = [
-                x["link"]
-                for x in image_groups[0]["images"]
-                if validators.url(x["link"])
-            ]
+        if "description" in product_data:
+            description = html_to_markdown(product_data["description"]["es-CL"])
         else:
-            picture_urls = None
+            description = ""
 
-        raw_seller = product_data["seller"]
+        for attribute in master_variant.get("attributes", []):
+            description += f"\n{attribute['name']}: {str(attribute['value'])}"
 
-        if raw_seller == "Paris.cl":
-            seller = None
+        review_count = product_data.get("countRating", 0)
+        if "averageRating" in product_data:
+            review_avg_score = float(product_data["averageRating"])
         else:
-            seller = raw_seller
-
-        if seller:
-            stock = 0
-        elif product_data["orderable"]:
-            stock = -1
-        else:
-            stock = 0
-
-        video_urls = []
-        for iframe in soup.findAll("iframe"):
-            if "src" not in iframe.attrs:
-                continue
-            match = re.match("https://www.youtube.com/embed/(.+)", iframe["src"])
-            if match:
-                video_urls.append(
-                    "https://www.youtube.com/watch?v={}".format(match.groups()[0])
-                )
-
-        flixmedia_id = None
-
-        flixmedia_tag = soup.find(
-            "script", {"src": "//media.flixfacts.com/js/loader.js"}
-        )
-        if flixmedia_tag:
-            mpn = flixmedia_tag["data-flix-mpn"].strip()
-            flix_videos = flixmedia_video_urls(mpn)
-            if flix_videos is not None:
-                video_urls.extend(flix_videos)
-                flixmedia_id = mpn
-
-        description = html_to_markdown(
-            str(soup.find("table", "table-data-product-details"))
-        )
-
-        reviews_endpoint = (
-            "https://api.bazaarvoice.com/data/display/"
-            "0.2alpha/product/summary?PassKey=cawhDUNXMzzke7y"
-            "V6JTnIiPm8Eh0hP8s7Oqzo57qihXkk&productid="
-            "{}&contentType=reviews&rev=0".format(sku)
-        )
-        review_data = json.loads(session.get(reviews_endpoint).text)
-        review_count = review_data["reviewSummary"]["numReviews"]
-        review_avg_score = review_data["reviewSummary"]["primaryRating"]["average"]
-
-        conditions_dict = {
-            "REACONDICIONADO": "https://schema.org/RefurbishedCondition",
-            "SEGUNDA MANO": "https://schema.org/UsedCondition",
-        }
-
-        condition = "https://schema.org/NewCondition"
-        for promotion in product_data["promotions"]:
-            for label in promotion["labels"]:
-                for condition_text, condition_cadidate in conditions_dict.items():
-                    if condition_text in label.upper():
-                        condition = condition_cadidate
+            review_avg_score = None
 
         if "REACONDICIONADO" in name.upper():
             condition = "https://schema.org/RefurbishedCondition"
-
-        has_virtual_assistant = brand == "LG"
+        else:
+            condition = "https://schema.org/NewCondition"
 
         p = Product(
             name[:200],
@@ -481,12 +379,9 @@ class Paris(Store):
             sku=sku,
             description=description,
             picture_urls=picture_urls,
-            video_urls=video_urls,
-            flixmedia_id=flixmedia_id,
             review_count=review_count,
             review_avg_score=review_avg_score,
             seller=seller,
-            has_virtual_assistant=has_virtual_assistant,
             condition=condition,
         )
 
@@ -530,32 +425,3 @@ class Paris(Store):
             raise Exception("No banners for Home section: " + base_url)
 
         return banners
-
-    @classmethod
-    def reviews_for_sku(cls, sku):
-        print(sku)
-        session = session_with_proxy(None)
-        reviews = []
-
-        reviews_endpoint = (
-            "https://api.bazaarvoice.com/data/batch.json?pass"
-            "key=caKNy0lDYfGnjpRhD27b7ZtxiSbxdwBcuuIEwXCyc9Zr"
-            "M&apiversion=5.5&resource.q0=reviews&filter.q0=p"
-            "roductid%3Aeq%3A{}&limit.q0=100".format(sku)
-        )
-        review_data = json.loads(session.get(reviews_endpoint).text)
-
-        for entry in review_data["BatchedResults"]["q0"]["Results"]:
-            review_date = parse(entry["SubmissionTime"])
-
-            review = {
-                "store": "Paris",
-                "sku": sku,
-                "rating": float(entry["Rating"]),
-                "text": entry["ReviewText"],
-                "date": review_date.isoformat(),
-            }
-
-            reviews.append(review)
-
-        return reviews

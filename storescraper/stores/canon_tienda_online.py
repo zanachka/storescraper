@@ -10,27 +10,41 @@ from storescraper.categories import PRINTER, PRINTER_SUPPLY
 class CanonTiendaOnline(StoreWithUrlExtensions):
     url_extensions = [
         [
-            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-tinta",
+            "impresoras-y-multifuncionales",
             PRINTER,
-        ],  # Impresoras y Multifuncionales Tinta
-        [
-            "impresoras-y-multifuncionales/impresoras-portatiles",
-            PRINTER,
-        ],  # Impresoras Portátiles
-        [
-            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-laser",
-            PRINTER,
-        ],  # Impresoras y Multifuncionales Láser
+        ],
         [
             "impresoras-y-multifuncionales/impresoras-formato-ancho",
             PRINTER,
-        ],  # Impresoras Formato Ancho
-        ["tinta-papel-y-toner/tinta", PRINTER_SUPPLY],  # Tinta
+        ],
+        [
+            "impresoras-y-multifuncionales/impresoras-portatiles",
+            PRINTER,
+        ],
+        [
+            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-laser",
+            PRINTER,
+        ],
+        [
+            "impresoras-y-multifuncionales/impresoras-y-multifuncionales-tinta",
+            PRINTER,
+        ],
+        [
+            "tinta-papel-y-toner",
+            PRINTER_SUPPLY,
+        ],
+        [
+            "tinta-papel-y-toner/tinta",
+            PRINTER_SUPPLY,
+        ],
+        [
+            "tinta-papel-y-toner/toner",
+            PRINTER_SUPPLY,
+        ],
         [
             "tinta-papel-y-toner/suministros-impresoras-portatiles",
             PRINTER_SUPPLY,
-        ],  # Suministros Impresoras Portátiles
-        ["tinta-papel-y-toner/toner", PRINTER_SUPPLY],  # Toner
+        ],
     ]
 
     @classmethod
@@ -68,6 +82,10 @@ class CanonTiendaOnline(StoreWithUrlExtensions):
         name = soup.find("span", {"itemprop": "name"}).text
         sku = soup.find("div", {"itemprop": "sku"}).text
         price = Decimal(soup.find("meta", {"itemprop": "price"})["content"])
+
+        if price == 0:
+            return []
+
         key = soup.find("form", {"id": "product_addtocart_form"}).find(
             "input", {"name": "product"}
         )["value"]
@@ -77,6 +95,11 @@ class CanonTiendaOnline(StoreWithUrlExtensions):
         picture_urls = [
             soup.find("img", {"alt": "main product photo"})["src"].replace(" ", "%20")
         ]
+
+        if "DAÑADA" in name.upper():
+            condition = "https://schema.org/DamagedCondition"
+        else:
+            condition = "https://schema.org/NewCondition"
 
         p = Product(
             name,
@@ -93,6 +116,7 @@ class CanonTiendaOnline(StoreWithUrlExtensions):
             part_number=sku,
             description=description,
             picture_urls=picture_urls,
+            condition=condition,
         )
 
         return [p]
