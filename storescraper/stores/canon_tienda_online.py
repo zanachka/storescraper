@@ -80,8 +80,14 @@ class CanonTiendaOnline(StoreWithUrlExtensions):
         soup = BeautifulSoup(session.get(url).text, "html5lib")
 
         name = soup.find("span", {"itemprop": "name"}).text
-        sku = soup.find("div", {"itemprop": "sku"}).text
-        price = Decimal(soup.find("meta", {"itemprop": "price"})["content"])
+        sku_tag = soup.find("div", {"itemprop": "sku"})
+        sku = sku_tag.text if sku_tag else None
+        price_tag = soup.find("meta", {"itemprop": "price"})
+
+        if not price_tag:
+            return []
+
+        price = Decimal(price_tag["content"])
 
         if price == 0:
             return []
