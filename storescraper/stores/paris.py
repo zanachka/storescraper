@@ -56,7 +56,8 @@ from storescraper import banner_sections as bs
 class Paris(Store):
     USER_AGENT = "solotodobot"
     RESULTS_PER_PAGE = 200
-    preferred_products_for_url_concurrency = 6
+    preferred_discover_urls_concurrency = 3
+    preferred_products_for_url_concurrency = 3
 
     category_paths = [
         ["tecnologia/computadores/tablets/", TABLET, 1],
@@ -249,7 +250,7 @@ class Paris(Store):
             breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
 
             if not breadcrumbs_tag:
-                raise Exception(response.text)
+                raise Exception(f"{base_url}, {response.status_code}, {response.text}")
 
             breadcrumbs = []
 
