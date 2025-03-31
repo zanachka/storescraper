@@ -369,7 +369,7 @@ class Paris(Store):
             name[:200],
             cls.__name__,
             category,
-            response.url,
+            url,
             url,
             sku,
             stock,
