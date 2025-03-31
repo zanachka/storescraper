@@ -56,8 +56,6 @@ from storescraper import banner_sections as bs
 class Paris(Store):
     USER_AGENT = "solotodobot"
     RESULTS_PER_PAGE = 200
-    preferred_discover_urls_concurrency = 3
-    preferred_products_for_url_concurrency = 3
 
     category_paths = [
         ["tecnologia/computadores/tablets/", TABLET, 1],
@@ -246,11 +244,16 @@ class Paris(Store):
             base_url = "https://www.paris.cl/" + category_path
             logging.info("Obtaining base section data from " + base_url)
             response = session.get(base_url)
+
+            if response.status_code == 504:
+                continue
+
             soup = BeautifulSoup(response.text, "lxml")
             breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
 
             if not breadcrumbs_tag:
-                raise Exception(f"{base_url}, {response.status_code}, {response.text}")
+                continue
+                # raise Exception(f"{base_url}, {response.status_code}, {response.text}")
 
             breadcrumbs = []
 
