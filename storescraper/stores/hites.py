@@ -35,6 +35,8 @@ from storescraper.categories import (
     WATER_HEATER,
     ACCESORIES,
     PRINTER_SUPPLY,
+    IRON,
+    HAIR_DRYER,
 )
 
 from storescraper.flixmedia import flixmedia_video_urls
@@ -74,6 +76,8 @@ class Hites(Store):
             GAMING_CHAIR,
             WATER_HEATER,
             PRINTER_SUPPLY,
+            IRON,
+            HAIR_DRYER,
         ]
 
     @classmethod
@@ -473,6 +477,18 @@ class Hites(Store):
                 "tecnologia/accesorios-y-otros/tintas-y-toner",
                 [PRINTER_SUPPLY],
                 "Inicio > Tecnología > Accesorios y Otros > Tintas y Toner",
+                1,
+            ],
+            [
+                "electro-hogar/electrodomesticos-hogar/planchas",
+                [IRON],
+                "Electro Hogar > Electrodomesticos Hogar > Planchas",
+                1,
+            ],
+            [
+                "belleza/cuidado-personal/secadores-de-pelo",
+                [HAIR_DRYER],
+                "Belleza > Cuidado Personal > Secadores De Pelo",
                 1,
             ],
         ]

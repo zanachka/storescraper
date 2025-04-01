@@ -30,6 +30,8 @@ from storescraper.categories import (
     PRINTER_SUPPLY,
     ACCESORIES,
     ELECTRIC_GRILL,
+    IRON,
+    HAIR_DRYER,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -340,6 +342,18 @@ class AbcDin(Store):
             1,
         ],
         ["tintas", [PRINTER_SUPPLY], "Tecnología / Computadores / Tintas", 1],
+        [
+            "planchas",
+            [IRON],
+            "Línea Blanca / Aseo y Limpieza / Planchas",
+            1,
+        ],
+        [
+            "secadores-de-pelo",
+            [HAIR_DRYER],
+            "Belleza / Cuidado Personal / Secadores de Pelos",
+            1,
+        ],
     ]
 
     @classmethod

@@ -46,6 +46,8 @@ from storescraper.categories import (
     FOOD_PROCESSOR,
     SANDWICH_MAKER,
     ELECTRIC_POT,
+    IRON,
+    HAIR_DRYER,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -216,6 +218,12 @@ class Paris(Store):
         ["outlet/outlet-tecno/outlet-ipads-y-tablets/", TABLET, 1],
         ["outlet/outlet-tecno/outlet-impresoras/", PRINTER_SUPPLY, 1],
         ["outlet/outlet-tecno/outlet-smartwatch/", WEARABLE, 1],
+        ["linea-blanca/electrodomesticos/planchas/", IRON, 1],
+        [
+            "linea-blanca/cuidado-personal/alisadores-onduladores/?tipoProductoAll=Secadores%20de%20Pelo",
+            HAIR_DRYER,
+            1,
+        ],
     ]
 
     @classmethod
