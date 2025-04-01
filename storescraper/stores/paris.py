@@ -56,7 +56,6 @@ from storescraper import banner_sections as bs
 class Paris(Store):
     USER_AGENT = "solotodobot"
     RESULTS_PER_PAGE = 200
-    preferred_discover_urls_concurrency = 6
     preferred_products_for_url_concurrency = 3
 
     category_paths = [
