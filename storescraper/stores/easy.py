@@ -319,8 +319,7 @@ class Easy(Store):
 
             assert len(item["referenceId"]) == 1
             assert item["referenceId"][0]["Key"] == "RefId"
-            key = item["referenceId"][0]["Value"]
-            sku = item["itemId"]
+            sku = item["referenceId"][0]["Value"]
 
             if "itemSpecifications" in item:
                 variations_axis = item["itemSpecifications"]["variations"]
@@ -369,7 +368,7 @@ class Easy(Store):
                 normal_price,
                 offer_price,
                 "CLP",
-                sku=key,
+                sku=sku,
                 picture_urls=picture_urls,
                 description=description,
             )
