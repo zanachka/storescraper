@@ -327,7 +327,7 @@ class Easy(Store):
                 variations_entries = " / ".join(
                     [item["itemSpecifications"][axis][0] for axis in variations_axis]
                 )
-                name = f"{item["name"]} ({variations_entries})"
+                name = f"{item['name']} ({variations_entries})"
             else:
                 name = item["name"]
 
