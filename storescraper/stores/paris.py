@@ -1,4 +1,3 @@
-import json
 import logging
 from collections import defaultdict
 from decimal import Decimal
@@ -57,6 +56,8 @@ from storescraper import banner_sections as bs
 class Paris(Store):
     USER_AGENT = "solotodobot"
     RESULTS_PER_PAGE = 200
+    preferred_discover_urls_concurrency = 6
+    preferred_products_for_url_concurrency = 3
 
     category_paths = [
         ["tecnologia/computadores/tablets/", TABLET, 1],
@@ -247,7 +248,12 @@ class Paris(Store):
             response = session.get(base_url)
             soup = BeautifulSoup(response.text, "lxml")
             breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
+
+            if not breadcrumbs_tag:
+                raise Exception(f"{base_url}, {response.status_code}, {response.text}")
+
             breadcrumbs = []
+
             for link_tag in breadcrumbs_tag.find_all("a"):
                 breadcrumbs.append(link_tag.text.strip())
 
@@ -368,8 +374,14 @@ class Paris(Store):
         if not json_response["results"]:
             return []
 
-        assert len(json_response["results"]) == 1
-        product_data = json_response["results"][0]
+        if len(json_response["results"]) == 1:
+            product_data = json_response["results"][0]
+        else:
+            for entry in json_response["results"]:
+                if entry["key"] == url.split("-")[-1].replace(".html", ""):
+                    product_data = entry
+                    break
+
         name = f"{product_data['brand']} {product_data['name']['es-CL']}"
 
         sellers = product_data["sellers"]
@@ -446,20 +458,17 @@ class Paris(Store):
 
         res = session.get(base_url)
         soup = BeautifulSoup(res.text, "lxml")
-        page_json = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)
+        slide_containers = soup.find_all("div", "flex-none rounded-lg relative")
 
-        for idx, banner_entry in enumerate(
-            page_json["props"]["pageProps"]["dehydratedState"]["queries"][0]["state"][
-                "data"
-            ]["data"]["data"]["content"][0]["items"]
-        ):
-            picture_url = banner_entry["image"]
+        for idx, banner_entry in enumerate(slide_containers):
+            destination_url = banner_entry.find("a")
+            picture_url = destination_url.find("source")["srcset"]
 
             banners.append(
                 {
                     "url": base_url,
                     "picture_url": picture_url,
-                    "destination_urls": [banner_entry["link"][:500]],
+                    "destination_urls": [destination_url["href"]],
                     "key": picture_url,
                     "position": idx + 1,
                     "section": bs.HOME,
