@@ -95,13 +95,8 @@ class ScGlobal(StoreWithUrlExtensions):
 
         name = soup.find("h1", {"itemprop": "name"}).text.strip()
         sku = soup.find("input", {"name": "id_product"})["value"]
-
         pricing_container = soup.find("span", {"itemprop": "price"})
         price = Decimal(pricing_container["content"])
-        part_number_tag = soup.find("span", {"itemprop": "sku"})
-        if not part_number_tag:
-            return []
-        part_number = part_number_tag.text.strip().split("-", 1)[1]
         add_to_cart_button = soup.find("button", "add-to-cart")
 
         if add_to_cart_button.get("disabled") is None:
@@ -129,7 +124,7 @@ class ScGlobal(StoreWithUrlExtensions):
             price,
             "CLP",
             sku=sku,
-            part_number=part_number,
+            part_number=sku,
             picture_urls=picture_urls,
             description=description,
         )
