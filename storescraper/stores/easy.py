@@ -291,9 +291,9 @@ class Easy(Store):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        sku = re.findall(r"-(\d+)", url)[-1]
+        item_id = re.findall(r"-(\d+)", url)[-1]
         response = session.get(
-            f"{cls.base_url}/products/by-sku/{sku}",
+            f"{cls.base_url}/products/by-sku/{item_id}",
             headers={"X-Api-Key": "jFt3XhoLqFAGr6qN9SCpr9K6y83HpakP"},
         )
 
@@ -301,36 +301,7 @@ class Easy(Store):
             return []
 
         response = response.json()
-
-        assert len(response["items"]) == 1
-
-        item = response["items"][0]
-
-        if "images" not in item:
-            return []
-
-        name = response["productName"]
-        key = response["productId"]
-        picture_urls = [img["imageUrl"] for img in item["images"]]
-
-        for seller in item["sellers"]:
-            if seller["sellerName"] == "Easy.cl":
-                offer = seller["commertialOffer"]
-
-                if "offerPrice" in offer["prices"] and offer["prices"]["offerPrice"]:
-                    normal_price = Decimal(offer["prices"]["offerPrice"])
-                else:
-                    normal_price = Decimal(offer["prices"]["normalPrice"])
-
-                if "brandPrice" in offer["prices"] and offer["prices"]["brandPrice"]:
-                    offer_price = Decimal(offer["prices"]["brandPrice"])
-                else:
-                    offer_price = normal_price
-
-                stock = offer["availableQuantity"]
-                break
-        else:
-            return []
+        assert response["items"]
 
         description = html_to_markdown(response["description"])
         description += "\n"
@@ -341,23 +312,70 @@ class Easy(Store):
                 continue
             description += f"{local_key}: {', '.join([str(x) for x in value])}\n"
 
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            key,
-            stock,
-            normal_price,
-            offer_price,
-            "CLP",
-            sku=sku,
-            picture_urls=picture_urls,
-            description=description,
-        )
+        products = []
+        for item in response["items"]:
+            if "images" not in item:
+                continue
 
-        return [p]
+            assert len(item["referenceId"]) == 1
+            assert item["referenceId"][0]["Key"] == "RefId"
+            key = item["referenceId"][0]["Value"]
+            sku = item["itemId"]
+
+            if "itemSpecifications" in item:
+                variations_axis = item["itemSpecifications"]["variations"]
+                variations_entries = " / ".join(
+                    [item["itemSpecifications"][axis][0] for axis in variations_axis]
+                )
+                name = f"{item["name"]} ({variations_entries})"
+            else:
+                name = item["name"]
+
+            picture_urls = [img["imageUrl"] for img in item["images"]]
+
+            for seller in item["sellers"]:
+                if seller["sellerName"] == "Easy.cl":
+                    offer = seller["commertialOffer"]
+
+                    if (
+                        "offerPrice" in offer["prices"]
+                        and offer["prices"]["offerPrice"]
+                    ):
+                        normal_price = Decimal(offer["prices"]["offerPrice"])
+                    else:
+                        normal_price = Decimal(offer["prices"]["normalPrice"])
+
+                    if (
+                        "brandPrice" in offer["prices"]
+                        and offer["prices"]["brandPrice"]
+                    ):
+                        offer_price = Decimal(offer["prices"]["brandPrice"])
+                    else:
+                        offer_price = normal_price
+
+                    stock = offer["availableQuantity"]
+                    break
+            else:
+                continue
+
+            p = Product(
+                name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                sku,
+                stock,
+                normal_price,
+                offer_price,
+                "CLP",
+                sku=key,
+                picture_urls=picture_urls,
+                description=description,
+            )
+            products.append(p)
+
+        return products
 
     @classmethod
     def banners(cls, extra_args=None):
