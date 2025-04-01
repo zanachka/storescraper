@@ -141,14 +141,14 @@ class Claro(Store):
         leasing_modes = [" (sin cuota de arriendo)", " (con cuota de arriendo)"]
 
         for plan in response:
-            plan_name = plan["fc_TEXTO_CAJA"].strip()
+            plan_name = plan["fc_NOMBRE"].strip()
             plan_name = " ".join(plan_name.split())
-            plan_url = f"https://www.clarochile.cl/{plan['fc_URL_PLANES']}"
+            plan_url = f"https://www.clarochile.cl{plan['fc_URL_PLANES']}"
 
             for portability_mode in portabilidad_modes:
                 normal_price = plan["fc_PRECIO_TACHADO"]
 
-                if normal_price != "" and portability_mode == "":
+                if normal_price != "":
                     plan_price = Decimal(normal_price)
                 else:
                     plan_price = Decimal(plan["fi_PRECIO_PLAN"])
