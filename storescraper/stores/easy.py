@@ -39,7 +39,6 @@ class Easy(Store):
             VIDEO_GAME_CONSOLE,
             WATER_HEATER,
             STOVE,
-            AI,
         ]
 
     @classmethod
@@ -337,10 +336,10 @@ class Easy(Store):
         description += "\n"
 
         specs_keys_blacklist = response.get("allSpecificationsGroups", [])
-        for key, value in response.get("specifications", {}).items():
-            if key in specs_keys_blacklist:
+        for local_key, value in response.get("specifications", {}).items():
+            if local_key in specs_keys_blacklist:
                 continue
-            description += f"{key}: {', '.join([str(x) for x in value])}\n"
+            description += f"{local_key}: {', '.join([str(x) for x in value])}\n"
 
         p = Product(
             name,

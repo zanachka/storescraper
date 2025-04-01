@@ -389,7 +389,6 @@ class Lider(Store):
             SOLID_STATE_DRIVE,
             DISH_WASHER,
             WATER_HEATER,
-            AI,
             PRINTER_SUPPLY,
         ]
 

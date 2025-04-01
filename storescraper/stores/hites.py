@@ -73,7 +73,6 @@ class Hites(Store):
             DISH_WASHER,
             GAMING_CHAIR,
             WATER_HEATER,
-            AI,
             PRINTER_SUPPLY,
         ]
 

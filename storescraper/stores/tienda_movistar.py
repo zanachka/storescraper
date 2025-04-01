@@ -44,7 +44,6 @@ class TiendaMovistar(Movistar):
             WEARABLE,
             VIDEO_GAME_CONSOLE,
             STEREO_SYSTEM,
-            AI,
         ]
 
     @classmethod

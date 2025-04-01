@@ -69,7 +69,6 @@ class CNava(Store):
             GAMING_CHAIR,
             UPS,
             TELEVISION,
-            AI,
             PRINTER_SUPPLY,
         ]
 
