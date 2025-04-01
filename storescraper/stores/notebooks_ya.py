@@ -195,7 +195,7 @@ class NotebooksYa(StoreWithUrlExtensions):
         data = json.loads(gtag_text)
         offer_price = Decimal(data["products"][str(key)]["price"])
         normal_price = Decimal(math.ceil(offer_price * Decimal(1.03)))
-        sku = product_data["sku"]
+        sku = str(product_data["sku"])
         picture_urls = [a["href"] for a in soup.findAll("a", "swiper-slide-imglink")]
         description = html_to_markdown(str(soup.find("div", {"id": "tab-description"})))
 
