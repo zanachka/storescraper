@@ -328,7 +328,7 @@ class Easy(Store):
                 )
                 name = f"{response['brand']} {item['name']} ({variations_entries})"
             else:
-                name = f"{response['brand']} {item["name"]}"
+                name = f"{response['brand']} {item['name']}"
 
             picture_urls = [img["imageUrl"] for img in item["images"]]
 
