@@ -37,7 +37,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words
+from storescraper.utils import session_with_proxy, remove_words, html_to_markdown
 
 
 class KDTec(StoreWithUrlExtensions):
@@ -164,7 +164,7 @@ class KDTec(StoreWithUrlExtensions):
 
         name = product_data["name"]
         sku = product_data.get("sku", None)
-        description = product_data["description"]
+        description = html_to_markdown(str(soup.find("div", {"id": "tab-description"})))
         price_tags = soup.findAll("span", "woocommerce-Price-amount")
 
         if not price_tags:
