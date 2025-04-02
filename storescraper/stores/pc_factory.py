@@ -229,6 +229,10 @@ class PcFactory(Store):
         name = product_data["nombre"]
         description = html_to_markdown(product_data["descripcion"])
 
+        for spec_group in product_data["especificaciones"]:
+            for entry in spec_group["detalle"]:
+                description += f"\n{entry['nombre']}: {entry['valor']}"
+
         # Precio
         res = session.get(
             f"https://api.pcfactory.cl/pcfactory-services-catalogo/v1/catalogo/productos/{product_id}/precio"
