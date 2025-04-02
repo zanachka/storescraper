@@ -1,7 +1,6 @@
 import logging
 from collections import defaultdict
 from decimal import Decimal
-import time
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
@@ -56,7 +55,6 @@ from storescraper import banner_sections as bs
 class Paris(Store):
     USER_AGENT = "solotodobot"
     RESULTS_PER_PAGE = 200
-    preferred_products_for_url_concurrency = 3
 
     category_paths = [
         ["tecnologia/computadores/ipad-tablet/", TABLET, 1],
@@ -152,7 +150,7 @@ class Paris(Store):
         ["linea-blanca/refrigeracion/refrigeradores/", REFRIGERATOR, 1],
         ["linea-blanca/refrigeracion/no-frost/", REFRIGERATOR, 1],
         ["linea-blanca/refrigeracion/frigobar-cavas/", REFRIGERATOR, 1],
-        ["linea-blanca/equipamiento-industrial/refrigeracion/", REFRIGERATOR, 1],
+        # ["linea-blanca/equipamiento-industrial/refrigeracion/", REFRIGERATOR, 1],
         ["linea-blanca/lavado-secado/", WASHING_MACHINE, 1],
         [
             "linea-blanca/lavado-secado/lavadoras-carga-frontal",
@@ -188,18 +186,16 @@ class Paris(Store):
         ["linea-blanca/aspirado-limpieza/aspiradoras-verticales/", VACUUM_CLEANER, 1],
         ["linea-blanca/climatizacion/", SPLIT_AIR_CONDITIONER, 1],
         [
-            "linea-blanca/climatizacion/aires-acondicionado/aires-acondicionados-portatiles/",
+            "linea-blanca/estufas/calefactores-split/",
             SPLIT_AIR_CONDITIONER,
             1,
         ],
         [
-            "linea-blanca/climatizacion/aires-acondicionado/aires-acondicionados-split/",
+            "linea-blanca/calefaccion/aire-acondicionado/",
             SPLIT_AIR_CONDITIONER,
             1,
         ],
-        ["linea-blanca/climatizacion/aires-acondicionado/", SPLIT_AIR_CONDITIONER, 1],
         ["linea-blanca/climatizacion/ventilacion/", SPLIT_AIR_CONDITIONER, 1],
-        ["linea-blanca/climatizacion/tratamiento-aire/", SPLIT_AIR_CONDITIONER, 1],
         ["linea-blanca/electrodomesticos/", ACCESORIES, 1],
         ["tecnologia/impresoras/insumos-accesorios/", PRINTER_SUPPLY, 1],
         ["belleza/perfumes/", PERFUME, 1],
@@ -207,10 +203,10 @@ class Paris(Store):
         ["outlet/outlet-electro/outlet-audio/", HEADPHONES, 1],
         ["outlet/outlet-electro/outlet-hifi/", STEREO_SYSTEM, 1],
         ["outlet/outlet-linea-blanca/outlet-refrigeracion/", REFRIGERATOR, 1],
-        ["outlet/outlet-linea-blanca/outlet-lavadoras/", WASHING_MACHINE, 1],
-        ["outlet/outlet-linea-blanca/outlet-cocinas/", STOVE, 1],
-        ["outlet/outlet-linea-blanca/outlet-calefaccion/", SPACE_HEATER, 1],
-        ["outlet/outlet-linea-blanca/outlet-electrodomesticos/", ACCESORIES, 1],
+        # ["outlet/outlet-linea-blanca/outlet-lavadoras/", WASHING_MACHINE, 1],
+        # ["outlet/outlet-linea-blanca/outlet-cocinas/", STOVE, 1],
+        # ["outlet/outlet-linea-blanca/outlet-calefaccion/", SPACE_HEATER, 1],
+        # ["outlet/outlet-linea-blanca/outlet-electrodomesticos/", ACCESORIES, 1],
         ["outlet/outlet-tecno/outlet-celulares/", CELL, 1],
         ["outlet/outlet-tecno/outlet-computadores/", NOTEBOOK, 1],
         ["outlet/outlet-tecno/outlet-ipads-y-tablets/", TABLET, 1],
@@ -245,6 +241,9 @@ class Paris(Store):
             base_url = "https://www.paris.cl/" + category_path
             logging.info("Obtaining base section data from " + base_url)
             response = session.get(base_url)
+
+            if response.url == "https://www.paris.cl/404":
+                raise Exception("Invalid section: " + category_path)
 
             soup = BeautifulSoup(response.text, "lxml")
             breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
