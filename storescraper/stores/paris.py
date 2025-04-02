@@ -59,7 +59,7 @@ class Paris(Store):
     preferred_products_for_url_concurrency = 3
 
     category_paths = [
-        ["tecnologia/computadores/tablets/", TABLET, 1],
+        ["tecnologia/computadores/ipad-tablet/", TABLET, 1],
         ["electro/audio/audifonos/", HEADPHONES, 1],
         ["electro/audio/parlantes-bluetooth-portables/", STEREO_SYSTEM, 1],
         ["electro/television/", TELEVISION, 1],
@@ -244,20 +244,7 @@ class Paris(Store):
 
             base_url = "https://www.paris.cl/" + category_path
             logging.info("Obtaining base section data from " + base_url)
-            retries = 0
-
-            while retries < 3:
-                response = session.get(base_url)
-
-                if (
-                    response.status_code == 502
-                    or "Página en construcción" in response.text
-                ):
-                    retries += 1
-                    time.sleep(60)
-                    continue
-                else:
-                    break
+            response = session.get(base_url)
 
             soup = BeautifulSoup(response.text, "lxml")
             breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
