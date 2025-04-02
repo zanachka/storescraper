@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 from decimal import Decimal
-
+import time
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
@@ -244,7 +244,21 @@ class Paris(Store):
 
             base_url = "https://www.paris.cl/" + category_path
             logging.info("Obtaining base section data from " + base_url)
-            response = session.get(base_url)
+            retries = 0
+
+            while retries < 3:
+                response = session.get(base_url)
+
+                if (
+                    response.status_code == 502
+                    or "Página en construcción" in response.text
+                ):
+                    retries += 1
+                    time.sleep(60)
+                    continue
+                else:
+                    break
+
             soup = BeautifulSoup(response.text, "lxml")
             breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
 
