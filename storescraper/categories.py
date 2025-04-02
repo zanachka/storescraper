@@ -112,6 +112,8 @@ SANDWICH_MAKER = "SandwichMaker"
 STORAGE_WATER_HEATER = "StorageWaterHeater"
 # Tostadores
 TOASTER = "Toaster"
+# Proyectores (como para hacer presentaciones)
+PROJECTOR = "Projector"
 
 #########################
 # Legacy (no usar)
@@ -130,7 +132,5 @@ OPTICAL_DRIVE = "OpticalDrive"
 
 # Reproductores de DVD y Blu-ray para televisores
 OPTICAL_DISK_PLAYER = "OpticalDiskPlayer"
-# Proyectores (como para hacer presentaciones)
-PROJECTOR = "Projector"
 # Perfumes
 PERFUME = "Perfume"

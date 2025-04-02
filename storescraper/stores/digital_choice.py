@@ -24,7 +24,7 @@ from storescraper.categories import (
     ACCESORIES,
 )
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import session_with_proxy, html_to_markdown
 
 
 class DigitalChoice(StoreWithUrlExtensions):
@@ -97,7 +97,9 @@ class DigitalChoice(StoreWithUrlExtensions):
 
             key = json_data["@id"]
             name = json_data["name"]
-            description = json_data["description"]
+            description = html_to_markdown(
+                str(soup.find("section", {"id": "bs-product-description"}))
+            )
             sku = json_data["sku"]
             picture_urls = [x for x in json_data["image"] if validators.url(x)]
             price = Decimal(json_data["offers"]["price"])
