@@ -326,9 +326,9 @@ class Easy(Store):
                 variations_entries = " / ".join(
                     [item["itemSpecifications"][axis][0] for axis in variations_axis]
                 )
-                name = f"{item['name']} ({variations_entries})"
+                name = f"{response['brand']} {item['name']} ({variations_entries})"
             else:
-                name = item["name"]
+                name = f"{response['brand']} {item["name"]}"
 
             picture_urls = [img["imageUrl"] for img in item["images"]]
 
