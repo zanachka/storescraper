@@ -112,6 +112,10 @@ SANDWICH_MAKER = "SandwichMaker"
 STORAGE_WATER_HEATER = "StorageWaterHeater"
 # Tostadores
 TOASTER = "Toaster"
+# Planchas
+IRON = "Iron"
+# Secadores de pelo
+HAIR_DRYER = "HairDryer"
 
 #########################
 # Legacy (no usar)
