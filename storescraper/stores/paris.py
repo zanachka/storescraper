@@ -249,7 +249,10 @@ class Paris(Store):
             while retries < 3:
                 response = session.get(base_url)
 
-                if response.status_code == 502:
+                if (
+                    response.status_code == 502
+                    or "Página en construcción" in response.text
+                ):
                     retries += 1
                     time.sleep(60)
                     continue
