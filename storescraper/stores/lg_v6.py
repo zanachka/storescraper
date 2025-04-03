@@ -173,20 +173,12 @@ class LgV6(Store):
         positions = [(section_path, 1)]
         sku = json_data["ec_sku"]
 
-        if "ec_tech_spec_list" in json_data:
-            description = {}
+        pdp_data = soup.find("div", {"id": "pdp-overview-section"})
 
-            for spec in cls.string_to_dict(json_data["ec_tech_spec_list"]):
-                description[spec["lv2SpecName"]] = spec["specValueName"]
-
-            description = json.dumps(description)
+        if pdp_data:
+            description = str(pdp_data).replace('="/', '="https://www.lg.com/')
         else:
-            pdp_data = soup.find("div", {"id": "pdp-overview-section"})
-            description = (
-                html_to_markdown(pdp_data.text.replace('="/', '="https://www.lg.com/'))
-                if pdp_data
-                else None
-            )
+            description = None
 
         reviews_endpoint = (
             "https://api.bazaarvoice.com/data/display/0.2alpha/product/summary?PassKey="
