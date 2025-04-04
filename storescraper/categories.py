@@ -114,6 +114,10 @@ STORAGE_WATER_HEATER = "StorageWaterHeater"
 TOASTER = "Toaster"
 # Proyectores (como para hacer presentaciones)
 PROJECTOR = "Projector"
+# Planchas
+IRON = "Iron"
+# Secadores de pelo
+HAIR_DRYER = "HairDryer"
 
 #########################
 # Legacy (no usar)

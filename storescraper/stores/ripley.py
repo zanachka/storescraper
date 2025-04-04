@@ -37,6 +37,8 @@ from storescraper.categories import (
     MOUSE,
     PRINTER_SUPPLY,
     PERFUME,
+    IRON,
+    HAIR_DRYER,
 )
 from storescraper.store import Store
 from storescraper.product import Product
@@ -332,6 +334,18 @@ class Ripley(Store):
             "belleza/perfumeria?s=mdco",
             [PERFUME],
             "Belleza > Perfumería",
+            1,
+        ],
+        [
+            "electro/lavanderia/planchas-y-vaporizadores",
+            [IRON],
+            "Electro > Lavandería > Planchas y vaporizadores",
+            1,
+        ],
+        [
+            "electro/cuidado-personal/secadores-de-pelo",
+            [HAIR_DRYER],
+            "Electro > Cuidado personal > Secadores de pelo",
             1,
         ],
     ]
