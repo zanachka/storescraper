@@ -88,10 +88,7 @@ class TiendaToyotomi(StoreWithUrlExtensions):
         description = json_data["description"]
         description += html_to_markdown(str(soup.find("div", "product_specifications")))
 
-        if "image" not in json_data.keys():
-            return []
-
-        picture_urls = [json_data["image"]]
+        picture_urls = [x.find("img")["src"] for x in soup.findAll("div", "zoom")]
 
         p = Product(
             name,
