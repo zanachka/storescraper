@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict
 from decimal import Decimal
 from bs4 import BeautifulSoup
-
+import validators
 from storescraper.categories import (
     ALL_IN_ONE,
     GAMING_CHAIR,
@@ -410,6 +410,12 @@ class Paris(Store):
             offer_price = normal_price
 
         picture_urls = [x["url"] for x in master_variant["images"]]
+        cleaned_picture_urls = []
+
+        for picture_url in picture_urls:
+            if validators.url(picture_url):
+                cleaned_picture_urls.append(picture_url)
+
         stock = 0 if seller else -1
 
         if "description" in product_data:
@@ -444,7 +450,7 @@ class Paris(Store):
             "CLP",
             sku=sku,
             description=description,
-            picture_urls=picture_urls,
+            picture_urls=cleaned_picture_urls,
             review_count=review_count,
             review_avg_score=review_avg_score,
             seller=seller,
