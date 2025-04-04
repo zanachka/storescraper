@@ -36,7 +36,7 @@ class AgilStore(StoreWithUrlExtensions):
         ["5606", POWER_SUPPLY],  # Fuente Poder
         ["5530", PRINTER_SUPPLY],  # Toner
         ["5531", PRINTER_SUPPLY],  # Cartuchos de Tinta
-        ["5591", HEADPHONES],  # Audífonos
+        ["6146", HEADPHONES],  # Audífonos
     ]
 
     @classmethod
