@@ -34,6 +34,9 @@ class Falabella(Store):
     preferred_discover_urls_concurrency = 3
     preferred_products_for_url_concurrency = 20
     store_and_subdomain = None
+    product_url_template = (
+        "https://www.falabella.com/falabella-cl/product/{}/product/{}"
+    )
     pid = "15c37b0b-a392-41a9-8b3b-978376c700d5"
     seller = [
         {"id": "FALABELLA", "section_prefix": "RETAIL", "include_in_fast_mode": True},
@@ -760,14 +763,9 @@ class Falabella(Store):
                     break
 
                 for result in res["results"]:
-                    product_url = result["url"]
-                    # Remove weird special characters
-                    product_url = product_url.encode("ascii", "ignore").decode("ascii")
-
-                    if "?" in product_url:
-                        product_url = "{}/{}".format(
-                            product_url.split("?")[0], result["skuId"]
-                        )
+                    product_url = cls.product_url_template.format(
+                        result["productId"], result["skuId"]
+                    )
 
                     if product_url not in discovered_urls:
                         discovered_urls.append(product_url)

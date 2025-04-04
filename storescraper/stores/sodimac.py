@@ -10,6 +10,7 @@ class Sodimac(Falabella):
     banners_sections_data = [
         [bs.HOME, "Home", bs.SUBSECTION_TYPE_HOME, ""],
     ]
+    product_url_template = "https://www.sodimac.cl/sodimac-cl/articulo/{}/product/{}"
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):

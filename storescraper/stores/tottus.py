@@ -11,6 +11,9 @@ class Tottus(Falabella):
     seller = [{"id": "TOTTUS", "section_prefix": None, "include_in_fast_mode": True}]
     seller_blacklist = []
     banners_base_url = "https://tottus.cl/"
+    product_url_template = (
+        "https://tottus.falabella.com/tottus-cl/product/{}/product/{}"
+    )
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
