@@ -5,10 +5,7 @@ import re
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy, html_to_markdown
-from storescraper.categories import (
-    KEYBOARD_MOUSE_COMBO,
-    NOTEBOOK,
-)
+from storescraper.categories import KEYBOARD_MOUSE_COMBO, NOTEBOOK, ALL_IN_ONE
 
 
 class ZTech(StoreWithUrlExtensions):
@@ -17,6 +14,7 @@ class ZTech(StoreWithUrlExtensions):
         ["notebooks-empresariales", NOTEBOOK],
         ["ultrabooks", NOTEBOOK],
         ["perifericos", KEYBOARD_MOUSE_COMBO],
+        ["all-in-one", ALL_IN_ONE],
     ]
 
     @classmethod
