@@ -33,6 +33,8 @@ from storescraper.categories import (
     WEARABLE,
     WATER_HEATER,
     PRINTER_SUPPLY,
+    IRON,
+    HAIR_DRYER,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -355,6 +357,18 @@ class Lider(Store):
             "89057520_18938454_30849678",
             [PRINTER_SUPPLY],
             "Computación > Impresión > Tintas y Toners",
+            1.0,
+        ],
+        [
+            "23989399_75788044_32008261",
+            [IRON],
+            "Electrohogar > Lavado y Planchado > Planchado",
+            1.0,
+        ],
+        [
+            "59721722_76091226_92571610",
+            [HAIR_DRYER],
+            "Belleza y Cuidado Personal > Cuidado Personal > Secadores de Pelo",
             1.0,
         ],
     ]

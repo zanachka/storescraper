@@ -27,6 +27,7 @@ from storescraper.categories import (
     ALL_IN_ONE,
     CPU_COOLER,
     PRINTER_SUPPLY,
+    UPS,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -76,6 +77,8 @@ class Lifemax(StoreWithUrlExtensions):
         ["botellas-de-tinta-impresoras", PRINTER_SUPPLY],
         ["cartuchos-de-tinta", PRINTER_SUPPLY],
         ["toners", PRINTER_SUPPLY],
+        ["ups", UPS],
+        ["mouse-gamer", MOUSE],
     ]
 
     @classmethod

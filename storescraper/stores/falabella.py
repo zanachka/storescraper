@@ -574,6 +574,13 @@ class Falabella(Store):
             "Home > Belleza y salud > Perfumes",
             1,
         ],
+        ["cat3182", [IRON], "Home > Electrohogar - Línea blanca > Planchas", 1],
+        [
+            "cat3223",
+            [HAIR_DRYER],
+            "Home > Belleza, higiene y salud > Tecnología para la Belleza > Secadores de pelo",
+            1,
+        ],
     ]
 
     @classmethod
