@@ -54,6 +54,10 @@ class TodoGeek(StoreWithUrlExtensions):
         page_data = json.loads(
             soup.findAll("script", {"type": "application/ld+json"})[1].text
         )["@graph"]
+
+        if "hasVariant" in page_data[0]:
+            page_data = page_data[0]["hasVariant"]
+
         product_data = None
 
         for entry in page_data:
@@ -68,12 +72,14 @@ class TodoGeek(StoreWithUrlExtensions):
             for product in json.loads(product_variations["data-product_variations"]):
                 key = str(product["variation_id"])
                 name = f"{product_data['name']} ({', '.join(product['attributes'].values())})"
-                sku = product["sku"]
+                sku = product.get("sku")
 
                 if sku == "":
                     sku = None
 
-                description = product_data["description"]
+                description = html_to_markdown(
+                    soup.find("div", {"id": "tab-description"}).text
+                )
                 offer_price = Decimal(product["display_price"])
                 normal_price = (offer_price * Decimal("1.06")).quantize(0)
                 stock = -1 if product["is_in_stock"] else 0
@@ -112,7 +118,7 @@ class TodoGeek(StoreWithUrlExtensions):
             return products
         else:
             name = product_data["name"]
-            sku = str(product_data["sku"])
+            sku = str(product_data["sku"]) if "sku" in product_data else None
             offer = product_data["offers"][0]
             stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
 
