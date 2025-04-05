@@ -112,6 +112,9 @@ class ScGlobal(StoreWithUrlExtensions):
         ]
         description = html_to_markdown(soup.find("div", {"id": "description"}).text)
 
+        part_number_tag = soup.find("div", "product-information").find("div", "h3")
+        part_number = part_number_tag.text.split(": ")[1]
+
         p = Product(
             name,
             cls.__name__,
@@ -124,7 +127,7 @@ class ScGlobal(StoreWithUrlExtensions):
             price,
             "CLP",
             sku=sku,
-            part_number=sku,
+            part_number=part_number,
             picture_urls=picture_urls,
             description=description,
         )
