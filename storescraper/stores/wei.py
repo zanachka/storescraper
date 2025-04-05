@@ -162,11 +162,14 @@ class Wei(StoreWithUrlExtensions):
         sku = sku.groups()[0]
         soup = BeautifulSoup(page_source, "lxml")
 
-        brand = (
-            soup.find("div", "migadepan").findAll("a")[-1].text.split("-")[0].strip()
-        )
+        breadcrumb = soup.find("div", "migadepan").findAll("a")[-1].text
         model = soup.find("meta", {"name": "description"})["content"]
-        name = f"{brand} {model}"
+
+        if " - " in breadcrumb:
+            brand = breadcrumb.split("-")[0].strip()
+            name = f"{brand} {model}"
+        else:
+            name = model
 
         stock_div = soup.find("div", "col-55 col-100-md-2 pb20")
         if (
