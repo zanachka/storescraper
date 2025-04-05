@@ -214,7 +214,7 @@ class Wei(StoreWithUrlExtensions):
                 picture_urls.append(picture_url)
 
         p = Product(
-            name,
+            name[:250],
             cls.__name__,
             category,
             url,
