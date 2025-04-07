@@ -32,6 +32,7 @@ from storescraper.categories import (
     SOLID_STATE_DRIVE,
     PRINTER,
     PRINTER_SUPPLY,
+    OPTICAL_DRIVE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -80,6 +81,7 @@ class PcExpress(StoreWithUrlExtensions):
         ["149", PRINTER_SUPPLY],  # Tintas Cartridge o Botellas
         ["152", PRINTER_SUPPLY],  # Toner Laser
         ["504", PRINTER_SUPPLY],  # Tintas para Plotter
+        ["464", OPTICAL_DRIVE],  # Lectores opticos
     ]
 
     @classmethod

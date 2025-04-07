@@ -118,6 +118,12 @@ PROJECTOR = "Projector"
 IRON = "Iron"
 # Secadores de pelo
 HAIR_DRYER = "HairDryer"
+# Reproductores de DVD y Blu-ray para televisores
+OPTICAL_DISK_PLAYER = "OpticalDiskPlayer"
+# Lectores de DVD / Blu-ray para PCs desktop
+OPTICAL_DRIVE = "OpticalDrive"
+# Perfumes
+PERFUME = "Perfume"
 
 #########################
 # Legacy (no usar)
@@ -127,14 +133,3 @@ HAIR_DRYER = "HairDryer"
 MICROPHONE = "Microphone"
 # Escritorios gamer (no de oficina)
 GAMING_DESK = "GamingDesk"
-# Lectores de DVD / Blu-ray para PCs desktop
-OPTICAL_DRIVE = "OpticalDrive"
-
-#########################
-# Reservados (no usar normalmente)
-#########################
-
-# Reproductores de DVD y Blu-ray para televisores
-OPTICAL_DISK_PLAYER = "OpticalDiskPlayer"
-# Perfumes
-PERFUME = "Perfume"
