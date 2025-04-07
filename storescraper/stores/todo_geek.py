@@ -1,7 +1,6 @@
 from decimal import Decimal
 import json
 import logging
-import re
 from bs4 import BeautifulSoup
 from storescraper.categories import VIDEO_CARD, VIDEO_GAME_CONSOLE, CELL, NOTEBOOK
 from storescraper.product import Product
@@ -52,27 +51,30 @@ class TodoGeek(StoreWithUrlExtensions):
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
         page_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[1].text
+            soup.findAll("script", {"type": "application/ld+json"})[0].text
         )["@graph"]
-
-        if "hasVariant" in page_data[0]:
-            page_data = page_data[0]["hasVariant"]
-
-        product_data = None
-
-        for entry in page_data:
-            if entry["@type"] == "Product":
-                product_data = entry
 
         product_variations = soup.find("form", "variations_form")
 
         if product_variations:
             products = []
 
-            for product in json.loads(product_variations["data-product_variations"]):
-                key = str(product["variation_id"])
-                name = f"{product_data['name']} ({', '.join(product['attributes'].values())})"
-                sku = product.get("sku")
+            for entry in page_data:
+                if entry["@type"] == "ProductGroup":
+                    product_entries = entry["hasVariant"]
+                    break
+            else:
+                raise Exception("No product data found")
+
+            variations_data = json.loads(product_variations["data-product_variations"])
+            assert len(variations_data) == len(product_entries)
+
+            # We have to assume that the product entries and the variation data is in the same order,
+            # there is no common key to match them consistently
+            for product_entry, variation_data in zip(product_entries, variations_data):
+                key = str(variation_data["variation_id"])
+                name = f"{product_entry['name']} ({', '.join(variation_data['attributes'].values())})"
+                sku = variation_data["sku"]
 
                 if sku == "":
                     sku = None
@@ -80,10 +82,10 @@ class TodoGeek(StoreWithUrlExtensions):
                 description = html_to_markdown(
                     soup.find("div", {"id": "tab-description"}).text
                 )
-                offer_price = Decimal(product["display_price"])
+                offer_price = Decimal(variation_data["display_price"])
                 normal_price = (offer_price * Decimal("1.06")).quantize(0)
-                stock = -1 if product["is_in_stock"] else 0
-                picture_urls = [product["image"]["url"]]
+                stock = -1 if variation_data["is_in_stock"] else 0
+                picture_urls = [variation_data["image"]["url"]]
 
                 condition_tag = soup.find("p", "product-condition")
 
@@ -117,9 +119,15 @@ class TodoGeek(StoreWithUrlExtensions):
 
             return products
         else:
+            for entry in page_data:
+                if entry["@type"] == "Product":
+                    product_data = entry
+                    break
+            else:
+                raise Exception("No product data found")
             name = product_data["name"]
             sku = str(product_data["sku"]) if "sku" in product_data else None
-            offer = product_data["offers"][0]
+            offer = product_data["offers"]
             stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
 
             offer_price = Decimal(
@@ -128,7 +136,7 @@ class TodoGeek(StoreWithUrlExtensions):
             normal_price = Decimal(
                 remove_words(soup.find("p", "price-debito-credito").find("bdi").text)
             )
-            description = html_to_markdown(product_data["description"])
+            description = html_to_markdown(product_data.get("description", ""))
             key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
             picture_urls = [
                 a["href"]
