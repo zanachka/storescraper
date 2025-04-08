@@ -128,7 +128,7 @@ class TodoGeek(StoreWithUrlExtensions):
             name = product_data["name"]
             sku = str(product_data["sku"]) if "sku" in product_data else None
             offer = product_data["offers"]
-            stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+            stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
 
             offer_price = Decimal(
                 remove_words(soup.find("p", "price-transferencia").find("bdi").text)
