@@ -25,7 +25,7 @@ from .asus_store import AsusStore
 from .aufbau import Aufbau
 from .back_online import BackOnline
 from .batek import Batek
-from .bbcc import BookComputer
+from .book_computer import BookComputer
 from .best_store import BestStore
 from .bip import Bip
 from .bit_center import BitCenter
