@@ -20,6 +20,7 @@ from storescraper.categories import (
     MICROPHONE,
     NOTEBOOK,
     TELEVISION,
+    ACCESORIES,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -48,6 +49,8 @@ class VGamers(StoreWithUrlExtensions):
         ["streaming/microfonos", MICROPHONE],
         ["notebook-y-consolas", NOTEBOOK],
         ["todos-los-productos/televisores", TELEVISION],
+        ["electrodomesticos", ACCESORIES],
+        ["todos-los-productos/portatiles/notebook", NOTEBOOK],
     ]
 
     @classmethod
