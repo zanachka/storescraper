@@ -73,9 +73,7 @@ class VGamers(StoreWithUrlExtensions):
                 break
 
             soup = BeautifulSoup(response.text, "lxml")
-            products = soup.find("section", "page-gallery").findAll(
-                "div", "product-block"
-            )
+            products = soup.findAll("article", "product-block")
 
             if not products:
                 if page == 1:
@@ -100,32 +98,33 @@ class VGamers(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        product_form = soup.find("form", "product-form")
+        product_form = soup.find("script", "product-form-json")
 
         if not product_form:
             return []
 
-        key = product_form["data-id"]
+        product_data = json.loads(product_form.text)
+
         json_data = json.loads(
             soup.find("script", {"type": "application/ld+json"}).text
         )
-
         for entry in json_data:
             if entry["@type"] == "Product":
-                product_data = entry
+                json_data = entry
                 break
         else:
             raise Exception("No JSON product data found")
 
-        name = product_data["name"]
-        sku = product_data.get("sku")
-        description = product_data.get("description", None)
-        offer = product_data["offers"]
+        key = str(product_data["info"]["product"]["id"])
+        name = product_data["info"]["product"]["name"]
+        sku = json_data["sku"]
+        description = json_data["description"]
+        offer = json_data["offers"]
         price = Decimal(offer["price"])
-        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        stock = product_data["info"]["product"]["stock"]
         picture_urls = [
-            slide.find("img")["src"].split("resize")[0]
-            for slide in soup.findAll("div", "swiper-slide product-gallery__slide trsn")
+            slide.find("img")["src"].split("?")[0]
+            for slide in soup.findAll("div", "swiper-slide product-gallery__slide")
         ]
 
         p = Product(

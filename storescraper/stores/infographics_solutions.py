@@ -204,8 +204,10 @@ class InfographicsSolutions(StoreWithUrlExtensions):
             stock = 0
             description = "INTERNACIONAL " + description
         elif stock_container:
-            stock_text = stock_container.text.split(" ")[0]
-            if stock_text == "Agotado":
+            stock_text = stock_container.text.strip()
+            if stock_text == "Hay existencias":
+                stock = -1
+            elif stock_text == "Agotado":
                 stock = 0
             else:
                 stock = int(stock_text)
