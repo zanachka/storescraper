@@ -61,7 +61,7 @@ class LaserChile(StoreWithUrlExtensions):
 
         key = str(product_data["item_id"])
         stock = -1 if soup.find("button", {"name": "add-to-cart"}) else 0
-        price = Decimal(product_data["price"])
+        price = Decimal(product_data["price"]).quantize(0)
         sku = str(product_data["sku"])
         description_tag = soup.find(
             "div", "elementor-widget-woocommerce-product-content"
