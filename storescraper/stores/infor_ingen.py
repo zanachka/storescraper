@@ -24,7 +24,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import get_price_from_price_specification, session_with_proxy
 
 
 class InforIngen(StoreWithUrlExtensions):
@@ -109,15 +109,16 @@ class InforIngen(StoreWithUrlExtensions):
         sku = json_data["sku"]
         summary_tag = soup.find("div", "summary")
         stock_tags = summary_tag.findAll("li")[:2]  # Web and Store
-
         stock = 0
+
         for stock_tag in stock_tags:
             raw_stock_text = stock_tag.contents[1]
             stock_match = re.search(r"(\d+)", raw_stock_text)
+
             if stock_match:
                 stock += int(stock_match.groups()[0])
 
-        offer_price = Decimal(json_data["offers"][0]["price"])
+        offer_price = get_price_from_price_specification(json_data)
         normal_price = (offer_price * Decimal("1.06")).quantize(0)
         description = json_data["description"]
         picture_urls = [json_data["image"]]
