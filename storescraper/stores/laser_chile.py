@@ -63,9 +63,11 @@ class LaserChile(StoreWithUrlExtensions):
         stock = -1 if soup.find("button", {"name": "add-to-cart"}) else 0
         price = Decimal(product_data["price"]).quantize(0)
         sku = str(product_data["sku"])
-        description_tag = soup.find(
-            "div", "elementor-widget-woocommerce-product-content"
-        ) or soup.find("div", "woocommerce-product-details__short-description")
+        description_tag = (
+            soup.find("div", "elementor-widget-woocommerce-product-content")
+            or soup.find("div", "woocommerce-product-details__short-description")
+            or soup.find("div", {"id": "tab-description"})
+        )
         description = (
             html_to_markdown(description_tag.text) if description_tag else None
         )
