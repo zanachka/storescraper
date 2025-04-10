@@ -227,7 +227,11 @@ class PcFactory(Store):
             part_number = part_number.strip()
 
         name = product_data["nombre"]
-        description = html_to_markdown(product_data["descripcion"])
+        description = (
+            html_to_markdown(product_data["descripcion"])
+            if product_data["descripcion"]
+            else ""
+        )
 
         for spec_group in product_data["especificaciones"]:
             for entry in spec_group["detalle"]:
