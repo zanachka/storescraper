@@ -1,4 +1,5 @@
 import logging
+import time
 from collections import defaultdict
 from decimal import Decimal
 from bs4 import BeautifulSoup
@@ -121,10 +122,11 @@ class Paris(Store):
         ["tecnologia/accesorios-computacion/audifonos-microfonos/", HEADPHONES, 1],
         ["tecnologia/accesorios-computacion/pendrives/", USB_FLASH_DRIVE, 1],
         ["tecnologia/computadores/pc-gamer/", NOTEBOOK, 1],
-        ["tecnologia/gamer/teclados/", KEYBOARD, 1],
-        ["tecnologia/gamer/headset/", HEADPHONES, 1],
-        ["tecnologia/gamer/sillas-escritorios-gamer/", GAMING_CHAIR, 1],
-        ["tecnologia/gamer/gabinetes/", COMPUTER_CASE, 1],
+        # ["tecnologia/gamer/teclados/", KEYBOARD, 1],
+        # ["tecnologia/gamer/headset/", HEADPHONES, 1],
+        # ["tecnologia/gamer/sillas-escritorios-gamer/", GAMING_CHAIR, 1],
+        # ["tecnologia/gamer/gabinetes/", COMPUTER_CASE, 1],
+        ["tecnologia/gamer/monitores/", MONITOR, 1],
         ["tecnologia/accesorios-fotografia/tarjetas-memoria/", MEMORY_CARD, 1],
         ["linea-blanca/electrodomesticos/freidoras-de-aire/", AIR_FRYER, 1],
         ["linea-blanca/electrodomesticos/batidoras-licuadoras/", BLENDER, 1],
@@ -248,10 +250,19 @@ class Paris(Store):
 
             base_url = "https://www.paris.cl/" + category_path
             logging.info("Obtaining base section data from " + base_url)
-            response = session.get(base_url)
+            retries = 0
 
-            if response.url == "https://www.paris.cl/404":
-                raise Exception("Invalid section: " + category_path)
+            while retries < 2:
+                response = session.get(base_url)
+
+                if response.url == "https://www.paris.cl/404":
+                    raise Exception("Invalid section: " + category_path)
+
+                if "<h2>Estamos mejorando tu experiencia</h2>" in response.text:
+                    retries += 1
+                    time.sleep(30)
+                else:
+                    break
 
             soup = BeautifulSoup(response.text, "lxml")
             breadcrumbs_tag = soup.find("nav", {"aria-label": "breadcrumb"})
