@@ -35,6 +35,7 @@ from storescraper.categories import (
     WEARABLE,
     ACCESORIES,
     PRINTER_SUPPLY,
+    PROJECTOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -89,6 +90,7 @@ class CtMan(StoreWithUrlExtensions):
         ["types/toner", PRINTER_SUPPLY],
         ["types/cartucho-de-tinta", PRINTER_SUPPLY],
         ["collections/electrodomesticos", ACCESORIES],
+        ["types/proyectores", PROJECTOR],
     ]
 
     @classmethod
