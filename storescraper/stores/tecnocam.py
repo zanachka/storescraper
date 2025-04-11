@@ -34,71 +34,83 @@ from storescraper.categories import (
     VIDEO_GAME_CONSOLE,
     PRINTER,
     PRINTER_SUPPLY,
+    ACCESORIES,
+    UPS,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class Tecnocam(StoreWithUrlExtensions):
     url_extensions = [
-        ["almacenamiento/disco-externo", EXTERNAL_STORAGE_DRIVE],
-        ["almacenamiento/disco-hdd", STORAGE_DRIVE],
-        ["almacenamiento/disco-ssd", SOLID_STATE_DRIVE],
-        ["almacenamiento/pendrive", USB_FLASH_DRIVE],
-        ["almacenamiento/tarjeta-de-memoria", MEMORY_CARD],
-        ["componentes-de-pc/cpu-amd", PROCESSOR],
-        ["componentes-de-pc/cpu-intel", PROCESSOR],
-        ["componentes-de-pc/disipador", CPU_COOLER],
-        ["componentes-de-pc/fuentes-de-poder", POWER_SUPPLY],
-        ["componentes-de-pc/gabinetes", COMPUTER_CASE],
-        ["componentes-de-pc/memorias-ram-notebook", RAM],
-        ["componentes-de-pc/memorias-ram-pc", RAM],
-        ["componentes-de-pc/placas-madre", MOTHERBOARD],
-        ["componentes-de-pc/tarjetas-de-video", VIDEO_CARD],
-        ["componentes-de-pc/ventilador-pc", CASE_FAN],
-        ["articulos-de-oficina/sillas-gamer", GAMING_CHAIR],
-        ["accesorios-de-pc/kit-teclado-mouse", KEYBOARD_MOUSE_COMBO],
-        ["accesorios-de-pc/mouse", MOUSE],
-        ["accesorios-de-pc/teclado", KEYBOARD],
-        ["audiovisual/audifonos", HEADPHONES],
-        ["audiovisual/microfono", MICROPHONE],
-        ["audiovisual/monitores", MONITOR],
-        ["audiovisual/parlante", STEREO_SYSTEM],
-        ["audiovisual/smart-tv", TELEVISION],
-        ["celulares", CELL],
-        ["celulares/celulares-y-tablets", TABLET],
-        ["computadores/all-in-one", ALL_IN_ONE],
-        ["computadores/consolas-de-videojuegos", VIDEO_GAME_CONSOLE],
-        ["computadores/notebook", NOTEBOOK],
-        ["impresoras-y-escaner/impresoras", PRINTER],
-        ["impresoras-y-escaner/tintas", PRINTER_SUPPLY],
-        ["impresoras-y-escaner/toner", PRINTER_SUPPLY],
+        ["computacion/notebooks-accesorios/notebooks", NOTEBOOK],
+        ["computacion/notebooks-accesorios/accesorios-notebooks", ACCESORIES],
+        ["computacion/laptops-accesorios/repuestos", ACCESORIES],
+        ["computacion/componentes-pc/tarjetas", VIDEO_CARD],
+        [
+            "computacion/componentes-pc/discos-accesorios/discos-duros-ssds",
+            SOLID_STATE_DRIVE,
+        ],
+        ["computacion/componentes-pc/discos-accesorios/accesorios", ACCESORIES],
+        ["computacion/componentes-pc/memorias-ram", RAM],
+        ["computacion/componentes-pc/procesadores", PROCESSOR],
+        ["computacion/componentes-pc/fuentes-alimentacion", POWER_SUPPLY],
+        ["computacion/componentes-pc/gabinetes-soportes-pc", COMPUTER_CASE],
+        ["computacion/componentes-pc/refrigeracion", CPU_COOLER],
+        ["computacion/accesorios-pc-gaming/audifonos", HEADPHONES],
+        ["computacion/accesorios-pc-gaming/sillas-gamer", GAMING_CHAIR],
+        ["computacion/almacenamiento/pen-drives", USB_FLASH_DRIVE],
+        ["computacion/estabilizadores-ups", UPS],
+        ["computacion/perifericos-accesorios/cables-hubs-usb", ACCESORIES],
+        ["computacion/impresion/insumos-impresion", PRINTER_SUPPLY],
+        ["computacion/impresion/impresoras", PRINTER],
+        ["computacion/impresion/accesorios", ACCESORIES],
+        ["computacion/limpieza-cuidado-pcs", ACCESORIES],
+        ["pc-escritorio-all-in-one", ALL_IN_ONE],
+        ["computacion/monitores-accesorios/monitores", MONITOR],
+        ["perifericos-pc-mouses-teclados", KEYBOARD_MOUSE_COMBO],
+        ["computacion/tablets-accesorios/accesorios", ACCESORIES],
+        ["computacion/tablets-accesorios/tablets", TABLET],
+        ["electronica-audio-video/audio/audio-portatil-accesorios", STEREO_SYSTEM],
+        ["electronica-audio-video/audio/audifonos", HEADPHONES],
+        ["electronica-audio-video/audio/parlantes-subwoofers", STEREO_SYSTEM],
+        ["electronica-audio-video/accesorios-audio-video", ACCESORIES],
+        ["electronica-audio-video/cables", ACCESORIES],
+        ["celulares-telefonia/accesorios-celulares/cargadores", ACCESORIES],
+        ["celulares-telefonia/accesorios-celulares/manos-libres", HEADPHONES],
+        ["celulares-telefonia/accesorios-celulares/parlantes", STEREO_SYSTEM],
+        ["celulares-telefonia/accesorios-celulares/baterias", ACCESORIES],
+        ["celulares-telefonia/accesorios-celulares/cables-datos", ACCESORIES],
     ]
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
         products_urls = []
-        page = 1
+        index = 1
+
         while True:
-            if page > 10:
+            if index > 1000:
                 raise Exception("page overflow: " + url_extension)
-            url_webpage = "https://tecnocam.cl/product-category/{}/" "page/{}/".format(
-                url_extension, page
-            )
+
+            url_webpage = f"https://www.tecnocam.cl/listado/{url_extension}/_Desde_{index}_NoIndex_True"
             print(url_webpage)
-            data = session.get(url_webpage, timeout=60).text
-            soup = BeautifulSoup(data, "lxml")
-            product_containers = soup.findAll("section", "product")
+            response = session.get(url_webpage)
+            soup = BeautifulSoup(response.text, "lxml")
+            product_containers = soup.find_all("li", "ui-search-layout__item")
+
             if not product_containers:
-                if page == 1:
+                if index == 1:
                     logging.warning("Empty category: " + url_extension)
                 break
+
             for container in product_containers:
-                products_url = container.find("a")["href"]
+                products_url = container.find("a")["href"].split("#")[0].split("?")[0]
                 products_urls.append(products_url)
-            page += 1
+
+            index += 50
+
         return products_urls
 
     @classmethod
@@ -107,42 +119,35 @@ class Tecnocam(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url, timeout=60)
         soup = BeautifulSoup(response.text, "lxml")
+        product_data = json.loads(
+            soup.find("script", {"type": "application/ld+json"}).text
+        )
 
-        add_button = soup.find("button", {"name": "add-to-cart"})
-        product_div = soup.find("div", "type-product")
-        if add_button:
-            key = add_button["value"]
-        elif product_div:
-            key = product_div["id"].split("-")[-1]
-        else:
-            return []
-
-        json_scripts = soup.findAll("script", {"type": "application/ld+json"})
-
-        if len(json_scripts) <= 1:
-            return []
-
-        product_data = json.loads(json_scripts[-1].text)
-
+        key = soup.find("input", {"name": "item_id"})["value"]
         name = product_data["name"]
-        sku = product_data["sku"]
-        description = product_data["description"]
-        stock_input = soup.find("input", "qty")
-        if stock_input:
-            if "max" in stock_input.attrs and stock_input["max"] != "":
-                stock = int(stock_input["max"])
-            else:
-                stock = -1
-        else:
-            stock = 0
-        price = Decimal(product_data["offers"][0]["price"])
 
+        if "alternativa" in name.lower() or "alternativo" in name.lower():
+            return []
+
+        sku = product_data["sku"]
+        offers = product_data["offers"]
+        price = Decimal(offers["price"])
+        stock = -1 if offers["availability"] == "https://schema.org/InStock" else -1
+        description_tag = soup.find("div", "ui-pdp-description")
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
+        )
         picture_urls = [
-            tag["href"]
-            for tag in soup.find("div", "woocommerce-product-gallery__wrapper").findAll(
-                "a"
-            )
+            img["data-zoom"]
+            for img in soup.find_all("img", "ui-pdp-gallery__figure__image")
         ]
+        condition_tag = soup.find("span", "ui-pdp-subtitle")
+        condition = (
+            "https://schema.org/RefurbishedCondition"
+            if condition_tag.text == "Reacondicionado"
+            or "reacondicionado" in name.lower()
+            else "https://schema.org/NewCondition"
+        )
 
         p = Product(
             name,
@@ -159,5 +164,7 @@ class Tecnocam(StoreWithUrlExtensions):
             part_number=sku,
             picture_urls=picture_urls,
             description=description,
+            condition=condition,
         )
+
         return [p]
