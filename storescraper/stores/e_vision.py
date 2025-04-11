@@ -38,7 +38,9 @@ class EVision(Store):
                 if product["brand"] != "lg":
                     continue
 
-                product_urls.append(product["product_link"])
+                product_urls.append(
+                    "https://www.evisionstore.com/" + product["product_link"]
+                )
 
         return product_urls
 
