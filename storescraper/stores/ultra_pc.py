@@ -98,7 +98,7 @@ class UltraPc(StoreWithUrlExtensions):
 
                 if product["image"]["src"] == "":
                     picture_urls = [
-                        "https://www.ultrapc.cl" + tag["src"]
+                        tag["src"]
                         for tag in soup.find(
                             "div", "woocommerce-product-gallery"
                         ).findAll("img")
@@ -161,7 +161,7 @@ class UltraPc(StoreWithUrlExtensions):
             offer_price = Decimal(remove_words(price_tags[0].text))
 
             picture_urls = [
-                "https://www.ultrapc.cl/" + tag["src"]
+                tag["src"]
                 for tag in soup.find("div", "woocommerce-product-gallery").findAll(
                     "img"
                 )
