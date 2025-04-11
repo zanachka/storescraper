@@ -40,7 +40,7 @@ class TiendaClaro(StoreWithUrlExtensions):
                 break
 
             for container in containers:
-                product_url = container.find("a")["href"]
+                product_url = container.find_all("a")[1]["href"]
                 product_urls.append(product_url)
 
             offset += 12
