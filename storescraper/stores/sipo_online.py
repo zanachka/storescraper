@@ -121,6 +121,7 @@ class SipoOnline(StoreWithUrlExtensions):
         product_data = product_data["@graph"][1]
 
         name = product_data["name"]
+        sku = product_data["sku"]
         description = product_data["description"]
         is_reserva = "VENTA" in description.upper()
         variants = soup.find("form", "variations_form")
@@ -139,7 +140,7 @@ class SipoOnline(StoreWithUrlExtensions):
                     )
                 else:
                     variant_name = name
-                sku = str(product["variation_id"])
+                key = str(product["variation_id"])
 
                 if is_reserva:
                     stock = 0
@@ -162,7 +163,7 @@ class SipoOnline(StoreWithUrlExtensions):
                     category,
                     url,
                     url,
-                    sku,
+                    key,
                     stock,
                     normal_price,
                     offer_price,
@@ -189,7 +190,7 @@ class SipoOnline(StoreWithUrlExtensions):
                 stock = 0
             else:
                 stock = -1
-            sku = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
+            key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
             offer_price = Decimal(product_data["offers"][0]["price"])
             normal_price = (offer_price * Decimal("1.03")).quantize(0)
             picture_containers = soup.find("ul", "swiper-wrapper").findAll("img")
@@ -202,7 +203,7 @@ class SipoOnline(StoreWithUrlExtensions):
                 category,
                 url,
                 url,
-                sku,
+                key,
                 stock,
                 normal_price,
                 offer_price,

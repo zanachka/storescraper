@@ -158,6 +158,9 @@ class UltraPc(StoreWithUrlExtensions):
                 price_tags.append(price_tags[0])
 
             normal_price = Decimal(remove_words(price_tags[1].text))
+            if price_tags[0].text.strip() == "$":
+                # https://www.ultrapc.cl/tienda/2550x358007250-notebook-lenovo-thinkpad-20t3s24c3l-i5-16-500/
+                return []
             offer_price = Decimal(remove_words(price_tags[0].text))
 
             picture_urls = [

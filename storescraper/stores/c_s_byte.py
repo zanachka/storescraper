@@ -207,7 +207,15 @@ class CSByte(StoreWithUrlExtensions):
             else:
                 stock = 0
 
-            price = Decimal(offer["price"])
+            price = Decimal(
+                min(
+                    [
+                        x["price"]
+                        for x in offer["priceSpecification"]
+                        if x["@type"] == "UnitPriceSpecification"
+                    ]
+                )
+            )
 
             if "image" in json_data:
                 picture_urls = [json_data["image"]]

@@ -112,7 +112,7 @@ class InforIngen(StoreWithUrlExtensions):
         stock = 0
 
         for stock_tag in stock_tags:
-            raw_stock_text = stock_tag.contents[1]
+            raw_stock_text = stock_tag.contents[3].text
             stock_match = re.search(r"(\d+)", raw_stock_text)
 
             if stock_match:

@@ -79,7 +79,15 @@ class InteractiveStore(StoreWithUrlExtensions):
         name = product_data["name"]
         sku = str(product_data["sku"])
         offer = product_data["offers"][0]
-        price = Decimal(offer["price"])
+        price = Decimal(
+            min(
+                [
+                    x["price"]
+                    for x in offer["priceSpecification"]
+                    if x["@type"] == "UnitPriceSpecification"
+                ]
+            )
+        )
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
         description = product_data["description"]
         picture_urls = [product_data["image"]]
