@@ -1,9 +1,5 @@
-import json
 import logging
-from decimal import Decimal
-
 from bs4 import BeautifulSoup
-
 from storescraper.categories import (
     ALL_IN_ONE,
     CPU_COOLER,
@@ -26,9 +22,7 @@ from storescraper.categories import (
     ACCESORIES,
     UPS,
 )
-from storescraper.product import Product
-from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import session_with_proxy
 from storescraper.stores.mercado_libre_chile import MercadoLibreChile
 
 
