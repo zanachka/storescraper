@@ -159,6 +159,7 @@ from .lg_cac import LgCac
 from .lg_pa import LgPa
 from .lg_ec import LgEc
 from .lg_pe import LgPe
+from .lg_shop_ec import LgShopEc
 from .lg_uruguay_store import LgUruguayStore
 from .lider import Lider
 from .lifemax import Lifemax
