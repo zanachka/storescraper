@@ -28,7 +28,7 @@ from storescraper.categories import (
     DISH_WASHER,
     ACCESORIES,
     IRON,
-    HAIR_DRYER,
+    HAIR_CARE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -72,8 +72,12 @@ class TravelTienda(StoreWithUrlExtensions):
         ("1864719901", OVEN),  # Empotrados
         ("1004133923", MONITOR),  # Tecnología > Gamer > Monitores y Notebooks Gamer
         ("2343511074", ACCESORIES),  # Electro Hogar > Electrodomésticos
-        ("725960675", HAIR_DRYER),  # Electrohogar > Secadores de Pelo
         ("719487612", IRON),  # Electro Hogar > Aspirado & Limpieza > Planchas
+        ("725960675", HAIR_CARE),  # Electrohogar > Secadores de Pelo
+        (
+            "2387626197",
+            HAIR_CARE,
+        ),  # Electrohogar > Cuidado Personal > Alisadores y Onduladores
     ]
 
     @classmethod

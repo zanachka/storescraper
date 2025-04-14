@@ -577,8 +577,20 @@ class Falabella(Store):
         ["cat3182", [IRON], "Home > Electrohogar - Línea blanca > Planchas", 1],
         [
             "cat3223",
-            [HAIR_DRYER],
+            [HAIR_CARE],
             "Home > Belleza, higiene y salud > Tecnología para la Belleza > Secadores de pelo",
+            1,
+        ],
+        [
+            "cat3018",
+            [HAIR_CARE],
+            "Home > Belleza, higiene y salud > Tecnología para la Belleza > Plancha de pelo",
+            1,
+        ],
+        [
+            "cat3170",
+            [HAIR_CARE],
+            "Home > Belleza, higiene y salud > Tecnología para la Belleza > Onduladores de pelo",
             1,
         ],
     ]

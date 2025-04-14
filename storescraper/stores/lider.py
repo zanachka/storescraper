@@ -34,7 +34,7 @@ from storescraper.categories import (
     WATER_HEATER,
     PRINTER_SUPPLY,
     IRON,
-    HAIR_DRYER,
+    HAIR_CARE,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -367,8 +367,14 @@ class Lider(Store):
         ],
         [
             "59721722_76091226_92571610",
-            [HAIR_DRYER],
+            [HAIR_CARE],
             "Belleza y Cuidado Personal > Cuidado Personal > Secadores de Pelo",
+            1.0,
+        ],
+        [
+            "59721722_76091226_89836448",
+            [HAIR_CARE],
+            "Belleza y Cuidado Personal > Cuidado Personal > Alisadores y Onduladores",
             1.0,
         ],
     ]

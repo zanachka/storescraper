@@ -36,7 +36,7 @@ from storescraper.categories import (
     ACCESORIES,
     PRINTER_SUPPLY,
     IRON,
-    HAIR_DRYER,
+    HAIR_CARE,
 )
 
 from storescraper.flixmedia import flixmedia_video_urls
@@ -77,7 +77,7 @@ class Hites(Store):
             WATER_HEATER,
             PRINTER_SUPPLY,
             IRON,
-            HAIR_DRYER,
+            HAIR_CARE,
         ]
 
     @classmethod
@@ -487,8 +487,20 @@ class Hites(Store):
             ],
             [
                 "belleza/cuidado-personal/secadores-de-pelo",
-                [HAIR_DRYER],
+                [HAIR_CARE],
                 "Belleza > Cuidado Personal > Secadores De Pelo",
+                1,
+            ],
+            [
+                "belleza/cuidado-personal/onduladores",
+                [HAIR_CARE],
+                "Belleza > Cuidado Personal > Onduladores",
+                1,
+            ],
+            [
+                "belleza/cuidado-personal/alisadores",
+                [HAIR_CARE],
+                "Belleza > Cuidado Personal > alisadores",
                 1,
             ],
         ]

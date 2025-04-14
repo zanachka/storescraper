@@ -116,8 +116,8 @@ TOASTER = "Toaster"
 PROJECTOR = "Projector"
 # Planchas
 IRON = "Iron"
-# Secadores de pelo
-HAIR_DRYER = "HairDryer"
+# Cuidado capilar (secadores de pelo, alisadores y similares)
+HAIR_CARE = "HairCare"
 # Reproductores de DVD y Blu-ray para televisores
 OPTICAL_DISK_PLAYER = "OpticalDiskPlayer"
 # Lectores de DVD / Blu-ray para PCs desktop

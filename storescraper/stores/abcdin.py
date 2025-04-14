@@ -31,7 +31,7 @@ from storescraper.categories import (
     ACCESORIES,
     ELECTRIC_GRILL,
     IRON,
-    HAIR_DRYER,
+    HAIR_CARE,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -350,8 +350,14 @@ class AbcDin(Store):
         ],
         [
             "secadores-de-pelo",
-            [HAIR_DRYER],
+            [HAIR_CARE],
             "Belleza / Cuidado Personal / Secadores de Pelos",
+            1,
+        ],
+        [
+            "alisadores-i-onduladores",
+            [HAIR_CARE],
+            "Belleza / Cuidado Personal / Alisadores I Onduladores",
             1,
         ],
     ]

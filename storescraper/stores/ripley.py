@@ -38,7 +38,7 @@ from storescraper.categories import (
     PRINTER_SUPPLY,
     PERFUME,
     IRON,
-    HAIR_DRYER,
+    HAIR_CARE,
 )
 from storescraper.store import Store
 from storescraper.product import Product
@@ -344,8 +344,20 @@ class Ripley(Store):
         ],
         [
             "electro/cuidado-personal/secadores-de-pelo",
-            [HAIR_DRYER],
+            [HAIR_CARE],
             "Electro > Cuidado personal > Secadores de pelo",
+            1,
+        ],
+        [
+            "electro/cuidado-personal/alisadores",
+            [HAIR_CARE],
+            "Electro > Cuidado personal > Alisadores",
+            1,
+        ],
+        [
+            "electro/cuidado-personal/onduladores",
+            [HAIR_CARE],
+            "Electro > Cuidado personal > Onduladores",
             1,
         ],
     ]

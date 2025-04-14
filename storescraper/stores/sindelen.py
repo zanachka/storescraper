@@ -23,7 +23,7 @@ from storescraper.categories import (
     TOASTER,
     COOKING_ROBOT,
     IRON,
-    HAIR_DRYER,
+    HAIR_CARE,
 )
 
 
@@ -57,7 +57,7 @@ class Sindelen(StoreWithUrlExtensions):
         ("10046/calefactores-electricos", SPACE_HEATER),
         ("10041/ventiladores", ACCESORIES),
         ("10034/planchas", IRON),
-        ("10050/secadores-de-pelo", HAIR_DRYER),
+        ("10050/secadores-de-pelo", HAIR_CARE),
     ]
 
     @classmethod

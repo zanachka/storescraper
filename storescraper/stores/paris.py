@@ -47,7 +47,7 @@ from storescraper.categories import (
     SANDWICH_MAKER,
     ELECTRIC_POT,
     IRON,
-    HAIR_DRYER,
+    HAIR_CARE,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -218,8 +218,8 @@ class Paris(Store):
         ["outlet/outlet-tecno/outlet-smartwatch/", WEARABLE, 1],
         ["linea-blanca/electrodomesticos/planchas/", IRON, 1],
         [
-            "linea-blanca/cuidado-personal/alisadores-onduladores/?tipoProductoAll=Secadores%20de%20Pelo",
-            HAIR_DRYER,
+            "belleza/cuidado-capilar/?tipoProductoAll=Cepillos Alisadores,Alisadores de Pelo,Secadores de Pelo,Onduladores de Pelo",
+            HAIR_CARE,
             1,
         ],
     ]
@@ -300,6 +300,16 @@ class Paris(Store):
                     },
                     "sponsoredProducts": True,
                 }
+
+                if "tipoProductoAll=" in category_path:
+                    payload["filters"].append(
+                        {
+                            "key": "tipoProductoAll",
+                            "stringValues": category_path.split("?tipoProductoAll=")[
+                                -1
+                            ].split(","),
+                        }
+                    )
 
                 if fast_mode:
                     payload["filters"].append(
