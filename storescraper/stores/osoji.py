@@ -5,7 +5,13 @@ import json
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import session_with_proxy, html_to_markdown
-from storescraper.categories import VACUUM_CLEANER, ACCESORIES, COOKING_ROBOT, AIR_FRYER
+from storescraper.categories import (
+    VACUUM_CLEANER,
+    ACCESORIES,
+    COOKING_ROBOT,
+    AIR_FRYER,
+    HAIR_CARE,
+)
 
 
 class Osoji(StoreWithUrlExtensions):
@@ -20,7 +26,7 @@ class Osoji(StoreWithUrlExtensions):
         ["shop/irrigador-bucal-osoji-f100/", ACCESORIES],
         ["shop/cepillo-electrico-t100/", ACCESORIES],
         ["todos-los-robots/accesorios/", ACCESORIES],
-        ["secadores-de-pelo/", ACCESORIES],
+        ["secadores-de-pelo/", HAIR_CARE],
     ]
 
     @classmethod
