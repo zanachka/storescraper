@@ -121,7 +121,7 @@ class SipoOnline(StoreWithUrlExtensions):
         product_data = product_data["@graph"][1]
 
         name = product_data["name"]
-        sku = product_data["sku"]
+        sku = str(product_data["sku"])
         description = product_data["description"]
         is_reserva = "VENTA" in description.upper()
         variants = soup.find("form", "variations_form")
