@@ -3,7 +3,7 @@ import logging
 import json
 from storescraper.product import Product
 from bs4 import BeautifulSoup
-from storescraper.categories import NOTEBOOK, MONITOR, CPU_COOLER
+from storescraper.categories import NOTEBOOK, MONITOR, CPU_COOLER, VIDEO_CARD
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import cf_session_with_proxy, html_to_markdown, remove_words
 
@@ -11,7 +11,7 @@ from storescraper.utils import cf_session_with_proxy, html_to_markdown, remove_w
 class GamingX(StoreWithUrlExtensions):
     @classmethod
     def categories(cls):
-        return [NOTEBOOK, MONITOR, CPU_COOLER]
+        return [NOTEBOOK, MONITOR, CPU_COOLER, VIDEO_CARD]
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
@@ -19,6 +19,7 @@ class GamingX(StoreWithUrlExtensions):
             ("notebooks", NOTEBOOK),
             ("monitores", MONITOR),
             ("refrigeracion", CPU_COOLER),
+            ("tarjetas-de-video", VIDEO_CARD),
         ]
 
         session = cf_session_with_proxy(extra_args)
