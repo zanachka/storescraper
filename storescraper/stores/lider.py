@@ -48,14 +48,23 @@ from storescraper import banner_sections as bs
 
 class Lider(Store):
     preferred_discover_urls_concurrency = 3
-    preferred_products_for_url_concurrency = 3
-
+    preferred_products_for_url_concurrency = 6
     USER_AGENTS = [
+        "Mozilla/5.0 (Linux; Android 13; Pixel 6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.6312.105 Mobile Safari/537.36",
+        "Mozilla/5.0 (Linux; Android 13; SAMSUNG SM-G990B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/123.0.6312.105 Mobile Safari/537.36",
         "Mozilla/5.0 (Linux; Android 12; 220733SG Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.3",
         "Mozilla/5.0 (Linux; Android 10; HD1913) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
         "Mozilla/5.0 (Linux; Android 10; SM-G970F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 OPR/76.2.4027.73374",
         "Mozilla/5.0 (Linux; Android 10; SM-N975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 OPR/76.2.4027.73374",
         "Mozilla/5.0 (Linux; Android 10; Pixel 3 XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_3_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Safari/605.1.15",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_3_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Mobile/15E148 Safari/604.1",
+        "Mozilla/5.0 (iPad; CPU OS 16_4 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.2420.65",
     ]
 
     tenant = "catalogo"
@@ -459,10 +468,12 @@ class Lider(Store):
                 }
 
                 tries = 0
+                cf_session = False
 
                 while True:
                     extra_args = extra_args or {}
-                    if tries > 1:
+
+                    if cf_session:
                         session = cf_session_with_proxy(extra_args)
                     else:
                         session = session_with_proxy(extra_args)
@@ -475,10 +486,9 @@ class Lider(Store):
                         "x-o-vertical": "EA",
                         "X-APOLLO-OPERATION-NAME": "Browse",
                     }
-                    response = session.post(query_url, json=graphql_request_body)
-                    data = json.loads(response.text)
-
                     try:
+                        response = session.post(query_url, json=graphql_request_body)
+                        data = json.loads(response.text)
                         products_data = data["data"]["search"]["searchResult"][
                             "itemStacks"
                         ][0]["itemsV2"]
@@ -486,9 +496,14 @@ class Lider(Store):
                         break
                     except Exception as e:
                         exception = e
-                        tries += 1
 
-                    if tries > 4:
+                        if cf_session:
+                            cf_session = False
+                            tries += 1
+                        else:
+                            cf_session = True
+
+                    if tries > len(cls.USER_AGENTS) - 1:
                         raise exception
 
                 if not products_data:
@@ -601,14 +616,17 @@ class Lider(Store):
 
         graphql_request_body = {"query": graphql_query, "variables": graphql_variables}
         tries = 0
+        cf_session = False
 
         while True:
             try:
+                print(cls.USER_AGENTS[tries])
                 extra_args = extra_args or {}
-                session = session_with_proxy(extra_args)
 
-                if tries > 1:
+                if cf_session:
                     session = cf_session_with_proxy(extra_args)
+                else:
+                    session = session_with_proxy(extra_args)
 
                 session.headers = {
                     "Content-Type": "application/json",
@@ -624,9 +642,14 @@ class Lider(Store):
                 break
             except Exception as e:
                 exception = e
-                tries += 1
 
-            if tries > 4:
+                if cf_session:
+                    cf_session = False
+                    tries += 1
+                else:
+                    cf_session = True
+
+            if tries > len(cls.USER_AGENTS) - 1:
                 raise exception
 
         name = product_data["name"]
