@@ -48,7 +48,7 @@ from storescraper import banner_sections as bs
 
 class Lider(Store):
     preferred_discover_urls_concurrency = 3
-    preferred_products_for_url_concurrency = 3
+    preferred_products_for_url_concurrency = 6
     USER_AGENTS = [
         "Mozilla/5.0 (Linux; Android 13; Pixel 6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.6312.105 Mobile Safari/537.36",
         "Mozilla/5.0 (Linux; Android 13; SAMSUNG SM-G990B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/123.0.6312.105 Mobile Safari/537.36",
@@ -620,6 +620,7 @@ class Lider(Store):
 
         while True:
             try:
+                print(cls.USER_AGENTS[tries])
                 extra_args = extra_args or {}
 
                 if cf_session:
