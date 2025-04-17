@@ -486,10 +486,9 @@ class Lider(Store):
                         "x-o-vertical": "EA",
                         "X-APOLLO-OPERATION-NAME": "Browse",
                     }
-                    response = session.post(query_url, json=graphql_request_body)
-                    data = json.loads(response.text)
-
                     try:
+                        response = session.post(query_url, json=graphql_request_body)
+                        data = json.loads(response.text)
                         products_data = data["data"]["search"]["searchResult"][
                             "itemStacks"
                         ][0]["itemsV2"]
