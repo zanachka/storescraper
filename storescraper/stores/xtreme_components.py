@@ -69,8 +69,13 @@ class XtremeComponents(StoreWithUrlExtensions):
 
         assert len(product_data["offers"]) == 1
 
-        offer = product_data["offers"][0]
-        stock = -1 if soup.find("a", "add-to-cart-button") else 0
+        if "RESERVA" in name.upper():
+            stock = 0
+        elif soup.find("a", "add-to-cart-button"):
+            stock = -1
+        else:
+            stock = 0
+
         price = get_price_from_price_specification(product_data)
         sku = str(product_data["sku"])
         description = html_to_markdown(product_data["description"])
