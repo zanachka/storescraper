@@ -336,7 +336,7 @@ class Paris(Store):
                         {
                             "category_weight": weight,
                             "section_name": section_name,
-                            "value": cls.RESULTS_PER_PAGE * page + idx + 1,
+                            "value": cls.RESULTS_PER_PAGE * (page - 1) + idx + 1,
                         }
                     )
 
