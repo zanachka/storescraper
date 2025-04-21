@@ -111,10 +111,10 @@ class SipoOnline(StoreWithUrlExtensions):
         session.headers["Cookie"] = "_lscache_vary=a"
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-
         product_data = json.loads(
             soup.find("script", {"type": "application/ld+json"}).text
         )
+
         if "@graph" not in product_data:
             return []
 
@@ -125,6 +125,7 @@ class SipoOnline(StoreWithUrlExtensions):
         description = product_data["description"]
         is_reserva = "VENTA" in description.upper()
         variants = soup.find("form", "variations_form")
+
         if not variants:
             variants = soup.find("div", "variations_form")
 
@@ -148,6 +149,7 @@ class SipoOnline(StoreWithUrlExtensions):
                     availability_text = BeautifulSoup(
                         product["availability_html"], "lxml"
                     ).text
+
                     if "Hay existencias" in availability_text:
                         stock = -1
                     else:
@@ -155,7 +157,7 @@ class SipoOnline(StoreWithUrlExtensions):
                 else:
                     stock = -1
                 offer_price = Decimal(product["display_price"])
-                normal_price = (offer_price * Decimal("1.03")).quantize(0)
+                normal_price = (offer_price * Decimal("1.05")).quantize(0)
                 picture_urls = [product["image"]["src"]]
                 p = Product(
                     variant_name,
@@ -173,13 +175,16 @@ class SipoOnline(StoreWithUrlExtensions):
                     description=description,
                 )
                 products.append(p)
+
             return products
         else:
             stock_container = soup.find("p", "stock in-stock")
+
             if is_reserva:
                 stock = 0
             elif stock_container:
                 stock_container_text = stock_container.text
+
                 if "Hay existencias" in stock_container_text:
                     stock = -1
                 elif "quedan" in stock_container_text:
@@ -190,9 +195,10 @@ class SipoOnline(StoreWithUrlExtensions):
                 stock = 0
             else:
                 stock = -1
+
             key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
             offer_price = Decimal(product_data["offers"][0]["price"])
-            normal_price = (offer_price * Decimal("1.03")).quantize(0)
+            normal_price = (offer_price * Decimal("1.05")).quantize(0)
             picture_containers = soup.find("ul", "swiper-wrapper").findAll("img")
             picture_urls = [
                 tag["src"] for tag in picture_containers if validators.url(tag["src"])
@@ -212,4 +218,5 @@ class SipoOnline(StoreWithUrlExtensions):
                 picture_urls=picture_urls,
                 description=description,
             )
+
             return [p]
