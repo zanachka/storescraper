@@ -154,6 +154,10 @@ class AsusStore(StoreWithUrlExtensions):
             name = "{} ({})".format(base_name, model_name)
             key = soup.find("div", "price-box")["data-product-id"]
             sku = soup.find("div", "simple-part").text.split(" - ")[-1]
+
+            if not sku:
+                return []
+
             if soup.find("div", "box-tocart").find("div", "out-stock"):
                 stock = 0
             else:
