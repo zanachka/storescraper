@@ -76,6 +76,7 @@ class Winpy(StoreWithUrlExtensions):
         ["apple/macbook-pro-retina/", NOTEBOOK],
         ["apple/ipad/", TABLET],
         ["apple/watch/", WEARABLE],
+        ["electronica/reloj-inteligente/", WEARABLE],
         ["monitores/", MONITOR],
         ["impresoras/", PRINTER],
         ["accesorios/audifonos/", HEADPHONES],
