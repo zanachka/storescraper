@@ -189,11 +189,11 @@ class Paris(Store):
         ["linea-blanca/aspirado-limpieza/aspiradoras-robot/", VACUUM_CLEANER, 1],
         ["linea-blanca/aspirado-limpieza/aspiradoras-verticales/", VACUUM_CLEANER, 1],
         ["linea-blanca/climatizacion/", SPLIT_AIR_CONDITIONER, 1],
-        [
-            "linea-blanca/estufas/calefactores-split/",
-            SPLIT_AIR_CONDITIONER,
-            1,
-        ],
+        # [
+        #    "linea-blanca/estufas/calefactores-split/",
+        #    SPLIT_AIR_CONDITIONER,
+        #    1,
+        # ],
         [
             "linea-blanca/calefaccion/aire-acondicionado/",
             SPLIT_AIR_CONDITIONER,
