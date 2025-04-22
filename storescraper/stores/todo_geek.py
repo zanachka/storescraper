@@ -124,7 +124,8 @@ class TodoGeek(StoreWithUrlExtensions):
                     product_data = entry
                     break
             else:
-                raise Exception("No product data found")
+                return []
+
             name = product_data["name"]
             sku = str(product_data["sku"]) if "sku" in product_data else None
             offer = product_data["offers"]
