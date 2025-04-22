@@ -73,7 +73,10 @@ class TravelTienda(StoreWithUrlExtensions):
         ("1004133923", MONITOR),  # Tecnología > Gamer > Monitores y Notebooks Gamer
         ("2343511074", ACCESORIES),  # Electro Hogar > Electrodomésticos
         ("719487612", IRON),  # Electro Hogar > Aspirado & Limpieza > Planchas
-        ("725960675", HAIR_CARE),  # Electrohogar > Secadores de Pelo
+        (
+            "1262558924",
+            HAIR_CARE,
+        ),  # Electrohogar > Cuidado Personal > Secadores de Pelo
         (
             "2387626197",
             HAIR_CARE,
