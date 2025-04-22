@@ -64,7 +64,7 @@ class TodoGeek(StoreWithUrlExtensions):
                     product_entries = entry["hasVariant"]
                     break
             else:
-                raise Exception("No product data found")
+                return []
 
             variations_data = json.loads(product_variations["data-product_variations"])
             assert len(variations_data) == len(product_entries)
