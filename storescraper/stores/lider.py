@@ -424,109 +424,15 @@ class Lider(Store):
     @classmethod
     def discover_entries_for_category(cls, category, extra_args=None):
         category_paths = cls.category_paths
-        fast_mode = extra_args.get("fast_mode", False)
         product_entries = defaultdict(lambda: [])
-        query_url = "https://www.lider.cl/orchestra/graphql/browse"
-        p = Path(__file__).with_name("lider_request.txt")
-
-        with p.open("r") as f:
-            graphql_query = f.read()
 
         for e in category_paths:
-            category_id, local_categories, section_name, category_weight = e
+            category_id, local_categories, _, _ = e
 
             if category not in local_categories:
                 continue
 
-            print(category_id)
-            page = 1
-            product_idx = 1
-
-            while True:
-                print(page)
-
-                graphql_variables = {
-                    "page": page,
-                    "prg": "desktop",
-                    "catId": category_id,
-                    "sort": "best_match",
-                    "ps": 44,
-                    "fetchMarquee": True,
-                    "fetchSkyline": True,
-                    "fetchSbaTop": False,
-                    "fetchGallery": False,
-                    "fetchDac": False,
-                    "tenant": "CHILE_EA_GLASS",
-                }
-
-                if fast_mode:
-                    graphql_variables["facet"] = "ss_sellertype:Lider"
-
-                graphql_request_body = {
-                    "query": graphql_query,
-                    "variables": graphql_variables,
-                }
-
-                tries = 0
-                cf_session = False
-
-                while True:
-                    extra_args = extra_args or {}
-
-                    if cf_session:
-                        session = cf_session_with_proxy(extra_args)
-                    else:
-                        session = session_with_proxy(extra_args)
-
-                    session.headers = {
-                        "Content-Type": "application/json",
-                        "User-Agent": cls.USER_AGENTS[tries],
-                        "x-o-bu": "LIDER-CL",
-                        "x-o-mart": "B2C",
-                        "x-o-vertical": "EA",
-                        "X-APOLLO-OPERATION-NAME": "Browse",
-                    }
-                    try:
-                        response = session.post(query_url, json=graphql_request_body)
-                        data = json.loads(response.text)
-                        products_data = data["data"]["search"]["searchResult"][
-                            "itemStacks"
-                        ][0]["itemsV2"]
-                        tries = 0
-                        break
-                    except Exception as e:
-                        exception = e
-
-                        if cf_session:
-                            cf_session = False
-                            tries += 1
-                        else:
-                            cf_session = True
-
-                    if tries > len(cls.USER_AGENTS) - 1:
-                        raise exception
-
-                if not products_data:
-                    break
-
-                for entry in products_data:
-                    product_url = f"https://www.lider.cl{entry['canonicalUrl']}"
-                    print(product_url)
-                    product_entries[product_url].append(
-                        {
-                            "category_weight": category_weight,
-                            "section_name": section_name,
-                            "value": product_idx,
-                        }
-                    )
-                    product_idx += 1
-
-                page += 1
-
-        if fast_mode:
-            # Since the fast mode filters the results, it messes up the position data, so remove it altogether
-            for url in product_entries.keys():
-                product_entries[url] = []
+            product_entries[category_id] = []
 
         return product_entries
 
@@ -573,136 +479,131 @@ class Lider(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
+        page = 1
+        fast_mode = extra_args.get("fast_mode", False)
+        query_url = "https://www.lider.cl/orchestra/graphql/browse"
+        products = []
+        path = Path(__file__).with_name("lider_request.txt")
 
-        sku = url.split("/")[-1]
-        query_url = "https://www.lider.cl/orchestra/graphql/ip/{sku}"
-        p = Path(__file__).with_name("lider_product_request.txt")
-
-        with p.open("r") as f:
+        with path.open("r") as f:
             graphql_query = f.read()
 
-        graphql_variables = {
-            "pageType": "ItemPageGlobal",
-            "tenant": "CHILE_EA_GLASS",
-            "iId": sku,
-            "fBBAd": True,
-            "eLLBBAds": False,
-            "fSL": True,
-            "fIdml": True,
-            "fMrkDscrp": False,
-            "fRev": True,
-            "fFit": True,
-            "fSeo": True,
-            "fP13": True,
-            "fAff": True,
-            "fMq": True,
-            "fGalAd": False,
-            "fSCar": True,
-            "fDac": False,
-            "spVid": False,
-            "spSBA": False,
-            "fBB": True,
-            "eItIb": True,
-            "fIlc": False,
-            "fSId": True,
-            "eSb": True,
-            "eCc": False,
-            "eSsm": False,
-            "enableRelatedSearch": False,
-            "enableDetailedBeacon": False,
-            "sV": False,
-            "sVC": False,
-        }
-
-        graphql_request_body = {"query": graphql_query, "variables": graphql_variables}
-        tries = 0
-        cf_session = False
-
         while True:
-            try:
+            print(page)
+
+            graphql_variables = {
+                "page": page,
+                "prg": "desktop",
+                "catId": url,
+                "sort": "best_match",
+                "ps": 44,
+                "fetchMarquee": True,
+                "fetchSkyline": True,
+                "fetchSbaTop": False,
+                "fetchGallery": False,
+                "fetchDac": False,
+                "tenant": "CHILE_EA_GLASS",
+            }
+
+            if fast_mode:
+                graphql_variables["facet"] = "ss_sellertype:Lider"
+
+            graphql_request_body = {
+                "query": graphql_query,
+                "variables": graphql_variables,
+            }
+
+            tries = 0
+            cf_session = False
+
+            while True:
                 extra_args = extra_args or {}
 
                 if cf_session:
                     session = cf_session_with_proxy(extra_args)
                 else:
                     session = session_with_proxy(extra_args)
-                print(cls.USER_AGENTS[tries])
+
                 session.headers = {
                     "Content-Type": "application/json",
-                    "User-Agent": extra_args.get("user_agent", cls.USER_AGENTS[tries]),
+                    "User-Agent": cls.USER_AGENTS[tries],
                     "x-o-bu": "LIDER-CL",
                     "x-o-mart": "B2C",
                     "x-o-vertical": "EA",
-                    "X-APOLLO-OPERATION-NAME": "ItemById",
+                    "X-APOLLO-OPERATION-NAME": "Browse",
                 }
-                response = session.post(query_url, json=graphql_request_body)
-                data = json.loads(response.text)["data"]
-                product_data = data["product"]
+                try:
+                    response = session.post(query_url, json=graphql_request_body)
+                    data = json.loads(response.text)
+                    products_data = data["data"]["search"]["searchResult"][
+                        "itemStacks"
+                    ][0]["itemsV2"]
+                    tries = 0
+                    break
+                except Exception as e:
+                    exception = e
+
+                    if cf_session:
+                        cf_session = False
+                        tries += 1
+                    else:
+                        cf_session = True
+
+                if tries > len(cls.USER_AGENTS) - 1:
+                    raise exception
+
+            if not products_data:
                 break
-            except Exception as e:
-                exception = e
 
-                if cf_session:
-                    cf_session = False
-                    tries += 1
-                else:
-                    cf_session = True
+            for entry in products_data:
+                product_url = f"https://www.lider.cl{entry['canonicalUrl']}"
+                name = entry["name"]
+                key = entry["offerId"]
+                price_info = entry["priceInfo"]
+                normal_price = Decimal(price_info["currentPrice"]["price"])
+                sku = entry["usItemId"]
+                picture_urls = [
+                    img["url"]
+                    for img in entry["imageInfo"]["allImages"]
+                    if validators.url(img["url"])
+                ]
+                seller_name = entry["sellerName"]
+                seller = None if seller_name == "Lider" else seller_name
+                stock = (
+                    -1
+                    if (
+                        entry["availabilityStatusV2"]["value"] == "IN_STOCK"
+                        and seller_name == "Lider"
+                    )
+                    else 0
+                )
+                description_value = entry["shortDescription"]
+                description = (
+                    html_to_markdown(description_value) if description_value else None
+                )
 
-            if tries > len(cls.USER_AGENTS) - 1:
-                raise exception
+                p = Product(
+                    name,
+                    cls.__name__,
+                    category,
+                    product_url,
+                    product_url,
+                    key,
+                    stock,
+                    normal_price,
+                    normal_price,
+                    "CLP",
+                    sku=sku,
+                    picture_urls=picture_urls,
+                    description=description,
+                    seller=seller,
+                )
 
-        name = product_data["name"]
-        key = product_data["offerId"]
-        price_data = product_data["priceInfo"]["currentPrice"]
+                products.append(p)
 
-        if not price_data:
-            return []
+            page += 1
 
-        normal_price = Decimal(price_data["price"])
-        offer_price = normal_price
-        sku = product_data["usItemId"]
-        picture_urls = [
-            img["url"]
-            for img in product_data["imageInfo"]["allImages"]
-            if validators.url(img["url"])
-        ]
-        seller_name = product_data["sellerDisplayName"]
-        stock = (
-            -1
-            if (
-                product_data["availabilityStatus"] == "IN_STOCK"
-                and seller_name == "Lider"
-            )
-            else 0
-        )
-        description = html_to_markdown(data["idml"]["longDescription"])
-
-        for spec in data["idml"]["specifications"]:
-            description += f"{spec['name']}: {spec['value']}\n"
-
-        if seller_name == "Lider":
-            seller = None
-        else:
-            seller = seller_name
-
-        return [
-            Product(
-                name,
-                cls.__name__,
-                category,
-                url,
-                url,
-                key,
-                stock,
-                normal_price,
-                offer_price,
-                "CLP",
-                sku=sku,
-                picture_urls=picture_urls,
-                description=description,
-                seller=seller,
-            )
-        ]
+        return products
 
     @classmethod
     def banners(cls, extra_args=None):
