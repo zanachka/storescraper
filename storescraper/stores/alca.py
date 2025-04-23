@@ -23,14 +23,14 @@ from storescraper.utils import get_price_from_price_specification, session_with_
 
 class Alca(StoreWithUrlExtensions):
     url_extensions = [
-        ("accesorios-solotodo", MOUSE),
-        ("all-in-one-solotodo", ALL_IN_ONE),
-        ("almacenamiento-solotodo", SOLID_STATE_DRIVE),
-        ("impresoras-solotodo", PRINTER),
+        ("accesorios", MOUSE),
+        ("all-in-one", ALL_IN_ONE),
+        ("almacenamiento", SOLID_STATE_DRIVE),
+        ("impresoras", PRINTER),
         ("laptops", NOTEBOOK),
-        ("monitores-solotodo", MONITOR),
+        ("monitores", MONITOR),
         ("suministro", PRINTER_SUPPLY),
-        ("tablets-solotodo", TABLET),
+        ("tablets", TABLET),
     ]
 
     @classmethod
