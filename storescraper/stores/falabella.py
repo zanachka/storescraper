@@ -814,13 +814,13 @@ class Falabella(Store):
 
     @classmethod
     def _products_for_url(cls, url, content, session, category=None, extra_args=None):
-        soup = BeautifulSoup(content, "lxml")
+        soup = BeautifulSoup(content, "html5lib")
         next_container = soup.find("script", {"id": "__NEXT_DATA__"})
 
         if not next_container:
             return []
 
-        page_props = json.loads(next_container.text)["props"]["pageProps"]
+        page_props = json.loads(next_container.contents[0])["props"]["pageProps"]
 
         if "productData" not in page_props:
             return []
