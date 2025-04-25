@@ -427,12 +427,12 @@ class Lider(Store):
         product_entries = defaultdict(lambda: [])
 
         for e in category_paths:
-            category_id, local_categories, _, _ = e
+            category_id, local_categories, section_name, category_weight = e
 
             if category not in local_categories:
                 continue
 
-            product_entries[category_id] = []
+            product_entries[f"{category_id} section_name: {section_name}"] = []
 
         return product_entries
 
@@ -479,11 +479,14 @@ class Lider(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
+        section_name = url.split(" section_name: ")[-1]
+        cat_id = url.split(" section_name: ")[0]
         page = 1
         fast_mode = extra_args.get("fast_mode", False)
         query_url = "https://www.lider.cl/orchestra/graphql/browse"
-        products = []
+        products = {}
         path = Path(__file__).with_name("lider_request.txt")
+        idx = 1
 
         with path.open("r") as f:
             graphql_query = f.read()
@@ -494,7 +497,7 @@ class Lider(Store):
             graphql_variables = {
                 "page": page,
                 "prg": "desktop",
-                "catId": url,
+                "catId": cat_id,
                 "sort": "best_match",
                 "ps": 44,
                 "fetchMarquee": True,
@@ -559,51 +562,62 @@ class Lider(Store):
                 product_url = f"https://www.lider.cl{entry['canonicalUrl']}"
                 name = entry["name"]
                 key = entry["offerId"]
-                price_info = entry["priceInfo"]
-                normal_price = Decimal(price_info["currentPrice"]["price"])
-                sku = entry["usItemId"]
-                picture_urls = [
-                    img["url"]
-                    for img in entry["imageInfo"]["allImages"]
-                    if validators.url(img["url"])
-                ]
-                seller_name = entry["sellerName"]
-                seller = None if seller_name == "Lider" else seller_name
-                stock = (
-                    -1
-                    if (
-                        entry["availabilityStatusV2"]["value"] == "IN_STOCK"
-                        and seller_name == "Lider"
+
+                if not fast_mode and key in products:
+                    products[key].positions.append((section_name, idx))
+                    idx += 1
+                else:
+                    price_info = entry["priceInfo"]
+                    normal_price = Decimal(price_info["currentPrice"]["price"])
+                    sku = entry["usItemId"]
+                    picture_urls = [
+                        img["url"]
+                        for img in entry["imageInfo"]["allImages"]
+                        if validators.url(img["url"])
+                    ]
+                    seller_name = entry["sellerName"]
+                    seller = None if seller_name == "Lider" else seller_name
+                    stock = (
+                        -1
+                        if (
+                            entry["availabilityStatusV2"]["value"] == "IN_STOCK"
+                            and seller_name == "Lider"
+                        )
+                        else 0
                     )
-                    else 0
-                )
-                description_value = entry["shortDescription"]
-                description = (
-                    html_to_markdown(description_value) if description_value else None
-                )
+                    description_value = entry["shortDescription"]
+                    description = (
+                        html_to_markdown(description_value)
+                        if description_value
+                        else None
+                    )
 
-                p = Product(
-                    name,
-                    cls.__name__,
-                    category,
-                    product_url,
-                    product_url,
-                    key,
-                    stock,
-                    normal_price,
-                    normal_price,
-                    "CLP",
-                    sku=sku,
-                    picture_urls=picture_urls,
-                    description=description,
-                    seller=seller,
-                )
+                    p = Product(
+                        name,
+                        cls.__name__,
+                        category,
+                        product_url,
+                        product_url,
+                        key,
+                        stock,
+                        normal_price,
+                        normal_price,
+                        "CLP",
+                        sku=sku,
+                        picture_urls=picture_urls,
+                        description=description,
+                        seller=seller,
+                    )
 
-                products.append(p)
+                    if not fast_mode:
+                        p.positions = [(section_name, idx)]
+                        idx += 1
+
+                    products[key] = p
 
             page += 1
 
-        return products
+        return list(products.values())
 
     @classmethod
     def banners(cls, extra_args=None):
