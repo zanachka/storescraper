@@ -885,7 +885,6 @@ class Ripley(Store):
                 "https://simple.ripley.cl/marketingcomponent/api/bff/marketing"
             )
             response = response.json()
-            banner_items = None
 
             for response_section in response:
                 if (
@@ -894,9 +893,11 @@ class Ripley(Store):
                 ):
                     banner_items = response_section["data"][0]["items"]
                     break
+            else:
+                raise Exception("No banner items for Home section")
 
             for idx, banner in enumerate(banner_items):
-                picture_url = banner["image"]["url"].split("?")[0]
+                picture_url = banner["image"]["originalURL"].split("?")[0]
                 banners.append(
                     {
                         "url": url,
