@@ -51,7 +51,7 @@ class Dreamtec(StoreWithUrlExtensions):
         page = 1
 
         while True:
-            if page > 20:
+            if page > 30:
                 raise Exception("Page overflow")
 
             url_webpage = "https://dreamtec.cl:3000/categoria/{}?page={}".format(
