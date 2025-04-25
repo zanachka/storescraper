@@ -27,7 +27,7 @@ class Alca(StoreWithUrlExtensions):
         ("all-in-one", ALL_IN_ONE),
         ("almacenamiento", SOLID_STATE_DRIVE),
         ("impresoras", PRINTER),
-        ("laptops", NOTEBOOK),
+        ("notebooks", NOTEBOOK),
         ("monitores", MONITOR),
         ("suministro", PRINTER_SUPPLY),
         ("tablets", TABLET),
