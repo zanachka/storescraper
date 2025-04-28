@@ -62,7 +62,9 @@ class LgShopEc(StoreWithUrlExtensions):
             match = re.search(r"__STATE__ = {(.+)}", response.text)
             products_container = json.loads(f"{{{match.group(1)}}}")
             products = [
-                key for key in products_container if re.match(r"Product:sp-\d+$", key)
+                key
+                for key in products_container
+                if re.match(r"Product:sp-\d+-(\d+--|none)$", key)
             ]
 
             if not products:
