@@ -102,6 +102,7 @@ from .eylstore import Eylstore
 from .falabella import Falabella
 from .falabella_colombia import FalabellaColombia
 from .falabella_fast import FalabellaFast
+from .falabella_marketplace import FalabellaMarketplace
 from .falabella_peru import FalabellaPeru
 from .fama import Fama
 from .fantasia_electronica import FantasiaElectronica
@@ -221,6 +222,7 @@ from .oechsle import Oechsle
 from .outlet_medina import OutletMedina
 from .panafoto import Panafoto
 from .paris import Paris
+from .paris_marketplace import ParisMarketplace
 from .pc_com import PcCom
 from .pc_express import PcExpress
 from .pc_factory import PcFactory
