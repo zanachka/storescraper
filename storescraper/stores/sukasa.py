@@ -49,13 +49,18 @@ class Sukasa(Store):
         print(url)
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.3"
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
         )
 
         product_id = url.split("/")[-1]
         endpoint = "https://api.comohogar.com/catalog-api/products/portal/" + product_id
         response = session.get(endpoint)
-        product_data = response.json()
+
+        try:
+            product_data = response.json()
+        except:
+            return []
+
         name = product_data["name"]
         sku = product_data["cmInternalCode"]
         stock = product_data["cmStock"] or 0
