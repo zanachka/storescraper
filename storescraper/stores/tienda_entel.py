@@ -80,8 +80,13 @@ class TiendaEntel(Store):
                 continue
 
             normal_price = Decimal(price_container).quantize(0)
+
             if not offer_price:
                 offer_price = normal_price
+
+            if offer_price > normal_price:
+                offer_price = normal_price
+
             sku_id = sku["skuId"]
 
             pictures_container = []
