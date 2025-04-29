@@ -1,3 +1,6 @@
+import gzip
+import io
+import json
 from decimal import Decimal
 from storescraper.product import Product
 from storescraper.store import Store
@@ -51,13 +54,16 @@ class Sukasa(Store):
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
         )
-
+        session.headers["Content-Type"] = "Content-Encoding: gzip"
         product_id = url.split("/")[-1]
         endpoint = "https://api.comohogar.com/catalog-api/products/portal/" + product_id
         response = session.get(endpoint)
 
+        with gzip.GzipFile(fileobj=io.BytesIO(response.content)) as f:
+            data = f.read().decode("utf-8")
+
         try:
-            product_data = response.json()
+            product_data = json.loads(data)
         except:
             return []
 
