@@ -942,7 +942,7 @@ class Falabella(Store):
 
             stock = 0
 
-            if seller_entry:
+            if seller_entry and not extra_args.get("bypass_sellers_blacklist"):
                 seller = (
                     seller_entry.get("sellerName", seller_entry["sellerId"]) or None
                 )
