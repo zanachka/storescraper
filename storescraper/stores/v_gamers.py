@@ -47,7 +47,7 @@ class VGamers(StoreWithUrlExtensions):
         ["hogar-y-oficina/accesorios-computacionales/teclado", KEYBOARD],
         ["hogar-y-oficina/accesorios-computacionales/audifonos", HEADPHONES],
         ["streaming/microfonos", MICROPHONE],
-        ["notebook-y-consolas", NOTEBOOK],
+        ["computadores-y-consolas", NOTEBOOK],
         ["todos-los-productos/televisores", TELEVISION],
         ["electrodomesticos", ACCESORIES],
         ["todos-los-productos/portatiles/notebook", NOTEBOOK],
