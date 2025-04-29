@@ -19,6 +19,10 @@ class ParisMarketplace(Paris):
     ]
 
     @classmethod
+    def categories(cls):
+        return [TELEVISION]
+
+    @classmethod
     def discover_entries_for_category(cls, category, extra_args=None):
         product_entries = {}
 
