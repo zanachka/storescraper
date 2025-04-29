@@ -128,7 +128,11 @@ class Paris(Store):
         # ["tecnologia/gamer/gabinetes/", COMPUTER_CASE, 1],
         ["tecnologia/gamer/monitores/", MONITOR, 1],
         ["tecnologia/accesorios-fotografia/tarjetas-memoria/", MEMORY_CARD, 1],
-        ["linea-blanca/electrodomesticos/freidoras-de-aire/", AIR_FRYER, 1],
+        [
+            "linea-blanca/electrodomesticos/?tipoProductoAll=Freidoras de Aire",
+            AIR_FRYER,
+            1,
+        ],
         ["linea-blanca/electrodomesticos/batidoras-licuadoras/", BLENDER, 1],
         ["linea-blanca/electrodomesticos/cafeteras/", COFFE_MAKER, 1],
         ["linea-blanca/electrodomesticos/robot-cocina/", COOKING_ROBOT, 1],
