@@ -1,3 +1,5 @@
+import time
+
 from .lg_v6 import LgV6
 from storescraper.categories import (
     TELEVISION,
@@ -11,6 +13,8 @@ from storescraper.categories import (
     OVEN,
     VACUUM_CLEANER,
 )
+from playwright.sync_api import sync_playwright
+from storescraper import banner_sections as bs
 
 
 class LgCl(LgV6):
@@ -48,3 +52,42 @@ class LgCl(LgV6):
             # Aspiradoras
             ("CT52020323", VACUUM_CLEANER),
         ]
+
+    @classmethod
+    def banners(cls, extra_args=None):
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(viewport={"width": 1920, "height": 1080})
+            url = "https://www.lg.com/cl/"
+
+            page = context.new_page()
+            page.goto(url)
+            page.wait_for_selector(".ST0048 .c-carousel-controls__action--pause")
+            pause_button = page.query_selector(
+                ".ST0048 .c-carousel-controls__action--pause"
+            )
+            pause_button.click()
+
+            container = page.query_selector(".ST0048")
+            buttons = container.query_selector_all(".c-carousel-controls__bullet")
+
+            banners = []
+            for idx, button in enumerate(buttons):
+                button.click()
+                time.sleep(2)
+                picture = container.screenshot()
+                key = button.get_attribute("aria-label")
+                banners.append(
+                    {
+                        "url": url,
+                        "picture": picture,
+                        "destination_urls": [],
+                        "key": key,
+                        "position": idx + 1,
+                        "section": bs.HOME,
+                        "subsection": bs.HOME,
+                        "type": bs.SUBSECTION_TYPE_HOME,
+                    }
+                )
+            browser.close()
+            return banners

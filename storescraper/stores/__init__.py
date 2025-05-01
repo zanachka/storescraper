@@ -107,7 +107,6 @@ from .falabella_peru import FalabellaPeru
 from .fama import Fama
 from .fantasia_electronica import FantasiaElectronica
 from .fiesta_lan import FiestaLan
-from .frecuento import Frecuento
 from .g_games import GGames
 from .gaming_house import GamingHouse
 from .gaming_x import GamingX
