@@ -66,8 +66,11 @@ class GolloTienda(Store):
         sku = (
             soup.find("div", "product attribute sku").find("div", "value").text.strip()
         )
+        stock_tag = soup.find("div", "stock available")
 
-        if soup.find("div", "stock available").find("span").text == "Disponible":
+        if not stock_tag:
+            stock = 0
+        elif stock_tag.find("span").text == "Disponible":
             stock = -1
         else:
             stock = 0
