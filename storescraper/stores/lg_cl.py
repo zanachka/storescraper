@@ -1,3 +1,4 @@
+import base64
 import time
 
 from .lg_v6 import LgV6
@@ -75,7 +76,9 @@ class LgCl(LgV6):
             for idx, button in enumerate(buttons):
                 button.click()
                 time.sleep(2)
-                picture = container.screenshot()
+                picture_bytes = container.screenshot()
+                picture = base64.b64encode(picture_bytes).decode()
+                print(picture)
                 key = button.get_attribute("aria-label")
                 banners.append(
                     {
