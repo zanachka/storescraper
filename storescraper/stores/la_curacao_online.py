@@ -84,7 +84,11 @@ class LaCuracaoOnline(Store):
         price = Decimal(
             soup.find("meta", {"property": "product:price:amount"})["content"].strip()
         )
-        stock = -1
+
+        if soup.find("div", "stock unavailable"):
+            stock = 0
+        else:
+            stock = -1
 
         picture_urls = magento_picture_urls(soup)
 
