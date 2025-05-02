@@ -143,6 +143,7 @@ from .jasaltec import Jasaltec
 from .jetstereo import Jetstereo
 from .jumbo_colombia import JumboColombia
 from .k_d_tec import KDTec
+from .krone_store import KroneStore
 from .ktronix import Ktronix
 from .la_curacao_online_nicaragua import LaCuracaoOnlineNicaragua
 from .la_curacao_online_el_salvador import LaCuracaoOnlineElSalvador
