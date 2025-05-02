@@ -527,7 +527,7 @@ class Lider(Store):
 
                 for entry in products_data:
                     product_url = f"https://www.lider.cl{entry['canonicalUrl']}"
-                    name = entry["name"]
+                    name = f"{entry['brand']} {entry['name']}"
                     key = entry["offerId"]
 
                     if not fast_mode and key in products:
