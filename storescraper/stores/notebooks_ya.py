@@ -144,8 +144,7 @@ class NotebooksYa(StoreWithUrlExtensions):
                     logging.warning("Empty category: " + url_extension)
                 break
 
-            soup = BeautifulSoup(response.text, "lxml")
-
+            soup = BeautifulSoup(response.text, "html5lib")
             template_tag = soup.find("script", {"type": "text/template"})
 
             if template_tag:
@@ -161,10 +160,6 @@ class NotebooksYa(StoreWithUrlExtensions):
 
             for container in product_containers:
                 product_url = container.find("a")["href"]
-
-                if product_url in product_urls:
-                    return product_urls
-
                 product_urls.append(product_url)
 
             page += 1
