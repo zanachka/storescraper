@@ -30,12 +30,13 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     VIDEO_GAME_CONSOLE,
     CPU_COOLER,
+    PRINTER_SUPPLY,
+    PROJECTOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import (
     session_with_proxy,
-    get_price_from_price_specification,
     html_to_markdown,
 )
 
@@ -99,7 +100,7 @@ class NotebooksYa(StoreWithUrlExtensions):
             "partes-y-piezas-ya/?filter_producto-partes-y-piezas=" "tarjeta-de-video",
             VIDEO_CARD,
         ],
-        ["impresion-ya", PRINTER],
+        ["impresoras", PRINTER],
         ["audio-y-video-ya/?filter_producto-audio-y-video=audifonos", HEADPHONES],
         [
             "audio-y-video-ya/?filter_producto-audio-y-video=parlante-portatil",
@@ -111,6 +112,14 @@ class NotebooksYa(StoreWithUrlExtensions):
         [
             "partes-y-piezas-ya/?filter_producto-partes-y-piezas=refrigeracion",
             CPU_COOLER,
+        ],
+        [
+            "insumos-de-impresoras",
+            PRINTER_SUPPLY,
+        ],
+        [
+            "proyectores",
+            PROJECTOR,
         ],
     ]
 
