@@ -79,13 +79,15 @@ class NotebooksYa(StoreWithUrlExtensions):
             COMPUTER_CASE,
         ],
         [
-            "partes-y-piezas-ya/?filter_producto-partes-y-piezas="
-            "memoria-ram-para-laptops",
+            "partes-y-piezas-ya/?filter_producto-partes-y-piezas=memoria-ram-para-laptops",
             RAM,
         ],
         [
-            "partes-y-piezas-ya/?filter_producto-partes-y-piezas="
-            "memoria-ram-para-pc",
+            "partes-y-piezas-ya/?filter_producto-partes-y-piezas=memoria-ram-para-pc",
+            RAM,
+        ],
+        [
+            "partes-y-piezas-ya/?filter_producto-partes-y-piezas=memoria-para-servidores",
             RAM,
         ],
         [
