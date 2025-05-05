@@ -1,8 +1,9 @@
 from storescraper.categories import TELEVISION
+from storescraper.store import Store
 from storescraper.stores import Falabella
 
 
-class FalabellaMarketplace(Falabella):
+class FalabellaMarketplace(Store):
     category_paths = [
         "https://www.falabella.com/falabella-cl/product/131934511/LED-Smart-TV-32-T4202-HD-Tizen%E2%84%A2-Samsung-(2020)/131934512",
         "https://www.falabella.com/falabella-cl/product/138777627/Samsung-43-FHD-T5203-Smart-TV-2024/138777628",
@@ -105,14 +106,15 @@ class FalabellaMarketplace(Falabella):
         return product_entries
 
     @classmethod
-    def _products_for_url(cls, url, content, session, category=None, extra_args=None):
+    def products_for_url(cls, url, category=None, extra_args=None):
         extra_args.update({"bypass_sellers_blacklist": True})
 
-        products = super()._products_for_url(
-            url, content, session, TELEVISION, extra_args
+        products = Falabella.products_for_url(
+            url, category=category, extra_args=extra_args
         )
 
         for product in products:
+            product.store = cls.__name__
             product.seller = None
 
         return products

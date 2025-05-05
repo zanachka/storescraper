@@ -1,8 +1,9 @@
 from storescraper.categories import TELEVISION
 from storescraper.stores import Paris
+from storescraper.store import Store
 
 
-class ParisMarketplace(Paris):
+class ParisMarketplace(Store):
     category_paths = [
         "https://www.paris.cl/refrigerador-bottom-mount-290l-all-around-cooling-MKQRIMTEY5.html",
         "https://www.paris.cl/refrigerador-top-mount-freezer-234l-all-around-cooling-MKZ0MSVJXO.html",
@@ -33,9 +34,10 @@ class ParisMarketplace(Paris):
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
-        products = super().products_for_url(url, TELEVISION, extra_args)
+        products = Paris.products_for_url(url, category, extra_args)
 
         for product in products:
+            product.store = cls.__name__
             product.seller = None
             product.stock = -1
 
