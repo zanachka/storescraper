@@ -106,38 +106,46 @@ class SonyStore(Store):
             "/search?fq=productId:{}".format(json_container["productId"])
         )
         api_response = session.get(api_url)
-        json_product = json.loads(api_response.text)[0]["items"][0]
-        name = json_product["name"]
-        part_number = json_product["name"].replace("|", "").strip()
-        sku = json_product["itemId"]
 
-        if preventa:
-            stock = 0
-        elif json_product["sellers"][0]["commertialOffer"]["AvailableQuantity"] > 10:
-            stock = 10
-        else:
-            stock = json_product["sellers"][0]["commertialOffer"]["AvailableQuantity"]
+        products = []
+        json_products = json.loads(api_response.text)[0]["items"]
+        for json_product in json_products:
+            name = json_product["name"]
+            part_number = json_product["name"].replace("|", "").strip()
+            sku = json_product["itemId"]
 
-        price = Decimal(json_product["sellers"][0]["commertialOffer"]["Price"])
-        picture_urls = [
-            picture["imageUrl"].split("?v")[0] for picture in json_product["images"]
-        ]
+            if preventa:
+                stock = 0
+            elif (
+                json_product["sellers"][0]["commertialOffer"]["AvailableQuantity"] > 10
+            ):
+                stock = 10
+            else:
+                stock = json_product["sellers"][0]["commertialOffer"][
+                    "AvailableQuantity"
+                ]
 
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            sku,
-            stock,
-            price,
-            price,
-            "CLP",
-            sku=sku,
-            part_number=part_number,
-            picture_urls=picture_urls,
-            description=description,
-        )
+            price = Decimal(json_product["sellers"][0]["commertialOffer"]["Price"])
+            picture_urls = [
+                picture["imageUrl"].split("?v")[0] for picture in json_product["images"]
+            ]
 
-        return [p]
+            p = Product(
+                name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                sku,
+                stock,
+                price,
+                price,
+                "CLP",
+                sku=sku,
+                part_number=part_number,
+                picture_urls=picture_urls,
+                description=description,
+            )
+            products.append(p)
+
+        return products

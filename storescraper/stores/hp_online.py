@@ -122,7 +122,7 @@ class HpOnline(Store):
         price = Decimal(price.replace("$", "").replace(".", ""))
 
         description = html_to_markdown(
-            str(soup.find("div", "product info detailed").find("div", "overview"))
+            str(soup.find("div", "additional-attributes-wrapper"))
         )
 
         picture_urls = magento_picture_urls(soup)
