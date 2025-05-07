@@ -66,8 +66,12 @@ class Artefacta(Store):
         response = session.get(url)
 
         soup = BeautifulSoup(response.text, "lxml")
+        name_tag = soup.find("span", {"itemprop": "name"})
 
-        name = soup.find("span", {"itemprop": "name"}).text.strip()
+        if not name_tag:
+            return []
+
+        name = name_tag.text.strip()
         sku = soup.find("div", {"itemprop": "sku"}).text.strip()
         stock = -1
 
