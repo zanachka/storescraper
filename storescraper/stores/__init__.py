@@ -298,6 +298,7 @@ from .tec_tec import TecTec
 from .tech_mark import TechMark
 from .tech_sale_chile import TechSaleChile
 from .techno_kings import TechnoKings
+from .tecno_shopping import TecnoShopping
 from .thundertech import Thundertech
 from .tienda_amiga import TiendaAmiga
 from .tienda_ao import TiendaAo
