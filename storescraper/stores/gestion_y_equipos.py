@@ -72,7 +72,11 @@ class GestionYEquipos(StoreWithUrlExtensions):
             "NUEVO": "https://schema.org/NewCondition",
             "NUEVO CAJA ABIERTA": "https://schema.org/OpenBoxCondition",
         }
-        condition = condition_dict[condition_text]
+        condition = (
+            condition_dict[condition_text]
+            if condition_text in condition_dict
+            else "https://schema.org/RefurbishedCondition"
+        )
 
         products = []
         variants_tags = soup.findAll("script", {"type": "application/json"})
