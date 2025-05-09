@@ -13,6 +13,7 @@ from storescraper.categories import (
     HEADPHONES,
     USB_FLASH_DRIVE,
     CELL,
+    POWER_SUPPLY,
 )
 from storescraper.stores.mercado_libre_chile import MercadoLibreChile
 from storescraper.utils import session_with_proxy
@@ -33,6 +34,7 @@ class MegaOfertas(MercadoLibreChile):
             HEADPHONES,
             USB_FLASH_DRIVE,
             CELL,
+            POWER_SUPPLY,
         ]
 
     @classmethod
@@ -52,6 +54,7 @@ class MegaOfertas(MercadoLibreChile):
             ("consolas-videojuegos/accesorios-pc-gaming", HEADPHONES),
             ("electronica-audio-video/audio", HEADPHONES),
             ("celulares-telefonia", CELL),
+            ("computacion/componentes-pc/fuentes-alimentacion", POWER_SUPPLY),
         ]
         session = session_with_proxy(extra_args)
         product_urls = []
