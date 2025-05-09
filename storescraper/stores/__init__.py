@@ -38,6 +38,7 @@ from .campcom import Campcom
 from .canon_tienda_online import CanonTiendaOnline
 from .carsa import Carsa
 from .casa_royal import CasaRoyal
+from .central_tech import CentralTech
 from .claro_up import ClaroUp
 from .cc_link import CCLink
 from .cesa_pro import CesaPro
