@@ -28,6 +28,7 @@ from storescraper.categories import (
     CPU_COOLER,
     PRINTER_SUPPLY,
     UPS,
+    PROJECTOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -79,6 +80,7 @@ class Lifemax(StoreWithUrlExtensions):
         ["toners", PRINTER_SUPPLY],
         ["ups", UPS],
         ["mouse-gamer", MOUSE],
+        ["proyectores", PROJECTOR],
     ]
 
     @classmethod
