@@ -90,6 +90,12 @@ class CentralTech(StoreWithUrlExtensions):
             else [product_data["image"]]
         )
 
+        part_number_tag = soup.find("span", "part-number")
+        if part_number_tag:
+            part_number = part_number_tag.text.strip()
+        else:
+            part_number = None
+
         p = Product(
             name,
             cls.__name__,
@@ -102,7 +108,7 @@ class CentralTech(StoreWithUrlExtensions):
             offer_price,
             "CLP",
             sku=sku,
-            part_number=sku,
+            part_number=part_number,
             description=description,
             picture_urls=picture_urls,
         )
