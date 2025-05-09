@@ -75,7 +75,8 @@ class AgilStore(StoreWithUrlExtensions):
         sku = sku_label.next.next[2:]
         pn_label = soup.find("strong", text="Part Number Fabricante")
         part_number = pn_label.next.next[2:]
-        picture_urls = [soup.find("div", {"id": "product-main-img"}).find("img")["src"]]
+        img_tag = soup.find("div", {"id": "product-main-img"}).find("img")
+        picture_urls = [img_tag["src"]] if img_tag else None
         description = html_to_markdown(str(soup.find("div", "product-details")))
 
         p = Product(

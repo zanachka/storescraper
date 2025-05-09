@@ -71,7 +71,7 @@ class Multimax(Store):
             stock = -1
 
         price = Decimal(
-            soup.find("div", "modal_price subtitle")
+            soup.find("div", "price-ui")
             .find("span", "money")
             .text.replace("$", "")
             .replace(",", "")
