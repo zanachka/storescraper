@@ -58,6 +58,7 @@ class Sindelen(StoreWithUrlExtensions):
         ("10041/ventiladores", ACCESORIES),
         ("10034/planchas", IRON),
         ("10050/secadores-de-pelo", HAIR_CARE),
+        ("10165/kits", ACCESORIES),
     ]
 
     @classmethod
