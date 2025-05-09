@@ -137,13 +137,34 @@ class Wom(Store):
         session = session_with_proxy(extra_args)
 
         path = url.split("/", 3)[-1]
-        endpoint = "https://store.wom.cl/page-data/{}/" "page-data.json".format(path)
+        endpoint = "https://store.wom.cl/page-data/{}/page-data.json".format(path)
         response = session.get(endpoint)
 
         if response.status_code == 404:
             return []
 
         json_data = response.json()
+        page_id = json_data["result"]["pageContext"]["id"]
+
+        stock_endpoint = (
+            "https://store-srv.wom.cl/rest/V1/content/getList?"
+            "searchCriteria[filterGroups][0][filters][0][field]=attribute_set_id&"
+            "searchCriteria[filterGroups][0][filters][0][value]=11&"
+            "searchCriteria[filterGroups][1][filters][0][field]=sku&"
+            f"searchCriteria[filterGroups][1][filters][0][value]={page_id}&"
+            "searchCriteria[filterGroups][1][filters][0][condition_type]=eq&"
+            "searchCriteria[pageSize]=1&searchCriteria[currentPage]=1&"
+            "searchCriteria[sortOrders][0][direction]=DESC"
+        )
+        response = session.get(stock_endpoint)
+        stock_json = response.json()
+        stock_dict = {}
+
+        for x in stock_json["items"][0]["child"]:
+            if x["saleable_info"]:
+                stock_dict[x["sku"]] = x["saleable_info"][0]["qty"]
+            else:
+                stock_dict[x["sku"]] = 0
 
         if "SEMI" in json_data["result"]["data"]["contentfulProduct"]["name"].upper():
             condition = "https://schema.org/RefurbishedCondition"
@@ -169,21 +190,7 @@ class Wom(Store):
                 continue
             graphql_data = json.loads(context["graphql_data"])
 
-            stock_reference = entry["referenceId"]
-            stock_endoint = "https://store.wom.cl/ss/{}.json".format(
-                stock_reference.replace(".", "_")
-            )
-            stock_endpoint_response = session.get(stock_endoint)
-
-            if stock_endpoint_response.status_code == 404:
-                continue
-
-            stock_json = json.loads(stock_endpoint_response.text)
-
-            if stock_json["inventory"]:
-                stock = -1
-            else:
-                stock = 0
+            stock = stock_dict[entry["referenceId"]]
 
             portability_choices = [
                 ("", "newConnection"),
