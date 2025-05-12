@@ -14,20 +14,21 @@ class Movistar(Store):
     preferred_discover_urls_concurrency = 1
     prepago_url = "http://ww2.movistar.cl/prepago/"
     planes_url = "https://ww2.movistar.cl/movil/planes-portabilidad/"
+    # 2025-05-12 - Movistar seems to not be including prices with plan?
     variations = [
-        {
-            "base_plan": "skuLineaNuevaTienda",
-            "methods": [
-                (1, ""),
-            ],
-        },
-        {
-            "base_plan": "skuPortabilidadTienda",
-            "methods": [
-                (1, " Portabilidad"),
-                (2, " Portabilidad Cuotas"),
-            ],
-        },
+        # {
+        #     "base_plan": "skuLineaNuevaTienda",
+        #     "methods": [
+        #         (1, ""),
+        #     ],
+        # },
+        # {
+        #     "base_plan": "skuPortabilidadTienda",
+        #     "methods": [
+        #         (1, " Portabilidad"),
+        #         (2, " Portabilidad Cuotas"),
+        #     ],
+        # },
     ]
     include_prepago = True
     category_paths = [
@@ -236,14 +237,8 @@ class Movistar(Store):
 
         # Prepago
         if cls.include_prepago:
-            product_id = soup.find("input", {"id": "du-product-id"})["value"]
-            payload = f"{base_payload}&id={product_id}"
-            prepago_res = session.post(
-                f"{base_endpoint}dataproducto",
-                payload,
-            )
-            prepago_json = prepago_res.json()
-            prepago_price = Decimal(remove_words(prepago_json["special_price"]))
+            prepago_price_tag = soup.find("meta", {"property": "product:price:amount"})
+            prepago_price = Decimal(prepago_price_tag["content"])
 
             if prepago_price:
                 products.append(
