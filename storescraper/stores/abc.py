@@ -21,7 +21,7 @@ class Abc(AbcDin):
 
         for index, slider_tag in enumerate(slider_tags):
             destination_urls = ["https://www.abc.cl" + slider_tag.find("a")["href"]]
-            picture_url = slider_tag.find("source")["srcset"]
+            picture_url = slider_tag.find("img")["src"]
 
             banners.append(
                 {
