@@ -28,7 +28,7 @@ class MegaOfertas(MercadoLibreChile):
             STORAGE_DRIVE,
             VIDEO_CARD,
             MOUSE,
-            KEYBOARD_MOUSE_COMBO,
+            KEYBOARD,
             KEYBOARD_MOUSE_COMBO,
             MONITOR,
             HEADPHONES,
@@ -62,6 +62,7 @@ class MegaOfertas(MercadoLibreChile):
         for url_extension, local_category in url_extensions:
             if local_category != category:
                 continue
+
             page = 1
 
             while True:
