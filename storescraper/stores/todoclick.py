@@ -35,6 +35,7 @@ from storescraper.categories import (
     WEARABLE,
     CASE_FAN,
     PRINTER_SUPPLY,
+    UPS,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -88,6 +89,7 @@ class Todoclick(StoreWithUrlExtensions):
         ["tarjetas-de-video-549", VIDEO_CARD],
         ["cartuchos-de-tinta-y-botellas-para-impresoras-541", PRINTER_SUPPLY],
         ["toners-impresora-laser-542", PRINTER_SUPPLY],
+        ["ups-572", UPS],
     ]
 
     @classmethod
