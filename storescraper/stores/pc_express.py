@@ -142,13 +142,19 @@ class PcExpress(StoreWithUrlExtensions):
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, "
             "like Gecko) Chrome/66.0.3359.117 Safari/537.36"
         )
-        soup = BeautifulSoup(session.get(url).text, "lxml")
+        response = session.get(url)
+
+        if response.status_code == 404:
+            return []
+
+        soup = BeautifulSoup(response.text, "lxml")
 
         if "¡No se encuentra el producto!" in soup.find("title").text:
             return []
 
         name = soup.find("h1", "rm-product-page__title").text[:250].strip()
         sku = soup.find("div", "rm-product__id").h3.text
+
         if not soup.find("p", "rm-product__mpn"):
             part_number = None
         else:
