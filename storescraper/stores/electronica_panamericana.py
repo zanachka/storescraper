@@ -35,7 +35,7 @@ class ElectronicaPanamericana(Store):
             print(url)
             response = session.get(url, verify=False, timeout=30)
 
-            if response.status_code == 404:
+            if response.status_code in [404, 403]:
                 break
 
             soup = BeautifulSoup(response.text, "lxml")
