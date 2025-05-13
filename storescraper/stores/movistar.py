@@ -10,10 +10,7 @@ from storescraper.utils import remove_words
 
 class Movistar(Store):
     category_paths = [
-        (
-            "Electronica > Comunicacion > Telefonia > Telefonos moviles",
-            CELL,
-        ),
+        ("Electronica > Comunicacion > Telefonia > Telefonos moviles", CELL)
     ]
 
     @classmethod

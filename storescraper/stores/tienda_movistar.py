@@ -9,7 +9,6 @@ from .movistar import Movistar
 
 
 class TiendaMovistar(Movistar):
-    variations = []
     category_paths = [
         ("Electronica > Comunicacion > Telefonia > Telefonos moviles", CELL),
         ("Electronica > Ordenadores > Tablets", TABLET),
