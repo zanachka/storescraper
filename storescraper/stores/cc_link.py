@@ -119,13 +119,18 @@ class CCLink(StoreWithUrlExtensions):
             )
         )
         summary_h5 = soup.find("div", "summary").find("h5")
+
         if summary_h5:
-            if summary_h5.find("strong"):
-                normal_price = Decimal(remove_words(summary_h5.find("strong").text))
-            else:
-                normal_price = Decimal(remove_words(summary_h5.text.split("\n")[0]))
+            strong_tag = summary_h5.find("strong")
+            price_text = (
+                strong_tag.text if strong_tag else summary_h5.text.split("\n")[0]
+            )
+            normal_price = Decimal(remove_words(price_text))
         else:
             normal_price = offer_price
+
+        offer_price = min(offer_price, normal_price)
+
         picture_urls = [
             urllib.parse.quote(tag["src"], safe="/:")
             for tag in soup.find("div", "product-images-wrapper").findAll("img")
