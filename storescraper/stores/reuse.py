@@ -52,7 +52,7 @@ class Reuse(StoreWithUrlExtensions):
             print(url_webpage)
             response = session.get(url_webpage)
             soup = BeautifulSoup(response.text, "lxml")
-            product_containers = soup.findAll("li", "productgrid--item")
+            product_containers = soup.findAll("li", "slider__item")
             if not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
@@ -70,15 +70,14 @@ class Reuse(StoreWithUrlExtensions):
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
         product_json = json.loads(
-            soup.find(
-                "script", {"data-section-id": "template--18401449148633__main"}
-            ).text
-        )["product"]
+            soup.find("essential-upsell-app-embed")["product-page-product"]
+        )
         description = html_to_markdown(product_json["description"])
         vendor = product_json["vendor"]
         seller = vendor if vendor != "Reuse Chile" else None
 
         products = []
+
         for variant in product_json["variants"]:
             if not variant["inventory_management"]:
                 continue
