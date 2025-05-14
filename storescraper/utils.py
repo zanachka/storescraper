@@ -5,6 +5,7 @@ from decimal import Decimal
 
 import html2text
 import re
+from celery import group
 
 import math
 
@@ -253,3 +254,12 @@ def get_price_from_price_specification(product_data):
         return Decimal(price[0])
 
     return Decimal(price_specification["price"])
+
+
+def create_celery_group(tasks):
+    # REF: https://stackoverflow.com/questions/41371933
+    if len(tasks) == 1:
+        g = group(tasks)()
+    else:
+        g = group(*tasks)()
+    return g

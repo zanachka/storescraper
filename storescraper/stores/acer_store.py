@@ -31,12 +31,11 @@ class AcerStore(StoreWithUrlExtensions):
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        product_urls = []
         session = session_with_proxy(extra_args)
         page = 1
 
         while True:
-            url = f"https://acerstore.cl/collections/{url_extension}?page={page}"
+            url = f"https://www.acerstore.cl/collections/{url_extension}?page={page}"
             print(url)
 
             response = session.get(url)
@@ -49,12 +48,10 @@ class AcerStore(StoreWithUrlExtensions):
                 break
 
             for product in products:
-                product_url = product.find("a")["href"]
-                product_urls.append(f"https://www.acerstore.cl{product_url}")
+                product_url = f"https://www.acerstore.cl{product.find("a")["href"]}"
+                yield product_url
 
             page += 1
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):

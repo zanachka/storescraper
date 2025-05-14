@@ -7,7 +7,12 @@ from celery.utils.log import get_task_logger
 
 
 from .product import Product
-from .utils import get_store_class_by_name, chunks, session_with_proxy
+from .utils import (
+    get_store_class_by_name,
+    chunks,
+    session_with_proxy,
+    create_celery_group,
+)
 
 logger = get_task_logger(__name__)
 
@@ -150,7 +155,7 @@ class Store:
                     )
                     task.set(queue="storescraper")
                     chunk_tasks.append(task)
-                tasks_group = cls.create_celery_group(chunk_tasks)
+                tasks_group = create_celery_group(chunk_tasks)
 
                 # Prevents Celery error for running a task inside another
                 with allow_join_result():
@@ -269,7 +274,7 @@ class Store:
                     chunk_tasks.append(task)
                     task_counter += 1
 
-                tasks_group = cls.create_celery_group(chunk_tasks)
+                tasks_group = create_celery_group(chunk_tasks)
 
                 # Prevents Celery error for running a task inside another
                 with allow_join_result():
@@ -365,29 +370,25 @@ class Store:
 
     @staticmethod
     @shared_task(autoretry_for=(StoreScrapError,), max_retries=5, default_retry_delay=5)
-    def products_for_urls_task(
-        store_class_name,
-        discovery_entries,
-        extra_args=None,
-        products_for_url_concurrency=None,
-        use_async=True,
-    ):
+    def discover_urls_for_category_task(store_class_name, category, extra_args=None):
         store = get_store_class_by_name(store_class_name)
-        result = store.products_for_urls(
-            discovery_entries,
-            extra_args=extra_args,
-            products_for_url_concurrency=products_for_url_concurrency,
-            use_async=use_async,
-        )
+        logger.info("Discovering URLs")
+        logger.info("Store: " + store.__name__)
+        logger.info("Category: " + category)
+        discovered_urls = []
+        try:
+            for url in store.discover_urls_for_category(category, extra_args):
+                if url not in discovered_urls:
+                    logger.info(url)
+                    discovered_urls.append(url)
+        except Exception:
+            error_message = "Error discovering URLs from {}: {} - {}".format(
+                store_class_name, category, traceback.format_exc()
+            )
+            logger.error(error_message)
+            raise StoreScrapError(error_message)
 
-        serialized_result = {
-            "products": [p.serialize() for p in result["products"]],
-            "discovery_urls_without_products": result[
-                "discovery_urls_without_products"
-            ],
-        }
-
-        return serialized_result
+        return discovered_urls
 
     ##########################################################################
     # Implementation dependant methods
@@ -401,8 +402,10 @@ class Store:
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
-        raise NotImplementedError(
-            "This method must be implemented by " "subclasses of Store"
+        # If the concrete class implements "discover_entries_for_category"
+        # instead of the this one, use that
+        return list(
+            cls.discover_entries_for_category(category, extra_args=extra_args).keys()
         )
 
     @classmethod
@@ -442,16 +445,6 @@ class Store:
     ##########################################################################
     # Utility methods
     ##########################################################################
-
-    @classmethod
-    def create_celery_group(cls, tasks):
-        # REF: https://stackoverflow.com/questions/41371933/why-is-this-
-        # construction-of-a-group-of-chains-causing-an-exception-in-celery
-        if len(tasks) == 1:
-            g = group(tasks)()
-        else:
-            g = group(*tasks)()
-        return g
 
     @classmethod
     def sanitize_parameters(
