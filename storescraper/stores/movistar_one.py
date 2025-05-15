@@ -10,16 +10,16 @@ class MovistarOne(Store):
     URL = "https://ww2.movistar.cl/ofertas/equipo-plan/equipos.min.json"
     AVAILABLE_PLANS = {
         "plan_libre_full": [
-            "Plan 5G Libre Full Cuotas",
-            "Plan 5G Libre Full Portabilidad Cuotas",
+            "5G Libre Full Cuotas",
+            "5G Libre Full Portabilidad Cuotas",
         ],
         "plan_libre_pro": [
-            "Plan 5G Libre Pro Cuotas",
-            "Plan 5G Libre Pro Portabilidad Cuotas",
+            "5G Libre Pro Cuotas",
+            "5G Libre Pro Portabilidad Cuotas",
         ],
         "plan_libre_ultra": [
-            "Plan 5G Libre Ultra Cuotas",
-            "Plan 5G Libre Ultra Portabilidad Cuotas",
+            "5G Libre Ultra Cuotas",
+            "5G Libre Ultra Portabilidad Cuotas",
         ],
     }
 
@@ -33,13 +33,12 @@ class MovistarOne(Store):
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
-        url = cls.URL
-        print(url)
+        print(cls.URL)
         session = session_with_proxy(extra_args)
-        response = session.get(url)
+        response = session.get(cls.URL)
         data = response.json()
         products = []
-        discovery_url = "https://ww2.movistar.cl/ofertas/equipo-plan/"
+        product_url = "https://ww2.movistar.cl/ofertas/equipo-plan/"
         filtered_entries = [entry for entry in data if entry["movistarone"] == 1]
 
         for entry in filtered_entries:
@@ -51,8 +50,8 @@ class MovistarOne(Store):
                     name=entry["equipo"],
                     store=cls.__name__,
                     category=CELL,
-                    url=discovery_url,
-                    discovery_url=discovery_url,
+                    url=product_url,
+                    discovery_url=url,
                     key=f"{entry['id']} - {plan}",
                     stock=-1,
                     normal_price=price,
