@@ -89,6 +89,22 @@ class Movistar(Store):
         soup = BeautifulSoup(session.get(url).text, "lxml")
         products = []
 
+        # Plan Prepago
+        p = Product(
+            "Movistar Prepago",
+            cls.__name__,
+            CELL_PLAN,
+            url,
+            url,
+            "Movistar Prepago",
+            -1,
+            Decimal(0),
+            Decimal(0),
+            "CLP",
+            allow_zero_prices=True,
+        )
+        products.append(p)
+
         for plan_container in soup.findAll("div", "card"):
             plan_link = plan_container.find("a")
             plan_url = plan_link["href"]
