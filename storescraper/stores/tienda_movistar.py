@@ -1,3 +1,8 @@
+from decimal import Decimal
+import requests
+import csv
+from io import StringIO
+from storescraper.product import Product
 from storescraper.categories import (
     HEADPHONES,
     TABLET,
@@ -5,6 +10,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     TELEVISION,
 )
+from storescraper.utils import remove_words
 from .movistar import Movistar
 
 
@@ -28,10 +34,53 @@ class TiendaMovistar(Movistar):
         ]
 
     @classmethod
-    def products_for_url(cls, url, category=None, extra_args=None):
-        products = super().products_for_url(url, category, extra_args)
+    def discover_urls_for_category(cls, category, extra_args=None):
+        return [category]
 
-        for product in products:
-            product.key = product.sku
+    @classmethod
+    def products_for_url(cls, url, category=None, extra_args=None):
+        products = []
+
+        for category_path, local_category in cls.category_paths:
+            if local_category != category:
+                continue
+
+            print(category_path)
+            url = f"https://docs.google.com/spreadsheets/d/1DCuy426WhXTwFd9hkILoL4eD6VIheqkL-GS7KJ6xLgw/export?format=csv"
+            response = requests.get(url)
+            response.encoding = "utf-8"
+            csv_data = csv.DictReader(StringIO(response.text))
+            data = list(csv_data)
+            filtered_entries = [
+                entry
+                for entry in data
+                if entry["categoría en google product"] == category_path
+            ]
+
+            for entry in filtered_entries:
+                price = Decimal(remove_words(entry["precio de oferta"]))
+                sku = entry["id"]
+                products.append(
+                    Product(
+                        name=entry["título"],
+                        store=cls.__name__,
+                        category=category,
+                        url=entry["enlace"],
+                        discovery_url=entry["enlace"],
+                        key=sku,
+                        stock=0 if entry["disponibilidad"] == "agotado" else -1,
+                        normal_price=price,
+                        offer_price=price,
+                        currency="CLP",
+                        sku=sku,
+                        condition=(
+                            "https://schema.org/NewCondition"
+                            if entry["estado"] == "Nuevo"
+                            else "https://schema.org/RefurbishedCondition"
+                        ),
+                        description=entry["descripción"],
+                        picture_urls=[entry["enlace imagen"]],
+                    )
+                )
 
         return products
