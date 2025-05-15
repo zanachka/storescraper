@@ -32,6 +32,7 @@ class PlayerPro(StoreWithUrlExtensions):
         ["teclados-y-mouse", KEYBOARD],
         ["almacenamiento-externo", EXTERNAL_STORAGE_DRIVE],
         ["computadores-1/laptops-2-en-1", NOTEBOOK],
+        ["zona-gamer/accesorios", KEYBOARD],
     ]
 
     @classmethod
