@@ -36,9 +36,9 @@ class MovistarOne(Movistar):
             filtered_entries = [entry for entry in data if entry["movistarone"] == 1]
 
             for entry in filtered_entries:
-                available_planes = cls.AVAILABLE_PLANS[entry["movistaroneTipo"]]
+                available_plans = cls.AVAILABLE_PLANS[entry["movistaroneTipo"]]
 
-                for plan in available_planes:
+                for plan in available_plans:
                     price = Decimal(entry["pie"])
                     allow_zero_prices = price == 0
 
