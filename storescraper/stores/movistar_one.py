@@ -47,7 +47,6 @@ class MovistarOne(Store):
 
             for plan in available_plans:
                 price = Decimal(entry["pie"])
-
                 p = Product(
                     name=entry["equipo"],
                     store=cls.__name__,
