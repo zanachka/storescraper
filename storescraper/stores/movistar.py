@@ -13,22 +13,22 @@ class Movistar(Store):
         ("https://ww2.movistar.cl/movil/planes-portabilidad/", CELL_PLAN),
     ]
     AVAILABLE_PLANS = [
-        "Plan 5G Libre Inicia",
-        "Plan 5G Libre Inicia Cuotas",
-        "Plan 5G Libre Inicia Portabilidad",
-        "Plan 5G Libre Inicia Portabilidad Cuotas",
-        "Plan 5G Libre Full",
-        "Plan 5G Libre Full Cuotas",
-        "Plan 5G Libre Full Portabilidad",
-        "Plan 5G Libre Full Portabilidad Cuotas",
-        "Plan 5G Libre Pro",
-        "Plan 5G Libre Pro Cuotas",
-        "Plan 5G Libre Pro Portabilidad",
-        "Plan 5G Libre Pro Portabilidad Cuotas",
-        "Plan 5G Libre Ultra",
-        "Plan 5G Libre Ultra Cuotas",
-        "Plan 5G Libre Ultra Portabilidad",
-        "Plan 5G Libre Ultra Portabilidad Cuotas",
+        "5G Libre Inicia",
+        "5G Libre Inicia Cuotas",
+        "5G Libre Inicia Portabilidad",
+        "5G Libre Inicia Portabilidad Cuotas",
+        "5G Libre Full",
+        "5G Libre Full Cuotas",
+        "5G Libre Full Portabilidad",
+        "5G Libre Full Portabilidad Cuotas",
+        "5G Libre Pro",
+        "5G Libre Pro Cuotas",
+        "5G Libre Pro Portabilidad",
+        "5G Libre Pro Portabilidad Cuotas",
+        "5G Libre Ultra",
+        "5G Libre Ultra Cuotas",
+        "5G Libre Ultra Portabilidad",
+        "5G Libre Ultra Portabilidad Cuotas",
     ]
 
     @classmethod
@@ -49,7 +49,7 @@ class Movistar(Store):
 
         for entry in filtered_entries:
             for plan in cls.AVAILABLE_PLANS:
-                discovery_url = (
+                product_url = (
                     "https://ww2.movistar.cl/ofertas/equipo-plan/"
                     if "Portabilidad" in plan
                     else "https://ww2.movistar.cl/ofertas/linea-nueva/"
@@ -63,8 +63,8 @@ class Movistar(Store):
                     name=entry["equipo"],
                     store=cls.__name__,
                     category=CELL,
-                    url=discovery_url,
-                    discovery_url=discovery_url,
+                    url=product_url,
+                    discovery_url=url,
                     key=f"{entry['id']} - {plan}",
                     stock=-1,
                     normal_price=price,
@@ -130,3 +130,4 @@ class Movistar(Store):
                 return cls._cellphones(category_path, extra_args)
             elif category == CELL_PLAN:
                 return cls._plans(category_path, extra_args)
+        raise Exception("Invalid category")
