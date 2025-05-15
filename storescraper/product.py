@@ -41,7 +41,6 @@ class Product:
         picture_urls=None,
         timestamp=None,
         condition="https://schema.org/NewCondition",
-        positions=None,
         video_urls=None,
         review_count=None,
         review_avg_score=None,
@@ -127,7 +126,6 @@ class Product:
         if not timestamp.tzinfo:
             timestamp = pytz.utc.localize(timestamp)
         self.condition = condition
-        self.positions = positions or []
         self.video_urls = video_urls
         self.review_count = review_count
         self.review_avg_score = review_avg_score
@@ -180,7 +178,6 @@ class Product:
             )
         )
         lines.append("Seller: {}".format(self.optional_field_as_string("seller")))
-        lines.append("Positions: {}".format(self.positions))
         lines.append(
             "Cell plan name: {}".format(self.optional_field_as_string("cell_plan_name"))
         )
@@ -234,7 +231,6 @@ class Product:
             "video_urls": self.video_urls,
             "timestamp": self.timestamp.isoformat(),
             "condition": self.condition,
-            "positions": self.positions,
             "review_count": self.review_count,
             "review_avg_score": self.review_avg_score,
             "flixmedia_id": self.flixmedia_id,

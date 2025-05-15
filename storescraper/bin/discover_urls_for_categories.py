@@ -9,7 +9,7 @@ from storescraper.utils import (
     get_store_class_by_name,
     chunks,
     create_celery_group,
-)  # noqa
+)
 
 
 def main():
@@ -78,7 +78,7 @@ def main():
         seen_urls = set()
         for category in categories:
             print(f"Discovering URLs for: {category}")
-            for url in store.discover_urls_for_category(
+            for url in store.discover_urls_for_category_with_preflight(
                 category, extra_args=args.extra_args
             ):
                 if url not in seen_urls:

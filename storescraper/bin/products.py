@@ -36,10 +36,8 @@ def main():
     available_products = 0
     unavailable_products = 0
 
-    products_data = store.products(
-        categories=args.categories,
-        use_async=args.with_async,
-        extra_args=args.extra_args)
+    if args.with_async:
+
 
     for product in products_data['products']:
         if product.is_available():

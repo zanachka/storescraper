@@ -49,6 +49,7 @@ class AcerStore(StoreWithUrlExtensions):
 
             for product in products:
                 product_url = f"https://www.acerstore.cl{product.find("a")["href"]}"
+                print("yielding", product_url)
                 yield product_url
 
             page += 1
@@ -113,4 +114,4 @@ class AcerStore(StoreWithUrlExtensions):
             condition=condition,
         )
 
-        return [p]
+        yield p

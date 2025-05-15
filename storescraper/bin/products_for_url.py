@@ -40,14 +40,12 @@ def main():
     store = get_store_class_by_name(args.store)
     category = args.category or "Unknown"
 
-    entries = {args.url: {"category": category, "positions": []}}
-
-    products = store.products_for_urls(
-        entries, extra_args=args.extra_args, use_async=False
+    products = store.products_for_url_with_preflight(
+        args.url, category=category, extra_args=args.extra_args
     )
 
     if products:
-        for product in products["products"]:
+        for product in products:
             print(product, "\n")
     else:
         print("No products found")
