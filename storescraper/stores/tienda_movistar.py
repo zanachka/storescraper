@@ -2,7 +2,6 @@ from decimal import Decimal
 import requests
 import csv
 from io import StringIO
-from storescraper.product import Product
 from storescraper.categories import (
     HEADPHONES,
     TABLET,
@@ -10,11 +9,12 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     TELEVISION,
 )
+from storescraper.product import Product
+from storescraper.store import Store
 from storescraper.utils import remove_words
-from .movistar import Movistar
 
 
-class TiendaMovistar(Movistar):
+class TiendaMovistar(Store):
     category_paths = [
         ("Electronica > Comunicacion > Telefonia > Telefonos moviles", CELL),
         ("Electronica > Ordenadores > Tablets", TABLET),

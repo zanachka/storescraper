@@ -7,6 +7,9 @@ from storescraper.utils import session_with_proxy
 
 
 class MovistarOne(Store):
+    category_paths = [
+        ("https://ww2.movistar.cl/ofertas/equipo-plan/equipos.min.json", CELL),
+    ]
     URL = "https://ww2.movistar.cl/ofertas/equipo-plan/equipos.min.json"
     AVAILABLE_PLANS = {
         "plan_libre_full": [
