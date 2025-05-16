@@ -18,8 +18,7 @@ class StoreWithUrlExtensions(Store):
             if local_category != category:
                 continue
 
-            for url in cls.discover_urls_for_url_extension(url_extension, extra_args):
-                yield url
+            yield from cls.discover_urls_for_url_extension(url_extension, extra_args)
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
