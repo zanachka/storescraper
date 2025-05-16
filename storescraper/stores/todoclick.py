@@ -90,6 +90,7 @@ class Todoclick(StoreWithUrlExtensions):
         ["cartuchos-de-tinta-y-botellas-para-impresoras-541", PRINTER_SUPPLY],
         ["toners-impresora-laser-542", PRINTER_SUPPLY],
         ["ups-572", UPS],
+        ["plotter-569", PRINTER],
     ]
 
     @classmethod

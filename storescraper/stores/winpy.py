@@ -81,7 +81,7 @@ class Winpy(StoreWithUrlExtensions):
         ["impresoras/", PRINTER],
         ["accesorios/audifonos/", HEADPHONES],
         ["accesorios/parlantes/", STEREO_SYSTEM],
-        ["ups/ups/", UPS],
+        ["energia/ups/", UPS],
         ["suministros/toner/", PRINTER_SUPPLY],
         ["suministros/botellas-de-tinta/", PRINTER_SUPPLY],
         ["suministros/cartuchos-de-tinta/", PRINTER_SUPPLY],
