@@ -17,7 +17,7 @@ class Abastible(StoreWithUrlExtensions):
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         time.sleep(5)
         url = "https://servicioshogar.abastible.cl/{}.html".format(url_extension)
-        return [url]
+        yield url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -46,4 +46,4 @@ class Abastible(StoreWithUrlExtensions):
             "CLP",
             description=description,
         )
-        return [p]
+        yield p
