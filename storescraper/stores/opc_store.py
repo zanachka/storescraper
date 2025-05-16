@@ -84,7 +84,7 @@ class OpcStore(StoreWithUrlExtensions):
         else:
             condition = "https://schema.org/NewCondition"
 
-        offer = json_data["offers"][0]
+        offer = json_data["offers"]
 
         price = Decimal(offer["price"])
 
