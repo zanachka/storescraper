@@ -55,6 +55,8 @@ def main():
     else:
         categories = store.categories()
 
+    extra_args = store.extra_args_with_preflight(extra_args=args.extra_args)
+
     if args.with_async:
         for category_chunk in chunks(
             categories, store.preferred_discover_urls_concurrency
@@ -64,7 +66,7 @@ def main():
 
             for category in category_chunk:
                 task = store.discover_urls_for_category_task.s(
-                    store.__name__, category, extra_args=args.extra_args
+                    store.__name__, category, extra_args=extra_args
                 )
                 task.set(queue="storescraper")
                 chunk_tasks.append(task)
@@ -78,8 +80,8 @@ def main():
         seen_urls = set()
         for category in categories:
             print(f"Discovering URLs for: {category}")
-            for url in store.discover_urls_for_category_with_preflight(
-                category, extra_args=args.extra_args
+            for url in store.discover_urls_for_category_with_custom_exception(
+                category, extra_args=extra_args
             ):
                 if url not in seen_urls:
                     print(url)

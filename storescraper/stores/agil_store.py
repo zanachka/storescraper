@@ -42,7 +42,7 @@ class AgilStore(StoreWithUrlExtensions):
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-        product_urls = []
+        seen_product_urls = set()
         url_webpage = (
             "https://www.agilstore.cl/productos.php?ver=productos&id={}".format(
                 url_extension
@@ -58,8 +58,9 @@ class AgilStore(StoreWithUrlExtensions):
 
         for container in product_containers:
             product_url = "https://www.agilstore.cl/" + container.find("a")["href"]
-            product_urls.append(product_url)
-        return product_urls
+            if product_url not in seen_product_urls:
+                seen_product_urls.add(product_url)
+                yield product_url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -95,4 +96,4 @@ class AgilStore(StoreWithUrlExtensions):
             picture_urls=picture_urls,
             description=description,
         )
-        return [p]
+        yield p

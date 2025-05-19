@@ -57,6 +57,8 @@ def main():
     else:
         categories = store.categories()
 
+    extra_args = store.extra_args_with_preflight(extra_args=args.extra_args)
+
     available_products = 0
     unavailable_products = 0
     discovery_urls_with_error = []
@@ -71,7 +73,7 @@ def main():
 
             for category in category_chunk:
                 task = store.discover_urls_for_category_task.s(
-                    store.__name__, category, extra_args=args.extra_args
+                    store.__name__, category, extra_args=extra_args
                 )
                 task.set(queue="storescraper")
                 discover_urls_for_category_tasks.append(task)
@@ -95,7 +97,7 @@ def main():
                             store.__name__,
                             discovery_url,
                             category=category,
-                            extra_args=args.extra_args,
+                            extra_args=extra_args,
                         )
                         task.set(queue="storescraper")
                         products_for_url_tasks.append(task)
@@ -121,13 +123,13 @@ def main():
         for category in categories:
             print(f"Discovering URLs for: {category}")
             for discovery_url in store.discover_urls_for_category_with_preflight(
-                category, extra_args=args.extra_args
+                category, extra_args=extra_args
             ):
                 if discovery_url not in seen_urls:
                     seen_urls.add(discovery_url)
                     retrieved_products_for_url = False
                     for product in store.products_for_url_with_preflight(
-                        discovery_url, category=category, extra_args=args.extra_args
+                        discovery_url, category=category, extra_args=extra_args
                     ):
                         retrieved_products_for_url = True
                         if product.is_available():

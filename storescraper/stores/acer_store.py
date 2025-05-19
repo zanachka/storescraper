@@ -24,7 +24,6 @@ class AcerStore(StoreWithUrlExtensions):
         ["outlet-seminuevos", NOTEBOOK],
         ["mouse", MOUSE],
         ["headset", HEADPHONES],
-        # ["notebook-gamer", NOTEBOOK],
         ["notebook", NOTEBOOK],
         ["tablets", TABLET],
     ]
@@ -56,6 +55,7 @@ class AcerStore(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
+
         session = cf_session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
