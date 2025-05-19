@@ -99,9 +99,13 @@ class Osoji(StoreWithUrlExtensions):
         description = (
             html_to_markdown(description_tag.text) if description_tag else None
         )
-        picture_urls = [
-            img["src"] for img in soup.find("div", "wpgs-image").find_all("img")
-        ]
+        picture_urls = list(
+            {
+                img["data-large_image"]
+                for img in soup.find("div", "wpgs-image").find_all("img")
+                if img.get("data-large_image")
+            }
+        )
 
         p = Product(
             name,
