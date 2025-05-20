@@ -172,11 +172,6 @@ class Abc(Store):
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
-        session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
-        )
         seen_urls = set()
 
         for (
@@ -187,26 +182,7 @@ class Abc(Store):
             if category not in local_categories:
                 continue
 
-            url = (
-                "https://www.abc.cl/on/demandware.store/Sites-Abc-Site/es_CL/Search-UpdateGrid?cgid={}&"
-                "srule=best-matches&sz=1000"
-            ).format(category_id)
-            print(url)
-
-            res = session.get(url)
-            soup = BeautifulSoup(res.text, "lxml")
-            product_cells = soup.findAll("div", "product-tile__item")
-
-            if not product_cells:
-                logging.warning("Empty category: " + category_id)
-
-            for product_cell in product_cells:
-                product_path = product_cell.find("a", "image-link")
-
-                if not product_path:
-                    continue
-
-                product_url = "https://www.abc.cl" + product_path["href"]
+            for product_url in cls._get_product_urls(category_id, extra_args):
                 if product_url not in seen_urls:
                     seen_urls.add(product_url)
                     yield product_url
@@ -349,40 +325,51 @@ class Abc(Store):
     @classmethod
     def section_positions(cls, section, extra_args=None):
         section_positions = []
-        session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
-        )
 
         for category_id, _, section_path in cls.ajax_resources:
             if section != section_path:
                 continue
 
-            url = f"https://www.abc.cl/on/demandware.store/Sites-Abc-Site/es_CL/Search-UpdateGrid?cgid={category_id}&srule=best-matches&sz=1000"
-            print(url)
+            idx = 1
 
-            res = session.get(url)
-            soup = BeautifulSoup(res.text, "lxml")
-            product_cells = soup.findAll("div", "product-tile__item")
-
-            if not product_cells:
-                logging.warning("Empty category: " + category_id)
-
-            for idx, product_cell in enumerate(product_cells):
-                product_path = product_cell.find("a", "image-link")
-
-                if not product_path:
-                    continue
-
-                product_url = f"https://www.abc.cl{product_path['href']}"
+            for product_url in cls._get_product_urls(category_id, extra_args):
                 section_positions.append(
                     {
                         "field": "discovery_url",
                         "value": product_url,
-                        "position": idx + 1,
+                        "position": idx,
                         "section": section,
                     }
                 )
+                idx += 1
 
         return section_positions
+
+    @classmethod
+    def _get_product_urls(cls, category_id, extra_args):
+        session = session_with_proxy(extra_args)
+        session.headers["User-Agent"] = (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
+        )
+        url = (
+            "https://www.abc.cl/on/demandware.store/Sites-Abc-Site/es_CL/Search-UpdateGrid?cgid={}&"
+            "srule=best-matches&sz=1000"
+        ).format(category_id)
+        print(url)
+
+        res = session.get(url)
+        soup = BeautifulSoup(res.text, "lxml")
+        product_cells = soup.findAll("div", "product-tile__item")
+
+        if not product_cells:
+            logging.warning("Empty category: " + category_id)
+
+        for product_cell in product_cells:
+            product_path = product_cell.find("a", "image-link")
+
+            if not product_path:
+                continue
+
+            product_url = "https://www.abc.cl" + product_path["href"]
+            yield product_url
