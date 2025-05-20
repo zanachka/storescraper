@@ -341,7 +341,6 @@ class Abc(Store):
                         "section": section,
                     }
                 )
-                idx += 1
 
         return section_positions
 
