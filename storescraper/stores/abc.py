@@ -40,332 +40,135 @@ from storescraper import banner_sections as bs
 
 class Abc(Store):
     ajax_resources = [
-        ["celulares", [CELL], "Tecnología / Celulares", 0.5],
-        ["smartphones", [CELL], "Tecnología / Celulares / Smartphones", 1],
-        ["smartwatch", [WEARABLE], "Tecnología / Celulares / Smartwatch", 1],
+        ["celulares", CELL, "Tecnología / Celulares"],
+        ["smartphones", CELL, "Tecnología / Celulares / Smartphones"],
+        ["smartwatch", WEARABLE, "Tecnología / Celulares / Smartwatch"],
         [
             "accesorios-telefonos",
-            [HEADPHONES],
+            HEADPHONES,
             "Tecnología / Celulares / Accesorios Teléfonos",
-            1,
         ],
-        [
-            "ver-todo-celulares",
-            [CELL],
-            "Tecnología / Celulares / Ver todo Celulares",
-            1,
-        ],
-        [
-            "televisores",
-            [TELEVISION],
-            "Tecnología / Televisores",
-            1,
-        ],
-        [
-            "smart-tv",
-            [TELEVISION],
-            "Tecnología / Televisores / Smart TV",
-            1,
-        ],
-        [
-            "soundbar",
-            [STEREO_SYSTEM],
-            "Tecnología / Televisores / Soundbar",
-            1,
-        ],
+        ["ver-todo-celulares", CELL, "Tecnología / Celulares / Ver todo Celulares"],
+        ["televisores", TELEVISION, "Tecnología / Televisores"],
+        ["smart-tv", TELEVISION, "Tecnología / Televisores / Smart TV"],
+        ["soundbar", STEREO_SYSTEM, "Tecnología / Televisores / Soundbar"],
         [
             "ver-todo-televisores",
-            [TELEVISION, STEREO_SYSTEM],
+            TELEVISION,
             "Tecnología / Televisores / Ver todo Televisores",
-            0.5,
         ],
-        [
-            "computadores",
-            [NOTEBOOK, TABLET, PRINTER],
-            "Tecnología / Computadores",
-            0.5,
-        ],
-        [
-            "notebooks",
-            [NOTEBOOK],
-            "Tecnología / Computadores / Notebooks",
-            1,
-        ],
-        [
-            "tablet",
-            [TABLET],
-            "Tecnología / Computadores / Tablet",
-            1,
-        ],
-        [
-            "todo-impresoras",
-            [PRINTER],
-            "Tecnología / Computadores / Impresoras",
-            1,
-        ],
+        ["computadores", NOTEBOOK, "Tecnología / Computadores"],
+        ["notebooks", NOTEBOOK, "Tecnología / Computadores / Notebooks"],
+        ["tablet", TABLET, "Tecnología / Computadores / Tablet"],
+        ["todo-impresoras", PRINTER, "Tecnología / Computadores / Impresoras"],
         [
             "ver-todo-computadores",
-            [NOTEBOOK, TABLET, PRINTER],
+            NOTEBOOK,
             "Tecnología / Computadores / Todo Computadores",
-            0.5,
         ],
-        [
-            "audio",
-            [STEREO_SYSTEM, HEADPHONES],
-            "Tecnología / Audio",
-            0.5,
-        ],
-        [
-            "minicomponentes",
-            [STEREO_SYSTEM],
-            "Tecnología / Audio / Minicomponentes",
-            1,
-        ],
+        ["audio", HEADPHONES, "Tecnología / Audio"],
+        ["minicomponentes", STEREO_SYSTEM, "Tecnología / Audio / Minicomponentes"],
         [
             "parlantes-portátiles",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Tecnología / Audio / Parlantes portátiles",
-            1,
         ],
-        [
-            "audifonos",
-            [HEADPHONES],
-            "Tecnología / Audio / Audífonos",
-            1,
-        ],
-        [
-            "soundbar",
-            [STEREO_SYSTEM],
-            "Tecnología / Audio / Soundbar",
-            1,
-        ],
-        [
-            "ver-todo-audio",
-            [STEREO_SYSTEM, HEADPHONES],
-            "Tecnología / Audio / Ver todo Audio",
-            0.5,
-        ],
+        ["audifonos", HEADPHONES, "Tecnología / Audio / Audífonos"],
+        ["soundbar", STEREO_SYSTEM, "Tecnología / Audio / Soundbar"],
+        ["ver-todo-audio", HEADPHONES, "Tecnología / Audio / Ver todo Audio"],
         [
             "discos-duros",
-            [EXTERNAL_STORAGE_DRIVE],
+            EXTERNAL_STORAGE_DRIVE,
             "Tecnología / Accesorios Computación / Discos Duros",
-            1,
         ],
         [
             "mouse-i-teclados",
-            [MOUSE],
+            MOUSE,
             "Tecnología / Accesorios Computación / Mouse y Teclados",
-            1,
         ],
-        [
-            "notebooks-gamer",
-            [NOTEBOOK],
-            "Tecnología / Mundo Gamer / Notebooks Gamer",
-            1,
-        ],
-        [
-            "consolas",
-            [VIDEO_GAME_CONSOLE],
-            "Tecnología / Mundo Gamer / Consolas",
-            1,
-        ],
-        [
-            "audifonos-gamer",
-            [HEADPHONES],
-            "Tecnología / Mundo Gamer / Audífonos Gamer",
-            1,
-        ],
-        [
-            "sillas-gamer",
-            [GAMING_CHAIR],
-            "Tecnología / Mundo Gamer / Sillas Gamer",
-            1,
-        ],
-        [
-            "accesorios-gamer",
-            [MOUSE],
-            "Tecnología / Mundo Gamer / Accesorios Gamer",
-            1,
-        ],
-        [
-            "refrigeradores",
-            [REFRIGERATOR],
-            "Línea Blanca / Refrigeradores",
-            1,
-        ],
-        [
-            "freezer",
-            [REFRIGERATOR],
-            "Línea Blanca / Refrigeradores / Freezer",
-            1,
-        ],
-        [
-            "side-by-side",
-            [REFRIGERATOR],
-            "Línea Blanca / Refrigeradores / Side by Side",
-            1,
-        ],
-        [
-            "no-frost",
-            [REFRIGERATOR],
-            "Línea Blanca / Refrigeradores / No Frost",
-            1,
-        ],
-        [
-            "frio-directo",
-            [REFRIGERATOR],
-            "Línea Blanca / Refrigeradores / Frío Directo",
-            1,
-        ],
-        [
-            "frigobar",
-            [REFRIGERATOR],
-            "Línea Blanca / Refrigeradores / Frigobar",
-            1,
-        ],
+        ["notebooks-gamer", NOTEBOOK, "Tecnología / Mundo Gamer / Notebooks Gamer"],
+        ["consolas", VIDEO_GAME_CONSOLE, "Tecnología / Mundo Gamer / Consolas"],
+        ["audifonos-gamer", HEADPHONES, "Tecnología / Mundo Gamer / Audífonos Gamer"],
+        ["sillas-gamer", GAMING_CHAIR, "Tecnología / Mundo Gamer / Sillas Gamer"],
+        ["accesorios-gamer", MOUSE, "Tecnología / Mundo Gamer / Accesorios Gamer"],
+        ["refrigeradores", REFRIGERATOR, "Línea Blanca / Refrigeradores"],
+        ["freezer", REFRIGERATOR, "Línea Blanca / Refrigeradores / Freezer"],
+        ["side-by-side", REFRIGERATOR, "Línea Blanca / Refrigeradores / Side by Side"],
+        ["no-frost", REFRIGERATOR, "Línea Blanca / Refrigeradores / No Frost"],
+        ["frio-directo", REFRIGERATOR, "Línea Blanca / Refrigeradores / Frío Directo"],
+        ["frigobar", REFRIGERATOR, "Línea Blanca / Refrigeradores / Frigobar"],
         [
             "ver-todo-refrigeracion",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Línea Blanca / Refrigeradores / Ver todo Refrigeración",
-            1,
         ],
-        [
-            "lavado-y-secado",
-            [WASHING_MACHINE],
-            "Línea Blanca / Lavado y Secado",
-            1,
-        ],
-        [
-            "lavadoras",
-            [WASHING_MACHINE],
-            "Línea Blanca / Lavado y Secado / Lavadoras",
-            1,
-        ],
-        [
-            "secadoras",
-            [WASHING_MACHINE],
-            "Línea Blanca / Lavado y Secado / Secadoras",
-            1,
-        ],
+        ["lavado-y-secado", WASHING_MACHINE, "Línea Blanca / Lavado y Secado"],
+        ["lavadoras", WASHING_MACHINE, "Línea Blanca / Lavado y Secado / Lavadoras"],
+        ["secadoras", WASHING_MACHINE, "Línea Blanca / Lavado y Secado / Secadoras"],
         [
             "lavadoras-secadoras",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Línea Blanca / Lavado y Secado / Lavadoras - Secadoras",
-            1,
         ],
         [
             "ver-todo-lavado-y-secado",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Línea Blanca / Lavado y Secado / Ver todo Lavado y Secado",
-            1,
         ],
         [
             "hornos-electricos",
-            [OVEN],
+            OVEN,
             "Línea Blanca / Electrodomésticos / Hornos Eléctricos",
-            1,
         ],
-        [
-            "microondas",
-            [OVEN],
-            "Línea Blanca / Electrodomésticos / Microondas",
-            1,
-        ],
-        [
-            "cocinas-a-gas",
-            [STOVE],
-            "Línea Blanca / Cocina / Cocinas a Gas",
-            1,
-        ],
-        [
-            "encimeras",
-            [STOVE],
-            "Línea Blanca / Cocina / Encimeras",
-            1,
-        ],
-        [
-            "hornos-empotrables",
-            [OVEN],
-            "Línea Blanca / Cocina / Hornos empotrables",
-            1,
-        ],
+        ["microondas", OVEN, "Línea Blanca / Electrodomésticos / Microondas"],
+        ["cocinas-a-gas", STOVE, "Línea Blanca / Cocina / Cocinas a Gas"],
+        ["encimeras", STOVE, "Línea Blanca / Cocina / Encimeras"],
+        ["hornos-empotrables", OVEN, "Línea Blanca / Cocina / Hornos empotrables"],
         [
             "lavaplatos-y-lavavajillas",
-            [DISH_WASHER],
+            DISH_WASHER,
             "Línea Blanca / Cocina / Lavaplatos y Lavavajillas",
-            1,
         ],
         [
             "aires-acondicionados",
-            [SPLIT_AIR_CONDITIONER],
+            SPLIT_AIR_CONDITIONER,
             "Línea Blanca / Climatización / Aires Acondicionados",
-            1,
         ],
         [
             "calefont-y-termos",
-            [WATER_HEATER],
+            WATER_HEATER,
             "Línea Blanca / Climatización / Calefont y Termos",
-            1,
         ],
-        [
-            "estufas",
-            [SPACE_HEATER],
-            "Línea Blanca / Climatización / Estufas",
-            1,
-        ],
-        [
-            "aspiradoras",
-            [VACUUM_CLEANER],
-            "Línea Blanca / Aseo y Limpieza / Aspiradoras",
-            1,
-        ],
+        ["estufas", SPACE_HEATER, "Línea Blanca / Climatización / Estufas"],
+        ["aspiradoras", VACUUM_CLEANER, "Línea Blanca / Aseo y Limpieza / Aspiradoras"],
         [
             "aspiradoras-robot",
-            [VACUUM_CLEANER],
+            VACUUM_CLEANER,
             "Línea Blanca / Aseo y Limpieza / Aspiradoras Robot",
-            1,
         ],
-        [
-            "electrodomesticos",
-            [ACCESORIES],
-            "Línea Blanca / Electrodomésticos",
-            1,
-        ],
+        ["electrodomesticos", ACCESORIES, "Línea Blanca / Electrodomésticos"],
         [
             "parrillas-electricas",
-            [ELECTRIC_GRILL],
+            ELECTRIC_GRILL,
             "Línea Blanca / Cocina / Parrillas Eléctricas",
-            1,
         ],
-        ["tintas", [PRINTER_SUPPLY], "Tecnología / Computadores / Tintas", 1],
-        [
-            "planchas",
-            [IRON],
-            "Línea Blanca / Aseo y Limpieza / Planchas",
-            1,
-        ],
+        ["tintas", PRINTER_SUPPLY, "Tecnología / Computadores / Tintas"],
+        ["planchas", IRON, "Línea Blanca / Aseo y Limpieza / Planchas"],
         [
             "secadores-de-pelo",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Belleza / Cuidado Personal / Secadores de Pelos",
-            1,
         ],
         [
             "alisadores-i-onduladores",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Belleza / Cuidado Personal / Alisadores I Onduladores",
-            1,
         ],
     ]
 
     @classmethod
     def categories(cls):
-        cats = list()
-        for category_id, local_categories, section, weight in cls.ajax_resources:
-            for local_category in local_categories:
-                if local_category not in cats:
-                    cats.append(local_category)
-        return cats
+        return list({local_category for _, local_category, _ in cls.ajax_resources})
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
@@ -379,8 +182,7 @@ class Abc(Store):
         for (
             category_id,
             local_categories,
-            section_name,
-            category_weight,
+            _,
         ) in cls.ajax_resources:
             if category not in local_categories:
                 continue
@@ -398,7 +200,7 @@ class Abc(Store):
             if not product_cells:
                 logging.warning("Empty category: " + category_id)
 
-            for idx, product_cell in enumerate(product_cells):
+            for product_cell in product_cells:
                 product_path = product_cell.find("a", "image-link")
 
                 if not product_path:
@@ -539,3 +341,48 @@ class Abc(Store):
             raise Exception("No banners for Home section: https://www.abc.cl")
 
         return banners
+
+    @classmethod
+    def sections(cls):
+        return [section for _, _, section in cls.ajax_resources]
+
+    @classmethod
+    def section_positions(cls, section, extra_args=None):
+        section_positions = []
+        session = session_with_proxy(extra_args)
+        session.headers["User-Agent"] = (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
+        )
+
+        for category_id, _, section_path in cls.ajax_resources:
+            if section != section_path:
+                continue
+
+            url = f"https://www.abc.cl/on/demandware.store/Sites-Abc-Site/es_CL/Search-UpdateGrid?cgid={category_id}&srule=best-matches&sz=1000"
+            print(url)
+
+            res = session.get(url)
+            soup = BeautifulSoup(res.text, "lxml")
+            product_cells = soup.findAll("div", "product-tile__item")
+
+            if not product_cells:
+                logging.warning("Empty category: " + category_id)
+
+            for idx, product_cell in enumerate(product_cells):
+                product_path = product_cell.find("a", "image-link")
+
+                if not product_path:
+                    continue
+
+                product_url = f"https://www.abc.cl{product_path['href']}"
+                section_positions.append(
+                    {
+                        "field": "discovery_url",
+                        "value": product_url,
+                        "position": idx + 1,
+                        "section": section,
+                    }
+                )
+
+        return section_positions

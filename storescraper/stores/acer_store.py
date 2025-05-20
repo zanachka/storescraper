@@ -51,7 +51,7 @@ class AcerStore(StoreWithUrlExtensions):
                 break
 
             for product in products:
-                product_url = f"https://www.acerstore.cl{product.find("a")["href"]}"
+                product_url = f"https://www.acerstore.cl{product.find('a')['href']}"
                 yield product_url
 
             page += 1
