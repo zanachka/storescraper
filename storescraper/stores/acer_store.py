@@ -29,8 +29,12 @@ class AcerStore(StoreWithUrlExtensions):
     ]
 
     @classmethod
+    def get_session(cls, extra_args=None):
+        return cf_session_with_proxy(extra_args)
+
+    @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        session = cf_session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         page = 1
 
         while True:
@@ -56,7 +60,7 @@ class AcerStore(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
 
-        session = cf_session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
         product_data = json.loads(
@@ -114,3 +118,20 @@ class AcerStore(StoreWithUrlExtensions):
         )
 
         yield p
+
+    # Implemented only for testing purposes, please delete afterwards
+    @classmethod
+    def sections(cls):
+        return [x[0] for x in cls.url_extensions]
+
+    @classmethod
+    def section_positions(cls, section_name, extra_args=None):
+        for idx, discovery_url in enumerate(
+            cls.discover_urls_for_url_extension(section_name, extra_args=extra_args)
+        ):
+            yield {
+                "field": "discovery_url",
+                "value": discovery_url,
+                "position": idx + 1,
+                "section": section_name,
+            }

@@ -1,5 +1,4 @@
 import logging
-from collections import defaultdict
 
 import validators
 from bs4 import BeautifulSoup

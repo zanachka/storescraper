@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, html_to_markdown, remove_words
+from storescraper.utils import html_to_markdown, remove_words
 
 
 from storescraper.categories import (
@@ -30,7 +30,7 @@ class AgenciasWayOnline(StoreWithUrlExtensions):
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         page = 1
 
         while True:
@@ -67,7 +67,7 @@ class AgenciasWayOnline(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
 
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         data = session.get(url, timeout=20).text
         soup = BeautifulSoup(data, "lxml")
 

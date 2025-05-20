@@ -79,6 +79,13 @@ class Store:
         except Exception as e:
             raise StoreScrapError("Error retrieving products") from e
 
+    @classmethod
+    def section_positions_with_custom_exception(cls, section, extra_args=None):
+        try:
+            yield from cls.section_positions(section, extra_args=extra_args)
+        except Exception as e:
+            raise StoreScrapError("Error obtaining section positions") from e
+
     ##########################################################################
     # Celery tasks wrappers
     ##########################################################################
@@ -118,6 +125,20 @@ class Store:
 
         return discovered_urls
 
+    @staticmethod
+    @shared_task(autoretry_for=(StoreScrapError,), max_retries=5, default_retry_delay=5)
+    def section_positions_task(store_class_name, section, extra_args=None):
+        store = get_store_class_by_name(store_class_name)
+        logger.info("Obtaining section positions")
+        logger.info("Store: " + store.__name__)
+        logger.info("Section: " + section)
+        section_positions = []
+        for url in store.section_positions_with_custom_exception(section, extra_args):
+            logger.info(url)
+            section_positions.append(url)
+
+        return section_positions
+
     ##########################################################################
     # Implementation dependant methods
     ##########################################################################
@@ -144,6 +165,18 @@ class Store:
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
         raise NotImplementedError(
             "This method must be implemented by subclasses of Store"
+        )
+
+    @classmethod
+    def sections(cls):
+        raise NotImplementedError(
+            "This method must be implemented by subclasses of Store that implement section positioning"
+        )
+
+    @classmethod
+    def section_positions(cls, section_name, extra_args=None):
+        raise NotImplementedError(
+            "This method must be implemented by subclasses of Store that implement section positioning"
         )
 
     @classmethod
