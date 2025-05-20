@@ -29,6 +29,7 @@ from storescraper.categories import (
     WEARABLE,
     PRINTER_SUPPLY,
     PROJECTOR,
+    ACCESORIES,
 )
 
 
@@ -60,6 +61,7 @@ class ShopBox(StoreWithUrlExtensions):
         ["relojes", WEARABLE],
         ["cartuchos-de-toner-e-ink-jet", PRINTER_SUPPLY],
         ["proyectores", PROJECTOR],
+        ["accesorios-ipad", ACCESORIES],
     ]
 
     @classmethod

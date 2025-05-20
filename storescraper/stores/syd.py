@@ -29,7 +29,6 @@ class Syd(StoreWithUrlExtensions):
         ["ssd", EXTERNAL_STORAGE_DRIVE],
         ["raid", EXTERNAL_STORAGE_DRIVE],
         ["audio", HEADPHONES],
-        ["memorias", RAM],
         ["mouse-y-teclados", MOUSE],
     ]
 

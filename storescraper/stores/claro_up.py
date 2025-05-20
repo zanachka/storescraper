@@ -21,6 +21,9 @@ class ClaroUp(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         session = session_with_proxy(extra_args)
+        session.headers["User-Agent"] = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+        )
         endpoint = (
             "https://migracion.clarochilepromociones.com/ofertaPlanConEquipo/info.php"
         )

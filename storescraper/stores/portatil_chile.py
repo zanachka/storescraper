@@ -84,7 +84,8 @@ class PortatilChile(Store):
 
         for f in json_data["features"]:
             if f["name"] == "Garantia":
-                if "Open Box" in f["value"]:
+                f_value = f["value"]
+                if f_value and "Open Box" in f_value:
                     condition = "https://schema.org/RefurbishedCondition"
 
         description = ""
