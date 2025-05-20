@@ -330,14 +330,14 @@ class Abc(Store):
             if section != section_path:
                 continue
 
-            idx = 1
-
-            for product_url in cls._get_product_urls(category_id, extra_args):
+            for idx, product_url in enumerate(
+                cls._get_product_urls(category_id, extra_args)
+            ):
                 section_positions.append(
                     {
                         "field": "discovery_url",
                         "value": product_url,
-                        "position": idx,
+                        "position": idx + 1,
                         "section": section,
                     }
                 )
@@ -352,10 +352,7 @@ class Abc(Store):
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
         )
-        url = (
-            "https://www.abc.cl/on/demandware.store/Sites-Abc-Site/es_CL/Search-UpdateGrid?cgid={}&"
-            "srule=best-matches&sz=1000"
-        ).format(category_id)
+        url = f"https://www.abc.cl/on/demandware.store/Sites-Abc-Site/es_CL/Search-UpdateGrid?cgid={category_id}&srule=best-matches&sz=1000"
         print(url)
 
         res = session.get(url)
@@ -371,5 +368,5 @@ class Abc(Store):
             if not product_path:
                 continue
 
-            product_url = "https://www.abc.cl" + product_path["href"]
+            product_url = f"https://www.abc.cl{product_path['href']}"
             yield product_url
