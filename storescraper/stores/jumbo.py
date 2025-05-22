@@ -46,7 +46,14 @@ class Jumbo(Store):
                 )
                 print(api_url)
 
-                response = session.get(api_url)
+                retries = 3
+                while retries:
+                    response = session.get(api_url)
+                    if response.status_code == 200:
+                        break
+                    retries -= 1
+                else:
+                    raise Exception("Fetch error")
 
                 json_data = json.loads(response.text)
 
