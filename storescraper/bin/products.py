@@ -122,13 +122,13 @@ def main():
     else:
         for category in categories:
             print(f"Discovering URLs for: {category}")
-            for discovery_url in store.discover_urls_for_category_with_preflight(
+            for discovery_url in store.discover_urls_for_category(
                 category, extra_args=extra_args
             ):
                 if discovery_url not in seen_urls:
                     seen_urls.add(discovery_url)
                     retrieved_products_for_url = False
-                    for product in store.products_for_url_with_preflight(
+                    for product in store.products_for_url(
                         discovery_url, category=category, extra_args=extra_args
                     ):
                         retrieved_products_for_url = True

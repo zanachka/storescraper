@@ -6,7 +6,7 @@ import logging
 
 sys.path.append("../..")
 
-from storescraper.utils import get_store_class_by_name  # noqa
+from storescraper.utils import get_store_class_by_name
 
 
 def main():
@@ -41,7 +41,7 @@ def main():
     category = args.category or "Unknown"
     extra_args = store.extra_args_with_preflight(extra_args=args.extra_args)
 
-    products = store.products_for_url_with_preflight(
+    products = store.products_for_url(
         args.url, category=category, extra_args=extra_args
     )
 

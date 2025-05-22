@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -25,39 +23,6 @@ class Store:
     ##########################################################################
     # API methods
     ##########################################################################
-
-    @classmethod
-    def products_for_keyword(
-        cls,
-        keyword,
-        threshold,
-        extra_args=None,
-        products_for_url_concurrency=None,
-        use_async=None,
-    ):
-        if products_for_url_concurrency is None:
-            products_for_url_concurrency = cls.preferred_products_for_url_concurrency
-
-        if use_async is None:
-            use_async = cls.prefer_async
-
-        extra_args = cls.extra_args_with_preflight(extra_args)
-        extra_args["source"] = "keyword_search"
-        product_urls = cls.discover_urls_for_keyword(keyword, threshold, extra_args)
-        product_entries = OrderedDict()
-
-        for url in product_urls:
-            product_entries[url] = {
-                "positions": [],
-                "category": None,
-            }
-
-        return cls.products_for_urls(
-            product_entries,
-            extra_args=extra_args,
-            products_for_url_concurrency=products_for_url_concurrency,
-            use_async=use_async,
-        )
 
     @classmethod
     def discover_urls_for_category_with_custom_exception(
