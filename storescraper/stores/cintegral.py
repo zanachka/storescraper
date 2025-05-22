@@ -109,7 +109,9 @@ class Cintegral(StoreWithUrlExtensions):
         product_data = json.loads(product_data_tag.text)
         key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
         name = product_data["name"]
-        part_number = product_data["sku"]
+
+        part_number_tag = soup.find("div", "field_682c8d88970c3")
+        part_number = part_number_tag.contents[1].strip()
         offers = product_data["offers"]
 
         assert len(offers) == 1
