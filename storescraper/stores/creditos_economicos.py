@@ -31,13 +31,13 @@ class CreditosEconomicos(Store):
             if page > 10:
                 raise Exception("Page overflow")
 
-            url = "https://www.crecos.com/lg?_q=lg&map=ft&page=" "{}&sc=2".format(page)
+            url = f"https://www.crecos.com/lg?_q=lg&map=ft&page={page}"
             print(url)
 
             soup = BeautifulSoup(session.get(url).text, "lxml")
             state = soup.find("template", {"data-varname": "__STATE__"}).find("script")
             product_containers = json.loads(state.text)
-            r = re.compile(r"Product:sp-(\d+$)")
+            r = re.compile(r"Product:sp-\d+-(\d+--|none)$")
             product_container_keys = product_containers.keys()
             products_to_find = list(filter(r.match, product_container_keys))
 
@@ -49,7 +49,7 @@ class CreditosEconomicos(Store):
 
             for product_key in products_to_find:
                 product_url = product_containers[product_key]["link"]
-                product_urls.append("https://www.crecos.com" + product_url)
+                product_urls.append(f"https://www.crecos.com{product_url}")
 
             page += 1
 
