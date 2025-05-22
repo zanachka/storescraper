@@ -118,10 +118,12 @@ class SpDigital(StoreWithUrlExtensions):
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
-        )
+
+        if "User-Agent" not in session.headers:
+            session.headers["User-Agent"] = (
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
+            )
 
         product_urls = []
         page = 1
@@ -131,12 +133,12 @@ class SpDigital(StoreWithUrlExtensions):
 
             if page == 1:
                 url_webpage = (
-                    "https://www.spdigital.cl/page-data/"
+                    "https://bypass.spdigital.cl/page-data/"
                     "categories/{}/page-data.json".format(url_extension)
                 )
             else:
                 url_webpage = (
-                    "https://www.spdigital.cl/page-data/"
+                    "https://bypass.spdigital.cl/page-data/"
                     "categories/{}/{}/page-data.json".format(url_extension, page)
                 )
 
@@ -160,14 +162,16 @@ class SpDigital(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = cf_session_with_proxy(extra_args)
-        session.headers["User-Agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
-        )
+
+        if "User-Agent" not in session.headers:
+            session.headers["User-Agent"] = (
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
+            )
 
         slug = re.match(r"https://www.spdigital.cl/(.+?)/?$", url).groups()[0]
         page_data_url = (
-            "https://www.spdigital.cl/page-data/{}/" "page-data.json".format(slug)
+            "https://bypass.spdigital.cl/page-data/{}/" "page-data.json".format(slug)
         )
         print(page_data_url)
         response = session.get(page_data_url)
@@ -268,7 +272,7 @@ class SpDigital(StoreWithUrlExtensions):
                 cls.__name__,
                 category,
                 url,
-                url,
+                url.replace("www.", "bypass."),
                 key,
                 stock,
                 normal_price,
