@@ -2,7 +2,6 @@ import json
 import logging
 import re
 
-from collections import defaultdict
 from curl_cffi import requests
 from bs4 import BeautifulSoup
 from decimal import Decimal
@@ -14,8 +13,6 @@ from storescraper.categories import (
     EXTERNAL_STORAGE_DRIVE,
     GAMING_CHAIR,
     HEADPHONES,
-    KEYBOARD,
-    MEMORY_CARD,
     MONITOR,
     MOUSE,
     NOTEBOOK,
@@ -47,549 +44,385 @@ from storescraper.utils import html_to_markdown
 
 
 class Hites(Store):
+    category_paths = [
+        [
+            "electro-hogar/refrigeradores",
+            REFRIGERATOR,
+            "Inicio > Electro Hogar > Refrigeradores",
+        ],
+        [
+            "electro-hogar/refrigeradores/refrigerador-frio-directo",
+            REFRIGERATOR,
+            "Inicio > Electro Hogar > Refrigeradores > Frío Directo",
+        ],
+        [
+            "electro-hogar/refrigeradores/refrigerador-no-frost",
+            REFRIGERATOR,
+            "Inicio > Electro Hogar > Refrigeradores > No Frost",
+        ],
+        [
+            "electro-hogar/refrigeradores/refrigerador-side-by-side",
+            REFRIGERATOR,
+            "Inicio > Electro Hogar > Refrigeradores > Side by Side",
+        ],
+        [
+            "electro-hogar/refrigeradores/refrigerador-bottom-freezer",
+            REFRIGERATOR,
+            "Inicio > Electro Hogar > Refrigeradores > Refrigerador Bottom Freezer",
+        ],
+        [
+            "electro-hogar/refrigeradores/refrigerador-top-freezer",
+            REFRIGERATOR,
+            "Inicio > Electro Hogar > Refrigeradores > Refrigerador Top Freezer",
+        ],
+        [
+            "electro-hogar/refrigeradores/freezer-y-frigobar",
+            REFRIGERATOR,
+            "Inicio > Electro Hogar > Refrigeradores > Freezers y Frigobar",
+        ],
+        [
+            "electro-hogar/lavado-y-secado",
+            WASHING_MACHINE,
+            "Inicio > Electro Hogar > Lavado y Secado",
+        ],
+        [
+            "electro-hogar/lavado-y-secado/lavadoras",
+            WASHING_MACHINE,
+            "Inicio > Electro Hogar > Lavado y Secado > Lavadoras",
+        ],
+        [
+            "electro-hogar/lavado-y-secado/secadoras/",
+            WASHING_MACHINE,
+            "Inicio > Electro Hogar > Lavado y Secado > Secadoras",
+        ],
+        [
+            "electro-hogar/lavado-y-secado/lavadoras-secadoras",
+            WASHING_MACHINE,
+            "Inicio > Electro Hogar > Lavado y Secado > Lavadoras-Secadoras",
+        ],
+        [
+            "electro-hogar/lavado-y-secado/carga-frontal",
+            WASHING_MACHINE,
+            "Inicio > Electro Hogar > Lavado y Secado > Carga Frontal",
+        ],
+        [
+            "electro-hogar/lavado-y-secado/carga-superior",
+            WASHING_MACHINE,
+            "Inicio > Electro Hogar > Lavado y Secado > Carga Superior",
+        ],
+        ["electro-hogar/cocina", OVEN, "Inicio > Electro Hogar > Cocina"],
+        [
+            "electro-hogar/cocina/cocina-a-gas",
+            STOVE,
+            "Inicio > Electro Hogar > Cocina > Cocina a gas",
+        ],
+        [
+            "electro-hogar/lavado-y-secado/lavavajillas",
+            DISH_WASHER,
+            "Inicio > Electro Hogar > Cocina > Lavavajillas",
+        ],
+        [
+            "electro-hogar/cocina/encimeras",
+            STOVE,
+            "Inicio > Electro Hogar > Cocina > Encimeras",
+        ],
+        [
+            "electro-hogar/cocina/hornos-empotrados",
+            OVEN,
+            "Inicio > Electro Hogar > Cocina > Hornos Empotrados",
+        ],
+        [
+            "electro-hogar/electrodomesticos-cocina/microondas",
+            OVEN,
+            "Inicio > Electro Hogar > Electrodomesticos Cocina > Microondas",
+        ],
+        [
+            "electro-hogar/electrodomesticos-cocina/hornos-electricos",
+            OVEN,
+            "Inicio > Electro Hogar > Electrodomesticos Cocina > Hornos Eléctricos",
+        ],
+        [
+            "electro-hogar/calefaccion",
+            SPACE_HEATER,
+            "Inicio > Electro Hogar > Calefacción",
+        ],
+        [
+            "electro-hogar/calefaccion/estufas-a-gas",
+            SPACE_HEATER,
+            "Inicio > Electro Hogar > Calefacción > Estufas a Gas",
+        ],
+        [
+            "electro-hogar/calefaccion/f/estufa-a-lena",
+            SPACE_HEATER,
+            "Inicio > Electro Hogar > Calefacción > Estufa a Leña",
+        ],
+        [
+            "electro-hogar/calefaccion/estufas-electricas",
+            SPACE_HEATER,
+            "Inicio > Electro Hogar > Calefacción > Estufas Eléctricas",
+        ],
+        [
+            "electro-hogar/climatizacion",
+            SPLIT_AIR_CONDITIONER,
+            "Inicio > Electro Hogar > Climatización",
+        ],
+        [
+            "electro-hogar/climatizacion/f/aire-acondicionado",
+            SPLIT_AIR_CONDITIONER,
+            "Inicio > Electro Hogar > Climatizacioń >  " "Aire Acondicionado",
+        ],
+        ["tecnologia/tv-video", TELEVISION, "Inicio > Tecnología > TV Video"],
+        [
+            "tecnologia/tv-video/televisores-smart-tv",
+            TELEVISION,
+            "Inicio > Tecnología > Tv Video > Smart TV",
+        ],
+        [
+            "tecnologia/tv-video/smart-tv-premium",
+            TELEVISION,
+            "Inicio > Tecnología > Tv Video > Smart TV Premium",
+        ],
+        # ['tecnologia/tv-video/smart-tv-hasta-49', Television',
+        #  'Inicio > Tecnología > Tv Video > Smart TV Hasta 49'],
+        # ['tecnologia/tv-video/smart-tv-entre-50-y-55', 'Television',
+        #  'Inicio > Tecnología > Tv Video > Smart TV Entre 50 y 55'],
+        # ['tecnologia/tv-video/smart-tv-desde-58', 'Television',
+        #  'Inicio > Tecnología > Tv Video > Smart TV Desde 58'],
+        [
+            "tecnologia/tv-video/smart-tv-samsung",
+            TELEVISION,
+            "Inicio > Tecnología > Tv Video > Smart Tv Samsung",
+        ],
+        [
+            "tecnologia/tv-video/smart-tv-lg",
+            TELEVISION,
+            "Inicio > Tecnología > Tv Video > Smart Tv LG",
+        ],
+        [
+            "tecnologia/tv-video/smart-tv-hisense",
+            TELEVISION,
+            "Inicio > Tecnología > Tv Video > Smart Tv Hisense",
+        ],
+        [
+            "tecnologia/tv-video/f/soundbar",
+            STEREO_SYSTEM,
+            "Inicio > Tecnología > TV Video > Soundbar",
+        ],
+        [
+            "tecnologia/tv-video/proyectores",
+            PROJECTOR,
+            "Inicio > Tecnología > TV Video > Proyectores",
+        ],
+        ["tecnologia/computacion", NOTEBOOK, "Inicio > Tecnología > Computación"],
+        [
+            "tecnologia/computacion/notebook",
+            NOTEBOOK,
+            "Inicio > Tecnología > Computación > Notebook",
+        ],
+        [
+            "tecnologia/computacion/tablets",
+            TABLET,
+            "Inicio > Tecnología > Computación > Tablets",
+        ],
+        [
+            "tecnologia/computacion/computadores-y-all-in-one",
+            ALL_IN_ONE,
+            "Inicio > Tecnología > Computacioń > All in One",
+        ],
+        [
+            "tecnologia/computacion/monitores",
+            MONITOR,
+            "Inicio > Tecnología > Computación > Monitores y Proyectores",
+        ],
+        [
+            "tecnologia/computacion/impresoras-y-multifuncionales",
+            PRINTER,
+            "Inicio > Tecnología > Computación > " "Impresoras y Multifuncionales",
+        ],
+        [
+            "tecnologia/videojuegos/consolas",
+            VIDEO_GAME_CONSOLE,
+            "Inicio > Tecnología > Video Juego > Consolas",
+        ],
+        [
+            "tecnologia/accesorios-y-otros/mouse-y-teclados",
+            MOUSE,
+            "Inicio > Tecnología > Accesorios y Otros > Mouse y Teclados",
+        ],
+        [
+            "tecnologia/accesorios-y-otros/pendrives-y-tarjetas-de-memoria",
+            USB_FLASH_DRIVE,
+            "Inicio > Tecnología > Accesorios y Otros > Pendrives y Tarjetas de Memoria",
+        ],
+        [
+            "tecnologia/accesorios-y-otros/discos-duros-y-pendrives",
+            EXTERNAL_STORAGE_DRIVE,
+            "Inicio > Tecnología > Accesorios y Otros > Discos Duros y Pendrives",
+        ],
+        ["tecnologia/audio", HEADPHONES, "Inicio > Tecnología > Audio"],
+        [
+            "tecnologia/audio/parlantes-bluetooth",
+            STEREO_SYSTEM,
+            "Inicio > Tecnología > Audio > Parlantes Bluetooth",
+        ],
+        [
+            "tecnologia/audio/karaokes",
+            STEREO_SYSTEM,
+            "Inicio > Tecnología > Audio > Karaokes",
+        ],
+        [
+            "tecnologia/audio/minicomponentes",
+            STEREO_SYSTEM,
+            "Inicio > Tecnología > Audio > Minicomponentes",
+        ],
+        [
+            "celulares/audio/audifonos",
+            HEADPHONES,
+            "Inicio > Celulares > Accesorios para celulares > Audífonos",
+        ],
+        [
+            "celulares/audio/audifonos-inalambrico",
+            HEADPHONES,
+            "Inicio > Celulares > Accesorios para celulares > Audífonos Inalámbrico",
+        ],
+        [
+            "tecnologia/mundo-gamer/notebook-gamer",
+            NOTEBOOK,
+            "Tecnología > Mundo Gamer > Notebook Gamer",
+        ],
+        [
+            "tecnologia/mundo-gamer/monitores-gamer",
+            MONITOR,
+            "Tecnología > Mundo Gamer > Monitores Gamer",
+        ],
+        [
+            "tecnologia/mundo-gamer/sillas-gamer",
+            GAMING_CHAIR,
+            "Tecnología > Mundo Gamer > Sillas Gamer",
+        ],
+        [
+            "tecnologia/mundo-gamer/audifonos-gamer",
+            HEADPHONES,
+            "Tecnología > Mundo Gamer > Audífonos Gamer",
+        ],
+        [
+            "tecnologia/mundo-gamer/mouse-y-teclados-gamer",
+            MOUSE,
+            "Tecnología > Mundo Gamer > Mouse y Teclados Gamer",
+        ],
+        ["celulares/smartphones", CELL, "Inicio > Celulares > Smartphones"],
+        [
+            "celulares/smartphones/smartphone",
+            CELL,
+            "Inicio > Celulares > Smartphones > Smartphones",
+        ],
+        [
+            "celulares/smartphones/celulares-liberados",
+            CELL,
+            "Inicio > Celulares > Smartphones > Celulares Liberados",
+        ],
+        [
+            "celulares/smartphones/smartphones-reacondicionados",
+            CELL,
+            "Inicio > Celulares > Smartphones > Celulares Reacondicionados",
+        ],
+        [
+            "celulares/smartphones/celulares-basicos",
+            CELL,
+            "Inicio > Celulares > Smartphone > Celulares Basicos",
+        ],
+        [
+            "celulares/wearables/smartwatch",
+            WEARABLE,
+            "Inicio > Celulares > Accesorios para celulares > Smartwatch",
+        ],
+        [
+            "celulares/accesorios-para-celulares/audifonos",
+            HEADPHONES,
+            "Inicio > Celulares > Accesorios para celulares > Audífonos",
+        ],
+        [
+            "electro-hogar/calefaccion/calefont-y-termos",
+            WATER_HEATER,
+            "Inicio > Electro Hogar > Calefacción > Calefont y Termos",
+        ],
+        [
+            "electro-hogar/electrodomesticos-cocina",
+            ACCESORIES,
+            "Inicio > Electro Hogar > Electrodomésticos Cocina",
+        ],
+        [
+            "tecnologia/accesorios-y-otros/tintas-y-toner",
+            PRINTER_SUPPLY,
+            "Inicio > Tecnología > Accesorios y Otros > Tintas y Toner",
+        ],
+        [
+            "electro-hogar/electrodomesticos-hogar/planchas",
+            IRON,
+            "Electro Hogar > Electrodomesticos Hogar > Planchas",
+        ],
+        [
+            "belleza/cuidado-personal/secadores-de-pelo",
+            HAIR_CARE,
+            "Belleza > Cuidado Personal > Secadores De Pelo",
+        ],
+        [
+            "belleza/cuidado-personal/onduladores",
+            HAIR_CARE,
+            "Belleza > Cuidado Personal > Onduladores",
+        ],
+        [
+            "belleza/cuidado-personal/alisadores",
+            HAIR_CARE,
+            "Belleza > Cuidado Personal > Alisadores",
+        ],
+        [
+            "electro-hogar/cuidado-personal/secadores-de-pelo",
+            HAIR_CARE,
+            "Electro Hogar > Cuidado Personal > Secadores de Pelo",
+        ],
+        [
+            "electro-hogar/cuidado-personal/onduladores",
+            HAIR_CARE,
+            "Electro Hogar > Cuidado Personal > Onduladores",
+        ],
+        [
+            "electro-hogar/cuidado-personal/alisadores",
+            HAIR_CARE,
+            "Electro Hogar > Cuidado Personal > Alisadores",
+        ],
+    ]
+
     @classmethod
     def categories(cls):
-        return [
-            NOTEBOOK,
-            TELEVISION,
-            TABLET,
-            REFRIGERATOR,
-            PRINTER,
-            OVEN,
-            STOVE,
-            WASHING_MACHINE,
-            CELL,
-            STEREO_SYSTEM,
-            VIDEO_GAME_CONSOLE,
-            ALL_IN_ONE,
-            SPACE_HEATER,
-            KEYBOARD,
-            MOUSE,
-            HEADPHONES,
-            EXTERNAL_STORAGE_DRIVE,
-            MONITOR,
-            PROJECTOR,
-            SPLIT_AIR_CONDITIONER,
-            USB_FLASH_DRIVE,
-            WEARABLE,
-            DISH_WASHER,
-            GAMING_CHAIR,
-            WATER_HEATER,
-            PRINTER_SUPPLY,
-            IRON,
-            HAIR_CARE,
-        ]
+        return list({local_category for _, local_category, _ in cls.category_paths})
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
-        category_paths = [
-            [
-                "electro-hogar/refrigeradores",
-                [REFRIGERATOR],
-                "Inicio > Electro Hogar > Refrigeradores",
-                1,
-            ],
-            [
-                "electro-hogar/refrigeradores/refrigerador-frio-directo",
-                [REFRIGERATOR],
-                "Inicio > Electro Hogar > Refrigeradores > Frío Directo",
-                1,
-            ],
-            [
-                "electro-hogar/refrigeradores/refrigerador-no-frost",
-                [REFRIGERATOR],
-                "Inicio > Electro Hogar > Refrigeradores > No Frost",
-                1,
-            ],
-            [
-                "electro-hogar/refrigeradores/refrigerador-side-by-side",
-                [REFRIGERATOR],
-                "Inicio > Electro Hogar > Refrigeradores > Side by Side",
-                1,
-            ],
-            [
-                "electro-hogar/refrigeradores/refrigerador-bottom-freezer",
-                [REFRIGERATOR],
-                "Inicio > Electro Hogar > Refrigeradores > Refrigerador "
-                "Bottom Freezer",
-                1,
-            ],
-            [
-                "electro-hogar/refrigeradores/refrigerador-top-freezer",
-                [REFRIGERATOR],
-                "Inicio > Electro Hogar > Refrigeradores > Refrigerador " "Top Freezer",
-                1,
-            ],
-            [
-                "electro-hogar/refrigeradores/freezer-y-frigobar",
-                [REFRIGERATOR],
-                "Inicio > Electro Hogar > Refrigeradores > Freezers y Frigobar",
-                1,
-            ],
-            [
-                "electro-hogar/lavado-y-secado",
-                [WASHING_MACHINE],
-                "Inicio > Electro Hogar > Lavado y Secado",
-                1,
-            ],
-            [
-                "electro-hogar/lavado-y-secado/lavadoras",
-                [WASHING_MACHINE],
-                "Inicio > Electro Hogar > Lavado y Secado > Lavadoras",
-                1,
-            ],
-            [
-                "electro-hogar/lavado-y-secado/secadoras/",
-                [WASHING_MACHINE],
-                "Inicio > Electro Hogar > Lavado y Secado > Secadoras",
-                1,
-            ],
-            [
-                "electro-hogar/lavado-y-secado/lavadoras-secadoras",
-                [WASHING_MACHINE],
-                "Inicio > Electro Hogar > Lavado y Secado > Lavadoras-Secadoras",
-                1,
-            ],
-            [
-                "electro-hogar/lavado-y-secado/carga-frontal",
-                [WASHING_MACHINE],
-                "Inicio > Electro Hogar > Lavado y Secado > Carga Frontal",
-                1,
-            ],
-            [
-                "electro-hogar/lavado-y-secado/carga-superior",
-                [WASHING_MACHINE],
-                "Inicio > Electro Hogar > Lavado y Secado > Carga Superior",
-                1,
-            ],
-            [
-                "electro-hogar/cocina",
-                [OVEN, STOVE],
-                "Inicio > Electro Hogar > Cocina",
-                0,
-            ],
-            [
-                "electro-hogar/cocina/cocina-a-gas",
-                [STOVE],
-                "Inicio > Electro Hogar > Cocina > Cocina a gas",
-                1,
-            ],
-            [
-                "electro-hogar/lavado-y-secado/lavavajillas",
-                [DISH_WASHER],
-                "Inicio > Electro Hogar > Cocina > Lavavajillas",
-                1,
-            ],
-            [
-                "electro-hogar/cocina/encimeras",
-                [STOVE],
-                "Inicio > Electro Hogar > Cocina > Encimeras",
-                1,
-            ],
-            [
-                "electro-hogar/cocina/hornos-empotrados",
-                [OVEN],
-                "Inicio > Electro Hogar > Cocina > Hornos Empotrados",
-                1,
-            ],
-            [
-                "electro-hogar/electrodomesticos-cocina/microondas",
-                [OVEN],
-                "Inicio > Electro Hogar > Electrodomesticos Cocina > Microondas",
-                1,
-            ],
-            [
-                "electro-hogar/electrodomesticos-cocina/hornos-electricos",
-                [OVEN],
-                "Inicio > Electro Hogar > Electrodomesticos Cocina > "
-                "Hornos Eléctricos",
-                1,
-            ],
-            [
-                "electro-hogar/calefaccion",
-                [SPACE_HEATER],
-                "Inicio > Electro Hogar > Calefacción",
-                0,
-            ],
-            [
-                "electro-hogar/calefaccion/estufas-a-gas",
-                [SPACE_HEATER],
-                "Inicio > Electro Hogar > Calefacción > Estufas a Gas",
-                1,
-            ],
-            [
-                "electro-hogar/calefaccion/f/estufa-a-lena",
-                [SPACE_HEATER],
-                "Inicio > Electro Hogar > Calefacción > Estufa a Leña",
-                1,
-            ],
-            [
-                "electro-hogar/calefaccion/estufas-electricas",
-                [SPACE_HEATER],
-                "Inicio > Electro Hogar > Calefacción > Estufas Eléctricas",
-                1,
-            ],
-            [
-                "electro-hogar/climatizacion",
-                [SPLIT_AIR_CONDITIONER],
-                "Inicio > Electro Hogar > Climatización",
-                0,
-            ],
-            [
-                "electro-hogar/climatizacion/f/aire-acondicionado",
-                [SPLIT_AIR_CONDITIONER],
-                "Inicio > Electro Hogar > Climatizacioń >  " "Aire Acondicionado",
-                1,
-            ],
-            [
-                "tecnologia/tv-video",
-                [TELEVISION, STEREO_SYSTEM, PROJECTOR],
-                "Inicio > Tecnología > TV Video",
-                0,
-            ],
-            [
-                "tecnologia/tv-video/televisores-smart-tv",
-                [TELEVISION],
-                "Inicio > Tecnología > Tv Video > Smart TV",
-                1,
-            ],
-            [
-                "tecnologia/tv-video/smart-tv-premium",
-                [TELEVISION],
-                "Inicio > Tecnología > Tv Video > Smart TV Premium",
-                1,
-            ],
-            # ['tecnologia/tv-video/smart-tv-hasta-49', ['Television'],
-            #  'Inicio > Tecnología > Tv Video > Smart TV Hasta 49', 1],
-            # ['tecnologia/tv-video/smart-tv-entre-50-y-55', ['Television'],
-            #  'Inicio > Tecnología > Tv Video > Smart TV Entre 50 y 55', 1],
-            # ['tecnologia/tv-video/smart-tv-desde-58', ['Television'],
-            #  'Inicio > Tecnología > Tv Video > Smart TV Desde 58', 1],
-            [
-                "tecnologia/tv-video/smart-tv-samsung",
-                [TELEVISION],
-                "Inicio > Tecnología > Tv Video > Smart Tv Samsung",
-                1,
-            ],
-            [
-                "tecnologia/tv-video/smart-tv-lg",
-                [TELEVISION],
-                "Inicio > Tecnología > Tv Video > Smart Tv LG",
-                1,
-            ],
-            [
-                "tecnologia/tv-video/smart-tv-hisense",
-                [TELEVISION],
-                "Inicio > Tecnología > Tv Video > Smart Tv Hisense",
-                1,
-            ],
-            [
-                "tecnologia/tv-video/f/soundbar",
-                [STEREO_SYSTEM],
-                "Inicio > Tecnología > TV Video > Soundbar",
-                1,
-            ],
-            [
-                "tecnologia/tv-video/proyectores",
-                [PROJECTOR],
-                "Inicio > Tecnología > TV Video > Proyectores",
-                1,
-            ],
-            [
-                "tecnologia/computacion",
-                [NOTEBOOK, TABLET, PRINTER, MONITOR, ALL_IN_ONE],
-                "Inicio > Tecnología > Computación",
-                0,
-            ],
-            [
-                "tecnologia/computacion/notebook",
-                [NOTEBOOK],
-                "Inicio > Tecnología > Computación > Notebook",
-                1,
-            ],
-            [
-                "tecnologia/computacion/tablets",
-                [TABLET],
-                "Inicio > Tecnología > Computación > Tablets",
-                1,
-            ],
-            [
-                "tecnologia/computacion/computadores-y-all-in-one",
-                [ALL_IN_ONE],
-                "Inicio > Tecnología > Computacioń > All in One",
-                1,
-            ],
-            [
-                "tecnologia/computacion/monitores",
-                [MONITOR],
-                "Inicio > Tecnología > Computación > Monitores y Proyectores",
-                1,
-            ],
-            [
-                "tecnologia/computacion/impresoras-y-multifuncionales",
-                [PRINTER],
-                "Inicio > Tecnología > Computación > " "Impresoras y Multifuncionales",
-                1,
-            ],
-            [
-                "tecnologia/videojuegos/consolas",
-                [VIDEO_GAME_CONSOLE],
-                "Inicio > Tecnología > Video Juego > Consolas",
-                1,
-            ],
-            [
-                "tecnologia/accesorios-y-otros/mouse-y-teclados",
-                [MOUSE, KEYBOARD],
-                "Inicio > Tecnología > Accesorios y Otros > Mouse y Teclados",
-                0.5,
-            ],
-            [
-                "tecnologia/accesorios-y-otros/pendrives-y-tarjetas-de-memoria",
-                [USB_FLASH_DRIVE, MEMORY_CARD],
-                "Inicio > Tecnología > Accesorios y Otros > Pendrives y "
-                "Tarjetas de Memoria",
-                1,
-            ],
-            [
-                "tecnologia/accesorios-y-otros/discos-duros-y-pendrives",
-                [EXTERNAL_STORAGE_DRIVE, USB_FLASH_DRIVE],
-                "Inicio > Tecnología > Accesorios y Otros > Discos Duros"
-                " y Pendrives",
-                0.5,
-            ],
-            [
-                "tecnologia/audio",
-                [STEREO_SYSTEM, HEADPHONES],
-                "Inicio > Tecnología > Audio",
-                0,
-            ],
-            [
-                "tecnologia/audio/parlantes-bluetooth",
-                [STEREO_SYSTEM],
-                "Inicio > Tecnología > Audio > Parlantes Bluetooth",
-                1,
-            ],
-            [
-                "tecnologia/audio/karaokes",
-                [STEREO_SYSTEM],
-                "Inicio > Tecnología > Audio > Karaokes",
-                1,
-            ],
-            [
-                "tecnologia/audio/minicomponentes",
-                [STEREO_SYSTEM],
-                "Inicio > Tecnología > Audio > Minicomponentes",
-                1,
-            ],
-            [
-                "celulares/audio/audifonos",
-                [HEADPHONES],
-                "Inicio > Celulares > Accesorios para celulares > Audífonos",
-                1,
-            ],
-            [
-                "celulares/audio/audifonos-inalambrico",
-                [HEADPHONES],
-                "Inicio > Celulares > Accesorios para celulares > Audífonos"
-                " Inalámbrico",
-                1,
-            ],
-            [
-                "tecnologia/mundo-gamer/notebook-gamer",
-                [NOTEBOOK],
-                "Tecnología > Mundo Gamer > Notebook Gamer",
-                1,
-            ],
-            [
-                "tecnologia/mundo-gamer/monitores-gamer",
-                [MONITOR],
-                "Tecnología > Mundo Gamer > Monitores Gamer",
-                1,
-            ],
-            [
-                "tecnologia/mundo-gamer/sillas-gamer",
-                [GAMING_CHAIR],
-                "Tecnología > Mundo Gamer > Sillas Gamer",
-                1,
-            ],
-            [
-                "tecnologia/mundo-gamer/audifonos-gamer",
-                [HEADPHONES],
-                "Tecnología > Mundo Gamer > Audífonos Gamer",
-                1,
-            ],
-            [
-                "tecnologia/mundo-gamer/mouse-y-teclados-gamer",
-                [MOUSE, KEYBOARD],
-                "Tecnología > Mundo Gamer > Mouse y Teclados Gamer",
-                0.5,
-            ],
-            ["celulares/smartphones", [CELL], "Inicio > Celulares > Smartphones", 1],
-            [
-                "celulares/smartphones/smartphone",
-                [CELL],
-                "Inicio > Celulares > Smartphones > Smartphones",
-                1,
-            ],
-            [
-                "celulares/smartphones/celulares-liberados",
-                [CELL],
-                "Inicio > Celulares > Smartphones > Celulares Liberados",
-                1,
-            ],
-            [
-                "celulares/smartphones/smartphones-reacondicionados",
-                [CELL],
-                "Inicio > Celulares > Smartphones > Celulares Reacondicionados",
-                1,
-            ],
-            [
-                "celulares/smartphones/celulares-basicos",
-                [CELL],
-                "Inicio > Celulares > Smartphone > Celulares Basicos",
-                1,
-            ],
-            [
-                "celulares/wearables/smartwatch",
-                [WEARABLE],
-                "Inicio > Celulares > Accesorios para celulares > Smartwatch",
-                1,
-            ],
-            [
-                "celulares/accesorios-para-celulares/audifonos",
-                [HEADPHONES],
-                "Inicio > Celulares > Accesorios para celulares > Audífonos",
-                1,
-            ],
-            [
-                "electro-hogar/calefaccion/calefont-y-termos",
-                [WATER_HEATER],
-                "Inicio > Electro Hogar > Calefacción > Calefont y Termos",
-                1,
-            ],
-            [
-                "electro-hogar/electrodomesticos-cocina",
-                [ACCESORIES],
-                "Inicio > Electro Hogar > Electrodomésticos Cocina",
-                1,
-            ],
-            [
-                "tecnologia/accesorios-y-otros/tintas-y-toner",
-                [PRINTER_SUPPLY],
-                "Inicio > Tecnología > Accesorios y Otros > Tintas y Toner",
-                1,
-            ],
-            [
-                "electro-hogar/electrodomesticos-hogar/planchas",
-                [IRON],
-                "Electro Hogar > Electrodomesticos Hogar > Planchas",
-                1,
-            ],
-            [
-                "belleza/cuidado-personal/secadores-de-pelo",
-                [HAIR_CARE],
-                "Belleza > Cuidado Personal > Secadores De Pelo",
-                1,
-            ],
-            [
-                "belleza/cuidado-personal/onduladores",
-                [HAIR_CARE],
-                "Belleza > Cuidado Personal > Onduladores",
-                1,
-            ],
-            [
-                "belleza/cuidado-personal/alisadores",
-                [HAIR_CARE],
-                "Belleza > Cuidado Personal > alisadores",
-                1,
-            ],
-        ]
+    def discover_urls_for_category(cls, category, extra_args=None):
+        seen_urls = set()
 
-        product_entries = defaultdict(lambda: [])
-        session = cls.get_session()
-
-        for e in category_paths:
-            category_path, local_categories, section_name, category_weight = e
-
+        for category_path, local_categories, _ in cls.category_paths:
             if category not in local_categories:
                 continue
 
-            start = 0
-            current_position = 1
-            step = 48
-
-            while True:
-                category_url = (
-                    "https://www.hites.com/{}/?sz={}&start={}&"
-                    "srule=best-matches".format(category_path, step, start)
-                )
-                print(category_url)
-
-                if start >= step * 100:
-                    raise Exception("Page overflow: " + category_url)
-
-                response = session.get(category_url, timeout=60)
-                if response.url != category_url:
-                    raise Exception(
-                        "Page mismatch. Expecting {} Got {}"
-                        "".format(category_url, response.url)
-                    )
-
-                if response.status_code in [404, 500]:
-                    break
-
-                soup = BeautifulSoup(response.text, "lxml")
-
-                products = soup.findAll("div", "product-tile")
-
-                if not products:
-                    # if start == 0:
-                    #     raise Exception(category_url)
-                    break
-
-                for product_entry in products:
-                    a_tag = product_entry.find("a")
-
-                    if not a_tag:
-                        current_position += 1
-                        continue
-
-                    path = a_tag["href"].split("?")[0]
-
-                    if "hites.com" in path:
-                        product_url = path
-                    else:
-                        product_url = "https://www.hites.com" + path
-
-                    if product_url == "https://www.hites.com/":
-                        logging.warning("Invalid URL: " + category_url)
-                        continue
-
-                    product_entries[product_url].append(
-                        {
-                            "category_weight": category_weight,
-                            "section_name": section_name,
-                            "value": current_position,
-                        }
-                    )
-                    current_position += 1
-
-                start += step
-
-        return product_entries
+            for product_url in cls._get_product_urls(
+                category_path, exclude_marketplace=True
+            ):
+                if product_url not in seen_urls:
+                    seen_urls.add(product_url)
+                    yield product_url
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
         session = cls.get_session()
         product_urls = []
-
         page = 1
 
         while True:
             if page > 40:
                 raise Exception("Page overflow")
 
-            search_url = "https://www.hites.com/search/{}?page={}".format(keyword, page)
+            search_url = f"https://www.hites.com/search/{keyword}?page={page}"
             print(search_url)
 
             response = session.get(search_url, timeout=60)
@@ -606,8 +439,9 @@ class Hites(Store):
 
             for product_entry in product_data:
                 slug = product_entry["productString"]
-                product_url = "https://www.hites.com/" + slug
+                product_url = f"https://www.hites.com/{slug}"
                 product_urls.append(product_url)
+
                 if len(product_urls) == threshold:
                     return product_urls
 
@@ -620,45 +454,24 @@ class Hites(Store):
         print(url)
         session = cls.get_session()
         response = session.get(url, timeout=60)
-
-        if response.status_code in [404, 410]:
-            return []
-
-        page_source = response.text
-        soup = BeautifulSoup(page_source, "lxml")
-
-        if soup.find("section", "error-page"):
-            return []
-
-        if soup.find("img", {"src": "/public/statics/images/404.svg"}):
-            return []
+        soup = BeautifulSoup(response.text, "lxml")
 
         name = soup.find("h1", "product-name").text
         sku = soup.find("span", "product-id").text
 
         prices = soup.find("div", "prices")
-
-        offer_price_container = prices.find("span", "hites-price")
-        offer_price = None
-        if offer_price_container:
-            offer_price = Decimal(
-                offer_price_container.text.split("$")[1].replace(".", "").strip()
-            )
-
-        normal_price_container = prices.find("span", "sales")
-        if not normal_price_container:
-            normal_price_container = prices.find("span", "list")
-
-        if not normal_price_container and not offer_price_container:
-            return []
-
+        normal_price_container = prices.find("span", "sales") or prices.find(
+            "span", "list"
+        )
         normal_price = Decimal(normal_price_container.find("span", "value")["content"])
-
-        if not offer_price:
-            offer_price = normal_price
+        offer_price_container = prices.find("span", "hites-price")
+        offer_price = (
+            Decimal(offer_price_container.text.split("$")[1].replace(".", "").strip())
+            if offer_price_container
+            else normal_price
+        )
 
         has_virtual_assistant = "cdn.livechatinc.com/tracking.js" in response.text
-
         flixmedia_container = soup.find(
             "script", {"src": "//media.flixfacts.com/js/loader.js"}
         )
@@ -668,45 +481,37 @@ class Hites(Store):
         if flixmedia_container:
             mpn = flixmedia_container["data-flix-mpn"]
             video_urls = flixmedia_video_urls(mpn)
+
             if video_urls is not None:
                 flixmedia_id = mpn
 
-        if "reacondicionado" in name.lower():
-            condition = "https://schema.org/RefurbishedCondition"
-        else:
-            condition = "https://schema.org/NewCondition"
+        condition = (
+            "https://schema.org/RefurbishedCondition"
+            if "reacondicionado" in name.lower()
+            else "https://schema.org/NewCondition"
+        )
 
         images = soup.find("div", "primary-images").findAll("div", "carousel-item")
-
         picture_urls = [
             i.find("img")["src"].replace(" ", "%20")
             for i in images
             if i.find("img") is not None
         ]
 
-        seller = soup.find("b", "seller").text.strip()
-
-        if seller == "Hites":
-            seller = None
-
+        seller_text = soup.find("b", "seller").text.strip()
+        seller = None if seller_text == "Hites" else seller_text
         availability_match = re.search(r'"availability":"(.+)"}', response.text)
         availability_text = availability_match.groups()[0]
-
-        if seller:
-            stock = 0
-        elif availability_text == "http://schema.org/OutOfStock":
-            stock = 0
-        elif availability_text == "http://schema.org/InStock":
-            stock = -1
-        else:
-            raise Exception("Invalid availability text: {}".format(availability_text))
+        stock = (
+            0 if seller or availability_text == "http://schema.org/OutOfStock" else -1
+        )
 
         review_count_tag = soup.find("span", "top-stars-rating-details")
-
-        if review_count_tag:
-            review_count = int(review_count_tag.text.replace("(", "").replace(")", ""))
-        else:
-            review_count = 0
+        review_count = (
+            int(review_count_tag.text.replace("(", "").replace(")", ""))
+            if review_count_tag
+            else 0
+        )
 
         if review_count:
             review_score_tag = soup.find("div", "yotpo-score-average")
@@ -718,7 +523,7 @@ class Hites(Store):
             str(soup.find("div", {"id": "descriptionAndDetails"}))
         )
 
-        p = Product(
+        product = Product(
             name,
             cls.__name__,
             category,
@@ -741,7 +546,7 @@ class Hites(Store):
             description=description,
         )
 
-        return [p]
+        yield product
 
     @classmethod
     def banners(cls, extra_args=None):
@@ -775,3 +580,81 @@ class Hites(Store):
     @classmethod
     def get_session(cls, extra_args=None):
         return requests.Session(impersonate="chrome120")
+
+    @classmethod
+    def sections(cls):
+        return [section for _, _, section in cls.category_paths]
+
+    @classmethod
+    def section_positions(cls, section, extra_args=None):
+        section_positions = []
+
+        for category_path, _, section_path in cls.category_paths:
+            if section != section_path:
+                continue
+
+            for idx, product_url in enumerate(
+                cls._get_product_urls(category_path, exclude_marketplace=False)
+            ):
+                section_positions.append(
+                    {
+                        "field": "discovery_url",
+                        "value": product_url,
+                        "position": idx + 1,
+                        "section": section,
+                    }
+                )
+
+        return section_positions
+
+    @classmethod
+    def _get_product_urls(cls, category_path, exclude_marketplace):
+        session = cls.get_session()
+        start = 0
+        step = 48
+
+        while True:
+            category_url = f"https://www.hites.com/{category_path}/?sz={step}&start={start}&srule=best-matches"
+
+            if exclude_marketplace:
+                category_url += "&prefn1=productoMKP&prefv1=Hites.com"
+
+            print(category_url)
+
+            if start >= step * 100:
+                raise Exception(f"Page overflow: {category_url}")
+
+            response = session.get(category_url, timeout=60)
+
+            if response.url != category_url:
+                raise Exception(
+                    f"Page mismatch. Expecting {category_url} Got {response.url}"
+                )
+
+            if response.status_code in [404, 500]:
+                break
+
+            soup = BeautifulSoup(response.text, "lxml")
+            products = soup.findAll("div", "product-tile")
+
+            if not products:
+                break
+
+            for product_entry in products:
+                a_tag = product_entry.find("a")
+
+                if not a_tag:
+                    continue
+
+                path = a_tag["href"].split("?")[0]
+                product_url = (
+                    path if "hites.com" in path else f"https://www.hites.com{path}"
+                )
+
+                if product_url == "https://www.hites.com/":
+                    logging.warning(f"Invalid URL: {category_url}")
+                    continue
+
+                yield product_url
+
+            start += step
