@@ -142,6 +142,7 @@ from .invasion_gamer import InvasionGamer
 from .inverfin import Inverfin
 from .jasaltec import Jasaltec
 from .jetstereo import Jetstereo
+from .jumbo import Jumbo
 from .jumbo_colombia import JumboColombia
 from .k_d_tec import KDTec
 from .krone_store import KroneStore
