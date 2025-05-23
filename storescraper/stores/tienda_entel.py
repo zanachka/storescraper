@@ -3,23 +3,26 @@ import json
 from bs4 import BeautifulSoup
 from decimal import Decimal
 
+from storescraper.categories import CELL
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
 
 
 class TiendaEntel(Store):
     @classmethod
     def categories(cls):
         return [
-            "Cell",
+            CELL,
         ]
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
+    def discover_urls_for_category(cls, category, extra_args=None):
         from .entel import Entel
 
-        return Entel.discover_entries_for_category(category, extra_args)
+        if category != CELL:
+            return []
+
+        yield from Entel.discover_urls_for_category(category, extra_args)
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -28,7 +31,7 @@ class TiendaEntel(Store):
     @classmethod
     def _products_for_url(cls, url, extra_args=None, retries=5):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
 
         products = []
 

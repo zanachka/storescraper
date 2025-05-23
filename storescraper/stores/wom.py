@@ -1,7 +1,7 @@
 import json
-from collections import defaultdict
 from decimal import Decimal
 
+from storescraper.categories import CELL_PLAN, CELL
 from storescraper.product import Product
 from storescraper.store import Store
 from storescraper.utils import session_with_proxy
@@ -13,22 +13,15 @@ class Wom(Store):
 
     @classmethod
     def categories(cls):
-        return ["CellPlan", "Cell"]
+        return [CELL_PLAN, CELL]
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
-        discovered_entries = defaultdict(lambda: [])
+    def discover_urls_for_category(cls, category, extra_args=None):
+        if category == CELL_PLAN:
+            yield cls.prepago_url
+            yield cls.planes_url
 
-        if category == "CellPlan":
-            discovered_entries[cls.prepago_url].append(
-                {"category_weight": 1, "section_name": "Planes", "value": 1}
-            )
-
-            discovered_entries[cls.planes_url].append(
-                {"category_weight": 1, "section_name": "Planes", "value": 2}
-            )
-
-        elif category == "Cell":
+        elif category == CELL:
             session = session_with_proxy(extra_args)
             equipos_url = (
                 "https://store-srv.wom.cl/rest/V1/content/getList?"
@@ -62,11 +55,7 @@ class Wom(Store):
                     .replace(".", "-")
                     .replace(" ", "-")
                 )
-                discovered_entries[cell_url].append(
-                    {"category_weight": 1, "section_name": "Equipos", "value": idx + 1}
-                )
-
-        return discovered_entries
+                yield cell_url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):

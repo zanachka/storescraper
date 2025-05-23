@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from collections import defaultdict
 from decimal import Decimal
 from requests.exceptions import TooManyRedirects
 
@@ -22,7 +21,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import html_to_markdown
 
 import json
 
@@ -38,7 +37,7 @@ class SamsungChile(Store):
             TELEVISION,
             "TVs",
             [
-                ("filter2=05z01", "Neo QLED"),
+                ("filter2=08z08", "Neo QLED"),
                 ("filter2=05z02", "QLED"),
                 ("filter2=05z09", "OLED"),
                 ("filter1=05z01", "The Frame"),
@@ -164,35 +163,51 @@ class SamsungChile(Store):
         return list({x[1] for x in cls.url_extensions})
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
-        product_entries = defaultdict(lambda: [])
-
+    def discover_urls_for_category(cls, category, extra_args=None):
         for category_id, category_name, section_name, subsections in cls.url_extensions:
             if category_name != category:
                 continue
 
             main_query = "type={}".format(category_id)
-            main_section_data = cls.__discover_entries_for_query(
-                main_query, section_name, extra_args
-            )
-            for product_url, entries in main_section_data.items():
-                product_entries[product_url].extend(entries)
-
-            for subsection_query, subsection_name in subsections:
-                subsection_query = "{}&{}".format(main_query, subsection_query)
-                subsection_data = cls.__discover_entries_for_query(
-                    subsection_query,
-                    "{} > {}".format(section_name, subsection_name),
-                    extra_args,
-                )
-                for product_url, entries in subsection_data.items():
-                    product_entries[product_url].extend(entries)
-
-        return product_entries
+            yield from cls.__discover_urls_for_query(main_query, extra_args)
 
     @classmethod
-    def __discover_entries_for_query(cls, query, section_name, extra_args=None):
-        session = session_with_proxy(extra_args)
+    def sections(cls):
+        for category_id, category_name, section_name, subsections in cls.url_extensions:
+            yield section_name
+            for subsection_filter, subsection_name in subsections:
+                yield f"{section_name} > {subsection_name}"
+
+    @classmethod
+    def section_positions(cls, section, extra_args=None):
+        sections_filters = {}
+
+        for category_id, category_name, section_name, subsections in cls.url_extensions:
+            main_query = "type={}".format(category_id)
+            sections_filters[section_name] = main_query
+
+            for subsection_filter, subsection_name in subsections:
+                subsection_query = "{}&{}".format(main_query, subsection_filter)
+                local_section = "{} > {}".format(section_name, subsection_name)
+                sections_filters[local_section] = subsection_query
+
+        section_filter = sections_filters[section]
+        section_data = cls.__discover_urls_for_query(
+            section_filter,
+            extra_args,
+        )
+        for idx, product_url in enumerate(section_data):
+            section_position = {
+                "field": "discovery_url",
+                "value": product_url,
+                "position": idx + 1,
+                "section": section,
+            }
+            yield section_position
+
+    @classmethod
+    def __discover_urls_for_query(cls, query, extra_args=None):
+        session = cls.get_session(extra_args)
         page_size = 100
         api_url = (
             "https://searchapi.samsung.com/v6/front/b2c/product/"
@@ -200,9 +215,7 @@ class SamsungChile(Store):
             "&onlyFilterInfoYN=N".format(page_size)
         )
 
-        product_entries = defaultdict(lambda: [])
         offset = 0
-        current_position = 1
         while True:
             if offset > page_size * 10:
                 raise Exception("Page overflow")
@@ -223,23 +236,14 @@ class SamsungChile(Store):
                         + "?model="
                         + model["modelCode"]
                     )
-                    product_entries[product_url].append(
-                        {
-                            "category_weight": 1,
-                            "section_name": section_name,
-                            "value": current_position,
-                        }
-                    )
-                current_position += 1
+                    yield product_url
 
             offset += page_size
-
-        return product_entries
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         model = url.split("?model=")[1]
         endpoint = (
             "https://searchapi.samsung.com/v6/front/b2c/product/card/detail/newhybris?"

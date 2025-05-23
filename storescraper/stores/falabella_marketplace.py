@@ -97,13 +97,11 @@ class FalabellaMarketplace(Store):
         return [TELEVISION]
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
-        product_entries = {}
+    def discover_urls_for_category(cls, category, extra_args=None):
+        if category != TELEVISION:
+            return []
 
-        for url in cls.category_paths:
-            product_entries[url] = []
-
-        return product_entries
+        return cls.category_paths
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):

@@ -20,10 +20,9 @@ class Entel(Store):
         return [CELL, CELL_PLAN]
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
-        session = session_with_proxy(extra_args)
+    def discover_urls_for_category(cls, category, extra_args=None):
+        session = cls.get_session(extra_args)
         session.headers["Accept"] = "application/json"
-        product_entries = defaultdict(lambda: [])
 
         if category == CELL:
             # Contrato
@@ -45,31 +44,16 @@ class Entel(Store):
 
                 json_product_list = json.loads(response.text)["records"]
 
-                for idx, device in enumerate(json_product_list):
+                for device in json_product_list:
                     product_url = (
                         "https://miportal.entel.cl/personas/"
                         "producto{}".format(device["detailsAction"]["recordState"])
                     )
-
-                    # We mostly don't care about the exact position, just
-                    # merge the endpoints data
-                    product_entries[product_url].append(
-                        {
-                            "category_weight": 1,
-                            "section_name": endpoint,
-                            "value": idx + 1,
-                        }
-                    )
+                    yield product_url
 
         if category == CELL_PLAN:
-            product_entries[cls.prepago_url].append(
-                {"category_weight": 1, "section_name": "Planes", "value": 1}
-            )
-            product_entries[cls.planes_url].append(
-                {"category_weight": 1, "section_name": "Planes", "value": 2}
-            )
-
-        return product_entries
+            yield cls.prepago_url
+            yield cls.planes_url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
