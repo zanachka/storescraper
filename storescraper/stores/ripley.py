@@ -2,7 +2,6 @@ import logging
 import re
 import json
 from datetime import datetime
-from collections import defaultdict
 
 import validators
 from bs4 import BeautifulSoup
@@ -292,7 +291,9 @@ class Ripley(Store):
             if category != local_category:
                 continue
 
-            for product_url in cls._get_product_urls(category_path, True, extra_args):
+            for product_url in cls._get_product_urls(
+                category_path, exclude_marketplace=True, extra_args=extra_args
+            ):
                 if product_url not in seen_urls:
                     seen_urls.add(product_url)
                     yield product_url
@@ -312,9 +313,10 @@ class Ripley(Store):
         product_json = json.loads(product_data.groups()[0])
 
         if "product" not in product_json:
-            return None
+            return []
 
         specs_json = product_json["product"]["product"]
+        products = []
 
         for product_entry in specs_json["SKUs"]:
             sku = product_entry["partNumber"] + "P"
@@ -339,7 +341,7 @@ class Ripley(Store):
             elif "listPrice" in prices_entry:
                 normal_price = Decimal(prices_entry["listPrice"]).quantize(0)
             else:
-                return []
+                continue
 
             offer_price = Decimal(
                 product_entry["prices"].get("cardPrice", normal_price)
@@ -453,8 +455,8 @@ class Ripley(Store):
                 review_count=review_count,
                 review_avg_score=review_avg_score,
             )
-
-            yield product
+            products.append(product)
+        return products
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
@@ -507,7 +509,7 @@ class Ripley(Store):
 
     @classmethod
     def banners(cls, extra_args=None):
-        extra_args = cls._extra_args_with_preflight(extra_args)
+        extra_args = cls.extra_args_with_preflight(extra_args)
         base_url = "https://simple.ripley.cl/{}"
 
         sections_data = [
@@ -925,7 +927,9 @@ class Ripley(Store):
                 continue
 
             for idx, product_url in enumerate(
-                cls._get_product_urls(category_path, False, extra_args)
+                cls._get_product_urls(
+                    category_path, exclude_marketplace=False, extra_args=extra_args
+                )
             ):
                 if idx >= 300:
                     break
