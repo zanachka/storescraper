@@ -13,7 +13,6 @@ from storescraper.categories import (
     NOTEBOOK,
     TABLET,
     USB_FLASH_DRIVE,
-    EXTERNAL_STORAGE_DRIVE,
     ALL_IN_ONE,
     MONITOR,
     TELEVISION,
@@ -53,396 +52,250 @@ from storescraper import banner_sections as bs
 
 class Ripley(Store):
     category_paths = [
-        [
-            "tecno/computacion/notebooks",
-            [NOTEBOOK],
-            "Tecno > Computación > Notebooks",
-            1,
-        ],
+        ["tecno/computacion/notebooks", NOTEBOOK, "Tecno > Computación > Notebooks"],
         [
             "tecno/computacion/notebooks-gamer",
-            [NOTEBOOK],
+            NOTEBOOK,
             "Tecno > Computación > Notebooks gamer",
-            1,
         ],
-        [
-            "tecno/computacion/tablets",
-            [TABLET],
-            "Tecno > Computación > Tablets",
-            1,
-        ],
+        ["tecno/computacion/tablets", TABLET, "Tecno > Computación > Tablets"],
         [
             "tecno/computacion/impresoras",
-            [PRINTER_SUPPLY],
+            PRINTER_SUPPLY,
             "Tecno > Computación > Impresoras",
-            1,
         ],
         [
             "tecno/computacion/almacenamiento",
-            [USB_FLASH_DRIVE, EXTERNAL_STORAGE_DRIVE],
+            USB_FLASH_DRIVE,
             "Tecno > Computación > Almacenamiento",
-            0.5,
         ],
         [
             "tecno/computacion/pc-all-in-one",
-            [ALL_IN_ONE],
+            ALL_IN_ONE,
             "Tecno > Computación > PC/All in one",
-            1,
         ],
-        [
-            "tecno/computacion/monitores",
-            [MONITOR],
-            "Tecno > Computación > Monitores",
-            1,
-        ],
+        ["tecno/computacion/monitores", MONITOR, "Tecno > Computación > Monitores"],
         # [
         #     "tecno/television/proyectores-smart",
-        #     [PROJECTOR],
+        #     PROJECTOR,
         #     "Tecno > Televisión > Proyectores smart",
-        #     1,
         # ],
         [
             "tecno/computacion-gamer/monitores",
-            [MONITOR],
+            MONITOR,
             "Tecno > Computación Gamer > Monitores",
-            1,
         ],
-        ["tecno/television", [TELEVISION], "Tecno > Televisión", 1],
-        ["tecno/television/smart-tv", [TELEVISION], "Tecno > Televisión > Smart TV", 1],
+        ["tecno/television", TELEVISION, "Tecno > Televisión"],
+        ["tecno/television/smart-tv", TELEVISION, "Tecno > Televisión > Smart TV"],
         [
             "tecno/television/ultra-hd-4k",
-            [TELEVISION],
+            TELEVISION,
             "Tecno > Televisión > Ultra HD 4K",
-            1,
         ],
         [
             "tecno/television/premium-tv-y-8k",
-            [TELEVISION],
+            TELEVISION,
             "Tecno > Televisión > Premium y 8K",
-            1,
         ],
-        ["electro/refrigeracion", [REFRIGERATOR], "Electro > Refrigeración", 1],
+        ["electro/refrigeracion", REFRIGERATOR, "Electro > Refrigeración"],
         [
             "electro/refrigeracion/refrigerador-no-frost",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electro > Refrigeración > Refrigerador No Frost",
-            1,
         ],
         [
             "electro/refrigeracion/side-by-side",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electro > Refrigeración > Side by Side",
-            1,
         ],
         [
             "electro/refrigeracion/refrigeradores",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electro > Refrigeración > Refrigeradores",
-            1,
         ],
         [
             "electro/refrigeracion/freezers-y-congeladores",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electro > Refrigeración > Freezers y congeladores",
-            1,
         ],
         [
             "electro/refrigeracion/frigobar",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electro > Refrigeración > Frigobar",
-            1,
         ],
-        # ['electro/refrigeracion/door-in-door', [REFRIGERATOR],
-        #  'Electro > Refrigeración > Door in Door', 1],
-        ["electro/cocina/cocinas", [STOVE], "Electro > Cocina > Cocinas", 1],
-        ["electro/cocina/encimeras", [STOVE], "Electro > Cocina > Encimeras", 1],
+        # ['electro/refrigeracion/door-in-door', REFRIGERATOR,
+        #  'Electro > Refrigeración > Door in Door'],
+        ["electro/cocina/cocinas", STOVE, "Electro > Cocina > Cocinas"],
+        ["electro/cocina/encimeras", STOVE, "Electro > Cocina > Encimeras"],
         [
             "electro/electrodomesticos/hornos-y-microondas",
-            [OVEN],
+            OVEN,
             "Electro > Electrodomésticos > Hornos y Microondas",
-            1,
         ],
-        [
-            "electro/cocina/lavavajillas",
-            [DISH_WASHER],
-            "Electro > Cocina > Lavavajillas",
-            1,
-        ],
+        ["electro/cocina/lavavajillas", DISH_WASHER, "Electro > Cocina > Lavavajillas"],
         [
             "electro/aseo/robots-de-limpieza",
-            [VACUUM_CLEANER],
+            VACUUM_CLEANER,
             "Electro > Aseo > Aspiradoras de Arrastre",
-            1,
         ],
         [
             "electro/aseo/aspiradoras-de-arrastre",
-            [VACUUM_CLEANER],
+            VACUUM_CLEANER,
             "Electro > Aseo > Aspiradoras de Arrastre",
-            1,
         ],
         [
             "electro/aseo/aspiradoras-verticales",
-            [VACUUM_CLEANER],
+            VACUUM_CLEANER,
             "Electro > Aseo > Aspiradoras Verticales",
-            1,
         ],
-        ["electro/lavanderia", [WASHING_MACHINE], "Electro > Lavandería", 1],
+        ["electro/lavanderia", WASHING_MACHINE, "Electro > Lavandería"],
         [
             "electro/lavanderia/lavadoras",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Electro > Lavandería > Lavadoras",
-            1,
         ],
         [
             "electro/lavanderia/secadoras",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Electro > Lavandería > Secadoras",
-            1,
         ],
         [
             "electro/lavanderia/lavadora-secadora",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Electro > Lavandería > Lavadora-secadora",
-            1,
         ],
-        # ['electro/lavanderia/doble-carga', [WASHING_MACHINE],
-        #  'Electro > Lavandería > Doble carga', 1],
-        [
-            "tecno/celulares",
-            [CELL],
-            "Tecno > Celulares",
-            1,
-        ],
-        ["tecno/audio-y-musica", [STEREO_SYSTEM], "Tecno > Audio y Música", 0],
+        # ['electro/lavanderia/doble-carga', WASHING_MACHINE,
+        #  'Electro > Lavandería > Doble carga'],
+        ["tecno/celulares", CELL, "Tecno > Celulares"],
+        ["tecno/audio-y-musica", STEREO_SYSTEM, "Tecno > Audio y Música"],
         [
             "tecno/audio-y-musica/equipos-de-musica",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Tecno > Audio y Música > Equipos de música",
-            1,
         ],
         [
             "tecno/audio-y-musica/parlantes-bluetooth",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Tecno > Audio y Música > Parlantes Portables",
-            1,
         ],
         [
             "tecno/audio-y-musica/soundbar-y-home-theater",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Tecno > Audio y Música > Soundbar y Home theater",
-            1,
         ],
         [
             "tecno/television/bluray-dvd-y-tv-portatiles",
-            [OPTICAL_DISK_PLAYER],
+            OPTICAL_DISK_PLAYER,
             "Tecno > Televisión > Bluray -DVD y TV Portátil",
-            1,
         ],
         [
             "tecno/playstation/consolas",
-            [VIDEO_GAME_CONSOLE],
+            VIDEO_GAME_CONSOLE,
             "Tecno > PlayStation > Consolas",
-            1,
         ],
-        [
-            "tecno/nintendo/consolas",
-            [VIDEO_GAME_CONSOLE],
-            "Tecno > Nintendo > Consolas",
-            1,
-        ],
-        # ['tecno/xbox/consolas', [VIDEO_GAME_CONSOLE],
-        #  'Tecno > Xbox > Consolas', 1],
+        ["tecno/nintendo/consolas", VIDEO_GAME_CONSOLE, "Tecno > Nintendo > Consolas"],
+        # ['tecno/xbox/consolas', VIDEO_GAME_CONSOLE,
+        #  'Tecno > Xbox > Consolas'],
         [
             "electro/climatizacion/aire-acondicionado",
-            [SPLIT_AIR_CONDITIONER],
+            SPLIT_AIR_CONDITIONER,
             "Electro > Climatización > Ventiladores y aire acondicionado",
-            1,
         ],
         [
             "electro/climatizacion/purificadores-y-humificadores",
-            [SPLIT_AIR_CONDITIONER],
+            SPLIT_AIR_CONDITIONER,
             "Electro > Climatización > Purificadores y humidificadores",
-            1,
         ],
         [
             "electro/calefaccion",
-            [SPACE_HEATER],
+            SPACE_HEATER,
             "Electro > Climatización > Estufas y calefactores",
-            1,
         ],
         [
             "tecno/smartwatches-y-smartbands",
-            [WEARABLE],
+            WEARABLE,
             "Tecno > Telefonía > Smartwatches y Wearables > Garmin",
-            1,
         ],
         [
             "tecno/audio-y-musica/audifonos",
-            [HEADPHONES],
+            HEADPHONES,
             "Tecno > Audio y Música > Audífonos",
-            1,
         ],
         [
             "tecno/computacion-gamer/audifonos-gamer",
-            [HEADPHONES],
+            HEADPHONES,
             "Tecno > Computación Gamer > Audífonos Gamer",
-            1,
         ],
         [
             "tecno/computacion-gamer/accesorios-gamer",
-            [HEADPHONES],
+            HEADPHONES,
             "Tecno > Computación Gamer > Accesorios Gamer",
-            1,
         ],
         [
             "muebles/home-office-y-oficina/sillas-y-escritorios-gamer",
-            [GAMING_CHAIR],
+            GAMING_CHAIR,
             "Tecno > Computación Gamer > Sillas Gamer",
-            1,
         ],
         [
             "tecno/computacion-gamer/teclados-y-mouse-gamer",
-            [MOUSE],
+            MOUSE,
             "Tecno > Computación Gamer > Teclados y Mouse Gamer",
-            1,
         ],
         [
             "ferreteria/cocina/calefont-y-termos",
-            [WATER_HEATER],
+            WATER_HEATER,
             "Ferretería > Cocina > Calefont y Termos",
-            1,
         ],
-        [
-            "electro/electrodomesticos",
-            [ACCESORIES],
-            "Electro > Electrodomésticos",
-            1,
-        ],
+        ["electro/electrodomesticos", ACCESORIES, "Electro > Electrodomésticos"],
         [
             "electro/cocina/parrillas-electricas",
-            [ELECTRIC_GRILL],
+            ELECTRIC_GRILL,
             "Electro > Cocina > Parrillas Eléctricas",
-            1,
         ],
         [
             "tecno/smart-home/asistentes-virtuales",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Tecno > Smart Home > Asistentes Virtuales",
-            1,
         ],
-        [
-            "belleza/perfumeria?s=mdco",
-            [PERFUME],
-            "Belleza > Perfumería",
-            1,
-        ],
+        ["belleza/perfumeria?s=mdco", PERFUME, "Belleza > Perfumería"],
         [
             "electro/lavanderia/planchas-y-vaporizadores",
-            [IRON],
+            IRON,
             "Electro > Lavandería > Planchas y vaporizadores",
-            1,
         ],
         [
             "electro/cuidado-personal/secadores-de-pelo",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Electro > Cuidado personal > Secadores de pelo",
-            1,
         ],
         [
             "electro/cuidado-personal/alisadores",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Electro > Cuidado personal > Alisadores",
-            1,
         ],
         [
             "electro/cuidado-personal/onduladores",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Electro > Cuidado personal > Onduladores",
-            1,
         ],
     ]
 
     @classmethod
     def categories(cls):
-        cats = set()
-
-        for _, local_categories, _, _ in cls.category_paths:
-            for local_category in local_categories:
-                cats.add(local_category)
-
-        return list(cats)
+        return list({local_category for _, local_category, _ in cls.category_paths})
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
-        category_paths = cls.category_paths
-        session = cls.get_session(extra_args)
-        fast_mode = extra_args and extra_args.get("fast_mode", False)
-        product_entries = defaultdict(lambda: [])
+    def discover_urls_for_category(cls, category, extra_args=None):
+        seen_urls = set()
 
-        for e in category_paths:
-            category_path, local_categories, section_name, category_weight = e
-
-            if category not in local_categories:
+        for category_path, local_category, _ in cls.category_paths:
+            if category != local_category:
                 continue
 
-            page = 1
-            section_index = 1
-
-            while True:
-                if page > 1000:
-                    raise Exception(f"Page overflow: {category_path}")
-
-                separator = "&" if "?" in category_path else "?"
-                url = f"https://simple.ripley.cl/api/v1/catalog-products/{category_path}{separator}page={page}"
-
-                if fast_mode:
-                    url += "&facet=Vendido%20por%3ARipley"
-
-                print(url)
-
-                http_response = session.post(url)
-                try:
-                    response = json.loads(http_response.text)
-                except Exception:
-                    if http_response.status_code == 404:
-                        break
-                    raise Exception(http_response.text)
-                products = response["products"]
-
-                assert products
-
-                for product in products:
-                    product_url = product["url"]
-
-                    if product["partNumber"][:3] == "MPM":
-                        continue
-
-                    if fast_mode:
-                        product_entries[product_url] = []
-                    else:
-                        product_entries[product_url].append(
-                            {
-                                "category_weight": category_weight,
-                                "section_name": section_name,
-                                "value": section_index,
-                            }
-                        )
-
-                    section_index += 1
-
-                if fast_mode and page >= 50:
-                    break
-
-                if (
-                    response["pagination"]["actualPage"]
-                    == response["pagination"]["totalPages"]
-                ):
-
-                    break
-
-                page += 1
-
-        return product_entries
+            for product_url in cls._get_product_urls(category_path, True, extra_args):
+                if product_url not in seen_urls:
+                    seen_urls.add(product_url)
+                    yield product_url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -462,7 +315,6 @@ class Ripley(Store):
             return None
 
         specs_json = product_json["product"]["product"]
-        products = []
 
         for product_entry in specs_json["SKUs"]:
             sku = product_entry["partNumber"] + "P"
@@ -473,19 +325,19 @@ class Ripley(Store):
             # If it's a cell sold by Ripley directly (not Mercado Ripley) add the
             # "Prepago" information in its description
             if category in [CELL, "Unknown"] and "MPM" not in sku:
-                name += " ({})".format(short_description)
+                name += f" ({short_description})"
 
             for attribute in product_entry["Attributes"]:
                 if attribute["usage"] == "Defining":
-                    name += " ({})".format(attribute["Values"][0]["values"])
+                    name += f" ({attribute['Values'][0]['values']})"
                     break
 
-            if "offerPrice" in product_entry["prices"]:
-                normal_price = Decimal(product_entry["prices"]["offerPrice"]).quantize(
-                    0
-                )
-            elif "listPrice" in product_entry["prices"]:
-                normal_price = Decimal(product_entry["prices"]["listPrice"]).quantize(0)
+            prices_entry = product_entry["prices"]
+
+            if "offerPrice" in prices_entry:
+                normal_price = Decimal(prices_entry["offerPrice"]).quantize(0)
+            elif "listPrice" in prices_entry:
+                normal_price = Decimal(prices_entry["listPrice"]).quantize(0)
             else:
                 return []
 
@@ -505,9 +357,7 @@ class Ripley(Store):
 
             for attribute in specs_json["attributes"]:
                 if "name" in attribute and "value" in attribute:
-                    description += "{} | {}\n".format(
-                        attribute["name"], attribute["value"]
-                    )
+                    description += f"{attribute['name']} | {attribute['value']}\n"
 
             description += "\n\n"
             condition = "https://schema.org/NewCondition"
@@ -524,13 +374,10 @@ class Ripley(Store):
             for path in specs_json["images"]:
                 picture_url = path
 
-                if "file://" in picture_url:
-                    continue
-
                 if not picture_url.startswith("http"):
                     picture_url = "https:" + picture_url
 
-                if not validators.url(picture_url):
+                if "file://" in picture_url or not validators.url(picture_url):
                     continue
 
                 picture_urls.append(picture_url)
@@ -548,12 +395,7 @@ class Ripley(Store):
             if seller == "Shop Ecsa":
                 seller = None
 
-            if seller:
-                stock = 0
-            elif product_entry["stock"]:
-                stock = -1
-            else:
-                stock = 0
+            stock = -1 if product_entry["stock"] and not seller else 0
 
             flixmedia_id = None
             video_urls = []
@@ -590,7 +432,7 @@ class Ripley(Store):
                 else:
                     review_count = 0
 
-            p = Product(
+            product = Product(
                 name,
                 cls.__name__,
                 category,
@@ -611,9 +453,8 @@ class Ripley(Store):
                 review_count=review_count,
                 review_avg_score=review_avg_score,
             )
-            products.append(p)
 
-        return products
+            yield product
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
@@ -1033,3 +874,65 @@ class Ripley(Store):
     @classmethod
     def get_session(cls, extra_args=None):
         return cf_session_with_proxy(extra_args)
+
+    @classmethod
+    def _get_product_urls(cls, category_path, exclude_marketplace, extra_args=None):
+        session = cls.get_session(extra_args)
+        page = 1
+
+        while True:
+            if page > 1000:
+                raise Exception(f"Page overflow: {category_path}")
+
+            separator = "&" if "?" in category_path else "?"
+            url = f"https://simple.ripley.cl/api/v1/catalog-products/{category_path}{separator}page={page}"
+
+            if exclude_marketplace:
+                url += "&facet=Vendido%20por%3ARipley"
+
+            print(url)
+            http_response = session.post(url)
+
+            try:
+                response = json.loads(http_response.text)
+            except Exception:
+                if http_response.status_code == 404:
+                    break
+                raise Exception(http_response.text)
+
+            products = response["products"]
+            assert products
+
+            for product in products:
+                yield product["url"]
+
+            if (
+                response["pagination"]["actualPage"]
+                == response["pagination"]["totalPages"]
+            ):
+                break
+
+            page += 1
+
+    @classmethod
+    def sections(cls):
+        return [section for _, _, section in cls.category_paths]
+
+    @classmethod
+    def section_positions(cls, section, extra_args=None):
+        for category_path, _, section_path in cls.category_paths:
+            if section != section_path:
+                continue
+
+            for idx, product_url in enumerate(
+                cls._get_product_urls(category_path, False, extra_args)
+            ):
+                if idx >= 300:
+                    break
+
+                yield {
+                    "field": "discovery_url",
+                    "value": product_url,
+                    "position": idx + 1,
+                    "section": section,
+                }

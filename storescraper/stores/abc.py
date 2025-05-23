@@ -176,10 +176,10 @@ class Abc(Store):
 
         for (
             category_id,
-            local_categories,
+            local_category,
             _,
         ) in cls.ajax_resources:
-            if category not in local_categories:
+            if category != local_category:
                 continue
 
             for product_url in cls._get_product_urls(category_id, extra_args):

@@ -401,8 +401,8 @@ class Hites(Store):
     def discover_urls_for_category(cls, category, extra_args=None):
         seen_urls = set()
 
-        for category_path, local_categories, _ in cls.category_paths:
-            if category not in local_categories:
+        for category_path, local_category, _ in cls.category_paths:
+            if category != local_category:
                 continue
 
             for product_url in cls._get_product_urls(
