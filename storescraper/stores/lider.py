@@ -540,7 +540,7 @@ class Lider(Store):
             if section != section_path:
                 continue
 
-            for idx, product_url in enumerate(
+            for idx, product in enumerate(
                 cls._get_product_urls(
                     category_id,
                     local_category,
@@ -553,7 +553,7 @@ class Lider(Store):
 
                 yield {
                     "field": "discovery_url",
-                    "value": product_url,
+                    "value": product.discovery_url,
                     "position": idx + 1,
                     "section": section,
                 }
