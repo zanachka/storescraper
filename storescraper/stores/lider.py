@@ -21,7 +21,6 @@ from storescraper.categories import (
     PROJECTOR,
     REFRIGERATOR,
     SOLID_STATE_DRIVE,
-    SPACE_HEATER,
     STEREO_SYSTEM,
     TABLET,
     TELEVISION,

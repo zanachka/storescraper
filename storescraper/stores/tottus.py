@@ -8,7 +8,11 @@ from .falabella import Falabella
 
 class Tottus(Falabella):
     store_and_subdomain = "tottus"
-    seller = [{"id": "TOTTUS", "section_prefix": None, "include_in_fast_mode": True}]
+    section_position_variants = [
+        {"id": "TOTTUS", "section_prefix": "TOTTUS", "exclude_marketplace": True},
+        {"id": None, "section_prefix": "GRUPO", "exclude_marketplace": False},
+    ]
+    seller_id = "TOTTUS"
     seller_blacklist = []
     banners_base_url = "https://tottus.cl/"
     product_url_template = (

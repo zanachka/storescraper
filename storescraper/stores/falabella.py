@@ -6,7 +6,6 @@ import urllib
 
 import time
 
-from collections import defaultdict
 from decimal import Decimal
 
 import validators
@@ -37,11 +36,7 @@ class Falabella(Store):
     product_url_template = (
         "https://www.falabella.com/falabella-cl/product/{}/product/{}"
     )
-    pid = "15c37b0b-a392-41a9-8b3b-978376c700d5"
-    seller = [
-        {"id": "FALABELLA", "section_prefix": "RETAIL", "include_in_fast_mode": True},
-        {"id": None, "section_prefix": "GRUPO", "include_in_fast_mode": False},
-    ]
+    seller_id = "FALABELLA"
     seller_blacklist = ["SODIMAC", "TOTTUS"]
     banners_base_url = "https://www.falabella.com/falabella-cl/{}"
     banners_sections_data = [
@@ -229,6 +224,10 @@ class Falabella(Store):
             "category/cat2018/Telefonos?isPLP=1",
         ],
     ]
+    section_position_variants = [
+        {"id": "FALABELLA", "section_prefix": "FALABELLA", "exclude_marketplace": True},
+        {"id": None, "section_prefix": "GRUPO", "exclude_marketplace": False},
+    ]
 
     zones = (
         "FALABELLA_FBY_BT_SDD,PCL2829,REVERSE_RM_REDPROPIA,PCL2998,PCL3128,PCL2808,1234,PCL1223,PCL2802,PCL2826,"
@@ -244,413 +243,319 @@ class Falabella(Store):
     category_paths = [
         [
             "cat720161",
-            [CELL],
+            CELL,
             "Home > Tecnología-Telefonía > Celulares y Teléfonos > Smartphones",
-            1,
         ],
         [
             "cat1280018",
-            [CELL],
-            "Home > Tecnología-Telefonía > Celulares y Telé"
-            "fonos > Celulares Básicos",
-            1,
+            CELL,
+            "Home > Tecnología-Telefonía > Celulares y Teléfonos > Celulares Básicos",
         ],
-        ["cat1640002", [HEADPHONES], "Home > Tecnología-Audio > Audífonos", 1],
+        ["cat1640002", HEADPHONES, "Home > Tecnología-Audio > Audífonos"],
         [
             "cat70037",
-            [MEMORY_CARD],
+            MEMORY_CARD,
             "Home > Tecnología-Telefonía > Accesorios "
             "Celulares > Tarjetas de Memoria",
-            1,
         ],
-        ["cat4290064", [WEARABLE], "Home > Tecnología-Wearables > Smartband", 1],
-        ["cat4290063", [WEARABLE], "Home > Tecnología-Wearables > SmartWatch", 1],
+        ["cat4290064", WEARABLE, "Home > Tecnología-Wearables > Smartband"],
+        ["cat4290063", WEARABLE, "Home > Tecnología-Wearables > SmartWatch"],
         [
             "cat429001",
-            [WEARABLE],
+            WEARABLE,
             "Home > Tecnología-Wearables > SmartWatch Infantil",
-            1,
         ],
-        ["cat1012", [TELEVISION], "Home > Tecnología-TV y Video", 0],
-        ["cat7190148", [TELEVISION], "Home > Tecnología-TV > Smart TV", 1],
+        ["cat1012", TELEVISION, "Home > Tecnología-TV y Video"],
+        ["cat7190148", TELEVISION, "Home > Tecnología-TV > Smart TV"],
         [
             "cat7190148",
-            [TELEVISION],
+            TELEVISION,
             'Home > Tecnología-TV > Smart tv entre 50" - 55"',
-            1,
             {"f.variant.custom.Tama%C3%B1o_de_la_pantalla": "50::55"},
         ],
         [
             "cat7190148",
-            [TELEVISION],
+            TELEVISION,
             'Home > Tecnología-TV > Smart tv sobre 55"',
-            1,
             {
                 "f.derived.product.Tamano_de_la_pantalla": "58::60::65::70::75::77::85::86::98"
             },
         ],
         [
             "cat7190148",
-            [TELEVISION],
+            TELEVISION,
             'Home > Tecnología-TV > Smart tv menores a 50"',
-            1,
             {
                 "f.variant.custom.Tama%C3%B1o_de_la_pantalla": "1::20::24::32::39::40::42::43::48"
             },
         ],
-        ["cat2070", [PROJECTOR], "Home > Tecnología-TV > Proyectores", 1],
-        ["cat2005", [STEREO_SYSTEM], "Home > Tecnología-Audio", 0],
+        ["cat2070", PROJECTOR, "Home > Tecnología-TV > Proyectores"],
+        ["cat2005", STEREO_SYSTEM, "Home > Tecnología-Audio"],
         [
             "cat3091",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Home > Tecnología-Audio > Equipos de Música y Karaokes",
-            1,
         ],
-        ["cat3203", [STEREO_SYSTEM], "Home > Tecnología-Audio > Hi-Fi", 1],
+        ["cat3203", STEREO_SYSTEM, "Home > Tecnología-Audio > Hi-Fi"],
         [
             "cat3171",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Home > Tecnología-Audio > Parlantes Bluetooth",
-            1,
         ],
         [
             "cat2045",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Home > Tecnología-Audio > Soundbar y Home Theater",
-            1,
         ],
         [
             "cat3155",
-            [MOUSE],
+            MOUSE,
             "Home > Tecnología-Computadores > Accesorios Computación > Mouse",
-            1,
         ],
         [
             "cat2370002",
-            [KEYBOARD],
+            KEYBOARD,
             "Home > Tecnología-Computadores > Accesorios Computación > Teclados",
-            1,
         ],
         [
             "cat3239",
-            [STEREO_SYSTEM],
-            "Home > Tecnología-Computadores > Accesor"
-            "ios Computación > Parlantes y Subwoofer",
-            1,
+            STEREO_SYSTEM,
+            "Home > Tecnología-Computadores > Accesorios Computación > Parlantes y Subwoofer",
         ],
-        ["cat40051", [ALL_IN_ONE], "Home > Tecnología-Computadores > All in one", 1],
+        ["cat40051", ALL_IN_ONE, "Home > Tecnología-Computadores > All in one"],
         [
             "cat3087",
-            [EXTERNAL_STORAGE_DRIVE],
+            EXTERNAL_STORAGE_DRIVE,
             "Home > Tecnología-Computadores > Almacenamiento > Discos duros",
-            1,
         ],
         [
             "cat3177",
-            [USB_FLASH_DRIVE],
+            USB_FLASH_DRIVE,
             "Home > Tecnología-Computación > Almacenamiento > Pendrives",
-            1,
         ],
         [
             "cat1820006",
-            [PRINTER],
-            "Home > Tecnología-Computadores > Impresoras"
-            " y Tintas > Impresoras Multifuncionales",
-            1,
+            PRINTER,
+            "Home > Tecnología-Computadores > Impresoras y Tintas > Impresoras Multifuncionales",
         ],
         [
             "cat1820004",
-            [PRINTER],
+            PRINTER,
             "Home > Tecnología-Computadores > Impresoras y Tintas > Impresoras",
-            1,
         ],
         [
             "cat6680042",
-            [PRINTER],
-            "Home > Tecnología-Computadores > Impresoras"
-            " y Tintas > Impresoras Tradicionales",
-            1,
+            PRINTER,
+            "Home > Tecnología-Computadores > Impresoras y Tintas > Impresoras Tradicionales",
         ],
         [
             "cat11970007",
-            [PRINTER],
-            "Home > Tecnología-Computadores > Impresora"
-            "s y Tintas > Impresoras Láser",
-            1,
+            PRINTER,
+            "Home > Tecnología-Computadores > Impresoras y Tintas > Impresoras Láser",
         ],
-        ["cat2062", [MONITOR], "Home > Tecnología-Computadores > Monitores", 1],
-        ["cat70057", [NOTEBOOK], "Home > Tecnología-Computadores > Notebooks", 1],
-        ["cat7230007", [TABLET], "Home > Tecnología-Computadores > Tablets", 1],
+        ["cat2062", MONITOR, "Home > Tecnología-Computadores > Monitores"],
+        ["cat70057", NOTEBOOK, "Home > Tecnología-Computadores > Notebooks"],
+        ["cat7230007", TABLET, "Home > Tecnología-Computadores > Tablets"],
         [
             "cat4930009",
-            [HEADPHONES],
+            HEADPHONES,
             "Home > Tecnología-Computadores > Accesorios gamer > Audífonos gamer",
-            1,
         ],
         [
             "CATG19011",
-            [GAMING_CHAIR],
+            GAMING_CHAIR,
             "Home > Tecnología-Computadores > Accesorios gamer > Sillas gamer",
-            1,
         ],
         [
             "CATG19008",
-            [KEYBOARD],
+            KEYBOARD,
             "Home > Tecnología-Computadores > Accesorios gamer > Tecaldos gamer",
-            1,
         ],
         [
             "CATG19007",
-            [MOUSE],
+            MOUSE,
             "Home > Tecnología-Computadores > Accesorios gamer > Mouse gamer",
-            1,
         ],
         [
             "cat202303",
-            [VIDEO_GAME_CONSOLE],
+            VIDEO_GAME_CONSOLE,
             "Home > Tecnología-Videojuegos > Consolas",
-            1,
         ],
         [
             "cat3114",
-            [OVEN],
+            OVEN,
             "Home > Electrohogar-Electrodomésticos Cocina > Hornos Eléctricos",
-            1,
         ],
         [
             "cat3151",
-            [OVEN],
+            OVEN,
             "Home > Electrohogar-Electrodomésticos Cocina > Microondas",
-            1,
         ],
         [
             "cat3136",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Home > Electrohogar-Línea blanca > Lavado",
-            1,
         ],
         [
             "cat4060",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Home > Electrohogar-Línea blanca > Lavado > Lavadoras",
-            1,
         ],
         [
             "cat1700002",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Home > Electrohogar-Línea blanca > Lavado > Lavadoras-Secadoras",
-            1,
         ],
         [
             "cat4088",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Home > Electrohogar-Línea blanca > Lavado > Secadoras",
-            1,
         ],
         [
             "cat4061",
-            [DISH_WASHER],
+            DISH_WASHER,
             "Home > Electrohogar-Línea blanca > Lavado > Lavavajillas",
-            1,
         ],
         [
             "cat3205",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Home > Electrohogar-Línea Blanca > Refrigeración > Refrigeradores",
-            1,
         ],
         [
             "cat4091",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Home > Electrohogar-Línea Blanca > Refrigeración > Refrigeradores > Side by side",
-            1,
         ],
         [
             "cat4074",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Home > Electrohogar-Línea Blanca > Refrigeración > Refrigeradores > No Frost",
-            1,
         ],
         [
             "CATG19019",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Home > Electrohogar-Línea Blanca > Refrigeración > Refrigeradores > Top Freezer",
-            1,
         ],
         [
             "CATG19020",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Home > Electrohogar-Línea Blanca > Refrigeración > Refrigeradores > Bottom Freezer",
-            1,
         ],
         [
             "cat4054",
-            [OVEN],
+            OVEN,
             "Home > Electrohogar-Línea blanca > Cocina > Hornos Empotrables",
-            1,
         ],
         [
             "cat2019",
-            [SPLIT_AIR_CONDITIONER],
+            SPLIT_AIR_CONDITIONER,
             "Home > Electrohogar-Climatización > Aire acondicionado",
-            1,
         ],
         [
             "cat4850013",
-            [NOTEBOOK],
+            NOTEBOOK,
             "Home > Especiales-Otras categorias > PC gamer",
-            1,
         ],
         [
             "cat3025",
-            [VACUUM_CLEANER],
+            VACUUM_CLEANER,
             "Home > Electrohogar-Aspirado y Limpieza > Aspiradoras",
-            1,
         ],
-        ["cat1130010", [STEREO_SYSTEM], "Home > Tecnología-Audio > Tornamesas", 1],
+        ["cat1130010", STEREO_SYSTEM, "Home > Tecnología-Audio > Tornamesas"],
         [
             "cat9910024",
-            [SPACE_HEATER],
+            SPACE_HEATER,
             "Home > Electrohogar-Calefacción > Calefacción > Estufas Gas",
-            1,
         ],
         [
             "cat16250010",
-            [SPACE_HEATER],
+            SPACE_HEATER,
             "Home > Electrohogar-Calefacción > Calefacción > Estufas Parafina",
-            1,
         ],
         [
             "cat9910006",
-            [SPACE_HEATER],
+            SPACE_HEATER,
             "Home > Electrohogar-Calefacción > Calefacción > Estufas Eléctricas",
-            1,
         ],
         [
             "CATG35044",
-            [SPACE_HEATER],
+            SPACE_HEATER,
             "Home > Electrohogar-Calefacción > Calefacción > Estufas a Leña",
-            1,
         ],
         [
             "cat9910027",
-            [SPACE_HEATER],
+            SPACE_HEATER,
             "Home > Electrohogar-Calefacción > Calefacción > Estufas a Pellet",
-            1,
         ],
         [
             "cat2013",
-            [WATER_HEATER],
+            WATER_HEATER,
             "Home > Cocina y Baño-Baño > Calefont y Termos",
-            1,
         ],
         [
             "cat70012",
-            [STOVE],
+            STOVE,
             "Home > Electrohogar - Línea blanca > Cocina > Cocina a gas",
-            1,
         ],
         [
             "cat4045",
-            [STOVE],
+            STOVE,
             "Home > Electrohogar - Línea blanca > Cocina > Encimeras",
-            1,
         ],
         [
             "cat2034",
-            [ACCESORIES],
+            ACCESORIES,
             "Home > Electrohogar - Electrodomésticos cocina",
-            1,
         ],
         [
             "cat3246",
-            [PRINTER_SUPPLY],
+            PRINTER_SUPPLY,
             "Home > Tecnología-Computadores > Impresoras y Tintas > Tintas y Toners",
-            1,
         ],
         [
             "cat2069",
-            [PERFUME],
+            PERFUME,
             "Home > Belleza y salud > Perfumes",
-            1,
         ],
-        ["cat3182", [IRON], "Home > Electrohogar - Línea blanca > Planchas", 1],
+        ["cat3182", IRON, "Home > Electrohogar - Línea blanca > Planchas"],
         [
             "cat3223",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Home > Belleza, higiene y salud > Tecnología para la Belleza > Secadores de pelo",
-            1,
         ],
         [
             "cat3018",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Home > Belleza, higiene y salud > Tecnología para la Belleza > Plancha de pelo",
-            1,
         ],
         [
             "cat3170",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Home > Belleza, higiene y salud > Tecnología para la Belleza > Onduladores de pelo",
-            1,
         ],
     ]
 
     @classmethod
     def categories(cls):
-        cats = []
-        for entry in cls.category_paths:
-            for cat in entry[1]:
-                if cat not in cats:
-                    cats.append(cat)
-
-        return cats
+        return list({x[1] for x in cls.category_paths})
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
-        category_paths = cls.category_paths
+    def discover_urls_for_category(cls, category, extra_args=None):
         session = cf_session_with_proxy(extra_args)
-        fast_mode = extra_args and extra_args.get("fast_mode", False)
-        product_entries = defaultdict(lambda: [])
 
-        for e in category_paths:
-            category_id, local_categories, section_name, category_weight = e[:4]
+        for e in cls.category_paths:
+            category_id, local_category, section_name = e[:3]
+            if category != local_category:
+                continue
 
-            if len(e) == 5:
-                extra_params = e[4]
+            if len(e) == 4:
+                extra_params = e[3]
             else:
                 extra_params = {}
 
-            if category not in local_categories:
-                continue
-
-            for seller_data in cls.seller:
-                if fast_mode and not seller_data["include_in_fast_mode"]:
-                    continue
-                category_product_urls = cls._get_product_urls(
-                    session, category_id, extra_params, seller_data["id"]
-                )
-
-                if seller_data["section_prefix"]:
-                    full_section_name = "{} > {}".format(
-                        seller_data["section_prefix"], section_name
-                    )
-                else:
-                    full_section_name = section_name
-
-                for idx, url in enumerate(category_product_urls):
-                    product_entries[url].append(
-                        {
-                            "category_weight": category_weight,
-                            "section_name": full_section_name,
-                            "value": idx + 1,
-                        }
-                    )
-
-        if fast_mode:
-            # Since the fast mode skips sections, remove the partial section data retrieved
-            for url in product_entries.keys():
-                product_entries[url] = []
-        return product_entries
+            yield from cls._get_product_urls(
+                session, category_id, extra_params, cls.seller_id
+            )
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
@@ -723,97 +628,12 @@ class Falabella(Store):
             content = response.text.replace("&#10;", "")
 
             if "NEXT_DATA" in content:
-                return cls._products_for_url(
-                    url, content, session, category=category, extra_args=extra_args
-                )
+                break
             else:
                 return []
-
-    @classmethod
-    def _get_product_urls(cls, session, category_id, extra_params, seller_id):
-        discovered_urls = []
-        # For some reason the "categoryName" param activates the sponsored
-        # results
-        base_url = (
-            "https://www.falabella.com/s/browse/v1/listing/cl?"
-            "&pid={}&categoryId={}&categoryName=foo&sortBy={}&page={}"
-        )
-
-        for key, value in extra_params.items():
-            base_url += "&{}={}".format(key, urllib.parse.quote(value))
-
-        base_url += "&zones={}".format(urllib.parse.quote(cls.zones))
-
-        # The first sorting will be given preference for
-        # section position information
-
-        sortings = [
-            "_score%2Cdesc",
-            # "derived.price.search%2Casc",
-            # "product.brandName%2Casc",
-            # "product.attribute.newIconExpiryDate%2Cdesc",
-            # "product.averageOverallRating%2Cdesc",
-        ]
-
-        for idx, sorting in enumerate(sortings):
-            page = 1
-
-            while True:
-                if page > 210:
-                    raise Exception("Page overflow: " + category_id)
-
-                pag_url = base_url.format(cls.pid, category_id, sorting, page)
-
-                if cls.store_and_subdomain:
-                    pag_url += "&subdomain={}&store={}".format(
-                        cls.store_and_subdomain, cls.store_and_subdomain
-                    )
-
-                if seller_id:
-                    pag_url += "&f.derived.variant.sellerId={}".format(seller_id)
-
-                print(pag_url)
-
-                res = cls.retrieve_json_page(session, pag_url)
-
-                if "results" not in res or not res["results"]:
-                    if page == 1:
-                        logging.warning("Empty category: {}".format(category_id))
-                    break
-
-                for result in res["results"]:
-                    product_url = cls.product_url_template.format(
-                        result["productId"], result["skuId"]
-                    )
-
-                    if product_url not in discovered_urls:
-                        discovered_urls.append(product_url)
-
-                page += 1
-
-        return discovered_urls
-
-    @classmethod
-    def retrieve_json_page(cls, session, url, retries=5):
-        if "?" in url:
-            separator = "&"
         else:
-            separator = "?"
+            return []
 
-        modified_url = "{}{}v={}".format(url, separator, random.random())
-
-        try:
-            res = session.get(modified_url, timeout=30)
-            return json.loads(res.content.decode("utf-8"))["data"]
-        except Exception:
-            if retries > 0:
-                time.sleep(3)
-                return cls.retrieve_json_page(session, url, retries=retries - 1)
-            else:
-                raise
-
-    @classmethod
-    def _products_for_url(cls, url, content, session, category=None, extra_args=None):
         soup = BeautifulSoup(content, "html5lib")
         next_container = soup.find("script", {"id": "__NEXT_DATA__"})
 
@@ -946,13 +766,10 @@ class Falabella(Store):
                 seller = (
                     seller_entry.get("sellerName", seller_entry["sellerId"]) or None
                 )
-                valid_sellers = [x["id"] for x in cls.seller]
 
-                if seller not in valid_sellers:
+                if seller != cls.seller_id:
                     stock = 0
                 elif is_international_shipping:
-                    stock = 0
-                elif seller in cls.seller_blacklist:
                     stock = 0
                 else:
                     if seller_entry.get(
@@ -1016,6 +833,119 @@ class Falabella(Store):
             products.append(p)
 
         return products
+
+    @classmethod
+    def sections(cls):
+        return [x[2] for x in cls.category_paths]
+
+    @classmethod
+    def section_positions(cls, section, extra_args=None):
+        session = cf_session_with_proxy(extra_args)
+
+        for e in cls.category_paths:
+            category_id, local_category, section_name = e[:3]
+            if section_name != section:
+                continue
+
+            if len(e) == 4:
+                extra_params = e[3]
+            else:
+                extra_params = {}
+
+            for section_variant in cls.section_position_variants:
+                category_product_urls = cls._get_product_urls(
+                    session,
+                    category_id,
+                    extra_params,
+                    section_variant["id"],
+                )
+
+                if section_variant["section_prefix"]:
+                    full_section_name = "{} > {}".format(
+                        section_variant["section_prefix"], section_name
+                    )
+                else:
+                    full_section_name = section_name
+
+                for idx, url in enumerate(category_product_urls):
+                    section_position = {
+                        "field": "discovery_url",
+                        "value": url,
+                        "position": idx + 1,
+                        "section": full_section_name,
+                    }
+                    yield section_position
+
+    @classmethod
+    def _get_product_urls(cls, session, category_id, extra_params, seller_id):
+        discovered_urls = []
+        # For some reason the "categoryName" param activates the sponsored
+        # results
+        base_url = (
+            "https://www.falabella.com/s/browse/v1/listing/cl?"
+            "&pid=15c37b0b-a392-41a9-8b3b-978376c700d5&categoryId={}&categoryName=foo&sortBy=_score%2Cdesc&page={}"
+        )
+
+        for key, value in extra_params.items():
+            base_url += "&{}={}".format(key, urllib.parse.quote(value))
+
+        base_url += "&zones={}".format(urllib.parse.quote(cls.zones))
+        page = 1
+
+        while True:
+            if page > 210:
+                raise Exception("Page overflow: " + category_id)
+
+            pag_url = base_url.format(category_id, page)
+
+            if cls.store_and_subdomain:
+                pag_url += "&subdomain={}&store={}".format(
+                    cls.store_and_subdomain, cls.store_and_subdomain
+                )
+
+            if seller_id:
+                pag_url += "&f.derived.variant.sellerId={}".format(seller_id)
+
+            print(pag_url)
+
+            res = cls.retrieve_json_page(session, pag_url)
+
+            if "results" not in res or not res["results"]:
+                if page == 1:
+                    logging.warning(
+                        "Empty category: {} - {}".format(category_id, extra_params)
+                    )
+                break
+
+            for result in res["results"]:
+                product_url = cls.product_url_template.format(
+                    result["productId"], result["skuId"]
+                )
+
+                if product_url not in discovered_urls:
+                    discovered_urls.append(product_url)
+                    yield product_url
+
+            page += 1
+
+    @classmethod
+    def retrieve_json_page(cls, session, url, retries=5):
+        if "?" in url:
+            separator = "&"
+        else:
+            separator = "?"
+
+        modified_url = "{}{}v={}".format(url, separator, random.random())
+
+        try:
+            res = session.get(modified_url, timeout=30)
+            return json.loads(res.content.decode("utf-8"))["data"]
+        except Exception:
+            if retries > 0:
+                time.sleep(3)
+                return cls.retrieve_json_page(session, url, retries=retries - 1)
+            else:
+                raise
 
     @classmethod
     def banners(cls, extra_args=None):

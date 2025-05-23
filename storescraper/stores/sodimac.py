@@ -4,7 +4,11 @@ from .falabella import Falabella
 
 class Sodimac(Falabella):
     store_and_subdomain = "sodimac"
-    seller = [{"id": "SODIMAC", "section_prefix": None, "include_in_fast_mode": True}]
+    section_position_variants = [
+        {"id": "SODIMAC", "section_prefix": "SODIMAC", "exclude_marketplace": True},
+        {"id": None, "section_prefix": "GRUPO", "exclude_marketplace": False},
+    ]
+    seller_id = "SODIMAC"
     seller_blacklist = []
     banners_base_url = "https://sodimac.falabella.com/sodimac-cl/{}"
     banners_sections_data = [
