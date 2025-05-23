@@ -868,6 +868,9 @@ class Falabella(Store):
                     full_section_name = section_name
 
                 for idx, url in enumerate(category_product_urls):
+                    if idx >= 300:
+                        break
+
                     section_position = {
                         "field": "discovery_url",
                         "value": url,
