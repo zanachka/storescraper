@@ -111,7 +111,11 @@ class Cintegral(StoreWithUrlExtensions):
         name = product_data["name"]
 
         part_number_tag = soup.find("div", "field_682c8d88970c3")
-        part_number = part_number_tag.contents[1].strip()
+        part_number = (
+            part_number_tag.contents[1].strip()
+            if part_number_tag
+            else product_data["sku"]
+        )
         offers = product_data["offers"]
 
         assert len(offers) == 1
