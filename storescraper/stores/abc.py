@@ -331,13 +331,15 @@ class Abc(Store):
             for idx, product_url in enumerate(
                 cls._get_product_urls(category_id, extra_args)
             ):
-                section_position = {
+                if idx >= 300:
+                    break
+
+                yield {
                     "field": "discovery_url",
                     "value": product_url,
                     "position": idx + 1,
                     "section": section,
                 }
-                yield section_position
 
     @classmethod
     def _get_product_urls(cls, category_id, extra_args):

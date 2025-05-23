@@ -587,8 +587,6 @@ class Hites(Store):
 
     @classmethod
     def section_positions(cls, section, extra_args=None):
-        section_positions = []
-
         for category_path, _, section_path in cls.category_paths:
             if section != section_path:
                 continue
@@ -596,16 +594,15 @@ class Hites(Store):
             for idx, product_url in enumerate(
                 cls._get_product_urls(category_path, exclude_marketplace=False)
             ):
-                section_positions.append(
-                    {
-                        "field": "discovery_url",
-                        "value": product_url,
-                        "position": idx + 1,
-                        "section": section,
-                    }
-                )
+                if idx >= 300:
+                    break
 
-        return section_positions
+                yield {
+                    "field": "discovery_url",
+                    "value": product_url,
+                    "position": idx + 1,
+                    "section": section,
+                }
 
     @classmethod
     def _get_product_urls(cls, category_path, exclude_marketplace):
