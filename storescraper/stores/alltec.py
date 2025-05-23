@@ -65,6 +65,14 @@ class AllTec(Store):
         ]
 
     @classmethod
+    def get_session(cls, extra_args=None):
+        session = session_with_proxy(extra_args)
+        session.headers["User-Agent"] = (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
+        )
+
+    @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         base_url = "https://www.alltec.cl/"
 
@@ -103,11 +111,8 @@ class AllTec(Store):
             ["45-tinta", PRINTER_SUPPLY],
         ]
 
-        session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
-        )
+        session = cls.get_session(extra_args)
+
         for category_path, local_category in category_urls:
             if local_category != category:
                 continue
@@ -160,7 +165,7 @@ class AllTec(Store):
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"

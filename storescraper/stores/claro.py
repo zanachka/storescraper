@@ -31,29 +31,16 @@ class Claro(Store):
         return [CELL, CELL_PLAN]
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
-        discovered_entries = defaultdict(lambda: [])
-
+    def discover_urls_for_category(cls, category, extra_args=None):
         if category == CELL_PLAN:
-            discovered_entries[cls.prepago_url].append(
-                {"category_weight": 1, "section_name": "Planes", "value": 1}
-            )
-
-            discovered_entries[cls.planes_url].append(
-                {"category_weight": 1, "section_name": "Planes", "value": 2}
-            )
+            yield cls.prepago_url
+            yield cls.planes_url
         if category == CELL:
-            cell_urls = cls._discover_cells(extra_args)
-            for idx, cell_url in enumerate(cell_urls):
-                discovered_entries[cell_url].append(
-                    {"category_weight": 1, "section_name": "Equipos", "value": idx + 1}
-                )
-
-        return discovered_entries
+            for cell_url in cls._discover_cells(extra_args):
+                yield cell_url
 
     @classmethod
     def _discover_cells(cls, extra_args=None):
-        product_urls = []
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
@@ -87,11 +74,9 @@ class Claro(Store):
 
             for container in containers:
                 product_url = container.find_all("a")[1]["href"]
-                product_urls.append(product_url)
+                yield product_url
 
             offset += 12
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):

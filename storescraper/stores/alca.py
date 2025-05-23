@@ -18,7 +18,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import get_price_from_price_specification, session_with_proxy
+from storescraper.utils import get_price_from_price_specification
 
 
 class Alca(StoreWithUrlExtensions):
@@ -35,7 +35,7 @@ class Alca(StoreWithUrlExtensions):
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         product_urls = []
 
         page = 1
@@ -71,7 +71,7 @@ class Alca(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
 
         try:
             response = session.get(url)

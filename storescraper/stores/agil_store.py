@@ -18,7 +18,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import remove_words, session_with_proxy, html_to_markdown
+from storescraper.utils import remove_words, html_to_markdown
 
 
 class AgilStore(StoreWithUrlExtensions):
@@ -41,7 +41,7 @@ class AgilStore(StoreWithUrlExtensions):
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         seen_product_urls = set()
         url_webpage = (
             "https://www.agilstore.cl/productos.php?ver=productos&id={}".format(
@@ -65,7 +65,7 @@ class AgilStore(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         response = session.get(url, verify=False)
         soup = BeautifulSoup(response.text, "lxml")
         name = soup.find("h2", "product-name").text.strip()

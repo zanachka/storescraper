@@ -5,7 +5,7 @@ import validators
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import html_to_markdown
 
 
 class AllTechMarket(Store):
@@ -16,7 +16,7 @@ class AllTechMarket(Store):
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         url_extensions = [TELEVISION]
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         product_urls = []
 
         for local_category in url_extensions:
@@ -37,7 +37,7 @@ class AllTechMarket(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
 

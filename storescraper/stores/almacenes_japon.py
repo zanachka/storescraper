@@ -8,7 +8,6 @@ from storescraper.product import Product
 from storescraper.store import Store
 from storescraper.utils import (
     html_to_markdown,
-    session_with_proxy,
     vtex_preflight,
     check_ean13,
 )
@@ -26,7 +25,7 @@ class AlmacenesJapon(Store):
         if category != TELEVISION:
             return []
         product_urls = []
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
 
         offset = 0
         while True:
@@ -73,7 +72,7 @@ class AlmacenesJapon(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
 

@@ -34,7 +34,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import html_to_markdown
 from storescraper import banner_sections as bs
 
 
@@ -189,7 +189,7 @@ class Abc(Store):
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         product_urls = []
 
         url = (
@@ -221,7 +221,7 @@ class Abc(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         response = session.get(url)
 
         if response.status_code in [410, 404]:
@@ -288,7 +288,7 @@ class Abc(Store):
 
     @classmethod
     def banners(cls, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         banners = []
 
         soup = BeautifulSoup(session.get("https://www.abc.cl").text, "lxml")
@@ -324,8 +324,6 @@ class Abc(Store):
 
     @classmethod
     def section_positions(cls, section, extra_args=None):
-        section_positions = []
-
         for category_id, _, section_path in cls.ajax_resources:
             if section != section_path:
                 continue
@@ -333,20 +331,17 @@ class Abc(Store):
             for idx, product_url in enumerate(
                 cls._get_product_urls(category_id, extra_args)
             ):
-                section_positions.append(
-                    {
-                        "field": "discovery_url",
-                        "value": product_url,
-                        "position": idx + 1,
-                        "section": section,
-                    }
-                )
-
-        return section_positions
+                section_position = {
+                    "field": "discovery_url",
+                    "value": product_url,
+                    "position": idx + 1,
+                    "section": section,
+                }
+                yield section_position
 
     @classmethod
     def _get_product_urls(cls, category_id, extra_args):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"

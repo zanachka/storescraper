@@ -139,7 +139,7 @@ class Store:
         )
 
     @classmethod
-    def section_positions(cls, section_name, extra_args=None):
+    def section_positions(cls, section, extra_args=None):
         raise NotImplementedError(
             "This method must be implemented by subclasses of Store that implement section positioning"
         )

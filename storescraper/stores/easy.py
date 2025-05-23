@@ -1,6 +1,5 @@
 import json
 import re
-from collections import defaultdict
 from decimal import Decimal
 from bs4 import BeautifulSoup
 
@@ -17,254 +16,168 @@ from storescraper.categories import (
     WATER_HEATER,
     STOVE,
     ACCESORIES,
+    PORTABLE_AIR_CONDITIONER,
 )
 
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy, html_to_markdown
+from storescraper.utils import html_to_markdown
 
 
 class Easy(Store):
     base_url = "https://cl-ccom-easy-bff-web.ecomm.cencosud.com/v2"
 
+    category_paths = [
+        # Electrohogar y climatización
+        # Calefacción
+        [
+            "electrohogar-y-climatizacion/calefaccion/estufas-electricas",
+            SPACE_HEATER,
+            "Inicio > Electrohogar > Calefacción > Estufas Eléctricas",
+        ],
+        [
+            "electrohogar-y-climatizacion/calefaccion/estufas-a-pellet",
+            SPACE_HEATER,
+            "Inicio > Electrohogar > Calefacción > Estufas a Pellet",
+        ],
+        [
+            "electrohogar-y-climatizacion/calefaccion/estufas-a-gas",
+            SPACE_HEATER,
+            "Inicio > Electrohogar > Calefacción > Estufas a Gas",
+        ],
+        [
+            "electrohogar-y-climatizacion/calefaccion/estufas-a-parafina",
+            SPACE_HEATER,
+            "Inicio > Electrohogar > Calefacción > Estufas a Parafina",
+        ],
+        [
+            "electrohogar-y-climatizacion/calefaccion/estufas-a-lena",
+            SPACE_HEATER,
+            "Inicio > Electrohogar > Calefacción > Estufas a leña",
+        ],
+        # Refrigeración
+        [
+            "electrohogar-y-climatizacion/refrigeracion/refrigeradores",
+            REFRIGERATOR,
+            "Inicio > Electrohogar y Climatización > Refrigeración > Refrigeradores",
+        ],
+        [
+            "electrohogar-y-climatizacion/refrigeracion/freezer",
+            REFRIGERATOR,
+            "Inicio > Electrohogar y Climatización > Refrigeración > Freezer",
+        ],
+        [
+            "electrohogar-y-climatizacion/refrigeracion/frigobar",
+            REFRIGERATOR,
+            "Inicio > Electrohogar y Climatización > Refrigeración > Frigobar",
+        ],
+        # Cocina
+        [
+            "electrohogar-y-climatizacion/cocina/hornos-empotrables",
+            OVEN,
+            "Inicio > Electrohogar y Climatización > Cocina > Hornos Empotrables",
+        ],
+        [
+            "electrohogar-y-climatizacion/electrodomesticos/microondas",
+            OVEN,
+            "Inicio > Electrohogar y Climatización > Cocina > Microondas",
+        ],
+        # Lavado y planchado
+        [
+            "electrohogar-y-climatizacion/lavado-y-planchado/lavadoras",
+            WASHING_MACHINE,
+            "Inicio > Electrohogar y Climatización > Lavado y planchado > Lavadoras",
+        ],
+        [
+            "electrohogar-y-climatizacion/lavado-y-planchado/secadoras",
+            WASHING_MACHINE,
+            "Inicio > Electrohogar y Climatización > Lavado y planchado > Secadoras",
+        ],
+        [
+            "electrohogar-y-climatizacion/lavado-y-planchado/lavadoras-secadoras",
+            WASHING_MACHINE,
+            "Inicio > Electrohogar y Climatización > Lavado y planchado > Lava - seca",
+        ],
+        # Aspirado y limpieza
+        [
+            "electrohogar-y-climatizacion/aspirado-y-limpieza/aspiradoras",
+            VACUUM_CLEANER,
+            "Inicio > Electrohogar y Climatización > Aspirado y limpieza > Aspiradoras",
+        ],
+        [
+            "electrohogar-y-climatizacion/aspirado-y-limpieza/robots-de-limpieza",
+            VACUUM_CLEANER,
+            "Inicio > Electrohogar y Climatización > Aspirado y limpieza > Robots de limpieza",
+        ],
+        # Electrodomésticos
+        [
+            "electrohogar-y-climatizacion/electrodomesticos/hornos-electricos",
+            OVEN,
+            "Inicio > Electrohogar y Climatización > Electrodomésticos > Hornos eléctricos",
+        ],
+        [
+            "electrohogar-y-climatizacion/electrodomesticos/microondas",
+            OVEN,
+            "Inicio > Electrohogar y Climatización > Electrodomésticos > Microondas",
+        ],
+        # Ventilación
+        [
+            "electrohogar-y-climatizacion/ventilacion/aire-acondicionado-portatil",
+            PORTABLE_AIR_CONDITIONER,
+            "Inicio > Electrohogar y Climatización > Ventilación > Aire acondicionado portátil",
+        ],
+        [
+            "electrohogar-y-climatizacion/ventilacion/aire-acondicionado-split",
+            SPLIT_AIR_CONDITIONER,
+            "Inicio > Electrohogar y Climatización > Ventilación > Aire Acondicionado split",
+        ],
+        [
+            "electrohogar-y-climatizacion/ventilacion/purificadores-y-humidificadores",
+            SPLIT_AIR_CONDITIONER,
+            "Inicio > Electrohogar y Climatización > Ventilación > Purificadores y humidificadores",
+        ],
+        [
+            "electrohogar-y-climatizacion/calefont-y-termos/calefont",
+            WATER_HEATER,
+            "Inicio > Electrohogar y Climatización > Calefont y Termos > Calefont",
+        ],
+        [
+            "electrohogar-y-climatizacion/tecnologia/consolas-y-videojuegos/consolas",
+            VIDEO_GAME_CONSOLE,
+            "Electrohogar y Climatización > Tecnología > Consolas y Videojuegos > Consolas",
+        ],
+        [
+            "electrohogar-y-climatizacion/cocina/cocinas-a-gas",
+            STOVE,
+            "Electrohogar y Climatización > Cocina > Cocina a gas",
+        ],
+        [
+            "electrohogar-y-climatizacion/cocina/encimeras",
+            STOVE,
+            "Electrohogar y Climatización > Cocina > Encimeras",
+        ],
+        [
+            "electrohogar-y-climatizacion/electrodomesticos",
+            ACCESORIES,
+            "Electrohogar y Climatización > Electrodomésticos",
+        ],
+    ]
+
     @classmethod
     def categories(cls):
-        return [
-            REFRIGERATOR,
-            OVEN,
-            VACUUM_CLEANER,
-            WASHING_MACHINE,
-            SPLIT_AIR_CONDITIONER,
-            SPACE_HEATER,
-            VIDEO_GAME_CONSOLE,
-            WATER_HEATER,
-            STOVE,
-        ]
+        return list({x[1] for x in cls.category_paths})
 
     @classmethod
-    def discover_entries_for_category(cls, category, extra_args=None):
-        category_paths = [
-            # Electrohogar y climatización
-            # Calefacción
-            [
-                "electrohogar-y-climatizacion/calefaccion/estufas-electricas",
-                [SPACE_HEATER],
-                "Inicio > Electrohogar > Calefacción > Estufas Eléctricas",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/calefaccion/estufas-a-pellet",
-                [SPACE_HEATER],
-                "Inicio > Electrohogar > Calefacción > Estufas a Pellet",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/calefaccion/estufas-a-gas",
-                [SPACE_HEATER],
-                "Inicio > Electrohogar > Calefacción > Estufas a Gas",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/calefaccion/estufas-a-parafina",
-                [SPACE_HEATER],
-                "Inicio > Electrohogar > Calefacción > Estufas a Parafina",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/calefaccion/estufas-a-lena",
-                [SPACE_HEATER],
-                "Inicio > Electrohogar > Calefacción > Estufas a leña",
-                1,
-            ],
-            # Refrigeración
-            [
-                "electrohogar-y-climatizacion/refrigeracion/refrigeradores",
-                [REFRIGERATOR],
-                "Inicio > Electrohogar y Climatización > Refrigeración > "
-                "Refrigeradores",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/refrigeracion/freezer",
-                [REFRIGERATOR],
-                "Inicio > Electrohogar y Climatización > Refrigeración > " "Freezer",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/refrigeracion/frigobar",
-                [REFRIGERATOR],
-                "Inicio > Electrohogar y Climatización > Refrigeración > " "Frigobar",
-                1,
-            ],
-            # Cocina
-            [
-                "electrohogar-y-climatizacion/cocina/hornos-empotrables",
-                [OVEN],
-                "Inicio > Electrohogar y Climatización > Cocina > "
-                "Hornos Empotrables",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/electrodomesticos/microondas",
-                [OVEN],
-                "Inicio > Electrohogar y Climatización > Cocina > Microondas",
-                1,
-            ],
-            # Lavado y planchado
-            [
-                "electrohogar-y-climatizacion/lavado-y-planchado/lavadoras",
-                [WASHING_MACHINE],
-                "Inicio > Electrohogar y Climatización > Lavado y planchado > "
-                "Lavadoras",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/lavado-y-planchado/secadoras",
-                [WASHING_MACHINE],
-                "Inicio > Electrohogar y Climatización > Lavado y planchado > "
-                "Secadoras",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/lavado-y-planchado/lavadoras-"
-                "secadoras",
-                [WASHING_MACHINE],
-                "Inicio > Electrohogar y Climatización > Lavado y planchado > "
-                "Lava - seca",
-                1,
-            ],
-            # Aspirado y limpieza
-            [
-                "electrohogar-y-climatizacion/aspirado-y-limpieza/aspiradoras",
-                [VACUUM_CLEANER],
-                "Inicio > Electrohogar y Climatización > Aspirado y limpieza > "
-                "Aspiradoras",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/aspirado-y-limpieza/robots-de-"
-                "limpieza",
-                [VACUUM_CLEANER],
-                "Inicio > Electrohogar y Climatización > Aspirado y limpieza > "
-                "Robots de limpieza",
-                1,
-            ],
-            # Electrodomésticos
-            [
-                "electrohogar-y-climatizacion/electrodomesticos/hornos-" "electricos",
-                [OVEN],
-                "Inicio > Electrohogar y Climatización > Electrodomésticos > "
-                "Hornos eléctricos",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/electrodomesticos/microondas",
-                [OVEN],
-                "Inicio > Electrohogar y Climatización > Electrodomésticos > "
-                "Microondas",
-                1,
-            ],
-            # Ventilación
-            [
-                "electrohogar-y-climatizacion/ventilacion/aire-acondicionado-"
-                "portatil",
-                [SPLIT_AIR_CONDITIONER],
-                "Inicio > Electrohogar y Climatización > Ventilación > "
-                "Aire acondicionado portátil",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/ventilacion/aire-acondicionado-" "split",
-                [SPLIT_AIR_CONDITIONER],
-                "Inicio > Electrohogar y Climatización > Ventilación > "
-                "Aire Acondicionado split",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/ventilacion/purificadores-y-"
-                "humidificadores",
-                [SPLIT_AIR_CONDITIONER],
-                "Inicio > Electrohogar y Climatización > Ventilación > "
-                "Purificadores y humidificadores",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/calefont-y-termos/calefont",
-                [WATER_HEATER],
-                "Inicio > Electrohogar y Climatización > Calefont y Termos > "
-                "Calefont",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/tecnologia/consolas-y-"
-                "videojuegos/consolas",
-                [VIDEO_GAME_CONSOLE],
-                "Electrohogar y Climatización > Tecnología > "
-                "Consolas y Videojuegos > Consolas",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/cocina/cocinas-a-gas",
-                [STOVE],
-                "Electrohogar y Climatización > Cocina > Cocina a gas",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/cocina/encimeras",
-                [STOVE],
-                "Electrohogar y Climatización > Cocina > Encimeras",
-                1,
-            ],
-            [
-                "electrohogar-y-climatizacion/electrodomesticos",
-                [ACCESORIES],
-                "Electrohogar y Climatización > Electrodomésticos",
-                1,
-            ],
-        ]
-
-        product_entries = defaultdict(lambda: [])
-        session = session_with_proxy(extra_args)
-
-        for e in category_paths:
-            category_path, local_categories, section_name, category_weight = e
-
-            if category not in local_categories:
+    def discover_urls_for_category(cls, category, extra_args=None):
+        for category_path, local_category, section in cls.category_paths:
+            if local_category != category:
                 continue
 
-            page = 1
-
-            while True:
-                if page > 20:
-                    raise Exception("page overflow: " + category_path)
-
-                url = f"{cls.base_url}/search/categories?count=40&page={page}&categories={category_path}"
-
-                response = session.get(
-                    url, headers={"X-Api-Key": "jFt3XhoLqFAGr6qN9SCpr9K6y83HpakP"}
-                ).json()
-
-                if response["productList"] == []:
-                    break
-
-                for idx, product in enumerate(response["productList"]):
-                    product_entries[
-                        f"https://www.easy.cl/{product['linkText']}/p"
-                    ].append(
-                        {
-                            "category_weight": category_weight,
-                            "section_name": section_name,
-                            "value": idx + 1,
-                        }
-                    )
-
-                page += 1
-
-        return product_entries
+            yield from cls._get_product_urls(category_path, extra_args)
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         product_urls = []
         page = 1
 
@@ -290,7 +203,7 @@ class Easy(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         item_id = re.findall(r"-(\d+)", url)[-1]
         response = session.get(
             f"{cls.base_url}/products/by-sku/{item_id}",
@@ -379,7 +292,7 @@ class Easy(Store):
     @classmethod
     def banners(cls, extra_args=None):
         base_url = "https://www.easy.cl"
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         soup = BeautifulSoup(session.get(base_url).text, "lxml")
         build_id = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)[
             "buildId"
@@ -420,3 +333,47 @@ class Easy(Store):
             raise Exception(f"No banners for Home section: {base_url}")
 
         return banners
+
+    @classmethod
+    def sections(cls):
+        return [x[2] for x in cls.category_paths]
+
+    @classmethod
+    def section_positions(cls, section, extra_args=None):
+        for category_path, category, local_section in cls.category_paths:
+            if local_section != section:
+                continue
+
+            for idx, url in enumerate(cls._get_product_urls(category_path, extra_args)):
+                section_position = {
+                    "field": "discovery_url",
+                    "value": url,
+                    "position": idx + 1,
+                    "section": section,
+                }
+                yield section_position
+
+    @classmethod
+    def _get_product_urls(cls, category_path, extra_args=None):
+        session = cls.get_session(extra_args)
+
+        page = 1
+
+        while True:
+            if page > 20:
+                raise Exception("page overflow: " + category_path)
+
+            url = f"{cls.base_url}/search/categories?count=40&page={page}&categories={category_path}"
+
+            response = session.get(
+                url, headers={"X-Api-Key": "jFt3XhoLqFAGr6qN9SCpr9K6y83HpakP"}
+            ).json()
+
+            if not response["productList"]:
+                break
+
+            for idx, product in enumerate(response["productList"]):
+                product_url = f"https://www.easy.cl/{product['linkText']}/p"
+                yield product_url
+
+            page += 1

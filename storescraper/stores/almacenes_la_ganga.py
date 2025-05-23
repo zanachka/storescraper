@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import html_to_markdown
 from storescraper.categories import TELEVISION
 
 
@@ -21,7 +21,7 @@ class AlmacenesLaGanga(Store):
         if category != TELEVISION:
             return []
 
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         product_urls = []
         page = 1
 
@@ -49,7 +49,7 @@ class AlmacenesLaGanga(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
 
