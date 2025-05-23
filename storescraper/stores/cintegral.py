@@ -1,20 +1,17 @@
-import re
-
+import json
 from bs4 import BeautifulSoup
 from decimal import Decimal
-
-from requests import TooManyRedirects
-
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, html_to_markdown, remove_words
+from storescraper.utils import (
+    session_with_proxy,
+    html_to_markdown,
+    get_price_from_price_specification,
+)
 from storescraper.categories import (
     NOTEBOOK,
     ALL_IN_ONE,
     TABLET,
-    EXTERNAL_STORAGE_DRIVE,
-    SOLID_STATE_DRIVE,
-    MEMORY_CARD,
     USB_FLASH_DRIVE,
     PROCESSOR,
     COMPUTER_CASE,
@@ -25,65 +22,48 @@ from storescraper.categories import (
     MOUSE,
     PRINTER,
     HEADPHONES,
-    STEREO_SYSTEM,
-    UPS,
     MONITOR,
     KEYBOARD_MOUSE_COMBO,
     KEYBOARD,
     GAMING_CHAIR,
     WEARABLE,
-    STORAGE_DRIVE,
     PRINTER_SUPPLY,
+    CPU_COOLER,
+    ACCESORIES,
+    PROJECTOR,
 )
 
 
 class Cintegral(StoreWithUrlExtensions):
     url_extensions = [
-        ["109", NOTEBOOK],
-        ["110", ALL_IN_ONE],
-        ["176", TABLET],
-        ["128", PRINTER],  # Impresoras Tinta
-        ["156", PRINTER],  # Impresoras
-        ["129", PRINTER],  # Impresoras Láser
-        ["157", PRINTER],  # Multifuncionales
-        ["152", PRINTER],  # Plotter
-        ["181", STORAGE_DRIVE],
-        ["182", EXTERNAL_STORAGE_DRIVE],
-        ["183", SOLID_STATE_DRIVE],
-        ["184", MEMORY_CARD],
-        ["185", USB_FLASH_DRIVE],
-        ["116", POWER_SUPPLY],
-        ["115", COMPUTER_CASE],
-        ["118", RAM],
-        ["117", MOTHERBOARD],
-        ["114", PROCESSOR],
-        ["119", VIDEO_CARD],
-        ["96", MONITOR],
-        ["122", KEYBOARD_MOUSE_COMBO],
-        ["123", MOUSE],
-        ["121", KEYBOARD],
-        ["161", NOTEBOOK],
-        ["163", WEARABLE],
-        ["162", TABLET],
-        ["164", KEYBOARD],
-        ["139", HEADPHONES],
-        ["140", STEREO_SYSTEM],
-        ["153", GAMING_CHAIR],
-        ["86", WEARABLE],
-        ["168", VIDEO_CARD],
-        ["160", MONITOR],
-        ["159", NOTEBOOK],
-        ["172", SOLID_STATE_DRIVE],
-        ["171", POWER_SUPPLY],
-        ["167", MOUSE],
-        ["170", MOTHERBOARD],
-        ["169", PROCESSOR],
-        ["166", GAMING_CHAIR],
-        ["178", RAM],
-        ["106", NOTEBOOK],
-        ["141", UPS],
-        ["133", PRINTER_SUPPLY],
-        ["134", PRINTER_SUPPLY],
+        ("notebook", NOTEBOOK),
+        ("all-in-one-pc-y-portatiles", ALL_IN_ONE),
+        ("tablet-digitalizadoras-smartphone", TABLET),
+        ("almacenamiento", USB_FLASH_DRIVE),
+        ("fuentes-de-poder", POWER_SUPPLY),
+        ("gabinetes", COMPUTER_CASE),
+        ("memorias", RAM),
+        ("placa-madre", MOTHERBOARD),
+        ("procesadores", PROCESSOR),
+        ("tarjetas-de-video", VIDEO_CARD),
+        ("ventiladores-y-water-cooling", CPU_COOLER),
+        ("cables-y-adaptadores", ACCESORIES),
+        ("monitores", MONITOR),
+        ("proyeccion", PROJECTOR),
+        ("multifuncionales", PRINTER),
+        ("impresoras", PRINTER),
+        ("plotter", PRINTER),
+        ("toners", PRINTER_SUPPLY),
+        ("tintas", PRINTER_SUPPLY),
+        ("combo-mouse-y-teclados", KEYBOARD_MOUSE_COMBO),
+        ("mouse", MOUSE),
+        ("teclados", KEYBOARD),
+        ("mac-imac", ALL_IN_ONE),
+        ("ipad", TABLET),
+        ("apple-watch", WEARABLE),
+        ("accesorios-apple", ACCESORIES),
+        ("audio", HEADPHONES),
+        ("sillas-gamer", GAMING_CHAIR),
     ]
 
     @classmethod
@@ -97,26 +77,18 @@ class Cintegral(StoreWithUrlExtensions):
             if page >= 20:
                 raise Exception("Page overflow: " + url_extension)
 
-            endpoint = (
-                "https://cintegral.cl/?post_type=product&jsf=jet-engine:grid-products&tax=product_cat:{}"
-                "&pagenum={}"
-            ).format(url_extension, page)
-            print(endpoint)
+            url = f"https://cintegral.cl/categoria/{url_extension}/page/{page}/"
+            print(url)
 
-            res = session.get(endpoint, verify=False)
+            res = session.get(url, verify=False)
             soup = BeautifulSoup(res.text, "lxml")
-            product_tags = soup.findAll("div", "jet-listing-grid__items")[1].findAll(
-                "div", "jet-listing-grid__item"
-            )
+            product_tags = soup.find_all("div", "product")
 
             if not product_tags:
                 break
 
             for product_tag in product_tags:
-                product_url = product_tag.find("a", "jet-listing-dynamic-image__link")[
-                    "href"
-                ]
-                print(product_url)
+                product_url = product_tag.find("a")["href"]
                 product_urls.append(product_url)
 
             page += 1
@@ -127,49 +99,42 @@ class Cintegral(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        try:
-            res = session.get(url, verify=False)
-        except TooManyRedirects:
+        response = session.get(url, verify=False)
+        soup = BeautifulSoup(response.text, "lxml")
+        product_data_tag = soup.find("script", {"type": "application/ld+json"})
+
+        if not product_data_tag:
             return []
-        soup = BeautifulSoup(res.text, "lxml")
 
-        name = soup.find("h1", "product_title").text.strip()
-        new_key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
-        old_key = re.match(r"https://cintegral.cl/producto/(\d+)", url).groups()[0]
+        product_data = json.loads(product_data_tag.text)
+        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
+        name = product_data["name"]
 
-        stock_label_tag = soup.find("span", text="Stock Web:")
-        stock_tag = stock_label_tag.next.next
-        stock_match = re.search(r"(\d+)", stock_tag.text.strip())
-        if not stock_match:
-            return []
-        stock = int(stock_match.groups()[0])
+        part_number_tag = soup.find("div", "field_682c8d88970c3")
+        part_number = (
+            part_number_tag.contents[1].strip()
+            if part_number_tag
+            else product_data["sku"]
+        )
+        offers = product_data["offers"]
 
-        prices_tag = soup.find("div", "elementor-element-9386c30")
+        assert len(offers) == 1
 
-        normal_price_label_tag = prices_tag.find("div", text="Pago con Tarjeta")
-        if normal_price_label_tag:
-            normal_price = Decimal(remove_words(normal_price_label_tag.next.next.text))
-
-            offer_price_label_tag = prices_tag.find("div", text="Pago transferencia")
-            offer_price = Decimal(remove_words(offer_price_label_tag.next.next.text))
-        else:
-            price_label_tag = prices_tag.find("div", text="Todo Medio de Pago")
-            price = Decimal(remove_words(price_label_tag.next.next.text))
-            normal_price = offer_price = price
-
-        mpn_label_tag = prices_tag.find("span", text="Part Number:")
-        if mpn_label_tag:
-            part_number = mpn_label_tag.next.next.strip()
-        else:
-            part_number = None
-
-        description = html_to_markdown(
-            str(soup.find("div", "woocommerce-Tabs-panel--description"))
+        offer = offers[0]
+        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        price = get_price_from_price_specification(product_data)
+        picture_urls = [
+            img["src"]
+            for img in soup.find("div", "product-image-slider").find_all("img")
+        ]
+        description_tag = soup.find("div", {"id": "tab-description"})
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
         )
 
-        picture_urls = [soup.find("meta", {"property": "og:image"})["content"]]
-
-        if "REACONDICIONADO" in name.upper():
+        if ("reacondicionado" in name) or (
+            description and "reacondicionado" in description
+        ):
             condition = "https://schema.org/RefurbishedCondition"
         else:
             condition = "https://schema.org/NewCondition"
@@ -180,12 +145,12 @@ class Cintegral(StoreWithUrlExtensions):
             category,
             url,
             url,
-            new_key,
+            key,
             stock,
-            normal_price,
-            offer_price,
+            price,
+            price,
             "CLP",
-            sku=old_key,
+            sku=key,
             part_number=part_number,
             description=description,
             picture_urls=picture_urls,

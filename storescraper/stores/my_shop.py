@@ -48,7 +48,7 @@ class MyShop(StoreWithUrlExtensions):
         ["119", NOTEBOOK],  # apple-macbook
         ["121", TABLET],  # apple-ipad
         ["124", HEADPHONES],  # apple-accesorios-apple
-        ["66", CELL],  # celulares
+        # ["66", CELL],  # celulares
         ["92", RAM],  # portabilidad-memorias-notebook
         ["21", TABLET],  # portabilidad-tablet
         # ["56", WEARABLE],  # portabilidad-relojes

@@ -1,7 +1,5 @@
 import json
 
-from collections import defaultdict
-
 from bs4 import BeautifulSoup
 from decimal import Decimal
 
@@ -92,7 +90,10 @@ class Entel(Store):
         session = session_with_proxy(extra_args)
         response = session.get(cls.planes_url)
         soup = BeautifulSoup(response.text, "lxml")
-        plans_container = soup.find("swiper-container", {"id": "cards-planes-movil"})
+        plans_container = soup.find(
+            "swiper-container", {"id": "cards-planes-movil-desktop"}
+        )
+
         plans = plans_container.findAll("swiper-slide")
         products = []
 

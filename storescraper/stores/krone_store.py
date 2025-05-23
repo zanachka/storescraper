@@ -49,12 +49,18 @@ class KroneStore(StoreWithUrlExtensions):
         )
 
         name = product_data["name"]
+        description = html_to_markdown(product_data["description"])
+
+        if "hasVariant" in product_data:
+            variant = product_data["hasVariant"]
+            assert len(variant) == 1
+            product_data = variant[0]
+
         sku = product_data["sku"]
         offer = product_data["offers"]
         price = Decimal(offer["price"])
         key = offer["url"].split("?variant=")[-1]
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
-        description = html_to_markdown(product_data["description"])
         picture_urls = [
             f"https:{img['src'].split('?v=')[0]}"
             for img in soup.find_all("img", "image-magnify-lightbox")

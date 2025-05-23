@@ -45,7 +45,7 @@ class Osoji(StoreWithUrlExtensions):
         soup = BeautifulSoup(response.text, "lxml")
         product_buttons = soup.find_all(
             "span", "elementor-button-text", string="Ver más"
-        )
+        ) or soup.find_all("span", "elementor-button-text", string="Ver más ")
 
         if product_buttons:
             for button in product_buttons:

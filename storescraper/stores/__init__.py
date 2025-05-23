@@ -76,6 +76,7 @@ from .infor_ingen import InforIngen
 from .invasion_gamer import InvasionGamer
 from .jasaltec import Jasaltec
 from .jetstereo import Jetstereo
+from .jumbo import Jumbo
 from .k_d_tec import KDTec
 from .krone_store import KroneStore
 from .la_curacao_online_nicaragua import LaCuracaoOnlineNicaragua
