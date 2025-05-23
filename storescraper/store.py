@@ -31,7 +31,7 @@ class Store:
         try:
             yield from cls.discover_urls_for_category(category, extra_args=extra_args)
         except Exception as e:
-            raise StoreScrapError("Error discovering URLs") from e
+            raise StoreScrapError(f"Error discovering URLs for {category} : {e}") from e
 
     @classmethod
     def products_for_url_with_custom_exception(

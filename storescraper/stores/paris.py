@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 import validators
 from storescraper.categories import (
     ALL_IN_ONE,
-    GAMING_CHAIR,
     TELEVISION,
     VACUUM_CLEANER,
     WATER_HEATER,
@@ -23,8 +22,6 @@ from storescraper.categories import (
     SOLID_STATE_DRIVE,
     PROJECTOR,
     MOUSE,
-    KEYBOARD,
-    COMPUTER_CASE,
     REFRIGERATOR,
     WASHING_MACHINE,
     DISH_WASHER,
@@ -240,15 +237,12 @@ class Paris(Store):
 
     @classmethod
     def discover_entries_for_category(cls, category, extra_args=None):
-        category_paths = cls.category_paths
         fast_mode = extra_args and extra_args.get("fast_mode", False)
 
         session = session_with_proxy(extra_args)
         product_entries = defaultdict(lambda: [])
 
-        for e in category_paths:
-            (category_path, local_category, weight) = e
-
+        for category_path, local_category, weight in cls.category_paths:
             if local_category != category:
                 continue
 
