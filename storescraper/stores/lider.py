@@ -67,332 +67,240 @@ class Lider(Store):
     tenant = "catalogo"
     category_paths = [
         # TECNO
-        ["66849718_44699651_73841472", [TELEVISION], "Tecno > TV", 1],
-        # ["Tecno/TV/Smart_TV", [TELEVISION], "Tecno > TV > Smart TV", 1],
+        ["66849718_44699651_73841472", TELEVISION, "Tecno > TV"],
+        # ["Tecno/TV/Smart_TV", TELEVISION, "Tecno > TV > Smart TV"],
         # [
         #     "Tecno/TV/Smart_TV_Hasta_50_Pulgadas",
-        #     [TELEVISION],
+        #     TELEVISION,
         #     "Tecno > TV > Smart TV Hasta 50 Pulgadas",
-        #     1,
         # ],
         # [
         #     "Tecno/TV/Smart_TV_Sobre_50_Pulgadas",
-        #     [TELEVISION],
+        #     TELEVISION,
         #     "Tecno > TV > Smart TV Sobre 50 Pulgadas",
-        #     1,
         # ],
-        ["66849718_44699651_64332442", [STEREO_SYSTEM], "Tecno > TV > Home Theater", 1],
-        ["66849718_44699651_68838150", [PROJECTOR], "Tecno > TV > Proyectores", 1],
-        ["66849718_14621386", [STEREO_SYSTEM], "Tecno > Audio", 1],
+        ["66849718_44699651_64332442", STEREO_SYSTEM, "Tecno > TV > Home Theater"],
+        ["66849718_44699651_68838150", PROJECTOR, "Tecno > TV > Proyectores"],
+        ["66849718_14621386", STEREO_SYSTEM, "Tecno > Audio"],
         [
             "66849718_14621386_88231649",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Tecno > Audio > Equipos de Música y Karaoke",
-            1,
         ],
         [
             "66849718_14621386_95114916",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Tecno > Audio > Equipos de Música y Karaoke",
-            1,
         ],
-        [
-            "66849718_14621386_49644492",
-            [STEREO_SYSTEM],
-            "Tecno > Audio > Audio Portable",
-            1,
-        ],
+        ["66849718_14621386_49644492", STEREO_SYSTEM, "Tecno > Audio > Audio Portable"],
         [
             "66849718_14621386_25354977",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Tecno > Audio > Micro y Mini Componentes",
-            1,
         ],
-        ["66849718_14621386_31940338", [HEADPHONES], "Tecno > Audio > Audífonos", 1],
+        ["66849718_14621386_31940338", HEADPHONES, "Tecno > Audio > Audífonos"],
         [
             "66849718_14621386_27642866",
-            [STEREO_SYSTEM],
+            STEREO_SYSTEM,
             "Tecno > Audio > Tornamesas y Vinilos",
-            1,
         ],
-        [
-            "66849718_14621386_98336174",
-            [STEREO_SYSTEM],
-            "Tecno > Audio > Audio HI-FI",
-            1,
-        ],
-        [
-            "66849718_44699651_68838150",
-            [PROJECTOR],
-            "Tecno > TV > Proyectores",
-            1,
-        ],
+        ["66849718_14621386_98336174", STEREO_SYSTEM, "Tecno > Audio > Audio HI-FI"],
+        ["66849718_44699651_68838150", PROJECTOR, "Tecno > TV > Proyectores"],
         [
             "66849718_80980590_45869788",
-            [VIDEO_GAME_CONSOLE],
+            VIDEO_GAME_CONSOLE,
             "Tecno > Videojuegos > Consolas",
-            1,
         ],
         [
             "66849718_80980590_97449970",
-            [VIDEO_GAME_CONSOLE],
+            VIDEO_GAME_CONSOLE,
             "Tecno > Videojuegos > Nintendo",
-            1,
         ],
         [
             "66849718_80980590_45368401",
-            [VIDEO_GAME_CONSOLE],
+            VIDEO_GAME_CONSOLE,
             "Tecno > Videojuegos > PlayStation",
-            1,
         ],
         [
             "66849718_80980590_47691134",
-            [VIDEO_GAME_CONSOLE],
+            VIDEO_GAME_CONSOLE,
             "Tecno > Videojuegos > XBOX",
-            1,
         ],
         # CELULARES
-        ["34388900_60412644", [CELL], "Celulares > Celulares y Teléfonos", 1],
-        [
-            "34388900_13662451",
-            [WEARABLE],
-            "Celulares > Smartwatches y Wearables",
-            1,
-        ],
+        ["34388900_60412644", CELL, "Celulares > Celulares y Teléfonos"],
+        ["34388900_13662451", WEARABLE, "Celulares > Smartwatches y Wearables"],
         # COMPUTACION
         [
             "89057520_72573679_94067303",
-            [NOTEBOOK],
+            NOTEBOOK,
             "Computación > Computadores > Notebooks",
-            1,
         ],
-        [
-            "89057520_72573679_62826909",
-            [TABLET],
-            "Computación > Computadores > Tablets",
-            1,
-        ],
+        ["89057520_72573679_62826909", TABLET, "Computación > Computadores > Tablets"],
         [
             "89057520_72573679_56612565",
-            [ALL_IN_ONE],
+            ALL_IN_ONE,
             "Computación > Computadores > Computadores All in One",
-            1,
         ],
         [
             "89057520_28386364_21832538",
-            [MONITOR],
+            MONITOR,
             "Computación > Accesorios Computación > Monitores y Proyectores",
-            1.0,
         ],
         [
             "89057520_28386364",
-            [MOUSE],
+            MOUSE,
             "Computación > Computadores > Accesorios Computación",
-            1.0,
         ],
         [
             "89057520_92341690_33654871",
-            [NOTEBOOK],
+            NOTEBOOK,
             "Computación > Mundo Gamer > Computación Gamer",
-            1.0,
         ],
         [
             "89057520_92341690_99170494",
-            [KEYBOARD],
+            KEYBOARD,
             "Computación > Mundo Gamer > Mouse y Teclados",
-            1.0,
         ],
         [
             "89057520_92341690_27961626",
-            [HEADPHONES],
+            HEADPHONES,
             "Computación > Mundo Gamer > Audífonos",
-            1.0,
         ],
         [
             "89057520_92341690_04804406",
-            [GAMING_CHAIR],
+            GAMING_CHAIR,
             "Computación > Mundo Gamer > Sillas Gamer",
-            1,
         ],
         [
             "89057520_18938454_77669169",
-            [PRINTER],
+            PRINTER,
             "Computación > Impresión > Impresoras y Multifuncionales",
-            1.0,
         ],
         [
             "89057520_98848773_69232935",
-            [EXTERNAL_STORAGE_DRIVE],
+            EXTERNAL_STORAGE_DRIVE,
             "Computación > Almacenamiento > Discos Duros",
-            1.0,
         ],
         [
             "89057520_98848773_37896447",
-            [SOLID_STATE_DRIVE],
+            SOLID_STATE_DRIVE,
             "Computación > Almacenamiento > Discos Duros SSD",
-            1.0,
         ],
         [
             "89057520_98848773_32568051",
-            [MEMORY_CARD],
+            MEMORY_CARD,
             "Computación > Almacenamiento > Tarjetas de Memoria",
-            1.0,
         ],
         [
             "89057520_98848773_93306813",
-            [USB_FLASH_DRIVE],
+            USB_FLASH_DRIVE,
             "Computación > Almacenamiento > Pendrives",
-            1.0,
         ],
         # ELECTROHOGAR
-        [
-            "23989399_93795889",
-            [REFRIGERATOR],
-            "Electrohogar > Refrigeración",
-            1.0,
-        ],
+        ["23989399_93795889", REFRIGERATOR, "Electrohogar > Refrigeración"],
         [
             "23989399_93795889_28605677",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electrohogar > Refrigeración > No Frost",
-            1.0,
         ],
         [
             "23989399_93795889_24472802",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electrohogar > Refrigeración > Frio Directo",
-            1.0,
         ],
         [
             "23989399_93795889_98442409",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electrohogar > Refrigeración > Side By Side",
-            1.0,
         ],
         [
             "23989399_93795889_83823051",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electrohogar > Refrigeración > Freezer",
-            1.0,
         ],
         [
             "23989399_93795889_10449779",
-            [REFRIGERATOR],
+            REFRIGERATOR,
             "Electrohogar > Refrigeración > Frigobar",
-            1.0,
         ],
-        [
-            "23989399_75788044",
-            [WASHING_MACHINE],
-            "Electrohogar > Lavado y Planchado",
-            1.0,
-        ],
+        ["23989399_75788044", WASHING_MACHINE, "Electrohogar > Lavado y Planchado"],
         [
             "23989399_75788044_27277508",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Electrohogar > Lavado y Planchado > Lavadoras",
-            1.0,
         ],
         [
             "23989399_75788044_75760841",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Electrohogar > Lavado y Planchado > Lavadoras Secadoras",
-            1.0,
         ],
         [
             "23989399_75788044_83679483",
-            [WASHING_MACHINE],
+            WASHING_MACHINE,
             "Electrohogar > Lavado y Planchado > Secadoras",
-            1.0,
         ],
         [
             "23989399_75788044_84624586",
-            [DISH_WASHER],
+            DISH_WASHER,
             "Electrohogar > Lavado y Planchado > Lavavajillas",
-            1.0,
         ],
-        [
-            "23989399_85011192",
-            [VACUUM_CLEANER],
-            "Electrohogar > Aspiradoras y Limpieza",
-            1.0,
-        ],
+        ["23989399_85011192", VACUUM_CLEANER, "Electrohogar > Aspiradoras y Limpieza"],
         [
             "23989399_53512871_73118366",
-            [OVEN],
+            OVEN,
             "Electrohogar > Electrodomésticos Cocina > Hornos Eléctricos",
-            1.0,
         ],
         [
             "23989399_53512871_12048011",
-            [OVEN],
+            OVEN,
             "Electrohogar > Electrodomésticos Cocina > Microondas",
-            1.0,
         ],
         [
             "23989399_74640407_68912278",
-            [OVEN],
+            OVEN,
             "Electrohogar > Cocinas > Hornos Empotrables",
-            1.0,
         ],
         # [
         #     "Climatización/Calefacción",
-        #     [SPACE_HEATER],
-        #     "Electrohogar > Climatización > Calefacción",
-        #     1.0,
+        #     SPACE_HEATER,
+        #     "Electrohogar > Climatización > Calefacción"
         # ],
         [
             "23989399_29216192_32962208",
-            [SPLIT_AIR_CONDITIONER],
+            SPLIT_AIR_CONDITIONER,
             "Electrohogar > Climatización > Ventilación",
-            1.0,
         ],
         # [
         #     "Climatización/Calefacción/Termos y Calefonts",
-        #     [WATER_HEATER],
-        #     "Electrohogar > Climatización > Calefacción > Termos y Calefonts",
-        #     1.0,
+        #     WATER_HEATER,
+        #     "Electrohogar > Climatización > Calefacción > Termos y Calefonts"
         # ],
-        [
-            "23989399_53512871",
-            [ACCESORIES],
-            "Electrohogar > Electrodomésticos Cocina",
-            1.0,
-        ],
+        ["23989399_53512871", ACCESORIES, "Electrohogar > Electrodomésticos Cocina"],
         [
             "89057520_18938454_30849678",
-            [PRINTER_SUPPLY],
+            PRINTER_SUPPLY,
             "Computación > Impresión > Tintas y Toners",
-            1.0,
         ],
         [
             "23989399_75788044_32008261",
-            [IRON],
+            IRON,
             "Electrohogar > Lavado y Planchado > Planchado",
-            1.0,
         ],
         [
             "59721722_76091226_92571610",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Belleza y Cuidado Personal > Cuidado Personal > Secadores de Pelo",
-            1.0,
         ],
         [
             "59721722_76091226_89836448",
-            [HAIR_CARE],
+            HAIR_CARE,
             "Belleza y Cuidado Personal > Cuidado Personal > Alisadores y Onduladores",
-            1.0,
         ],
     ]
 
     @classmethod
     def categories(cls):
-        cats = []
-        for entry in cls.category_paths:
-            for cat in entry[1]:
-                if cat not in cats:
-                    cats.append(cat)
-        return cats
+        return list({local_category for _, local_category, _ in cls.category_paths})
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
@@ -441,149 +349,21 @@ class Lider(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        products = {}
-        query_url = "https://www.lider.cl/orchestra/graphql/browse"
-        path = Path(__file__).with_name("lider_request.txt")
-        with path.open("r") as f:
-            graphql_query = f.read()
+        seen_urls = set()
 
-        for e in cls.category_paths:
-            category_id, local_categories, section_name, category_weight = e
-
-            if category not in local_categories:
+        for category_id, local_category, _ in cls.category_paths:
+            if category != local_category:
                 continue
 
-            page = 1
-            fast_mode = extra_args.get("fast_mode", False)
-            idx = 1
-
-            while True:
-                print(page)
-
-                graphql_variables = {
-                    "page": page,
-                    "prg": "desktop",
-                    "catId": category_id,
-                    "sort": "best_match",
-                    "ps": 44,
-                    "fetchMarquee": True,
-                    "fetchSkyline": True,
-                    "fetchSbaTop": False,
-                    "fetchGallery": False,
-                    "fetchDac": False,
-                    "tenant": "CHILE_EA_GLASS",
-                }
-
-                if fast_mode:
-                    graphql_variables["facet"] = "ss_sellertype:Lider"
-
-                graphql_request_body = {
-                    "query": graphql_query,
-                    "variables": graphql_variables,
-                }
-
-                tries = 0
-                cf_session = False
-
-                while True:
-                    extra_args = extra_args or {}
-
-                    if cf_session:
-                        session = cf_session_with_proxy(extra_args)
-                    else:
-                        session = session_with_proxy(extra_args)
-
-                    session.headers = {
-                        "Content-Type": "application/json",
-                        "User-Agent": cls.USER_AGENTS[tries],
-                        "x-o-bu": "LIDER-CL",
-                        "x-o-mart": "B2C",
-                        "x-o-vertical": "EA",
-                        "X-APOLLO-OPERATION-NAME": "Browse",
-                    }
-                    try:
-                        response = session.post(query_url, json=graphql_request_body)
-                        data = json.loads(response.text)
-                        products_data = data["data"]["search"]["searchResult"][
-                            "itemStacks"
-                        ][0]["itemsV2"]
-                        tries = 0
-                        break
-                    except Exception as e:
-                        exception = e
-
-                        if cf_session:
-                            cf_session = False
-                            tries += 1
-                        else:
-                            cf_session = True
-
-                    if tries > len(cls.USER_AGENTS) - 1:
-                        raise exception
-
-                if not products_data:
-                    break
-
-                for entry in products_data:
-                    product_url = f"https://www.lider.cl{entry['canonicalUrl']}"
-                    name = f"{entry['brand']} {entry['name']}"
-                    key = entry["offerId"]
-
-                    if not fast_mode and key in products:
-                        products[key].positions.append((section_name, idx))
-                        idx += 1
-                    else:
-                        price_info = entry["priceInfo"]
-                        normal_price = Decimal(price_info["currentPrice"]["price"])
-                        sku = entry["usItemId"]
-                        picture_urls = [
-                            img["url"]
-                            for img in entry["imageInfo"]["allImages"]
-                            if validators.url(img["url"])
-                        ]
-                        seller_name = entry["sellerName"]
-                        seller = None if seller_name == "Lider" else seller_name
-                        stock = (
-                            -1
-                            if (
-                                entry["availabilityStatusV2"]["value"] == "IN_STOCK"
-                                and seller_name == "Lider"
-                            )
-                            else 0
-                        )
-                        description_value = entry["shortDescription"]
-                        description = (
-                            html_to_markdown(description_value)
-                            if description_value
-                            else None
-                        )
-
-                        p = Product(
-                            name,
-                            cls.__name__,
-                            category,
-                            product_url,
-                            product_url,
-                            key,
-                            stock,
-                            normal_price,
-                            normal_price,
-                            "CLP",
-                            sku=sku,
-                            picture_urls=picture_urls,
-                            description=description,
-                            seller=seller,
-                        )
-
-                        if not fast_mode:
-                            p.positions = [(section_name, idx)]
-                            idx += 1
-
-                        products[key] = p
-
-                page += 1
-
-        return list(products.values())
+            for product_url in cls._get_product_urls(
+                category_id,
+                local_category,
+                exclude_marketplace=True,
+                extra_args=extra_args,
+            ):
+                if product_url not in seen_urls:
+                    seen_urls.add(product_url)
+                    yield product_url
 
     @classmethod
     def banners(cls, extra_args=None):
@@ -623,3 +403,157 @@ class Lider(Store):
             )
 
         return banners
+
+    @classmethod
+    def _get_product_urls(
+        cls, category_id, local_category, exclude_marketplace, extra_args=None
+    ):
+        query_url = "https://www.lider.cl/orchestra/graphql/browse"
+        path = Path(__file__).with_name("lider_request.txt")
+
+        with path.open("r") as f:
+            graphql_query = f.read()
+
+        page = 1
+
+        while True:
+            graphql_variables = {
+                "page": page,
+                "prg": "desktop",
+                "catId": category_id,
+                "sort": "best_match",
+                "ps": 44,
+                "fetchMarquee": True,
+                "fetchSkyline": True,
+                "fetchSbaTop": False,
+                "fetchGallery": False,
+                "fetchDac": False,
+                "tenant": "CHILE_EA_GLASS",
+            }
+
+            if exclude_marketplace:
+                graphql_variables["facet"] = "ss_sellertype:Lider"
+
+            graphql_request_body = {
+                "query": graphql_query,
+                "variables": graphql_variables,
+            }
+
+            tries = 0
+            cf_session = False
+
+            while True:
+                extra_args = extra_args or {}
+
+                if cf_session:
+                    session = cf_session_with_proxy(extra_args)
+                else:
+                    session = session_with_proxy(extra_args)
+
+                session.headers = {
+                    "Content-Type": "application/json",
+                    "User-Agent": cls.USER_AGENTS[tries],
+                    "x-o-bu": "LIDER-CL",
+                    "x-o-mart": "B2C",
+                    "x-o-vertical": "EA",
+                    "X-APOLLO-OPERATION-NAME": "Browse",
+                }
+
+                try:
+                    response = session.post(query_url, json=graphql_request_body)
+                    data = json.loads(response.text)
+                    products_data = data["data"]["search"]["searchResult"][
+                        "itemStacks"
+                    ][0]["itemsV2"]
+                    tries = 0
+                    break
+                except Exception as e:
+                    exception = e
+
+                    if cf_session:
+                        cf_session = False
+                        tries += 1
+                    else:
+                        cf_session = True
+
+                if tries > len(cls.USER_AGENTS) - 1:
+                    raise exception
+
+            if not products_data:
+                break
+
+            for entry in products_data:
+                product_url = f"https://www.lider.cl{entry['canonicalUrl']}"
+                name = f"{entry['brand']} {entry['name']}"
+                key = entry["offerId"]
+                price_info = entry["priceInfo"]
+                normal_price = Decimal(price_info["currentPrice"]["price"])
+                sku = entry["usItemId"]
+                picture_urls = [
+                    img["url"]
+                    for img in entry["imageInfo"]["allImages"]
+                    if validators.url(img["url"])
+                ]
+                seller_name = entry["sellerName"]
+                seller = None if seller_name == "Lider" else seller_name
+                stock = (
+                    -1
+                    if (
+                        entry["availabilityStatusV2"]["value"] == "IN_STOCK"
+                        and seller_name == "Lider"
+                    )
+                    else 0
+                )
+                description_value = entry["shortDescription"]
+                description = (
+                    html_to_markdown(description_value) if description_value else None
+                )
+
+                product = Product(
+                    name,
+                    cls.__name__,
+                    local_category,
+                    product_url,
+                    product_url,
+                    key,
+                    stock,
+                    normal_price,
+                    normal_price,
+                    "CLP",
+                    sku=sku,
+                    picture_urls=picture_urls,
+                    description=description,
+                    seller=seller,
+                )
+
+                yield product
+
+            page += 1
+
+    @classmethod
+    def sections(cls):
+        return [section for _, _, section in cls.category_paths]
+
+    @classmethod
+    def section_positions(cls, section, extra_args=None):
+        for category_id, local_category, section_path in cls.category_paths:
+            if section != section_path:
+                continue
+
+            for idx, product in enumerate(
+                cls._get_product_urls(
+                    category_id,
+                    local_category,
+                    exclude_marketplace=False,
+                    extra_args=extra_args,
+                )
+            ):
+                if idx >= 300:
+                    break
+
+                yield {
+                    "field": "discovery_url",
+                    "value": product.discovery_url,
+                    "position": idx + 1,
+                    "section": section,
+                }
