@@ -71,6 +71,7 @@ class AllTec(Store):
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
         )
+        return session
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
