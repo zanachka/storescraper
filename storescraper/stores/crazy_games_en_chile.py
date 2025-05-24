@@ -26,7 +26,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, html_to_markdown
+from storescraper.utils import cf_session_with_proxy
 
 
 class CrazyGamesenChile(StoreWithUrlExtensions):
@@ -57,8 +57,12 @@ class CrazyGamesenChile(StoreWithUrlExtensions):
     ]
 
     @classmethod
+    def get_session(cls, extra_args=None):
+        return cf_session_with_proxy(extra_args)
+
+    @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         session.headers["user-agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
@@ -104,7 +108,7 @@ class CrazyGamesenChile(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         session.headers["user-agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"

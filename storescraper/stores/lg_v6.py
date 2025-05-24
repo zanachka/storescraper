@@ -170,7 +170,7 @@ class LgV6(Store):
         else:
             section_path = "N/A"
 
-        positions = [(section_path, 1)]
+        # positions = [(section_path, 1)]
         sku = json_data["ec_sku"]
 
         pdp_data = soup.find("div", {"id": "pdp-overview-section"})
@@ -204,7 +204,7 @@ class LgV6(Store):
                 sku=sku,
                 picture_urls=picture_urls,
                 part_number=sku,
-                positions=positions,
+                # positions=positions,
                 allow_zero_prices=not cls.skip_products_without_price,
                 description=description,
                 review_count=review_count,

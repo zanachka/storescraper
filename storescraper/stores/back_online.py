@@ -17,7 +17,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import cf_session_with_proxy
 
 
 class BackOnline(StoreWithUrlExtensions):
@@ -34,8 +34,12 @@ class BackOnline(StoreWithUrlExtensions):
     ]
 
     @classmethod
+    def get_session(cls, extra_args=None):
+        return cf_session_with_proxy(extra_args)
+
+    @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session()
         product_urls = []
 
         for collection_label, collection_url in extra_args["collection_urls"]:
@@ -71,7 +75,7 @@ class BackOnline(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session()
         soup = BeautifulSoup(session.get(url).text, "lxml")
 
         variations_tags = soup.findAll("script", {"type": "application/json"})
@@ -166,7 +170,7 @@ class BackOnline(StoreWithUrlExtensions):
 
     @classmethod
     def preflight(cls, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session()
 
         response = session.get("https://backonline.cl/collections")
         soup = BeautifulSoup(response.text, "lxml")
