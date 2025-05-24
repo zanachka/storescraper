@@ -26,7 +26,7 @@ kombu==5.5.3
 lxml==5.4.0
 matplotlib-inline==0.1.7
 mypy_extensions==1.1.0
-packaging==25.0
+packaging==24.2
 parso==0.8.4
 pathspec==0.12.1
 pexpect==4.9.0
