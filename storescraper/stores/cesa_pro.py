@@ -105,6 +105,10 @@ class CesaPro(StoreWithUrlExtensions):
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
 
+        key_tag = soup.find("link", {"rel": "shortlink"})
+        if not key_tag:
+            raise Exception(response.text)
+
         key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
 
         if not soup.find("h1", "product_title"):
