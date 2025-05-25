@@ -126,7 +126,7 @@ class UltimateGamerStore(StoreWithUrlExtensions):
             picture_urls = [product_data["image"]] if "image" in product_data else []
         else:
             picture_urls = [
-                img["src"]
+                img["src"].split("?")[0]
                 for img in soup.find(
                     "swiper-slider", {"product-gallery__slider--main"}
                 ).findAll("img")

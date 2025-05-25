@@ -23,10 +23,17 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
+from storescraper.utils import (
+    html_to_markdown,
+    remove_words,
+    session_with_proxy,
+    cf_session_with_proxy,
+)
 
 
 class CesaPro(StoreWithUrlExtensions):
+    preferred_products_for_url_concurrency = 5
+
     url_extensions = [
         ["accesorios", HEADPHONES],
         ["audio", HEADPHONES],
@@ -51,8 +58,12 @@ class CesaPro(StoreWithUrlExtensions):
     ]
 
     @classmethod
+    def get_session(cls, extra_args=None):
+        return cf_session_with_proxy(extra_args)
+
+    @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session()
         session.headers["content-type"] = (
             "application/x-www-form-urlencoded;charset=UTF-8"
         )
@@ -90,7 +101,7 @@ class CesaPro(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session()
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
 

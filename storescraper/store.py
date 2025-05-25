@@ -1,3 +1,5 @@
+import traceback
+
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -42,7 +44,9 @@ class Store:
                 url, category=category, extra_args=extra_args
             )
         except Exception as e:
-            raise StoreScrapError("Error retrieving products") from e
+            raise StoreScrapError(
+                f"Error retrieving products: {traceback.format_exc()}"
+            ) from e
 
     @classmethod
     def section_positions_with_custom_exception(cls, section, extra_args=None):

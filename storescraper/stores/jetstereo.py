@@ -46,7 +46,7 @@ class Jetstereo(Store):
                 break
 
             for container in product_containers:
-                product_url = container["url"]
+                product_url = container["url"].strip()
                 product_urls.append(product_url)
             page += 1
         return product_urls
