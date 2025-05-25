@@ -123,7 +123,9 @@ class UltimateGamerStore(StoreWithUrlExtensions):
         )
 
         if not pictures_container:
-            picture_urls = [product_data["image"]] if "image" in product_data else []
+            picture_urls = (
+                [product_data["image"].split("?")[0]] if "image" in product_data else []
+            )
         else:
             picture_urls = [
                 img["src"].split("?")[0]

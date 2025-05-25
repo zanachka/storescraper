@@ -78,7 +78,8 @@ class TechMark(StoreWithUrlExtensions):
             return []
 
         picture_urls = [
-            x.find("img")["src"] for x in soup.findAll("div", "carousel-item")
+            x.find("img")["src"].split("?")[0]
+            for x in soup.findAll("div", "carousel-item")
         ]
         description = soup.find("meta", {"name": "description"})["content"]
 
