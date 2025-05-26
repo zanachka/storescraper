@@ -41,9 +41,6 @@ from storescraper.utils import session_with_proxy, remove_words, html_to_markdow
 
 
 class KDTec(StoreWithUrlExtensions):
-    preferred_discover_urls_concurrency = 3
-    preferred_products_for_url_concurrency = 3
-
     url_extensions = [
         ["notebook-2", NOTEBOOK],
         ["notebook-gamer", NOTEBOOK],
@@ -124,15 +121,25 @@ class KDTec(StoreWithUrlExtensions):
             data = session.get(url_webpage).text
             soup = BeautifulSoup(data, "lxml")
             product_containers = soup.findAll("li", "product")
+            out_of_stock_reached = False
+
             if not product_containers:
                 if page == 1:
                     logging.warning("Empty category: " + url_extension)
                 break
+
             for container in product_containers:
-                product_url = container.find("a", "woocommerce-Loop" "Product-link")[
-                    "href"
-                ]
-                product_urls.append(product_url)
+                product_tag = container.find("a", "woocommerce-LoopProduct-link")
+
+                if product_tag.find("span", "ast-shop-product-out-of-stock"):
+                    out_of_stock_reached = True
+                    break
+
+                product_urls.append(product_tag["href"])
+
+            if out_of_stock_reached:
+                break
+
             page += 1
         return product_urls
 
