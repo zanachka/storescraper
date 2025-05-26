@@ -171,7 +171,7 @@ class SpDigital(StoreWithUrlExtensions):
 
         slug = re.match(r"https://www.spdigital.cl/(.+?)/?$", url).groups()[0]
         page_data_url = (
-            "https://bypass.spdigital.cl/page-data/{}/" "page-data.json".format(slug)
+            "https://bypass.spdigital.cl/page-data/{}/page-data.json".format(slug)
         )
         print(page_data_url)
         response = session.get(page_data_url)
@@ -272,7 +272,7 @@ class SpDigital(StoreWithUrlExtensions):
                 cls.__name__,
                 category,
                 url,
-                url.replace("www.", "bypass."),
+                url,
                 key,
                 stock,
                 normal_price,
@@ -287,14 +287,3 @@ class SpDigital(StoreWithUrlExtensions):
             products.append(p)
 
         return products
-
-    @classmethod
-    def _retrieve_page(cls, session, url, retries=5):
-        print(url)
-        try:
-            return session.get(url, timeout=90)
-        except Exception:
-            if retries:
-                return cls._retrieve_page(session, url, retries - 1)
-            else:
-                raise
