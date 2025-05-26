@@ -229,17 +229,6 @@ class Falabella(Store):
         {"id": None, "section_prefix": "GRUPO", "exclude_marketplace": False},
     ]
 
-    zones = (
-        "FALABELLA_FBY_BT_SDD,PCL2829,REVERSE_RM_REDPROPIA,PCL2998,PCL3128,PCL2808,1234,PCL1223,PCL2802,PCL2826,"
-        "PCL3019,PCL2281,PCL3009,HUB_SALIDA_DIRECTA_RM,PCL2120,PCL3043,PCL3025,BLUE_RM_URBANO,PCL115,3045,PCL1486,"
-        "PCL2980,PCL1736,PCL1923,PCL2981,PCL2792,PCL3006,BX_R13_BASE,PCL226,PCL2847,PCL2901,PCL2827,PCL2979,PCL1389,"
-        "PCL2843,ZL_CERRILLOS,PCL1135,PCL2977,SCD9039_FLEX,PCL105,PCL3099,FBY_RM_M,PCL2380,PCL2442,2020,PCL1186,"
-        "PCL2864,FALABELLA_FBY_SDD,PCL2269,PCL2846,13,PCL861,PCL3015,FEDEX_RM_URB,PCL2520,LOSC,PCL540,CHILEXPRESS_8,"
-        "PCL1839,FBY_BT_SALIDA_DIRECTA,PCL2288,PCL2978,PCL2862,PCL2803,PCL2890,PCL2838,RM,PCL108,PCL94,"
-        "CHILE_INTERNATIONAL,PCL1364,PCL2801,PCL3011,PCL3017,13_MAIPU,PCL2830,PCL3026,PCL2845,PCL2982,PCL109,PCL3136,"
-        "130617,PCL25,PCL2441,PCL184,PCL3012,PCL1336,STARKEN_R13,PCL3041,PCL2825,PCL2511,PCL3042"
-    )
-
     category_paths = [
         [
             "cat720161",
@@ -554,7 +543,7 @@ class Falabella(Store):
                 extra_params = {}
 
             yield from cls._get_product_urls(
-                session, category_id, extra_params, cls.seller_id
+                session, category_id, extra_params, cls.seller_id, extra_args["zones"]
             )
 
     @classmethod
@@ -858,6 +847,7 @@ class Falabella(Store):
                     category_id,
                     extra_params,
                     section_variant["id"],
+                    extra_args["zones"],
                 )
 
                 if section_variant["section_prefix"]:
@@ -880,19 +870,19 @@ class Falabella(Store):
                     yield section_position
 
     @classmethod
-    def _get_product_urls(cls, session, category_id, extra_params, seller_id):
+    def _get_product_urls(cls, session, category_id, extra_params, seller_id, zones):
         discovered_urls = []
         # For some reason the "categoryName" param activates the sponsored
         # results
         base_url = (
             "https://www.falabella.com/s/browse/v1/listing/cl?"
-            "&pid=15c37b0b-a392-41a9-8b3b-978376c700d5&categoryId={}&categoryName=foo&sortBy=_score%2Cdesc&page={}"
+            "&pid=15c37b0b-a392-41a9-8b3b-978376c700d5&categoryId={}&categoryName=foo&page={}"
         )
 
         for key, value in extra_params.items():
             base_url += "&{}={}".format(key, urllib.parse.quote(value))
 
-        base_url += "&zones={}".format(urllib.parse.quote(cls.zones))
+        base_url += "&zones={}".format(urllib.parse.quote(zones))
         page = 1
 
         while True:
@@ -1146,3 +1136,16 @@ class Falabella(Store):
             offset += 100
 
         return reviews
+
+    @classmethod
+    def preflight(cls, extra_args=None):
+        sample_url = (
+            "https://www.falabella.com/falabella-cl/category/cat1012/TV-y-Video"
+        )
+        session = cls.get_session(extra_args)
+        response = session.get(sample_url)
+        soup = BeautifulSoup(response.text, "lxml")
+        script = soup.find("script", {"id": "__NEXT_DATA__"})
+        json_data = json.loads(script.text)
+        zones = json_data["props"]["appCtx"]["zones"]
+        return {"zones": zones}
