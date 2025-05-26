@@ -11,7 +11,7 @@ class FalabellaMarketplace(Falabella):
     sellers = [seller for seller, _, _ in category_paths]
 
     @classmethod
-    def _get_product_urls(cls, session, category_id, extra_params, seller_id):
+    def _get_product_urls(cls, session, category_id, extra_params, seller_id, zones):
         discovered_urls = set()
         page = 1
 
