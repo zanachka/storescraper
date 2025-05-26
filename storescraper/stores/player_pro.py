@@ -97,7 +97,7 @@ class PlayerPro(StoreWithUrlExtensions):
             return []
 
         picture_urls = [
-            picture.find("img")["src"]
+            picture.find("img")["src"].split("?")[0]
             for picture in soup.findAll("picture", "product-gallery__picture")
         ]
         type_label = soup.find("div", {"id": "tipo-producto"}).find("b", "oculto")
