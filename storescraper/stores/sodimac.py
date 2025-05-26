@@ -9,7 +9,6 @@ class Sodimac(Falabella):
         {"id": None, "section_prefix": "GRUPO", "exclude_marketplace": False},
     ]
     seller_id = "SODIMAC"
-    seller_blacklist = []
     banners_base_url = "https://sodimac.falabella.com/sodimac-cl/{}"
     banners_sections_data = [
         [bs.HOME, "Home", bs.SUBSECTION_TYPE_HOME, ""],

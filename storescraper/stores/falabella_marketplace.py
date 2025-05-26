@@ -39,3 +39,15 @@ class FalabellaMarketplace(Falabella):
                         yield product_url
 
                 page += 1
+
+    @classmethod
+    def sections(cls):
+        raise NotImplementedError("This method is not needed for this scraper")
+
+    @classmethod
+    def section_positions(cls, section, extra_args=None):
+        raise NotImplementedError("This method is not needed for this scraper")
+
+    @classmethod
+    def banners(cls, extra_args=None):
+        raise NotImplementedError("This method is not needed for this scraper")

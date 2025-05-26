@@ -37,8 +37,6 @@ class Falabella(Store):
         "https://www.falabella.com/falabella-cl/product/{}/product/{}"
     )
     seller_id = "FALABELLA"
-    sellers = []
-    seller_blacklist = ["SODIMAC", "TOTTUS"]
     banners_base_url = "https://www.falabella.com/falabella-cl/{}"
     banners_sections_data = [
         [bs.HOME, "Home", bs.SUBSECTION_TYPE_HOME, ""],
@@ -751,40 +749,32 @@ class Falabella(Store):
                     seller_entry = model["offerings"][0]
 
             stock = 0
+            seller = (
+                seller_entry.get("sellerName", seller_entry["sellerId"])
+                if seller_entry
+                else None
+            )
 
-            if seller_entry and not cls.sellers:
-                seller = (
-                    seller_entry.get("sellerName", seller_entry["sellerId"]) or None
-                )
+            if is_international_shipping:
+                stock = 0
+            elif seller_entry and (
+                seller_entry.get("sellerProductStatus", None) == "ACTIVO"
+                or seller_entry.get("isActive", False)
+            ):
+                stock = -1
+            elif model.get("isPurchaseable", True):
+                availabilities = model["availability"]
 
-                if seller != cls.seller_id:
-                    stock = 0
-                elif is_international_shipping:
-                    stock = 0
-                else:
-                    if seller_entry.get(
-                        "sellerProductStatus", None
-                    ) == "ACTIVO" or seller_entry.get("isActive", False):
-                        stock = -1
-                    else:
-                        stock = 0
-            else:
-                seller = None
-                if not is_international_shipping and model.get("isPurchaseable", True):
-                    availabilities = model["availability"]
-
-                    for availability in availabilities:
-                        if availability["shippingOptionType"] in [
-                            "All",
-                            "HomeDelivery",
-                            "SiteToStore",
-                            "PickupInStore",
-                        ]:
-                            if availability["quantity"]:
-                                stock = -1
-                                break
-                    else:
-                        stock = 0
+                for availability in availabilities:
+                    if availability["shippingOptionType"] in [
+                        "All",
+                        "HomeDelivery",
+                        "SiteToStore",
+                        "PickupInStore",
+                    ]:
+                        if availability["quantity"]:
+                            stock = -1
+                            break
 
             if "reacondicionado" in base_name.lower():
                 condition = "https://schema.org/RefurbishedCondition"
