@@ -37,6 +37,7 @@ class Falabella(Store):
         "https://www.falabella.com/falabella-cl/product/{}/product/{}"
     )
     seller_id = "FALABELLA"
+    sellers = []
     seller_blacklist = ["SODIMAC", "TOTTUS"]
     banners_base_url = "https://www.falabella.com/falabella-cl/{}"
     banners_sections_data = [
@@ -751,12 +752,14 @@ class Falabella(Store):
 
             stock = 0
 
-            if seller_entry and not extra_args.get("bypass_sellers_blacklist"):
+            if seller_entry and not cls.sellers:
                 seller = (
                     seller_entry.get("sellerName", seller_entry["sellerId"]) or None
                 )
 
-                if seller != cls.seller_id:
+                if seller in cls.sellers:
+                    stock = -1
+                elif seller != cls.seller_id:
                     stock = 0
                 elif is_international_shipping:
                     stock = 0
