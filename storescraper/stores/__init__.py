@@ -48,7 +48,6 @@ from .dust2 import Dust2
 from .e_forest import EForest
 from .e_vision import EVision
 from .easy import Easy
-from .efe import Efe
 from .electronica_budini import ElectronicaBudini
 from .electronica_panamericana import ElectronicaPanamericana
 from .el_gallo_mas_gallo import ElGalloMasGallo
@@ -83,7 +82,6 @@ from .la_curacao_online_nicaragua import LaCuracaoOnlineNicaragua
 from .la_curacao_online_el_salvador import LaCuracaoOnlineElSalvador
 from .la_curacao_online_guatemala import LaCuracaoOnlineGuatemala
 from .la_curacao_online_honduras import LaCuracaoOnlineHonduras
-from .la_curacao import LaCuracao
 from .lady_lee import LadyLee
 from .lap_shop import LapShop
 from .laser_chile import LaserChile
@@ -132,7 +130,6 @@ from .paris import Paris
 from .paris_marketplace import ParisMarketplace
 from .pc_express import PcExpress
 from .pc_factory import PcFactory
-from .philips import Philips
 from .photura import Photura
 from .plaza_lama import PlazaLama
 from .play_factory import PlayFactory
@@ -164,7 +161,6 @@ from .sp_digital import SpDigital
 from .sukasa import Sukasa
 from .syd import Syd
 from .t_y_t_gamer import TyTGamer
-from .tecnoaxis import Tecnoaxis
 from .tecnocam import Tecnocam
 from .tecnofacil import Tecnofacil
 from .tekmachine import Tekmachine
@@ -173,9 +169,7 @@ from .tecno_mega_store import TecnoMegaStore
 from .tecno_saga import TecnoSaga
 from .tecno_site import TecnoSite
 from .tic_online_store import TicOnlineStore
-from .ti_shop import TiShop
 from .tecno_master import TecnoMaster
-from .tecno_pro import TecnoPro
 from .tec_tec import TecTec
 from .tech_mark import TechMark
 from .tech_sale_chile import TechSaleChile
@@ -188,9 +182,7 @@ from .tienda_movistar import TiendaMovistar
 from .tienda_monge import TiendaMonge
 from .tienda_oficial_lg_chile import TiendaOficialLgChile
 from .tienda_oficial_lg_panama import TiendaOficialLgPanama
-from .tienda_oficial_lg_peru import TiendaOficialLgPeru
 from .tienda_toyotomi import TiendaToyotomi
-from .tiendas_metro import TiendasMetro
 from .todo_geek import TodoGeek
 from .travel_tienda import TravelTienda
 from .trulu_store import TruluStore
@@ -204,7 +196,6 @@ from .venelectronics import Venelectronics
 from .vtr import Vtr
 from .v2 import V2
 from .wei import Wei
-from .weplay import Weplay
 from .winpy import Winpy
 from .wom import Wom
 from .xtreme_components import XtremeComponents
