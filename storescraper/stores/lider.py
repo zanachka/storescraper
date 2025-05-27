@@ -304,7 +304,8 @@ class Lider(Store):
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
-        return [category]
+        url = cls.generate_discover_url_for_category(category)
+        return [url]
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
@@ -351,19 +352,22 @@ class Lider(Store):
         print(url)
         seen_urls = set()
 
+        if not category:
+            category = url.split("?category=")[1]
+
         for category_id, local_category, _ in cls.category_paths:
             if category != local_category:
                 continue
 
-            for product_url in cls._get_product_urls(
+            for product in cls._get_products(
                 category_id,
                 local_category,
                 exclude_marketplace=True,
                 extra_args=extra_args,
             ):
-                if product_url not in seen_urls:
-                    seen_urls.add(product_url)
-                    yield product_url
+                if product not in seen_urls:
+                    seen_urls.add(product)
+                    yield product
 
     @classmethod
     def banners(cls, extra_args=None):
@@ -405,7 +409,7 @@ class Lider(Store):
         return banners
 
     @classmethod
-    def _get_product_urls(
+    def _get_products(
         cls, category_id, local_category, exclude_marketplace, extra_args=None
     ):
         query_url = "https://www.lider.cl/orchestra/graphql/browse"
@@ -414,6 +418,7 @@ class Lider(Store):
         with path.open("r") as f:
             graphql_query = f.read()
 
+        discovery_url = cls.generate_discover_url_for_category(local_category)
         page = 1
 
         while True:
@@ -514,7 +519,7 @@ class Lider(Store):
                     cls.__name__,
                     local_category,
                     product_url,
-                    product_url,
+                    discovery_url,
                     key,
                     stock,
                     normal_price,
@@ -541,7 +546,7 @@ class Lider(Store):
                 continue
 
             for idx, product in enumerate(
-                cls._get_product_urls(
+                cls._get_products(
                     category_id,
                     local_category,
                     exclude_marketplace=False,
@@ -552,8 +557,12 @@ class Lider(Store):
                     break
 
                 yield {
-                    "field": "discovery_url",
-                    "value": product.discovery_url,
+                    "field": "key",
+                    "value": product.key,
                     "position": idx + 1,
                     "section": section,
                 }
+
+    @classmethod
+    def generate_discover_url_for_category(cls, category):
+        return "https://www.lider.cl/?category={}".format(category)

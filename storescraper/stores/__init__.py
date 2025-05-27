@@ -143,7 +143,6 @@ from .reuse import Reuse
 from .ripley import Ripley
 from .rodelag import Rodelag
 from .r_s_tech import RSTech
-from .samsung_chile import SamsungChile
 from .samsung_shop import SamsungShop
 from .sandos import Sandos
 from .sc_global import ScGlobal

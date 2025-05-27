@@ -38,7 +38,7 @@ def main():
 
     args = parser.parse_args()
     store = get_store_class_by_name(args.store)
-    category = args.category or "Unknown"
+    category = args.category
     extra_args = store.extra_args_with_preflight(extra_args=args.extra_args)
 
     products = store.products_for_url(

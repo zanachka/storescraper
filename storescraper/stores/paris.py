@@ -483,8 +483,6 @@ class Paris(Store):
             if validators.url(picture_url):
                 cleaned_picture_urls.append(picture_url)
 
-        stock = 0 if seller else -1
-
         if "description" in product_data:
             description = html_to_markdown(product_data["description"]["es-CL"])
         else:
@@ -511,7 +509,7 @@ class Paris(Store):
             url,
             url,
             sku,
-            stock,
+            -1,
             normal_price,
             offer_price,
             "CLP",
