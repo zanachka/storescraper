@@ -36,6 +36,7 @@ from storescraper.categories import (
     CASE_FAN,
     PRINTER_SUPPLY,
     UPS,
+    PROJECTOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -91,6 +92,7 @@ class Todoclick(StoreWithUrlExtensions):
         ["toners-impresora-laser-542", PRINTER_SUPPLY],
         ["ups-572", UPS],
         ["plotter-569", PRINTER],
+        ["proyectores-558", PROJECTOR],
     ]
 
     @classmethod
