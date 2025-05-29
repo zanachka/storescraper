@@ -21,8 +21,8 @@ class Panafoto(Store):
         "JavaScript%20(lite)%203.27.0%3Binstantsearch.js%20"
         "2.10.2%3BMagento2%20integration%20(1.10.0)%3BJS%20"
         "Helper%202.26.0&x-algolia-application-id=WLT832EA3J&x-alg"
-        "olia-api-key=NzQyZDYyYTYwZGRiZDBjNjg0YjJmZDEyNWMyMTAyNTNh"
-        "MjBjMDJiNzBhY2YyZWVjYWNjNzVjNjU5M2M5ZmVhY3RhZ0ZpbHRlcnM9"
+        "olia-api-key=YWE0NzQ2NDNkYjUyZWUwNzhjZDUxNzNhZDBkNzAxMzU5YT"
+        "Y3NjIwODk2MjI2ZmU2OTVjYTFiYjE3YjVmN2YzZXRhZ0ZpbHRlcnM9"
     )
 
     @classmethod
@@ -51,7 +51,7 @@ class Panafoto(Store):
             payload = {
                 "requests": [
                     {
-                        "indexName": "wwwpanafotocom_default_products",
+                        "indexName": "panafoto_mcprod_cloud_b2c_products",
                         "params": payload_params,
                     }
                 ]
@@ -67,10 +67,13 @@ class Panafoto(Store):
 
             for product_json in products_json:
                 product_url = product_json["url"]
-                if isinstance(product_url, list):
-                    product_url = ",".join(product_url)
+                if "panafoto.com" not in product_url:
+                    raise Exception("Invalid Panafoto URL")
 
-                product_urls.append(product_url)
+                if isinstance(product_url, list):
+                    product_urls.extend(product_url)
+                else:
+                    product_urls.append(product_url)
 
             page += 1
 
