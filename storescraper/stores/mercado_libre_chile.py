@@ -52,7 +52,7 @@ from storescraper.utils import session_with_proxy, chunks
 
 class MercadoLibreChile(Store):
     price_accuracy = "0"
-
+    store = "all"
     categories_path = [
         ("celulares-telefonia/celulares-smartphones", CELL, "Celulares y Telefonía"),
         ("computacion/notebooks-accesorios/notebooks", NOTEBOOK, "Notebooks"),
@@ -369,11 +369,7 @@ class MercadoLibreChile(Store):
     def discover_urls_for_category(cls, category, extra_args=None):
         seen_urls = set()
 
-        for (
-            category_path,
-            local_category,
-            _,
-        ) in cls.categories_path:
+        for category_path, local_category, _ in cls.categories_path:
             if category != local_category:
                 continue
 
@@ -388,7 +384,7 @@ class MercadoLibreChile(Store):
                     logging.warning(f"Overflow reached in: {category}")
                     break
 
-                url = f"https://listado.mercadolibre.cl/{category_path}/*_Desde_{offset}_Tienda_all_NoIndex_True"
+                url = f"https://listado.mercadolibre.cl/{category_path}/*_Desde_{offset}_Tienda_{cls.store}_NoIndex_True"
                 print(url)
                 response = session.get(url)
                 soup = BeautifulSoup(response.text, "lxml")
@@ -406,8 +402,12 @@ class MercadoLibreChile(Store):
                         seller
                         and seller.text.split("Por ")[-1].strip()
                         in cls.seller_whitelist
-                    ):
-                        product_url = product.find("a", "poly-component__title")["href"]
+                    ) or cls.store != "all":
+                        product_url = (
+                            product.find("a", "poly-component__title")["href"]
+                            .split("&")[0]
+                            .replace("%3A", ":")
+                        )
 
                         if product_url not in seen_urls:
                             seen_urls.add(product_url)
@@ -424,6 +424,7 @@ class MercadoLibreChile(Store):
             "(KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
         )
         tries = 0
+
         while tries < 3:
             try:
                 page_source = session.get(url).text
@@ -446,23 +447,15 @@ class MercadoLibreChile(Store):
             ):
                 return []
 
-        if url.startswith("https://articulo.mercadolibre."):
+        if "content" in data["initialState"]["components"]["description"]:
             return cls.retrieve_type2_products(
                 session, url, soup, category, data, extra_args
             )
-        elif url.startswith("https://www.mercadolibre."):
-            return cls.retrieve_type3_products(data, soup, extra_args, category)
         else:
-            # Another scraper with embedded ML pages
-            try:
-                return cls.retrieve_type2_products(
-                    session, url, soup, category, data, extra_args
-                )
-            except Exception:
-                return cls.retrieve_type3_products(data, soup, extra_args, category)
+            return cls.retrieve_type3_products(data, soup, extra_args, category, url)
 
     @classmethod
-    def retrieve_type3_products(cls, data, soup, extra_args, category):
+    def retrieve_type3_products(cls, data, soup, extra_args, category, url=None):
         print("Type3")
         api_session = session_with_proxy(extra_args)
         api_session.headers["Authorization"] = "Bearer {}".format(
@@ -503,7 +496,6 @@ class MercadoLibreChile(Store):
             review_count = None
             review_avg_score = None
 
-        products = []
         skip_whitelist = extra_args and extra_args.get("skip_whitelist", False)
 
         for variation in variations:
@@ -511,9 +503,8 @@ class MercadoLibreChile(Store):
             endpoint = "https://api.mercadolibre.com/products/" "{}".format(variation)
 
             if official_store_or_seller_filter:
-                endpoint += "?{}".format(
-                    official_store_or_seller_filter.replace(":", "=")
-                )
+                endpoint += f"?{official_store_or_seller_filter.replace(':', '=')}"
+
             variation_response = api_session.get(endpoint)
 
             if variation_response.status_code == 403:
@@ -525,24 +516,26 @@ class MercadoLibreChile(Store):
                 continue
 
             box_winner = variation_data["buy_box_winner"]
-
-            if not box_winner:
-                continue
-
             name = variation_data["name"]
-            url = variation_data["permalink"]
-
-            if official_store_or_seller_filter:
-                url += "?pdp_filters={}".format(official_store_or_seller_filter)
-
-            price = Decimal(box_winner["price"]).quantize(Decimal(cls.price_accuracy))
-            # stock = int(box_winner["available_quantity"])
-
-            seller_endpoint = "https://api.mercadolibre.com/users/" "{}".format(
-                box_winner["seller_id"]
+            permalink = variation_data["permalink"]
+            url = permalink if permalink != "" else url
+            price = (
+                Decimal(box_winner["price"]).quantize(Decimal(cls.price_accuracy))
+                if box_winner
+                else Decimal(
+                    soup.find("meta", {"itemprop": "price"})["content"]
+                ).quantize(Decimal(cls.price_accuracy))
             )
-            seller_info = json.loads(api_session.get(seller_endpoint).text)
-            seller = seller_info["nickname"]
+
+            if box_winner:
+                seller_endpoint = "https://api.mercadolibre.com/users/" "{}".format(
+                    box_winner["seller_id"]
+                )
+                seller_info = json.loads(api_session.get(seller_endpoint).text)
+                seller = seller_info["nickname"]
+            else:
+                seller = soup.find("h2", "ui-seller-data-header__title").text
+
             stock = -1 if skip_whitelist or seller in cls.seller_whitelist else 0
             picture_urls = [p["url"] for p in variation_data["pictures"]]
             description = ", ".join(
@@ -553,28 +546,26 @@ class MercadoLibreChile(Store):
                 + [variation_data["short_description"]["content"]]
             )
 
-            products.append(
-                Product(
-                    name,
-                    cls.__name__,
-                    category,
-                    url,
-                    url,
-                    sku,
-                    stock,
-                    price,
-                    price,
-                    "CLP",
-                    sku=sku,
-                    seller=seller,
-                    picture_urls=picture_urls,
-                    review_count=review_count,
-                    review_avg_score=review_avg_score,
-                    description=f"{description} - Type3",
-                )
+            product = Product(
+                name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                sku,
+                stock,
+                price,
+                price,
+                "CLP",
+                sku=sku,
+                seller=seller,
+                picture_urls=picture_urls,
+                review_count=review_count,
+                review_avg_score=review_avg_score,
+                description=f"{description} - Type3",
             )
 
-        return products
+            yield product
 
     @classmethod
     def retrieve_type2_products(cls, session, url, soup, category, data, extra_args):
@@ -625,7 +616,6 @@ class MercadoLibreChile(Store):
                     review_count = x["reviews"]["amount"]
                     review_avg_score = float(x["reviews"]["rating"])
 
-        products = []
         gallery = data["initialState"]["components"]["gallery"]["pictures"]
 
         if picker:
@@ -657,55 +647,55 @@ class MercadoLibreChile(Store):
                     for picture in gallery
                 ]
 
-                products.append(
-                    Product(
-                        name,
-                        cls.__name__,
-                        category,
-                        variation_url,
-                        url,
-                        key,
-                        stock,
-                        price,
-                        price,
-                        "CLP",
-                        sku=sku,
-                        seller=seller,
-                        condition=condition,
-                        review_count=review_count,
-                        review_avg_score=review_avg_score,
-                        description="{} Type2".format(description),
-                        picture_urls=picture_urls,
-                    )
-                )
-        else:
-            picture_urls = [
-                x["data-zoom"]
-                for x in soup.findAll("img", "ui-pdp-image")[1::2]
-                if "data-zoom" in x.attrs
-            ]
-            products.append(
-                Product(
-                    base_name,
+                product = Product(
+                    name,
                     cls.__name__,
                     category,
+                    variation_url,
                     url,
-                    url,
-                    sku,
+                    key,
                     stock,
                     price,
                     price,
                     "CLP",
                     sku=sku,
                     seller=seller,
-                    picture_urls=picture_urls,
                     condition=condition,
                     review_count=review_count,
                     review_avg_score=review_avg_score,
                     description="{} Type2".format(description),
+                    picture_urls=picture_urls,
                 )
+
+                yield product
+
+        else:
+            picture_urls = [
+                x["data-zoom"]
+                for x in soup.findAll("img", "ui-pdp-image")[1::2]
+                if "data-zoom" in x.attrs
+            ]
+            product = Product(
+                base_name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                sku,
+                stock,
+                price,
+                price,
+                "CLP",
+                sku=sku,
+                seller=seller,
+                picture_urls=picture_urls,
+                condition=condition,
+                review_count=review_count,
+                review_avg_score=review_avg_score,
+                description="{} Type2".format(description),
             )
-        return products
+
+            yield product
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
