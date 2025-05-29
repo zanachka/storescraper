@@ -1,11 +1,6 @@
-import json
-
-
+import re
 from decimal import Decimal
-
-from bs4 import BeautifulSoup
 from storescraper.categories import TELEVISION
-
 from storescraper.product import Product
 from storescraper.store import Store
 from storescraper.utils import session_with_proxy
@@ -24,78 +19,46 @@ class Diunsa(Store):
             return []
 
         session = session_with_proxy(extra_args)
+        session.headers["Content-Type"] = "application/json"
         product_urls = []
-
-        page = 1
-
+        offset = 0
         done = False
+
         while not done:
-            if page > 30:
+            if offset > 1000:
                 raise Exception("Page overflow")
 
-            url = "https://www.diunsa.hn/lg%20lg?_q=lg%20lg&" "page={}".format(page)
+            url = f"https://apicsm.dapplications.tech/api/em/material/paginate?skip={offset}&take=15"
+            print(url)
+            payload = '{"businessPartner":1,"storeId":null,"groupCode":"0","officeCode":"0","type":"PD","sortBy":"category","sortOption":"ASC","search":"lg","filter":{"priceMin":null,"priceMax":null,"brand":null,"supplier":null},"source":"WEB","hidden":"0"}'
+            response = session.post(url, payload).json()
 
-            soup = BeautifulSoup(session.get(url).text, "lxml")
-            page_state_tag = soup.find("template", {"data-varname": "__STATE__"})
-            page_state = json.loads(page_state_tag.find("script").string)
+            if response["data"] == []:
+                break
 
-            done = True
-            for key, product in page_state.items():
-                if "productId" not in product:
-                    continue
-                done = False
-                product_url = "https://www.diunsa.hn/{}/p".format(product["linkText"])
-                product_urls.append(product_url)
+            product_urls += [
+                f"https://www.diunsa.hn/producto/{product['name'].lower().replace(' ', '-').replace('/', '-').replace('--', '-')}-{product['code']}"
+                for product in response["data"]
+                if product["brandName"] == "LG"
+            ]
 
-            if done and page == 1:
-                raise Exception("Empty site")
-
-            page += 1
+            offset += 15
 
         return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
+        sku = re.search(r"([^-]+-[^-]+)$", url).group(1)
         session = session_with_proxy(extra_args)
-        response = session.get(url)
-
-        if response.status_code == 404:
-            return []
-
-        soup = BeautifulSoup(response.text, "html5lib")
-
-        product_data = json.loads(
-            soup.find("template", {"data-varname": "__STATE__"}).find("script").string
-        )
-
-        base_json_key = list(product_data.keys())[0]
-        product_specs = product_data[base_json_key]
-
-        key_key = "{}.items.0".format(base_json_key)
-        key = product_data[key_key]["itemId"]
-        name = product_specs["productName"]
-        sku = product_specs["productId"]
-        part_number = product_specs["productReference"]
-        description = product_specs.get("description", None)
-
-        pricing_key = "${}.items.0.sellers.0.commertialOffer".format(base_json_key)
-        pricing_data = product_data[pricing_key]
-
-        price = Decimal(str(pricing_data["Price"]))
-        stock = pricing_data["AvailableQuantity"]
-
-        picture_list_key = "{}.items.0".format(base_json_key)
-        picture_list_node = product_data[picture_list_key]
-        picture_ids = [x["id"] for x in picture_list_node["images"]]
-
-        picture_urls = []
-
-        for picture_id in picture_ids:
-            picture_node = product_data[picture_id]
-            picture_urls.append(
-                picture_node["imageUrl"].split("?")[0].replace(" ", "%20")
-            )
+        endpoint = f"https://apicsm.dapplications.tech/api/em/material/get/{sku}/PD/0"
+        response = session.get(endpoint).json()[0]
+        assert response["variants"] == []
+        name = response["name"]
+        part_number = response["nameAlias"]
+        price = Decimal(response["newPrice"])
+        description = response["descriptionLong"]
+        picture_urls = [img["fileLink"] for img in response["images"]]
 
         p = Product(
             name,
@@ -103,11 +66,11 @@ class Diunsa(Store):
             category,
             url,
             url,
-            key,
-            stock,
+            sku,
+            -1,
             price,
             price,
-            "CLP",
+            "HNL",
             sku=sku,
             part_number=part_number,
             description=description,
