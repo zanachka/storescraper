@@ -4,7 +4,6 @@ from decimal import Decimal
 from pathlib import Path
 from storescraper.categories import (
     SPLIT_AIR_CONDITIONER,
-    ALL_IN_ONE,
     CELL,
     DISH_WASHER,
     EXTERNAL_STORAGE_DRIVE,
@@ -18,7 +17,6 @@ from storescraper.categories import (
     HEADPHONES,
     OVEN,
     PRINTER,
-    PROJECTOR,
     REFRIGERATOR,
     SOLID_STATE_DRIVE,
     STEREO_SYSTEM,
@@ -80,7 +78,7 @@ class Lider(Store):
         #     "Tecno > TV > Smart TV Sobre 50 Pulgadas",
         # ],
         ["66849718_44699651_64332442", STEREO_SYSTEM, "Tecno > TV > Home Theater"],
-        ["66849718_44699651_68838150", PROJECTOR, "Tecno > TV > Proyectores"],
+        # ["66849718_44699651_68838150", PROJECTOR, "Tecno > TV > Proyectores"],
         ["66849718_14621386", STEREO_SYSTEM, "Tecno > Audio"],
         [
             "66849718_14621386_88231649",
@@ -105,7 +103,6 @@ class Lider(Store):
             "Tecno > Audio > Tornamesas y Vinilos",
         ],
         ["66849718_14621386_98336174", STEREO_SYSTEM, "Tecno > Audio > Audio HI-FI"],
-        ["66849718_44699651_68838150", PROJECTOR, "Tecno > TV > Proyectores"],
         [
             "66849718_80980590_45869788",
             VIDEO_GAME_CONSOLE,
@@ -136,11 +133,11 @@ class Lider(Store):
             "Computación > Computadores > Notebooks",
         ],
         ["89057520_72573679_62826909", TABLET, "Computación > Computadores > Tablets"],
-        [
-            "89057520_72573679_56612565",
-            ALL_IN_ONE,
-            "Computación > Computadores > Computadores All in One",
-        ],
+        # [
+        #     "89057520_72573679_56612565",
+        #     ALL_IN_ONE,
+        #     "Computación > Computadores > Computadores All in One",
+        # ],
         [
             "89057520_28386364_21832538",
             MONITOR,

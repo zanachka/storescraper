@@ -116,11 +116,8 @@ class Aufbau(StoreWithUrlExtensions):
         picture_urls = []
 
         for i in product_info["images"]:
-            if i["format"] == "product":
-                picture_urls.append(
-                    "https://api.cxl8rgz-articulos1-p1-public"
-                    ".model-t.cc.commerce.ondemand.com" + i["url"]
-                )
+            if i["format"] == "superZoom":
+                picture_urls.append("https://api-prd.ynk.cl" + i["url"])
 
         products = []
 
