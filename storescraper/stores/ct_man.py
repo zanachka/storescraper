@@ -1,9 +1,8 @@
+import json
 import logging
-import urllib
+import re
 from decimal import Decimal
-
 from bs4 import BeautifulSoup
-
 from storescraper.categories import (
     PRINTER,
     KEYBOARD,
@@ -131,64 +130,54 @@ class CtMan(StoreWithUrlExtensions):
         session = cls.get_session()
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        print(soup)
-        key_tag = soup.find("div", "title-description").find(
-            "input", {"name": "cart_item[variant_id]"}
+        product_script = soup.find(
+            "script", string=re.compile("Bootic.components.render")
         )
 
-        if not key_tag:
+        if not product_script:
             return []
 
-        key = key_tag["value"]
-        name = soup.find("h1", "product-name").text.strip()
-        sku = soup.find("div", "sku").text.split(":")[1].strip()
-        description = html_to_markdown(str(soup.find("div", "product-description")))
-        price_tag = soup.find("big", "product-price").find("span", "bootic-price")
-        price = Decimal(remove_words(price_tag.text))
-
-        add_to_cart_tag = soup.find("input", value="Agregar al carro")
-
-        if add_to_cart_tag:
-            stock = -1
-        else:
-            stock = 0
-
-        picture_urls = []
-        for i in soup.findAll("li", "product-asset"):
-            parsed_url = urllib.parse.urlparse(i.find("a")["href"])
-            picture_url = parsed_url._replace(
-                path=urllib.parse.quote(parsed_url.path)
-            ).geturl()
-            picture_urls.append(picture_url)
-
-        part_number_tag = soup.find("p", "part-number")
-        if part_number_tag:
-            part_number = soup.find("p", "part-number").contents[1].strip()
-        else:
-            part_number = None
-
-        special_tags = soup.findAll("div", "special-tags")
-
-        if special_tags:
-            condition = "https://schema.org/RefurbishedCondition"
-        else:
-            condition = "https://schema.org/NewCondition"
-
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            key,
-            stock,
-            price,
-            price,
-            "CLP",
-            sku=sku,
-            picture_urls=picture_urls,
-            description=description,
-            part_number=part_number,
-            condition=condition,
+        product_data = json.loads(
+            re.search(
+                r"product:\s*({.*?})\s*,\s*\n\s*\}\);", product_script.string, re.DOTALL
+            ).group(1)
         )
-        return [p]
+        products = []
+        description = html_to_markdown(str(soup.find("div", "product-description")))
+
+        for variant in product_data["variant_list"]:
+            key = str(variant["id"])
+            name = f"{product_data['name']} {variant['name']}"
+            sku = variant["sku"]
+            price = Decimal(variant["price"])
+            stock = variant["online_stock"]
+            picture_urls = [
+                img["src"]
+                for img in soup.find_all("img", "product-asset rounded main-image")
+            ]
+
+            if "reacondicioando" in name.lower() or "re acondicionado" in name.lower():
+                condition = "https://schema.org/RefurbishedCondition"
+            else:
+                condition = "https://schema.org/NewCondition"
+
+            p = Product(
+                name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                key,
+                stock,
+                price,
+                price,
+                "CLP",
+                sku=sku,
+                picture_urls=picture_urls,
+                description=description,
+                part_number=sku,
+                condition=condition,
+            )
+            products.append(p)
+
+        return products
