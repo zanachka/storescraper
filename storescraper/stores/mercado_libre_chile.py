@@ -241,6 +241,36 @@ class MercadoLibreChile(Store):
             STEREO_SYSTEM,
             "Electrónica, Audio y Video > Audio > Micro y Minicomponentes",
         ),
+        (
+            "electrodomesticos/hornos-cocinas/microondas",
+            OVEN,
+            "Electrodomésticos > Hornos y Cocinas > Microondas",
+        ),
+        (
+            "electrodomesticos/refrigeracion/refrigeradores",
+            REFRIGERATOR,
+            "Electrodomésticos > Refrigeración > Refrigeradores",
+        ),
+        (
+            "computacion/impresion/insumos-impresion/cartuchos-tinta",
+            PRINTER_SUPPLY,
+            "Computación > Impresión > Insumos de Impresión > Cartuchos de Tinta > Insumos de Impresión Cartuchos de Tinta",
+        ),
+        (
+            "computacion/impresion/insumos-impresion/toners",
+            PRINTER_SUPPLY,
+            "Computación > Impresión > Insumos de Impresión > Cartuchos de Tinta > Insumos de Impresión Tóners",
+        ),
+        (
+            "computacion/impresion/insumos-impresion/sets-insumos-impresion",
+            PRINTER_SUPPLY,
+            "Computación > Impresión > Insumos de Impresión > Cartuchos de Tinta > Insumos de Impresión Sets de Insumos de Impresión",
+        ),
+        (
+            "computacion/impresion/insumos-impresion/tintas",
+            PRINTER_SUPPLY,
+            "Computación > Impresión > Insumos de Impresión > Cartuchos de Tinta > Insumos de Impresión Tintas",
+        ),
     ]
     """ 
       
@@ -253,15 +283,11 @@ class MercadoLibreChile(Store):
         ("MLC411071", "Sartenes y Ollas Eléctricas", None),
         ("MLC162507", "Tostadoras", None),
         ("MLC30852", "Cocinas", None),
-        ("MLC30854", "Hornos", OVEN),
-        ("MLC436280", "Cocción y Horneado", OVEN),
         ("MLC180819", "Licuadoras", None),
         ("MLC4340", "Cafeteras", None),
         ("MLC385176", "Calefonts y Termos", None),
         ("MLC162500", "Freidoras", None),
         ("MLC174302", "Hornos de Pan", None),
-        ("MLC30848", "Microondas", OVEN),
-        ("MLC158426", "Freezers", REFRIGERATOR),
         ("MLC440069", "Jugueras", None),
         ("MLC429556", "Minipimers", None),
         ("MLC174293", "Parrillas Eléctricas", None),
@@ -269,13 +295,10 @@ class MercadoLibreChile(Store):
         ("MLC440067", "Procesadores", None),
         ("MLC179543", "Waffleras", None),
         ("MLC174449", "Parrillas Eléctricas", None),
-        ("MLC2675", "Amplificadores", STEREO_SYSTEM),
         ("MLC178457", "Alisadores de Pelo", None),
         ("MLC4597", "Secadores de Pelo", None),
         ("MLC178456", "Alisadores", None),
         ("MLC43660", "Rizadores y Onduladores", None),
-        ("MLC3560", "Toners", PRINTER_SUPPLY),
-        ("MLC7415", "Cartuchos de Tinta", PRINTER_SUPPLY),
         ("MLC428989", "Sets de Insumos de Impresión", PRINTER_SUPPLY),
         ("MLC10871", "Tintas", PRINTER_SUPPLY),
     ]"""
