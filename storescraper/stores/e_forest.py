@@ -127,6 +127,6 @@ class EForest(MercadoLibreChile):
         for product in products:
             if "openbox" in product.name.lower():
                 product.condition = "https://schema.org/RefurbishedCondition"
-            product.seller = None
 
-        return products
+            product.seller = None
+            yield product
