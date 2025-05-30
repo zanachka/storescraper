@@ -817,11 +817,6 @@ class MercadoLibreChile(Store):
         # -d 'redirect_uri=https://www.solotodo.com'
         # Replacing the APP_ID, APP_SECRET and CODE accordingly
         # 5. Copy the refresh token returned in the previous step
-        extra_args = {
-            "app_id": "248937565941879",
-            "app_secret": "FbYVCMfBrGl0hquFhgkKkwkY7uUtrzQi",
-            "refresh_token": "TG-67cafeae96b6860001942f99-30106659",
-        }
         session = session_with_proxy(extra_args)
         url = "https://api.mercadolibre.com/oauth/token"
         session.headers["accept"] = "application/json"
