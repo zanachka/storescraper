@@ -121,7 +121,6 @@ class KDTec(StoreWithUrlExtensions):
             data = session.get(url_webpage).text
             soup = BeautifulSoup(data, "lxml")
             product_containers = soup.findAll("li", "product")
-            out_of_stock_reached = False
 
             if not product_containers:
                 if page == 1:
@@ -131,14 +130,8 @@ class KDTec(StoreWithUrlExtensions):
             for container in product_containers:
                 product_tag = container.find("a", "woocommerce-LoopProduct-link")
 
-                if product_tag.find("span", "ast-shop-product-out-of-stock"):
-                    out_of_stock_reached = True
-                    break
-
-                product_urls.append(product_tag["href"])
-
-            if out_of_stock_reached:
-                break
+                if not product_tag.find("span", "ast-shop-product-out-of-stock"):
+                    product_urls.append(product_tag["href"])
 
             page += 1
         return product_urls
