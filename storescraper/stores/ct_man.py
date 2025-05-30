@@ -39,7 +39,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, remove_words, html_to_markdown
+from storescraper.utils import (
+    remove_words,
+    html_to_markdown,
+    cf_session_with_proxy,
+)
 
 
 class CtMan(StoreWithUrlExtensions):
@@ -71,7 +75,6 @@ class CtMan(StoreWithUrlExtensions):
         ["types/fuentes-de-alimentacion", POWER_SUPPLY],
         ["types/sillas-gamer", GAMING_CHAIR],
         ["types/gabinetes", COMPUTER_CASE],
-        ["types/notebooks", NOTEBOOK],
         ["types/kits-de-mouse-y-teclado", KEYBOARD_MOUSE_COMBO],
         ["types/consolas-de-videojuegos", VIDEO_GAME_CONSOLE],
         ["types/mouse", MOUSE],
@@ -94,9 +97,14 @@ class CtMan(StoreWithUrlExtensions):
     ]
 
     @classmethod
-    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        session = session_with_proxy(extra_args)
+    def get_session(cls, extra_args=None):
+        session = cf_session_with_proxy(extra_args)
         session.headers["User-Agent"] = "SoloTodoBot"
+        return session
+
+    @classmethod
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
+        session = cls.get_session()
         product_urls = []
         page = 1
         while True:
@@ -120,11 +128,10 @@ class CtMan(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = "SoloTodoBot"
+        session = cls.get_session()
         response = session.get(url)
-        response.encoding = response.apparent_encoding
         soup = BeautifulSoup(response.text, "lxml")
+        print(soup)
         key_tag = soup.find("div", "title-description").find(
             "input", {"name": "cart_item[variant_id]"}
         )
