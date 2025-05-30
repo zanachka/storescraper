@@ -4,6 +4,7 @@ import logging
 import re
 import urllib
 from decimal import Decimal
+import urllib.parse
 
 from bs4 import BeautifulSoup
 
@@ -403,10 +404,8 @@ class MercadoLibreChile(Store):
                         and seller.text.split("Por ")[-1].strip()
                         in cls.seller_whitelist
                     ) or cls.store != "all":
-                        product_url = (
+                        product_url = cls._clean_product_url(
                             product.find("a", "poly-component__title")["href"]
-                            .split("&")[0]
-                            .replace("%3A", ":")
                         )
 
                         if product_url not in seen_urls:
@@ -414,6 +413,23 @@ class MercadoLibreChile(Store):
                             yield product_url
 
                 offset += 50
+
+    @classmethod
+    def _clean_product_url(cls, url):
+        cleaned_url = url.split("#")[0]
+        parsed = urllib.parse.urlparse(cleaned_url)
+        query_params = urllib.parse.parse_qs(parsed.query)
+        pdp_filters = query_params.get("pdp_filters", [None])[0]
+        search_variation = query_params.get("searchVariation", [None])[0]
+        cleaned_url = cleaned_url.split("?")[0]
+
+        if pdp_filters:
+            cleaned_url += f"?pdp_filters={pdp_filters}"
+        if search_variation:
+            connector = "&" if "?" in cleaned_url else "?"
+            cleaned_url += f"{connector}searchVariation={search_variation}"
+
+        return cleaned_url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -801,7 +817,6 @@ class MercadoLibreChile(Store):
         # -d 'redirect_uri=https://www.solotodo.com'
         # Replacing the APP_ID, APP_SECRET and CODE accordingly
         # 5. Copy the refresh token returned in the previous step
-
         session = session_with_proxy(extra_args)
         url = "https://api.mercadolibre.com/oauth/token"
         session.headers["accept"] = "application/json"
