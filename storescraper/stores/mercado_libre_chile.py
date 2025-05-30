@@ -491,10 +491,14 @@ class MercadoLibreChile(Store):
                 session, url, soup, category, data, extra_args
             )
         else:
-            return cls.retrieve_type3_products(data, soup, extra_args, category, url)
+            return cls.retrieve_type3_products(
+                url, data, soup, extra_args, category, url
+            )
 
     @classmethod
-    def retrieve_type3_products(cls, data, soup, extra_args, category, url=None):
+    def retrieve_type3_products(
+        cls, discovery_url, data, soup, extra_args, category, url=None
+    ):
         print("Type3")
         api_session = session_with_proxy(extra_args)
         api_session.headers["Authorization"] = "Bearer {}".format(
@@ -591,7 +595,7 @@ class MercadoLibreChile(Store):
                 cls.__name__,
                 category,
                 url,
-                url,
+                discovery_url,
                 sku,
                 stock,
                 price,
