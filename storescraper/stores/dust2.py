@@ -31,7 +31,12 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
+from storescraper.utils import (
+    html_to_markdown,
+    remove_words,
+    session_with_proxy,
+    check_ean13,
+)
 
 
 class Dust2(StoreWithUrlExtensions):
@@ -136,6 +141,13 @@ class Dust2(StoreWithUrlExtensions):
             soup.find("div", "Content__reportError--body-description").text
         )
 
+        if check_ean13(sku):
+            ean = sku
+        elif check_ean13("0" + sku):
+            ean = "0" + sku
+        else:
+            ean = None
+
         p = Product(
             name,
             cls.__name__,
@@ -148,6 +160,7 @@ class Dust2(StoreWithUrlExtensions):
             offer_price,
             "CLP",
             sku=sku,
+            ean=ean,
             picture_urls=picture_urls if picture_urls != [""] else None,
             description=description,
         )
