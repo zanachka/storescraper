@@ -534,7 +534,8 @@ class MercadoLibreChile(Store):
                 seller_info = json.loads(api_session.get(seller_endpoint).text)
                 seller = seller_info["nickname"]
             else:
-                seller = soup.find("h2", "ui-seller-data-header__title").text
+                seller_tag = soup.find("h2", "ui-seller-data-header__title")
+                seller = seller_tag.text if seller_tag else None
 
             stock = -1 if skip_whitelist or seller in cls.seller_whitelist else 0
             picture_urls = [p["url"] for p in variation_data["pictures"]]
