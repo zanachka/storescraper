@@ -14,90 +14,82 @@ from storescraper.categories import (
     MONITOR,
     PROJECTOR,
 )
-from ..utils import session_with_proxy
 
 
 class MercadoLibreSamsung(MercadoLibreChile):
-    official_store_id = 462
-
-    @classmethod
-    def categories(cls):
-        return [
+    store = "samsung"
+    categories_path = [
+        (
+            "electronica-audio-video/audio",
             STEREO_SYSTEM,
+            "Tiendas oficiales > Samsung > Electrónica, Audio y Video > Audio",
+        ),
+        (
+            "electronica-audio-video/televisores",
             TELEVISION,
+            "Tiendas oficiales > Samsung > Electrónica, Audio y Video > Televisores",
+        ),
+        (
+            "celulares-telefonia/celulares-smartphones",
             CELL,
+            "Tiendas oficiales > Samsung > Celulares y Telefonía > Celulares y Smartphones",
+        ),
+        (
+            "celulares-telefonia/smartwatches-accesorios",
             WEARABLE,
-            STEREO_SYSTEM,
+            "Tiendas oficiales > Samsung > Celulares y Telefonía > Smartwatches y Accesorios",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/hogar/aspiradoras",
             VACUUM_CLEANER,
+            "Tiendas oficiales > Samsung > Electrodomésticos > Pequeños Electrodomésticos > Para Hogar > Aspiradoras",
+        ),
+        (
+            "electrodomesticos/refrigeracion/refrigeradores",
             REFRIGERATOR,
+            "Tiendas oficiales > Samsung > Electrodomésticos > Refrigeración > Refrigeradores",
+        ),
+        (
+            "electrodomesticos/climatizacion/aires-acondicionados",
             SPLIT_AIR_CONDITIONER,
+            "Tiendas oficiales > Samsung > Electrodomésticos > Climatización > Aires Acondicionados",
+        ),
+        (
+            "electrodomesticos/hornos-cocinas/cocinas",
             OVEN,
-            WASHING_MACHINE,
-            TABLET,
-            PROJECTOR,
+            "Tiendas oficiales > Samsung > Electrodomésticos > Hornos y Cocinas > Cocinas",
+        ),
+        (
+            "electrodomesticos/hornos-cocinas/microondas",
+            OVEN,
+            "Tiendas oficiales > Samsung > Electrodomésticos > Hornos y Cocinas > Microondas",
+        ),
+        (
+            "electrodomesticos/lavado/lavavajillas",
             DISH_WASHER,
+            "Tiendas oficiales > Samsung > Electrodomésticos > Lavado > Lavavajillas",
+        ),
+        (
+            "electrodomesticos/lavado/lavadora-secadoras",
+            WASHING_MACHINE,
+            "Tiendas oficiales > Samsung > Electrodomésticos > Lavado > Lavadora-Secadoras",
+        ),
+        (
+            "computacion/tablets-accesorios/tablets",
+            TABLET,
+            "Tiendas oficiales > Samsung > Computación > Tablets y Accesorios > Tablets",
+        ),
+        (
+            "computacion/monitores-accesorios",
             MONITOR,
-        ]
-
-    @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        categories_codes = {
-            STEREO_SYSTEM: ["MLC1010"],  # Audio
-            TELEVISION: ["MLC1002"],  # Televisores
-            CELL: ["MLC1055"],  # Celulares y Smartphones
-            WEARABLE: ["MLC417704"],  # Smartwatches y accesorios
-            VACUUM_CLEANER: [
-                "MLC1581",  # Pequeños electrodomésticos
-            ],
-            REFRIGERATOR: [
-                "MLC9456",  # Refrigeradores
-            ],
-            SPLIT_AIR_CONDITIONER: [
-                "MLC29800",  # Aires Acondicionados
-                "MLC409431",  # Salud y Equipamiento Médico
-            ],
-            OVEN: [
-                "MLC30854",  # Hornos
-                "MLC30848",  # Microondas
-            ],
-            DISH_WASHER: ["MLC174300"],  # Lavavajillas
-            WASHING_MACHINE: [
-                "MLC178593",  # Lavadora-Secadoras
-            ],
-            TABLET: [
-                "MLC82067",  # Tablets
-            ],
-            MONITOR: [
-                "MLC1655",  # Monitores y Accesorios
-            ],
-            PROJECTOR: [
-                "MLC9239",  # Proyectores y Telones
-                "MLC1657",  # Proyectores y Telones
-            ],
-        }
-
-        session = session_with_proxy(extra_args)
-        session.headers["Authorization"] = f"Bearer {extra_args['access_token']}"
-        product_urls = []
-
-        for category_code in categories_codes[category]:
-            product_urls.extend(
-                cls.get_products(
-                    session,
-                    category,
-                    category_code,
-                    official_store_id=cls.official_store_id,
-                )
-            )
-
-        # Sanity check, verify that we are getting all products
-        # all_products = cls.get_products(
-        #     session, official_store_id=cls.official_store_id)
-        #
-        # for url in all_products:
-        #     assert url in product_urls, url
-
-        return product_urls
+            "Tiendas oficiales > Samsung > Computación > Monitores y Accesorios",
+        ),
+        (
+            "electronica-audio-video/proyectores-telones",
+            PROJECTOR,
+            "Tiendas oficiales > Samsung > Electrónica, Audio y Video > Proyectores y Telones",
+        ),
+    ]
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -109,11 +101,6 @@ class MercadoLibreSamsung(MercadoLibreChile):
             url, category=category, extra_args=extra_args
         )
 
-        filtered_products = []
-
         for product in products:
-            assert product.seller
             product.seller = None
-            filtered_products.append(product)
-
-        return filtered_products
+            yield product

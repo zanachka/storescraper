@@ -3,41 +3,22 @@ from ..categories import (
     STEREO_SYSTEM,
     TELEVISION,
 )
-from ..utils import session_with_proxy
 
 
 class MercadoLibreLg(MercadoLibreChile):
-    official_store_id = 51202
-
-    @classmethod
-    def categories(cls):
-        return [
-            STEREO_SYSTEM,
+    store = "lg"
+    categories_path = [
+        (
+            "electronica-audio-video/televisores",
             TELEVISION,
-        ]
-
-    @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        categories_codes = {
-            STEREO_SYSTEM: ["MLC1010"],
-            TELEVISION: ["MLC1002"],
-        }
-        session = session_with_proxy(extra_args)
-        session.headers["Authorization"] = "Bearer {}".format(
-            extra_args["access_token"]
-        )
-        product_urls = []
-        for category_code in categories_codes[category]:
-            product_urls.extend(
-                cls.get_products(
-                    session,
-                    category,
-                    category_code,
-                    official_store_id=cls.official_store_id,
-                )
-            )
-
-        return product_urls
+            "Tiendas oficiales > LG > Electrónica, Audio y Video > Televisores",
+        ),
+        (
+            "electronica-audio-video/audio",
+            STEREO_SYSTEM,
+            "Tiendas oficiales > LG > Electrónica, Audio y Video > Audio",
+        ),
+    ]
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -51,5 +32,4 @@ class MercadoLibreLg(MercadoLibreChile):
 
         for product in products:
             product.seller = None
-
-        return products
+            yield product
