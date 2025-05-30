@@ -27,6 +27,9 @@ from storescraper.categories import (
     VIDEO_CARD,
     WEARABLE,
     PRINTER_SUPPLY,
+    PROJECTOR,
+    KEYBOARD_MOUSE_COMBO,
+    MEMORY_CARD,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -42,11 +45,12 @@ class CSByte(StoreWithUrlExtensions):
         ["parlantes", STEREO_SYSTEM],
         ["parlantes-gamer", STEREO_SYSTEM],
         ["almacenamiento", SOLID_STATE_DRIVE],
-        ["almacenamiento-componentes-gamer", SOLID_STATE_DRIVE],
+        ["almacenamiento-externo", SOLID_STATE_DRIVE],
         ["ssd-almacenamiento-componentes-gamer", SOLID_STATE_DRIVE],
         ["hdd", STORAGE_DRIVE],
         ["almacenamiento-seguridad", STORAGE_DRIVE],
         ["pendrive", USB_FLASH_DRIVE],
+        ["micro-sd", MEMORY_CARD],
         ["fuente-de-poder", POWER_SUPPLY],
         ["gabinete", COMPUTER_CASE],
         ["gabinete-gamer", COMPUTER_CASE],
@@ -77,6 +81,8 @@ class CSByte(StoreWithUrlExtensions):
         ["wearables", WEARABLE],
         ["fuentes-de-poder", POWER_SUPPLY],
         ["tinta", PRINTER_SUPPLY],
+        ["proyectores", PROJECTOR],
+        ["kit-teclado-y-mouse", KEYBOARD_MOUSE_COMBO],
     ]
 
     @classmethod
@@ -90,32 +96,26 @@ class CSByte(StoreWithUrlExtensions):
         page = 1
         while True:
             if page > 30:
-                raise Exception("page overflow: " + url_extension)
-            url_webpage = "https://www.csbyte.cl/product-category/{}/" "".format(
-                url_extension
-            )
+                raise Exception(f"Page overflow: {url_extension}")
 
-            if page > 1:
-                url_webpage += "page/{}/".format(page)
+            url_webpage = f"https://www.csbyte.cl/categoria/{url_extension}/page/{page}"
 
             print(url_webpage)
             response = session.get(url_webpage)
 
-            soup = BeautifulSoup(response.text, "lxml")
-            product_wrapper = soup.find("div", "site-content")
-
-            if not product_wrapper:
-                raise Exception(response.text)
-
-            product_containers = product_wrapper.findAll("div", "products")
-            if not product_containers:
+            if response.status_code == 404:
                 if page == 1:
-                    logging.warning("Empty category: " + url_extension)
+                    logging.warning(f"Empty category: {url_extension}")
                 break
-            for container in product_containers[-1].findAll("div", "product-grid-item"):
-                product_url = container.find("a")["href"]
-                product_urls.append(product_url)
+
+            soup = BeautifulSoup(response.text, "lxml")
+            products = soup.find_all("li", "product")
+
+            for product in products:
+                product_urls.append(product.find("a")["href"])
+
             page += 1
+
         return product_urls
 
     @classmethod
