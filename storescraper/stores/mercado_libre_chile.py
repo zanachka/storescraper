@@ -557,7 +557,7 @@ class MercadoLibreChile(Store):
                         mpn = attribute_entry["text"]
 
         tech_name = " - ".join([x for x in [model, mpn] if x])
-        part_number = tech_name or None
+        part_number = tech_name[:50] or None
 
         for variation in variations:
             sku = variation
@@ -665,7 +665,7 @@ class MercadoLibreChile(Store):
                         mpn = attribute_entry["text"]
 
         tech_name = " - ".join([x for x in [model, mpn] if x])
-        part_number = tech_name or None
+        part_number = tech_name[:50] or None
 
         picker = None
         condition = "https://schema.org/NewCondition"
