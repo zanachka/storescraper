@@ -541,6 +541,24 @@ class MercadoLibreChile(Store):
 
         skip_whitelist = extra_args and extra_args.get("skip_whitelist", False)
 
+        model = None
+        mpn = None
+
+        for attr_group in data["initialState"]["components"]["highlighted_specs_attrs"][
+            "components"
+        ]:
+            if "specs" not in attr_group:
+                continue
+            for spec_group in attr_group["specs"]:
+                for attribute_entry in spec_group["attributes"]:
+                    if attribute_entry["id"] == "Modelo":
+                        model = attribute_entry["text"]
+                    if attribute_entry["id"] == "Modelo alfanumérico":
+                        mpn = attribute_entry["text"]
+
+        tech_name = " - ".join([x for x in [model, mpn] if x])
+        part_number = tech_name or None
+
         for variation in variations:
             sku = variation
             endpoint = "https://api.mercadolibre.com/products/" "{}".format(variation)
@@ -603,6 +621,7 @@ class MercadoLibreChile(Store):
                 "CLP",
                 sku=sku,
                 seller=seller,
+                part_number=part_number,
                 picture_urls=picture_urls,
                 review_count=review_count,
                 review_avg_score=review_avg_score,
@@ -629,6 +648,24 @@ class MercadoLibreChile(Store):
             description = data["initialState"]["components"]["description"]["content"]
         else:
             description = ""
+
+        model = None
+        mpn = None
+
+        for attr_group in data["initialState"]["components"]["highlighted_specs_attrs"][
+            "components"
+        ]:
+            if "specs" not in attr_group:
+                continue
+            for spec_group in attr_group["specs"]:
+                for attribute_entry in spec_group["attributes"]:
+                    if attribute_entry["id"] == "Modelo":
+                        model = attribute_entry["text"]
+                    if attribute_entry["id"] == "Modelo alfanumérico":
+                        mpn = attribute_entry["text"]
+
+        tech_name = " - ".join([x for x in [model, mpn] if x])
+        part_number = tech_name or None
 
         picker = None
         condition = "https://schema.org/NewCondition"
@@ -703,6 +740,7 @@ class MercadoLibreChile(Store):
                     price,
                     "CLP",
                     sku=sku,
+                    part_number=part_number,
                     seller=seller,
                     condition=condition,
                     review_count=review_count,
@@ -731,6 +769,7 @@ class MercadoLibreChile(Store):
                 price,
                 "CLP",
                 sku=sku,
+                part_number=part_number,
                 seller=seller,
                 picture_urls=picture_urls,
                 condition=condition,
