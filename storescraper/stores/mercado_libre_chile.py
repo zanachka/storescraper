@@ -541,23 +541,7 @@ class MercadoLibreChile(Store):
 
         skip_whitelist = extra_args and extra_args.get("skip_whitelist", False)
 
-        model = None
-        mpn = None
-
-        for attr_group in data["initialState"]["components"]["highlighted_specs_attrs"][
-            "components"
-        ]:
-            if "specs" not in attr_group:
-                continue
-            for spec_group in attr_group["specs"]:
-                for attribute_entry in spec_group["attributes"]:
-                    if attribute_entry["id"] == "Modelo":
-                        model = attribute_entry["text"]
-                    if attribute_entry["id"] == "Modelo alfanumérico":
-                        mpn = attribute_entry["text"]
-
-        tech_name = " - ".join([x for x in [model, mpn] if x])
-        part_number = tech_name[:50] or None
+        description, part_number = cls.get_description_and_part_number(data)
 
         for variation in variations:
             sku = variation
@@ -600,7 +584,7 @@ class MercadoLibreChile(Store):
 
             stock = -1 if skip_whitelist or seller in cls.seller_whitelist else 0
             picture_urls = [p["url"] for p in variation_data["pictures"]]
-            description = ", ".join(
+            description += ", ".join(
                 [
                     f"{attribute['name']}: {attribute['value_name']}"
                     for attribute in variation_data["attributes"]
@@ -644,28 +628,9 @@ class MercadoLibreChile(Store):
             Decimal(cls.price_accuracy)
         )
 
+        description, part_number = cls.get_description_and_part_number(data)
         if "description" in data["initialState"]["components"]:
-            description = data["initialState"]["components"]["description"]["content"]
-        else:
-            description = ""
-
-        model = None
-        mpn = None
-
-        for attr_group in data["initialState"]["components"]["highlighted_specs_attrs"][
-            "components"
-        ]:
-            if "specs" not in attr_group:
-                continue
-            for spec_group in attr_group["specs"]:
-                for attribute_entry in spec_group["attributes"]:
-                    if attribute_entry["id"] == "Modelo":
-                        model = attribute_entry["text"]
-                    if attribute_entry["id"] == "Modelo alfanumérico":
-                        mpn = attribute_entry["text"]
-
-        tech_name = " - ".join([x for x in [model, mpn] if x])
-        part_number = tech_name[:50] or None
+            description += data["initialState"]["components"]["description"]["content"]
 
         picker = None
         condition = "https://schema.org/NewCondition"
@@ -964,3 +929,28 @@ class MercadoLibreChile(Store):
                     "nickname"
                 ]
         return result, seller_data
+
+    @classmethod
+    def get_description_and_part_number(cls, data):
+        model = None
+        mpn = None
+        description = ""
+
+        for attr_group in data["initialState"]["components"]["highlighted_specs_attrs"][
+            "components"
+        ]:
+            if "specs" not in attr_group:
+                continue
+            for spec_group in attr_group["specs"]:
+                for attribute_entry in spec_group["attributes"]:
+                    description += (
+                        f'{attribute_entry["id"]}: {attribute_entry["text"]}\n'
+                    )
+                    if attribute_entry["id"] == "Modelo":
+                        model = attribute_entry["text"]
+                    if attribute_entry["id"] == "Modelo alfanumérico":
+                        mpn = attribute_entry["text"]
+
+        tech_name = " - ".join([x for x in [model, mpn] if x])
+        part_number = tech_name[:50] or None
+        return description, part_number
