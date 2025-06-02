@@ -486,11 +486,12 @@ class MercadoLibreChile(Store):
             ):
                 return []
 
-        if "content" in data["initialState"]["components"]["description"]:
+        try:
+            data["initialState"]["components"]["description"]["content"]
             return cls.retrieve_type2_products(
                 session, url, soup, category, data, extra_args
             )
-        else:
+        except KeyError:
             return cls.retrieve_type3_products(
                 url, data, soup, extra_args, category, url
             )
@@ -627,8 +628,8 @@ class MercadoLibreChile(Store):
         price = Decimal(data["initialState"]["schema"][0]["offers"]["price"]).quantize(
             Decimal(cls.price_accuracy)
         )
-
         description, part_number = cls.get_description_and_part_number(data)
+
         if "description" in data["initialState"]["components"]:
             description += data["initialState"]["components"]["description"]["content"]
 
@@ -742,7 +743,6 @@ class MercadoLibreChile(Store):
                 review_avg_score=review_avg_score,
                 description="{} Type2".format(description),
             )
-
             yield product
 
     @classmethod
@@ -935,6 +935,12 @@ class MercadoLibreChile(Store):
         model = None
         mpn = None
         description = ""
+
+        if (
+            "component"
+            not in data["initialState"]["components"]["highlighted_specs_attrs"]
+        ):
+            return description, mpn
 
         for attr_group in data["initialState"]["components"]["highlighted_specs_attrs"][
             "components"
