@@ -197,7 +197,9 @@ class SipoOnline(StoreWithUrlExtensions):
                 stock = -1
 
             key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
-            offer_price = Decimal(product_data["offers"][0]["price"])
+            offer_price = Decimal(
+                product_data["offers"][0]["priceSpecification"][0]["price"]
+            )
             normal_price = (offer_price * Decimal("1.05")).quantize(0)
             picture_containers = soup.find("ul", "swiper-wrapper").findAll("img")
             picture_urls = [
