@@ -70,6 +70,7 @@ class CSByte(StoreWithUrlExtensions):
         ["proyectores", PROJECTOR],
         ["kit-teclado-y-mouse", KEYBOARD_MOUSE_COMBO],
     ]
+    cookies = {"humans_21909": "1"}
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
@@ -87,7 +88,7 @@ class CSByte(StoreWithUrlExtensions):
             url_webpage = f"https://www.csbyte.cl/categoria/{url_extension}/page/{page}"
 
             print(url_webpage)
-            response = session.get(url_webpage)
+            response = session.get(url_webpage, cookies=cls.cookies)
 
             if response.status_code == 404:
                 if page == 1:
@@ -112,7 +113,7 @@ class CSByte(StoreWithUrlExtensions):
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"
         )
-        response = session.get(url)
+        response = session.get(url, cookies=cls.cookies)
 
         if response.url.lower() != url.lower():
             print(response.url)
