@@ -43,43 +43,29 @@ class CSByte(StoreWithUrlExtensions):
         ["audifonos", HEADPHONES],
         ["microfonos", MICROPHONE],
         ["parlantes", STEREO_SYSTEM],
-        ["parlantes-gamer", STEREO_SYSTEM],
         ["almacenamiento", SOLID_STATE_DRIVE],
         ["almacenamiento-externo", SOLID_STATE_DRIVE],
-        ["ssd-almacenamiento-componentes-gamer", SOLID_STATE_DRIVE],
         ["hdd", STORAGE_DRIVE],
         ["almacenamiento-seguridad", STORAGE_DRIVE],
         ["pendrive", USB_FLASH_DRIVE],
         ["micro-sd", MEMORY_CARD],
         ["fuente-de-poder", POWER_SUPPLY],
         ["gabinete", COMPUTER_CASE],
-        ["gabinete-gamer", COMPUTER_CASE],
-        ["memoria-ram", RAM],
-        ["memoria-ram-componentes-gamer", RAM],
+        ["memoria", RAM],
         ["placa-madre", MOTHERBOARD],
-        ["placas-madre", MOTHERBOARD],
         ["procesadores", PROCESSOR],
-        ["procesadores-componentes-gamer", PROCESSOR],
         ["refrigeracion", CPU_COOLER],
-        ["refrigeracion-gamer", CPU_COOLER],
         ["tarjetas-de-video", VIDEO_CARD],
-        ["tarjetas-de-video-componentes-gamer", VIDEO_CARD],
         ["all-in-one", ALL_IN_ONE],
         ["notebook", NOTEBOOK],
         ["impresoras", PRINTER],
         ["monitores", MONITOR],
-        ["monitores-gamer", MONITOR],
         ["mouse", MOUSE],
         ["teclado", KEYBOARD],
-        ["teclados_zona_gamer", KEYBOARD],
-        ["sillas", GAMING_CHAIR],
-        ["silla-gamer", GAMING_CHAIR],
+        ["sillas-de-escritorio", GAMING_CHAIR],
         ["tablets", TABLET],
         ["ups", UPS],
-        ["audifonos-zona-gamer", HEADPHONES],
-        ["mouse-zona-gamer", MOUSE],
         ["wearables", WEARABLE],
-        ["fuentes-de-poder", POWER_SUPPLY],
         ["tinta", PRINTER_SUPPLY],
         ["proyectores", PROJECTOR],
         ["kit-teclado-y-mouse", KEYBOARD_MOUSE_COMBO],
@@ -128,7 +114,7 @@ class CSByte(StoreWithUrlExtensions):
         )
         response = session.get(url)
 
-        if response.url != url:
+        if response.url.lower() != url.lower():
             print(response.url)
             print(url)
             return []
@@ -195,7 +181,12 @@ class CSByte(StoreWithUrlExtensions):
                 soup.findAll("script", {"type": "application/ld+json"})[-1].text
             )["@graph"][1]
             sku = str(json_data["sku"])
-            part_number = json_data.get("gtin", None)
+            part_number_tag = soup.find("span", "part-number")
+            part_number = (
+                part_number_tag.text.split("Part Number: ")[1]
+                if part_number_tag
+                else None
+            )
             offer = json_data["offers"][0]
 
             if offer["availability"] == "http://schema.org/InStock":
