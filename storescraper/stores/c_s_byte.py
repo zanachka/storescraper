@@ -85,7 +85,7 @@ class CSByte(StoreWithUrlExtensions):
             if page > 30:
                 raise Exception(f"Page overflow: {url_extension}")
 
-            url_webpage = f"https://www.csbyte.cl/categoria/{url_extension}/page/{page}"
+            url_webpage = f"https://www.csbyte.cl/categoria/{url_extension}/page/{page}/?filter_vendido-por=csbyte"
 
             print(url_webpage)
             response = session.get(url_webpage, cookies=cls.cookies)
