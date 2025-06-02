@@ -24,7 +24,6 @@ from storescraper.categories import (
     MONITOR,
     MEMORY_CARD,
     GAMING_CHAIR,
-    STORAGE_DRIVE,
     POWER_SUPPLY,
     COMPUTER_CASE,
     USB_FLASH_DRIVE,
@@ -45,6 +44,21 @@ from storescraper.categories import (
     CPU_COOLER,
     IRON,
     UPS,
+    SPACE_HEATER,
+    WATER_HEATER,
+    BLENDER,
+    FOOD_PROCESSOR,
+    ELECTRIC_GRILL,
+    COOKING_ROBOT,
+    ELECTRIC_POT,
+    MIXER,
+    COFFE_MAKER,
+    TOASTER,
+    KETTLE,
+    AIR_FRYER,
+    JUICER,
+    SANDWICH_MAKER,
+    HAIR_CARE,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -55,66 +69,105 @@ class MercadoLibreChile(Store):
     price_accuracy = "0"
     store = "all"
     categories_path = [
-        ("celulares-telefonia/celulares-smartphones", CELL, "Celulares y Telefonía"),
-        ("computacion/notebooks-accesorios/notebooks", NOTEBOOK, "Notebooks"),
-        ("computacion/tablets-accesorios/tablets", TABLET, "Tablet"),
-        ("computacion/impresion/impresoras", PRINTER, "Impresoras"),
+        (
+            "celulares-telefonia/celulares-smartphones",
+            CELL,
+            "Celulares y Telefonía > Celulares y Smartphones",
+        ),
+        (
+            "celulares-telefonia/accesorios-celulares/memorias",
+            MEMORY_CARD,
+            "Celulares y Telefonía > Accesorios para Celulares > Memorias",
+        ),
+        (
+            "computacion/notebooks-accesorios/notebooks",
+            NOTEBOOK,
+            "Computación > Notebooks y Accesorios > Notebooks",
+        ),
+        (
+            "computacion/tablets-accesorios/tablets",
+            TABLET,
+            "Computación > Tablets y Accesorios > Tablets",
+        ),
+        (
+            "computacion/impresion/impresoras",
+            PRINTER,
+            "Computación > Impresión > Impresoras",
+        ),
         (
             "computacion/almacenamiento/discos-accesorios/discos-duros-ssds",
             SOLID_STATE_DRIVE,
-            "Discos y Accesorios Discos Duros y SSDs",
+            "Computación > AlmacenamientoDiscos y Accesorios > Discos Duros y SSDs",
         ),
-        ("computacion/componentes-pc", RAM, "Componentes de PC"),
-        ("electronica-audio-video/audio/audifonos/", HEADPHONES, "Audio"),
+        (
+            "electronica-audio-video/audio/audifonos",
+            HEADPHONES,
+            "Electrónica, Audio y Video > Audio > Audífonos",
+        ),
         (
             "electronica-audio-video/audio/audio-portatil-accesorios",
             STEREO_SYSTEM,
             "Audio Portátil y Accesorios",
         ),
-        ("electronica-audio-video/televisores", TELEVISION, "Televisores"),
-        ("perifericos-pc-parlantes", STEREO_SYSTEM, "Parlantes para PC"),
+        (
+            "electronica-audio-video/televisores",
+            TELEVISION,
+            "Electrónica, Audio y Video > Televisores",
+        ),
+        (
+            "perifericos-pc-parlantes",
+            STEREO_SYSTEM,
+            "Computación > Periféricos de PC > Parlantes para PC",
+        ),
         (
             "mouses-teclados-controles-kits-mouse-teclado",
             KEYBOARD_MOUSE_COMBO,
             "Mouses y Teclados Kits de Mouse y Teclado",
         ),
-        ("computacion/perifericos-accesorios/mouses", MOUSE, "Mouses"),
-        ("computacion/perifericos-accesorios/teclados", KEYBOARD, "Teclados"),
+        (
+            "computacion/perifericos-accesorios/mouses",
+            MOUSE,
+            "Computación > Periféricos de PC > Mouses y Teclados > Mouses",
+        ),
+        (
+            "computacion/perifericos-accesorios/teclados",
+            KEYBOARD,
+            "Computación > Periféricos de PC > Mouses y Teclados > Teclados",
+        ),
         (
             "celulares-telefonia/smartwatches-accesoriossmartwatch",
             WEARABLE,
-            "Smartwatches y Accesorios",
+            "Celulares y Telefonía > Smartwatches y Accesorios > Smartwatches",
         ),
         (
-            "electrodomesticos/pequenos-electrodomesticos",
-            ACCESORIES,
-            "Pequeños Electrodomésticos",
+            "computacion/monitores-accesorios/monitores",
+            MONITOR,
+            "Computación > Monitores y Accesorios > Monitores",
         ),
-        (
-            "consolas-videojuegos/consolas/xbox-series",
-            VIDEO_GAME_CONSOLE,
-            "Consolas Xbox Series",
-        ),
-        ("computacion/monitores-accesorios/monitores", MONITOR, "Monitores"),
         (
             "computacion/accesorios-pc-gaming/sillas-gamer",
             GAMING_CHAIR,
             "Computación > Accesorios para PC Gaming > Sillas Gamer",
         ),
         (
+            "consolas-videojuegos/consolas/xbox-series",
+            VIDEO_GAME_CONSOLE,
+            "Consolas y Videojuegos > Consolas Xbox Series",
+        ),
+        (
             "consolas-videojuegos/consolas/playstation-4",
             VIDEO_GAME_CONSOLE,
-            "Consolas y Videojuegos > Consolas",
+            "Consolas y Videojuegos > Consolas PlayStation 4",
         ),
         (
             "consolas-videojuegos/consolas/playstation-5",
             VIDEO_GAME_CONSOLE,
-            "Consolas y Videojuegos > Consolas>",
+            "Consolas y Videojuegos > Consolas PlayStation 5",
         ),
         (
             "consolas-videojuegos/consolas/switch",
             VIDEO_GAME_CONSOLE,
-            "Consolas y Videojuegos > Consolas",
+            "Consolas y Videojuegos > Consolas Switch",
         ),
         (
             "computacion/componentes-pc/fuentes-alimentacion/fuentes",
@@ -157,14 +210,9 @@ class MercadoLibreChile(Store):
             "Computación > Almacenamiento > Pen Drives",
         ),
         (
-            "computacion/almacenamiento/pen-drives",
-            USB_FLASH_DRIVE,
-            "Computación > Almacenamiento > Pen Drives",
-        ),
-        (
             "mouses-teclados-controles-tabletas-digitalizadoras",
             TABLET,
-            "Computación > Periféricos de PC > Mouses y Teclados > Tabletas Digitalizadoras > Mouses y Teclados Tabletas Digitalizadoras",
+            "Computación > Periféricos de PC > Mouses y Teclados > Tabletas Digitalizadoras",
         ),
         (
             "audio-home-theaters",
@@ -209,12 +257,12 @@ class MercadoLibreChile(Store):
         (
             "electrodomesticos/pequenos-electrodomesticos/hogar/aspiradoras",
             VACUUM_CLEANER,
-            "Electrodomésticos > Pequeños Electrodomésticos > Para Hogar > Aspiradoras > Para Hogar Aspiradoras",
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Hogar > Aspiradoras",
         ),
         (
             "electrodomesticos/pequenos-electrodomesticos/hogar/aspiradoras-robot",
             VACUUM_CLEANER,
-            "Electrodomésticos > Pequeños Electrodomésticos > Para Hogar > Aspiradoras > Para Hogar Aspiradoras Robot",
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Hogar > Aspiradoras",
         ),
         (
             "electrodomesticos/pequenos-electrodomesticos/hogar/planchas",
@@ -254,54 +302,134 @@ class MercadoLibreChile(Store):
         (
             "computacion/impresion/insumos-impresion/cartuchos-tinta",
             PRINTER_SUPPLY,
-            "Computación > Impresión > Insumos de Impresión > Cartuchos de Tinta > Insumos de Impresión Cartuchos de Tinta",
+            "Computación > Impresión > Insumos de Impresión > Cartuchos de Tinta",
         ),
         (
             "computacion/impresion/insumos-impresion/toners",
             PRINTER_SUPPLY,
-            "Computación > Impresión > Insumos de Impresión > Cartuchos de Tinta > Insumos de Impresión Tóners",
+            "Computación > Impresión > Insumos de Impresión > Tóners",
         ),
         (
             "computacion/impresion/insumos-impresion/sets-insumos-impresion",
             PRINTER_SUPPLY,
-            "Computación > Impresión > Insumos de Impresión > Cartuchos de Tinta > Insumos de Impresión Sets de Insumos de Impresión",
+            "Computación > Impresión > Insumos de Impresión > Sets de Insumos de Impresión",
         ),
         (
             "computacion/impresion/insumos-impresion/tintas",
             PRINTER_SUPPLY,
-            "Computación > Impresión > Insumos de Impresión > Cartuchos de Tinta > Insumos de Impresión Tintas",
+            "Computación > Impresión > Insumos de Impresión > Tintas",
+        ),
+        (
+            "electrodomesticos/climatizacion/estufas-calefactores",
+            SPACE_HEATER,
+            "Electrodomésticos > Climatización > Estufas y Calefactores",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/hogar/planchas",
+            IRON,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Hogar > Planchas",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/hervidores",
+            KETTLE,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Hervidores",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-alimentos/procesadores",
+            FOOD_PROCESSOR,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Alimentos > Procesadores",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-alimentos/arroceras",
+            ELECTRIC_POT,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Alimentos > Arroceras",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-alimentos/batidoras",
+            MIXER,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Alimentos > Batidoras",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-alimentos/ollas-electricas",
+            ELECTRIC_POT,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Alimentos > Ollas Eléctricas",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/cafeteras",
+            COFFE_MAKER,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Cafeteras",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-alimentos/tostadoras",
+            TOASTER,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Alimentos > Tostadoras",
+        ),
+        (
+            "electrodomesticos/hornos-cocinas/cocinas",
+            OVEN,
+            "ElectrodomésticosHornos y Cocinas",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-bebidas/licuadoras",
+            BLENDER,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Bebidas > Licuadoras",
+        ),
+        (
+            "electrodomesticos/climatizacion/calefonts-termos/calefonts",
+            WATER_HEATER,
+            "Electrodomésticos > Climatización > Calefonts y Termos > Calefonts",
+        ),
+        (
+            "electrodomesticos/climatizacion/calefonts-termos/termos",
+            WATER_HEATER,
+            "Electrodomésticos > Climatización > Calefonts y Termos > Termos",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-alimentos/freidoras/aire",
+            AIR_FRYER,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Alimentos > Freidoras > De Aire",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-bebidas/jugueras",
+            JUICER,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Bebidas > Jugueras",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-alimentos/licuadoras-mano",
+            FOOD_PROCESSOR,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Alimentos > Licuadoras de Mano",
+        ),
+        (
+            "hogar-muebles/jardin-aire-libre/hornos-parrillas-accesorios/parrillas/parrillas-electricas",
+            ELECTRIC_GRILL,
+            "Hogar y Muebles > Jardín y Aire Libre > Hornos, Parrillas y Accesorios > Parrillas > Parrillas Eléctricas",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-alimentos/sandwicheras",
+            SANDWICH_MAKER,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Alimentos > Sandwicheras",
+        ),
+        (
+            "belleza-cuidado-personal/artefactos-cabello/cepillos-electricos/alisadores",
+            HAIR_CARE,
+            "Belleza y Cuidado Personal > Artefactos para el Cabello > Cepillos Eléctricos",
+        ),
+        (
+            "belleza-cuidado-personal/artefactos-cabello/secadores-pelo",
+            HAIR_CARE,
+            "Belleza y Cuidado Personal > Artefactos para el Cabello > Secadores de Pelo",
+        ),
+        (
+            "belleza-cuidado-personal/artefactos-cabello/rizadores-onduladores",
+            HAIR_CARE,
+            "Belleza y Cuidado Personal > Artefactos para el Cabello > Rizadores y Onduladores",
+        ),
+        (
+            "electrodomesticos/pequenos-electrodomesticos/cocina/preparacion-alimentos/robots-cocina",
+            COOKING_ROBOT,
+            "Electrodomésticos > Pequeños Electrodomésticos > Para Cocina > Preparación de Alimentos > Robots de Cocina",
         ),
     ]
-    """ 
-      
-        ("MLC183159", "Estufas y Calefactores", None),
-        ("MLC162501", "Planchas", None),
-        ("MLC162504", "Hervidores", None),
-        ("MLC439832", "Preparación de Alimentos", None),
-        ("MLC162503", "Arroceras", None),
-        ("MLC440064", "Batidoras", None),
-        ("MLC411071", "Sartenes y Ollas Eléctricas", None),
-        ("MLC162507", "Tostadoras", None),
-        ("MLC30852", "Cocinas", None),
-        ("MLC180819", "Licuadoras", None),
-        ("MLC4340", "Cafeteras", None),
-        ("MLC385176", "Calefonts y Termos", None),
-        ("MLC162500", "Freidoras", None),
-        ("MLC174302", "Hornos de Pan", None),
-        ("MLC440069", "Jugueras", None),
-        ("MLC429556", "Minipimers", None),
-        ("MLC174293", "Parrillas Eléctricas", None),
-        ("MLC162502", "Sandwicheras", None),
-        ("MLC440067", "Procesadores", None),
-        ("MLC179543", "Waffleras", None),
-        ("MLC174449", "Parrillas Eléctricas", None),
-        ("MLC178457", "Alisadores de Pelo", None),
-        ("MLC4597", "Secadores de Pelo", None),
-        ("MLC178456", "Alisadores", None),
-        ("MLC43660", "Rizadores y Onduladores", None),
-        ("MLC428989", "Sets de Insumos de Impresión", PRINTER_SUPPLY),
-        ("MLC10871", "Tintas", PRINTER_SUPPLY),
-    ]"""
 
     seller_whitelist = [
         "Acer",
