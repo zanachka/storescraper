@@ -20,7 +20,6 @@ class Diunsa(Store):
 
         session = session_with_proxy(extra_args)
         session.headers["Content-Type"] = "application/json"
-        product_urls = []
         offset = 0
         done = False
 
@@ -36,15 +35,13 @@ class Diunsa(Store):
             if response["data"] == []:
                 break
 
-            product_urls += [
-                f"https://www.diunsa.hn/producto/{product['name'].lower().replace(' ', '-').replace('/', '-').replace('--', '-')}-{product['code']}"
-                for product in response["data"]
-                if product["brandName"] == "LG"
-            ]
+            for product in response["data"]:
+                if product["brandName"] != "LG":
+                    continue
+                product_url = f"https://www.diunsa.hn/producto/{product['name'].lower().replace(' ', '-').replace('/', '-').replace('--', '-')}-{product['code']}"
+                yield product_url
 
             offset += 15
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):

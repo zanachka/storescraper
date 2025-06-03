@@ -90,7 +90,6 @@ class Winpy(StoreWithUrlExtensions):
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         base_url = "https://www.winpy.cl"
-        product_urls = []
         session = cf_session_with_proxy(extra_args)
         url = base_url + "/" + url_extension
 
@@ -112,14 +111,12 @@ class Winpy(StoreWithUrlExtensions):
 
             for container in product_containers:
                 product_url = "https://www.winpy.cl" + container.find("a")["href"]
-                product_urls.append(product_url)
+                yield product_url
 
             if not soup.find("div", "paginador"):
                 break
 
             page += 1
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -127,7 +124,7 @@ class Winpy(StoreWithUrlExtensions):
         response = session.get(url)
 
         if response.url != url or response.status_code == 404:
-            return []
+            raise Exception(url, response.url, response.status_code)
 
         page_source = response.text
         soup = BeautifulSoup(page_source, "html5lib")
