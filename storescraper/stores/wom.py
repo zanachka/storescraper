@@ -179,7 +179,10 @@ class Wom(Store):
                 continue
             graphql_data = json.loads(context["graphql_data"])
 
-            stock = stock_dict[entry["referenceId"]]
+            try:
+                stock = stock_dict[entry["referenceId"]]
+            except KeyError:
+                continue
 
             portability_choices = [
                 ("", "newConnection"),
@@ -305,7 +308,10 @@ class Wom(Store):
         plans_json = []
 
         for product_entry in data["data"]["allContentfulProduct"]["nodes"]:
-            plan_context = json.loads(product_entry["context"]["context"])
+            try:
+                plan_context = json.loads(product_entry["context"]["context"])
+            except json.decoder.JSONDecodeError:
+                continue
 
             if not product_entry["offer"] and not product_entry["offerPdp"]:
                 continue
