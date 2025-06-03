@@ -33,7 +33,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, html_to_markdown, remove_words
+from storescraper.utils import (
+    html_to_markdown,
+    remove_words,
+    cf_session_with_proxy,
+)
 
 
 class Lifemax(StoreWithUrlExtensions):
@@ -86,8 +90,12 @@ class Lifemax(StoreWithUrlExtensions):
     ]
 
     @classmethod
+    def get_session(cls, extra_args=None):
+        return cf_session_with_proxy(extra_args)
+
+    @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         page = 1
 
         while True:
@@ -127,7 +135,7 @@ class Lifemax(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
         products = []
