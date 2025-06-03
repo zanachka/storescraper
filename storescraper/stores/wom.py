@@ -306,12 +306,24 @@ class Wom(Store):
 
         data = response.json()
         plans_json = []
+        import re
 
         for product_entry in data["data"]["allContentfulProduct"]["nodes"]:
             try:
                 plan_context = json.loads(product_entry["context"]["context"])
             except json.decoder.JSONDecodeError:
-                continue
+                json_string = product_entry["context"]["context"]
+                fixed_json_string = re.sub(
+                    r',\s*\{\s*"price_newline_campaing"',
+                    r', "price_newline_campaing"',
+                    json_string,
+                )
+                fixed_json_string = re.sub(
+                    r'price_newline_campaing":\s*([0-9]+)\s*\},',
+                    r'price_newline_campaing": \1,',
+                    fixed_json_string,
+                )
+                plan_context = json.loads(fixed_json_string)
 
             if not product_entry["offer"] and not product_entry["offerPdp"]:
                 continue
