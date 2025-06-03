@@ -88,7 +88,6 @@ class Lifemax(StoreWithUrlExtensions):
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
         session = session_with_proxy(extra_args)
-        product_urls = []
         page = 1
 
         while True:
@@ -118,12 +117,12 @@ class Lifemax(StoreWithUrlExtensions):
             )
 
             for container in product_containers:
-                product_url = container.find("a")["href"]
-                product_urls.append("https://www.lifemaxstore.cl" + product_url)
+                product_url = (
+                    "https://www.lifemaxstore.cl" + container.find("a")["href"]
+                )
+                yield product_url
 
             page += 1
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
