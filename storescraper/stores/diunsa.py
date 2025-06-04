@@ -38,7 +38,7 @@ class Diunsa(Store):
             for product in response["data"]:
                 if product["brandName"] != "LG":
                     continue
-                product_url = f"https://www.diunsa.hn/producto/{product['name'].lower().replace(' ', '-').replace('/', '-').replace('--', '-')}-{product['code']}"
+                product_url = f"https://www.diunsa.hn/p/{product['name'].lower().replace(' ', '-').replace('/', '-').replace('--', '-')}-{product['code']}"
                 yield product_url
 
             offset += 15
