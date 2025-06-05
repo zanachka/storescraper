@@ -45,7 +45,7 @@ class Store:
             )
         except Exception as e:
             raise StoreScrapError(
-                f"Error retrieving products: {traceback.format_exc()}"
+                f"Error retrieving products with discovery url {url}: {traceback.format_exc()}"
             ) from e
 
     @classmethod
