@@ -142,42 +142,45 @@ class CtMan(StoreWithUrlExtensions):
                 r"product:\s*({.*?})\s*,\s*\n\s*\}\);", product_script.string, re.DOTALL
             ).group(1)
         )
-        products = []
+
+        assert len(product_data["variant_list"]) == 1
+
         description = html_to_markdown(str(soup.find("div", "product-description")))
+        variant = product_data["variant_list"][0]
+        key = str(variant["id"])
+        name = f"{product_data['name']} {variant['name']}"
+        sku = variant["sku"]
+        stock = variant["online_stock"]
+        picture_urls = [
+            img["src"]
+            for img in soup.find_all("img", "product-asset rounded main-image")
+        ]
 
-        for variant in product_data["variant_list"]:
-            key = str(variant["id"])
-            name = f"{product_data['name']} {variant['name']}"
-            sku = variant["sku"]
-            price = Decimal(variant["price"])
-            stock = variant["online_stock"]
-            picture_urls = [
-                img["src"]
-                for img in soup.find_all("img", "product-asset rounded main-image")
-            ]
+        if "reacondicioando" in name.lower() or "re acondicionado" in name.lower():
+            condition = "https://schema.org/RefurbishedCondition"
+        else:
+            condition = "https://schema.org/NewCondition"
 
-            if "reacondicioando" in name.lower() or "re acondicionado" in name.lower():
-                condition = "https://schema.org/RefurbishedCondition"
-            else:
-                condition = "https://schema.org/NewCondition"
+        prices_tag = soup.find("div", "product-prices")
+        normal_price = Decimal(remove_words(prices_tag["data-price-otros"]))
+        offer_price = Decimal(remove_words(prices_tag["data-price-transferencia"]))
 
-            p = Product(
-                name,
-                cls.__name__,
-                category,
-                url,
-                url,
-                key,
-                stock,
-                price,
-                price,
-                "CLP",
-                sku=sku,
-                picture_urls=picture_urls,
-                description=description,
-                part_number=sku,
-                condition=condition,
-            )
-            products.append(p)
+        p = Product(
+            name,
+            cls.__name__,
+            category,
+            url,
+            url,
+            key,
+            stock,
+            normal_price,
+            offer_price,
+            "CLP",
+            sku=sku,
+            picture_urls=picture_urls,
+            description=description,
+            part_number=sku,
+            condition=condition,
+        )
 
-        return products
+        return [p]
