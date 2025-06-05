@@ -30,6 +30,7 @@ from storescraper.categories import (
     NOTEBOOK,
     MICROPHONE,
     TABLET,
+    PROJECTOR,
 )
 from storescraper.product import Product
 from storescraper.store import Store
@@ -69,6 +70,7 @@ class TecnoMaster(Store):
             UPS,
             MICROPHONE,
             TABLET,
+            PROJECTOR,
         ]
 
     @classmethod
@@ -100,6 +102,7 @@ class TecnoMaster(Store):
             ["ups-respaldos-de-energia", UPS],
             ["sillasgamer", GAMING_CHAIR],
             ["tablet-ipad", TABLET],
+            ["proyectores", PROJECTOR],
         ]
         session = session_with_proxy(extra_args)
         product_urls = []
