@@ -173,10 +173,14 @@ class SamsungShop(Store):
 
     @classmethod
     def sections(cls):
-        for category_id, category_name, section_name, subsections in cls.url_extensions:
-            yield section_name
-            for subsection_filter, subsection_name in subsections:
-                yield f"{section_name} > {subsection_name}"
+        sections = []
+
+        for _, _, section_name, subsections in cls.url_extensions:
+            sections.append(section_name)
+            for _, subsection_name in subsections:
+                sections.append(f"{section_name} > {subsection_name}")
+
+        return sections
 
     @classmethod
     def section_positions(cls, section, extra_args=None):
