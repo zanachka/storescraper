@@ -90,17 +90,14 @@ class Entel(Store):
         session = session_with_proxy(extra_args)
         response = session.get(cls.planes_url)
         soup = BeautifulSoup(response.text, "lxml")
-        plans_container = soup.find("swiper-container", {"id": "cards-products"})
-
-        plans = plans_container.findAll("swiper-slide")
         products = []
+        plan_container = soup.find("andino-card-planes-moviles-ecommerce")
+        plan_entries = json.loads(plan_container.get("eds-card"))
 
-        for plan in plans:
-            plan_data = json.loads(plan.find("andino-card-productos").get("eds-card"))[
-                "data"
-            ]
-            base_plan_name = plan_data["product-name"]
-            price = Decimal(plan_data["product-price"])
+        for plan in plan_entries:
+            plan_data = plan["button"]["data"]
+            base_plan_name = f"{plan_data['product_name']} {plan['title']}"
+            price = Decimal(plan_data["product_price"])
 
             if price == 0:
                 continue
