@@ -114,108 +114,123 @@ class HuaweiShop(Store):
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
 
-        product_id_tag = soup.find("span", {"id": "productId"})
-        product_id = None
-
-        if product_id_tag:
-            product_id = product_id_tag.text.strip()
-
-        if "productId" in url:
-            product_id = url.split("productId=")[1]
-
-        if not product_id_tag or not product_id:
+        base_products_tag = soup.find("input", {"id": "productAssembleData"})
+        if base_products_tag:
+            base_products = json.loads(base_products_tag["value"])
+            product_ids = [x["productId"] for x in base_products]
+        else:
             product_id_tag = soup.find("input", {"id": "productId"})
             if product_id_tag:
-                product_id = product_id_tag["value"]
+                product_ids = [product_id_tag["value"]]
+            elif "productId" in url:
+                product_ids = [url.split("productId=")[1]]
             else:
-                product_id_tag = soup.find("div", {"data-productid": True})
-                if product_id_tag:
-                    product_id = product_id_tag["data-productid"]
-                else:
-                    return []
-
-        if not product_id:
-            return []
-
-        query_url = (
-            "https://itrinity-sg.c.huawei.com/eCommerce/queryPrd"
-            "DisplayDetailInfo?productId={}&siteCode=CL".format(product_id)
-        )
-        product_json = json.loads(session.get(query_url).text)
-        sbom_codes = []
-
-        if "errorDetail" in product_json["data"]:
-            return []
-
-        for product_entry in product_json["data"]["sbomList"]:
-            sbom_codes.append(product_entry["sbomCode"])
-            for subvariant in product_entry["sbomPackageList"] or []:
-                for package in subvariant["packageList"]:
-                    sbom_codes.append(package["sbomCode"])
-
-        products_id = "%2C".join(sbom_codes)
-        json_stock = json.loads(
-            session.get(
-                "https://itrinity-sg.c.huawei."
-                "com/eCommerce/querySkuInventory?"
-                "skuCodes={}&siteCode=CL".format(products_id)
-            ).text
-        )
-
-        if "inventoryReqVOs" not in json_stock["data"]:
-            return []
-
-        stock_dict = {
-            x["skuCode"]: x["inventoryQty"]
-            for x in json_stock["data"]["inventoryReqVOs"]
-        }
-
-        prices_endpoint = (
-            "https://itrinity-sg.c.huawei.com/convert/"
-            "querySkuDetailDispAndInv?skuCodes={}&"
-            "groupFlag=true&siteCode=CL&loginFrom=1".format(products_id)
-        )
-        prices_res = session.get(prices_endpoint).json()
-        price_per_sbom = {
-            x["skuPriceInfo"]["sbomCode"]: Decimal(x["skuPriceInfo"]["salePrice"])
-            for x in prices_res["data"]["detailDispInfos"]
-        }
-
+                raise Exception("No product ID found")
         products = []
 
-        specs_res = session.get(f"{url}/specs/")
-        specs_soup = BeautifulSoup(specs_res.text, "lxml")
-        specs_tag = specs_soup.find("ul", "large-accordion__list")
-        description = html_to_markdown(specs_tag.text) if specs_tag else None
+        for product_id in product_ids:
+            query_url = (
+                "https://itrinity-sg.c.huawei.com/eCommerce/queryPrd"
+                "DisplayDetailInfo?productId={}&siteCode=CL".format(product_id)
+            )
+            product_json = json.loads(session.get(query_url).text)
+            sbom_codes = []
 
-        for product in product_json["data"]["sbomList"]:
-            base_stock = stock_dict[product["sbomCode"]]
-            name = product["name"]
-            picture_urls = [
-                "https://img01.huaweifile.com/sg/ms/cl/pms"
-                + product["photoPath"]
-                + "800_800_"
-                + product["photoName"]
-            ]
+            if "errorDetail" in product_json["data"]:
+                return []
 
-            if product["sbomPackageList"]:
-                for subvariant in product["sbomPackageList"]:
-                    sku = subvariant["packageCode"]
-                    subvariant_name = "{} {}".format(name, subvariant["name"])
-                    packages_stock = [
-                        stock_dict[package["sbomCode"]]
-                        for package in subvariant["packageList"]
-                    ]
-                    subvariant_stock = min(packages_stock + [base_stock])
-                    price = Decimal(subvariant["packageTotalPrice"])
+            for product_entry in product_json["data"]["sbomList"]:
+                sbom_codes.append(product_entry["sbomCode"])
+                for subvariant in product_entry["sbomPackageList"] or []:
+                    for package in subvariant["packageList"]:
+                        sbom_codes.append(package["sbomCode"])
+
+            products_id = "%2C".join(sbom_codes)
+            json_stock = json.loads(
+                session.get(
+                    "https://itrinity-sg.c.huawei."
+                    "com/eCommerce/querySkuInventory?"
+                    "skuCodes={}&siteCode=CL".format(products_id)
+                ).text
+            )
+
+            if "inventoryReqVOs" not in json_stock["data"]:
+                return []
+
+            stock_dict = {
+                x["skuCode"]: x["inventoryQty"]
+                for x in json_stock["data"]["inventoryReqVOs"]
+            }
+
+            prices_endpoint = (
+                "https://itrinity-sg.c.huawei.com/convert/"
+                "querySkuDetailDispAndInv?skuCodes={}&"
+                "groupFlag=true&siteCode=CL&loginFrom=1".format(products_id)
+            )
+            prices_res = session.get(prices_endpoint).json()
+            price_per_sbom = {
+                x["skuPriceInfo"]["sbomCode"]: Decimal(x["skuPriceInfo"]["salePrice"])
+                for x in prices_res["data"]["detailDispInfos"]
+            }
+
+            specs_res = session.get(f"{url}/specs/")
+            specs_soup = BeautifulSoup(specs_res.text, "lxml")
+            specs_tag = specs_soup.find("ul", "large-accordion__list")
+            description = html_to_markdown(specs_tag.text) if specs_tag else None
+
+            for product in product_json["data"]["sbomList"]:
+                base_stock = stock_dict[product["sbomCode"]]
+                name = product["name"]
+                picture_urls = [
+                    "https://img01.huaweifile.com/sg/ms/cl/pms"
+                    + product["photoPath"]
+                    + "800_800_"
+                    + product["photoName"]
+                ]
+
+                if product["sbomPackageList"]:
+                    for subvariant in product["sbomPackageList"]:
+                        sku = f'{product['sbomCode']} - {subvariant["packageCode"]}'
+                        subvariant_name = "{} {}".format(name, subvariant["name"])
+                        packages_stock = [
+                            stock_dict[package["sbomCode"]]
+                            for package in subvariant["packageList"]
+                        ]
+                        subvariant_stock = min(packages_stock + [base_stock])
+                        price = Decimal(subvariant["packageTotalPrice"])
+                        p = Product(
+                            subvariant_name,
+                            cls.__name__,
+                            category,
+                            url,
+                            url,
+                            sku,
+                            subvariant_stock,
+                            price,
+                            price,
+                            "CLP",
+                            sku=sku,
+                            picture_urls=picture_urls,
+                            description=description,
+                        )
+                        products.append(p)
+
+                else:
+                    sku = product["sbomCode"]
+
+                    if sku not in price_per_sbom:
+                        continue
+
+                    price = price_per_sbom[sku]
+
                     p = Product(
-                        subvariant_name,
+                        name,
                         cls.__name__,
                         category,
                         url,
                         url,
                         sku,
-                        subvariant_stock,
+                        base_stock,
                         price,
                         price,
                         "CLP",
@@ -224,30 +239,5 @@ class HuaweiShop(Store):
                         description=description,
                     )
                     products.append(p)
-
-            else:
-                sku = product["sbomCode"]
-
-                if sku not in price_per_sbom:
-                    continue
-
-                price = price_per_sbom[sku]
-
-                p = Product(
-                    name,
-                    cls.__name__,
-                    category,
-                    url,
-                    url,
-                    sku,
-                    base_stock,
-                    price,
-                    price,
-                    "CLP",
-                    sku=sku,
-                    picture_urls=picture_urls,
-                    description=description,
-                )
-                products.append(p)
 
         return products
