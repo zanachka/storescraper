@@ -190,7 +190,7 @@ class HuaweiShop(Store):
 
                 if product["sbomPackageList"]:
                     for subvariant in product["sbomPackageList"]:
-                        sku = f'{product['sbomCode']} - {subvariant["packageCode"]}'
+                        sku = f'{product["sbomCode"]} - {subvariant["packageCode"]}'
                         subvariant_name = "{} {}".format(name, subvariant["name"])
                         packages_stock = [
                             stock_dict[package["sbomCode"]]
