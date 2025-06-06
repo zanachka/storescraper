@@ -127,9 +127,9 @@ class MacOnline(Store):
 
                 picture_tag = soup.find("li", "tmb-" + sku)
                 if picture_tag:
-                    picture_urls = [picture_tag.find("a")["href"]]
+                    picture_urls = [picture_tag.find("a")["href"].split("?")[0]]
                 elif default_picture_url:
-                    picture_urls = [default_picture_url["data-src"]]
+                    picture_urls = [default_picture_url["data-src"].split("?")[0]]
                 else:
                     picture_urls = None
 
