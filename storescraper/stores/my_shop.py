@@ -119,7 +119,6 @@ class MyShop(StoreWithUrlExtensions):
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
         print(url_extension)
         session = session_with_proxy(extra_args)
-        product_urls = []
         page = 1
         while True:
             if page > 50:
@@ -136,9 +135,8 @@ class MyShop(StoreWithUrlExtensions):
 
             for product_entry in products_data:
                 product_url = "https://www.myshop.cl" + product_entry["url"]
-                product_urls.append(product_url)
+                yield product_url
             page += 1
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
