@@ -365,9 +365,9 @@ class Falabella(Store):
             "Home > Tecnología-Computadores > Accesorios gamer > Mouse gamer",
         ],
         [
-            "cat202303",
+            "cat2023",
             VIDEO_GAME_CONSOLE,
-            "Home > Tecnología-Videojuegos > Consolas",
+            "Home > Tecnología - Zona Gamer > Videojuegos",
         ],
         [
             "cat3114",
