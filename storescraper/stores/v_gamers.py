@@ -1,9 +1,7 @@
 import json
 import logging
 from decimal import Decimal
-
 from bs4 import BeautifulSoup
-
 from storescraper.categories import (
     HEADPHONES,
     KEYBOARD,
@@ -21,10 +19,12 @@ from storescraper.categories import (
     NOTEBOOK,
     TELEVISION,
     ACCESORIES,
+    WEARABLE,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy
+from storescraper.utils import remove_words, session_with_proxy
+import time
 
 
 class VGamers(StoreWithUrlExtensions):
@@ -51,6 +51,8 @@ class VGamers(StoreWithUrlExtensions):
         ["todos-los-productos/televisores", TELEVISION],
         ["electrodomesticos", ACCESORIES],
         ["todos-los-productos/portatiles/notebook", NOTEBOOK],
+        ["smartwatch", WEARABLE],
+        ["audio-y-sonido/audifonos-bluetooth", HEADPHONES],
     ]
 
     @classmethod
@@ -124,6 +126,29 @@ class VGamers(StoreWithUrlExtensions):
         description = json_data["description"]
         offer = json_data["offers"]
         price = Decimal(offer["price"])
+        tries = 0
+
+        while tries < 5:
+            price_url = f"https://www.vgamers.cl/search?sections=product-feed&omit_filters=true&only_products={key}"
+            price_response = session.get(price_url)
+
+            if price_response.status_code == 200:
+                break
+
+            tries += 1
+            time.sleep(5)
+
+        if price_response.status_code != 200:
+            return []
+
+        price_soup = BeautifulSoup(price_response.text, "lxml")
+        offer_price = Decimal(
+            remove_words(
+                price_soup.find(
+                    "div", "product-block__price product-block__price--new"
+                ).text
+            )
+        )
         stock = product_data["info"]["product"]["stock"]
         picture_urls = [
             slide.find("img")["src"].split("?")[0]
@@ -139,7 +164,7 @@ class VGamers(StoreWithUrlExtensions):
             key,
             stock,
             price,
-            price,
+            offer_price,
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
