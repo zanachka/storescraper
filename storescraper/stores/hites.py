@@ -46,39 +46,24 @@ from storescraper.utils import html_to_markdown
 class Hites(Store):
     category_paths = [
         [
-            "electro-hogar/refrigeradores",
+            "electro-hogar/refrigeracion",
             REFRIGERATOR,
-            "Inicio > Electro Hogar > Refrigeradores",
+            "Inicio > Electro Hogar > Refrigeración",
         ],
         [
-            "electro-hogar/refrigeradores/refrigerador-frio-directo",
+            "electro-hogar/refrigeracion/refrigeradores",
             REFRIGERATOR,
-            "Inicio > Electro Hogar > Refrigeradores > Frío Directo",
+            "Inicio > Electro Hogar > Refrigeración > Refrigeradores",
         ],
         [
-            "electro-hogar/refrigeradores/refrigerador-no-frost",
+            "electro-hogar/refrigeracion/side-by-side",
             REFRIGERATOR,
-            "Inicio > Electro Hogar > Refrigeradores > No Frost",
+            "Inicio > Electro Hogar > Refrigeración > Side by Side",
         ],
         [
-            "electro-hogar/refrigeradores/refrigerador-side-by-side",
+            "electro-hogar/refrigeracion/freezer-y-frigobar",
             REFRIGERATOR,
-            "Inicio > Electro Hogar > Refrigeradores > Side by Side",
-        ],
-        [
-            "electro-hogar/refrigeradores/refrigerador-bottom-freezer",
-            REFRIGERATOR,
-            "Inicio > Electro Hogar > Refrigeradores > Refrigerador Bottom Freezer",
-        ],
-        [
-            "electro-hogar/refrigeradores/refrigerador-top-freezer",
-            REFRIGERATOR,
-            "Inicio > Electro Hogar > Refrigeradores > Refrigerador Top Freezer",
-        ],
-        [
-            "electro-hogar/refrigeradores/freezer-y-frigobar",
-            REFRIGERATOR,
-            "Inicio > Electro Hogar > Refrigeradores > Freezers y Frigobar",
+            "Inicio > Electro Hogar > Refrigeración > Freezer y Frigobar",
         ],
         [
             "electro-hogar/lavado-y-secado",
