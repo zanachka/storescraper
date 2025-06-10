@@ -28,6 +28,7 @@ from storescraper.categories import (
     CASE_FAN,
     ALL_IN_ONE,
     TABLET,
+    COFFE_MAKER,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -77,6 +78,7 @@ class Dust2(StoreWithUrlExtensions):
         ["combo-teclado-y-mouse", KEYBOARD_MOUSE_COMBO],
         ["aio", ALL_IN_ONE],
         ["tarjetas-de-memoria", MEMORY_CARD],
+        ["cafeteras", COFFE_MAKER],
     ]
 
     @classmethod
