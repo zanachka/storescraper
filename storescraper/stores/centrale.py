@@ -138,16 +138,9 @@ class Centrale(StoreWithUrlExtensions):
 
             part_number = " + ".join(part_number_components) or None
         else:
-            mpn_tag = soup.find("strong", text="NÚMERO DE PARTE:")
-            part_number = mpn_tag.next.next.strip()
+            part_number = product_data["mpn"]
 
-        sku_tag = soup.find(
-            "div",
-            {
-                "style": "padding-top: 0px; padding-bottom:8px; margin: -12px 0px 0px 0px; text-align: left; font-size: 80%;"
-            },
-        )
-        sku = sku_tag.find("span").text.replace("ID: ", "").strip()
+        sku = product_data["sku"]
         name = product_data["name"].strip()
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
 

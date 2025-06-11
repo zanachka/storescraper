@@ -1,7 +1,7 @@
 import logging
-import math
-import re
 import json
+import re
+import pyjson5
 from bs4 import BeautifulSoup
 from decimal import Decimal
 
@@ -80,10 +80,16 @@ class UltimateGamerStore(StoreWithUrlExtensions):
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
         data = soup.find("script", {"type": "application/ld+json"}).text
-        clean_data = re.sub(r"\s+", " ", data)
+        data = re.sub(
+            r'":\s*"([^"]*?(?:\n[^"]*?)*)"',
+            lambda m: f'": "{m.group(1).replace(chr(10), "").strip()}"',
+            data,
+        )
+        data = re.sub(r'"\s*\n\s*,', r'",', data)
+        data = re.sub(r",\s*\n\s*\n+\s*", r",\n  ", data)
 
         try:
-            json_data = json.loads(clean_data)
+            json_data = pyjson5.loads(data)
         except:
             return []
 

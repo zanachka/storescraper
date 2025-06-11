@@ -28,6 +28,7 @@ import time
 
 
 class VGamers(StoreWithUrlExtensions):
+    preferred_products_for_url_concurrency = 1
     base_url = "https://vgamers.cl"
 
     url_extensions = [

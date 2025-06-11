@@ -31,13 +31,12 @@ class Tekmachine(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         product_urls = []
         page = 1
+
         while True:
             if page > 15:
                 raise Exception("page overflow: " + url_extension)
-            url_webpage = (
-                "https://tekmachine.cl/product-category/{}/page/{}/"
-                "?_pjax=.main-page-wrapper"
-            ).format(url_extension, page)
+
+            url_webpage = f"https://tekmachine.cl/product-category/{url_extension}/page/{page}/?_pjax=.main-page-wrapper"
             print(url_webpage)
             response = session.get(url_webpage)
             soup = BeautifulSoup(response.text, "lxml")
@@ -45,12 +44,12 @@ class Tekmachine(StoreWithUrlExtensions):
 
             if not product_containers:
                 if page == 1:
-                    logging.warning("empty category: " + url_extension)
+                    logging.warning(f"Empty category: {url_extension}")
                 break
 
             for container in product_containers:
-                product_url = container.find("a")["href"]
-                product_urls.append(product_url)
+                product_urls.append(container.find("a")["href"])
+
             page += 1
 
         return product_urls
@@ -64,11 +63,7 @@ class Tekmachine(StoreWithUrlExtensions):
         name = soup.find("h1", "product_title").text.strip()
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
         sku_tag = soup.find("span", "sku")
-
-        if sku_tag:
-            sku = soup.find("span", "sku").text.strip()[:45]
-        else:
-            sku = None
+        sku = sku_tag.text.strip()[:45] if sku_tag else None
 
         if soup.find("p", "out-of-stock") or soup.find("p", "available-on-backorder"):
             stock = 0
@@ -90,7 +85,7 @@ class Tekmachine(StoreWithUrlExtensions):
             a["href"]
             for a in soup.find(
                 "figure", "woocommerce-product-gallery__wrapper"
-            ).findAll("a")
+            ).find_all("a")
         ]
 
         description_tag = soup.find("div", {"id": "tab-description"})
@@ -114,4 +109,5 @@ class Tekmachine(StoreWithUrlExtensions):
             picture_urls=picture_urls,
             description=description,
         )
+
         return [p]
