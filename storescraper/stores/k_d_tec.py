@@ -56,6 +56,7 @@ class KDTec(StoreWithUrlExtensions):
         ["audifonos-gamer", HEADPHONES],
         ["mouse-gamer", MOUSE],
         ["disco-duro-externo", EXTERNAL_STORAGE_DRIVE],
+        ["disco-ssd-externo", EXTERNAL_STORAGE_DRIVE],
         ["disco-duro-interno", STORAGE_DRIVE],
         ["disco-ssd", SOLID_STATE_DRIVE],
         ["monitor", MONITOR],
@@ -105,7 +106,6 @@ class KDTec(StoreWithUrlExtensions):
                 "Safari/537.36"
             }
         )
-        product_urls = []
         page = 1
         while True:
             if page > 50:
@@ -131,10 +131,9 @@ class KDTec(StoreWithUrlExtensions):
                 product_tag = container.find("a", "woocommerce-LoopProduct-link")
 
                 if not product_tag.find("span", "ast-shop-product-out-of-stock"):
-                    product_urls.append(product_tag["href"])
+                    yield product_tag["href"]
 
             page += 1
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):

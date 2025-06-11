@@ -65,18 +65,18 @@ class Lider(Store):
     tenant = "catalogo"
     category_paths = [
         # TECNO
-        ["66849718_44699651_73841472", TELEVISION, "Tecno > TV"],
-        # ["Tecno/TV/Smart_TV", TELEVISION, "Tecno > TV > Smart TV"],
-        # [
-        #     "Tecno/TV/Smart_TV_Hasta_50_Pulgadas",
-        #     TELEVISION,
-        #     "Tecno > TV > Smart TV Hasta 50 Pulgadas",
-        # ],
-        # [
-        #     "Tecno/TV/Smart_TV_Sobre_50_Pulgadas",
-        #     TELEVISION,
-        #     "Tecno > TV > Smart TV Sobre 50 Pulgadas",
-        # ],
+        ["66849718_44699651", TELEVISION, "Tecno > TV"],
+        ["66849718_44699651_73841472", TELEVISION, "Tecno > TV > Smart TV"],
+        [
+            "66849718_44699651_99349146",
+            TELEVISION,
+            "Tecno > TV > Smart TV Hasta 50 Pulgadas",
+        ],
+        [
+            "66849718_44699651_60780062",
+            TELEVISION,
+            "Tecno > TV > Smart TV Sobre 50 Pulgadas",
+        ],
         ["66849718_44699651_64332442", STEREO_SYSTEM, "Tecno > TV > Home Theater"],
         # ["66849718_44699651_68838150", PROJECTOR, "Tecno > TV > Proyectores"],
         ["66849718_14621386", STEREO_SYSTEM, "Tecno > Audio"],
