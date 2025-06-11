@@ -32,6 +32,7 @@ from storescraper.categories import (
     STEREO_SYSTEM,
     UPS,
     PRINTER_SUPPLY,
+    VIDEO_GAME_CONSOLE,
 )
 from storescraper.flixmedia import flixmedia_video_urls
 from storescraper.product import Product
@@ -85,6 +86,7 @@ class Winpy(StoreWithUrlExtensions):
         ["suministros/toner/", PRINTER_SUPPLY],
         ["suministros/botellas-de-tinta/", PRINTER_SUPPLY],
         ["suministros/cartuchos-de-tinta/", PRINTER_SUPPLY],
+        ["portatiles/consolas/", VIDEO_GAME_CONSOLE],
     ]
 
     @classmethod
