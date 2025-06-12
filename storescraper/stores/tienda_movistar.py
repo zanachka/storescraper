@@ -16,23 +16,11 @@ from storescraper.utils import remove_words
 
 class TiendaMovistar(Store):
     category_paths = [
-        (
-            "celulares",
-            "Electronica > Comunicacion > Telefonia > Telefonos moviles",
-            CELL,
-        ),
-        ("tablets", "Electronica > Ordenadores > Tablets", TABLET),
-        (
-            "audifonos",
-            "Electrónica > Audio > Equipo de sonido > Auriculares",
-            HEADPHONES,
-        ),
-        ("smarthome", "Electrónica > Video > Televisores", TELEVISION),
-        (
-            "parlantes-bluetooth",
-            "Electrónica > Audio > Equipo de sonido > Altavoces",
-            STEREO_SYSTEM,
-        ),
+        ("Electronica > Comunicacion > Telefonia > Telefonos moviles", CELL),
+        ("Electronica > Ordenadores > Tablets", TABLET),
+        ("Electrónica > Audio > Equipo de sonido > Auriculares", HEADPHONES),
+        ("Electrónica > Video > Televisores", TELEVISION),
+        ("Electrónica > Audio > Equipo de sonido > Altavoces", STEREO_SYSTEM),
     ]
 
     @classmethod
@@ -54,7 +42,10 @@ class TiendaMovistar(Store):
     def products_for_url(cls, url, category=None, extra_args=None):
         products = []
 
-        for _, category_path, local_category in cls.category_paths:
+        if not category:
+            category = url.split("?category=")[1]
+
+        for category_path, local_category in cls.category_paths:
             if local_category != category:
                 continue
 
@@ -100,6 +91,4 @@ class TiendaMovistar(Store):
 
     @classmethod
     def generate_discover_url_for_category(cls, category):
-        for url_path, _, local_category in cls.category_paths:
-            if local_category == category:
-                return f"https://catalogo.movistar.cl/tienda/{url_path}"
+        return f"https://catalogo.movistar.cl/tienda/?category={category}"
