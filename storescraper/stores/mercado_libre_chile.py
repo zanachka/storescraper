@@ -1065,7 +1065,7 @@ class MercadoLibreChile(Store):
         description = ""
 
         if (
-            "component"
+            "components"
             not in data["initialState"]["components"]["highlighted_specs_attrs"]
         ):
             return description, mpn
