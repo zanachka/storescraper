@@ -112,14 +112,11 @@ class SmartDeal(StoreWithUrlExtensions):
         else:
             condition = "https://schema.org/RefurbishedCondition"
 
-        picture_tags = soup.findAll("img", "iconic-woothumbs-images__image")
+        picture_tags = soup.findAll("a", "wcgs-slider-lightbox")
         picture_urls = []
 
         for picture_tag in picture_tags:
-            if "data-large_image" in picture_tag.attrs:
-                picture_url = picture_tag["data-large_image"]
-            else:
-                picture_url = picture_tag["src"]
+            picture_url = picture_tag['href']
 
             if validators.url(picture_url):
                 picture_urls.append(picture_url)
