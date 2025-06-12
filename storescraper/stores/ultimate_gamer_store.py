@@ -1,5 +1,4 @@
 import logging
-import json
 import re
 import pyjson5
 from bs4 import BeautifulSoup
@@ -102,12 +101,15 @@ class UltimateGamerStore(StoreWithUrlExtensions):
                 break
 
         name = product_data["name"]
-        normal_price = Decimal(product_data["offers"]["price"]).quantize(0)
 
-        if normal_price > Decimal("1000000000"):
-            return []
+        pricing_tag = soup.find("div", "pricing-info")
+        normal_price = Decimal(
+            remove_words(pricing_tag.find("span", "product-info__price-current").text)
+        )
+        offer_price = Decimal(
+            remove_words(pricing_tag.find("span", "discount-value").text)
+        )
 
-        offer_price = (normal_price * Decimal("0.96")).quantize(0)
         key = soup.find("meta", {"property": "og:id"})["content"]
 
         if "PREVENTA" in name.upper() or "PREVENTA" in url.upper():
