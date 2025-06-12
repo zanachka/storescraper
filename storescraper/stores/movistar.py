@@ -65,7 +65,7 @@ class Movistar(Store):
                     category=CELL,
                     url=product_url,
                     discovery_url=url,
-                    key=f"{entry['id']} - {plan}",
+                    key=f"{entry['equipo']} - {plan}",
                     stock=-1,
                     normal_price=price,
                     offer_price=price,

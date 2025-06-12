@@ -116,7 +116,7 @@ class SmartDeal(StoreWithUrlExtensions):
         picture_urls = []
 
         for picture_tag in picture_tags:
-            picture_url = picture_tag['href']
+            picture_url = picture_tag["href"]
 
             if validators.url(picture_url):
                 picture_urls.append(picture_url)
