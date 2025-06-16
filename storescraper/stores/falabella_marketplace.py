@@ -5,6 +5,7 @@ from storescraper.stores import Falabella
 
 class FalabellaMarketplace(Falabella):
     category_paths = [
+        ["LG ELECTRONICS INC CHILE LIMITADA", TELEVISION, None],
         ["LG ELECTRONICS", TELEVISION, None],
         ["SAMSUNG", TELEVISION, None],
     ]
