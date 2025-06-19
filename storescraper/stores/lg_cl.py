@@ -24,6 +24,8 @@ class LgCl(LgV6):
         return [
             # Todos los TVs y Soundbars
             ("CT52000104", TELEVISION),
+            # Bundles TV - Soundbar
+            ("PM00024763", TELEVISION),
             # Object collection - Pose
             ("CT52000790", TELEVISION),
             # Flex

@@ -40,13 +40,15 @@ class LgV6(Store):
         for category_id, local_category in category_paths:
             if local_category != category:
                 continue
+
+            search_hub_type = "Listing" if "CT" in category_id else "Promotion"
             page = 0
             while True:
                 payload = {
-                    "aq": '@ec_sub_category_id=="{0}" OR @ec_category_id=="{0}"'.format(
+                    "aq": '@ec_sub_category_id=="{0}" OR @ec_category_id=="{0}" OR @ec_promotion_id="{0}"'.format(
                         category_id
                     ),
-                    "searchHub": "{}-B2C-Listing".format(cls.region_code),
+                    "searchHub": "{}-B2C-{}".format(cls.region_code, search_hub_type),
                     "numberOfResults": page_size,
                     "firstResult": page * page_size,
                 }
