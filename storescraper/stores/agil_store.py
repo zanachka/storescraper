@@ -15,6 +15,9 @@ from storescraper.categories import (
     EXTERNAL_STORAGE_DRIVE,
     PRINTER_SUPPLY,
     HEADPHONES,
+    KEYBOARD,
+    MOTHERBOARD,
+    VIDEO_CARD,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -37,6 +40,9 @@ class AgilStore(StoreWithUrlExtensions):
         ["5530", PRINTER_SUPPLY],  # Toner
         ["5531", PRINTER_SUPPLY],  # Cartuchos de Tinta
         ["6146", HEADPHONES],  # Audífonos
+        ["5573", KEYBOARD],  # Teclados
+        ["5581", MOTHERBOARD],  # Placas madre
+        ["5609", VIDEO_CARD],  # Tarjetas de video
     ]
 
     @classmethod
