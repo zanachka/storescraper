@@ -144,6 +144,9 @@ class Lenovo(StoreWithUrlExtensions):
         if not product_entries:
             return []
 
+        if is_outlet:
+            assert len(product_entries[0]["products"]) == 1
+
         for entry in product_entries[0]["products"]:
             name = entry["productName"]
             sku = entry["productCode"]
@@ -177,7 +180,7 @@ class Lenovo(StoreWithUrlExtensions):
                 name,
                 cls.__name__,
                 category,
-                variant_url,
+                url if is_outlet else variant_url,
                 url,
                 key,
                 stock,
