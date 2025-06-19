@@ -18,6 +18,9 @@ from storescraper.categories import (
     KEYBOARD,
     MOTHERBOARD,
     VIDEO_CARD,
+    GAMING_CHAIR,
+    PROJECTOR,
+    RAM,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -26,23 +29,26 @@ from storescraper.utils import remove_words, html_to_markdown
 
 class AgilStore(StoreWithUrlExtensions):
     url_extensions = [
-        ["5507", PRINTER],  # Impresoras
-        ["5553", NOTEBOOK],  # Laptop
-        ["5554", ALL_IN_ONE],  # All in One
-        ["5558", TABLET],  # Tablet
-        ["5570", KEYBOARD_MOUSE_COMBO],  # Kit Mouse y Teclado
-        ["5572", MOUSE],  # Mouse
-        ["5593", MONITOR],  # Monitor
-        ["5663", PROCESSOR],  # Procesador
-        ["5601", STORAGE_DRIVE],  # Disco Duro Interno
-        ["5602", EXTERNAL_STORAGE_DRIVE],  # Disco Duro Externo
-        ["5606", POWER_SUPPLY],  # Fuente Poder
-        ["5530", PRINTER_SUPPLY],  # Toner
-        ["5531", PRINTER_SUPPLY],  # Cartuchos de Tinta
-        ["6146", HEADPHONES],  # Audífonos
-        ["5573", KEYBOARD],  # Teclados
-        ["5581", MOTHERBOARD],  # Placas madre
-        ["5609", VIDEO_CARD],  # Tarjetas de video
+        ["5507", PRINTER],
+        ["5553", NOTEBOOK],
+        ["5554", ALL_IN_ONE],
+        ["5558", TABLET],
+        ["5570", KEYBOARD_MOUSE_COMBO],
+        ["5572", MOUSE],
+        ["5593", MONITOR],
+        ["5663", PROCESSOR],
+        ["5601", STORAGE_DRIVE],
+        ["5602", EXTERNAL_STORAGE_DRIVE],
+        ["5606", POWER_SUPPLY],
+        ["5530", PRINTER_SUPPLY],
+        ["5531", PRINTER_SUPPLY],
+        ["6146", HEADPHONES],
+        ["5573", KEYBOARD],
+        ["5581", MOTHERBOARD],
+        ["5609", VIDEO_CARD],
+        ["6172", GAMING_CHAIR],
+        ["5590", PROJECTOR],
+        ["5605", RAM],
     ]
 
     @classmethod
