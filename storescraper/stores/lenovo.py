@@ -18,7 +18,7 @@ class Lenovo(StoreWithUrlExtensions):
     region_extension = ""
 
     url_extensions = [
-        # ("7ca29953-e3fd-48a9-8c04-b790cfef3842", NOTEBOOK),
+        ("7ca29953-e3fd-48a9-8c04-b790cfef3842", NOTEBOOK),
         ("5efac680-d533-4fba-ad6d-28311eca5544", TABLET),
         ("738528ce-a63a-4853-9d21-ddda6bb57b14", ALL_IN_ONE),
         ("4d254d3e-4799-48c9-bb2b-b552a67c1499", MONITOR),
