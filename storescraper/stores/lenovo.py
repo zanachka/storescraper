@@ -22,6 +22,7 @@ class Lenovo(StoreWithUrlExtensions):
         ("5efac680-d533-4fba-ad6d-28311eca5544", TABLET),
         ("738528ce-a63a-4853-9d21-ddda6bb57b14", ALL_IN_ONE),
         ("4d254d3e-4799-48c9-bb2b-b552a67c1499", MONITOR),
+        ("outlet 64991cf6-d34a-4f82-bcf6-065e2b263030", NOTEBOOK),
     ]
 
     @classmethod
@@ -33,7 +34,11 @@ class Lenovo(StoreWithUrlExtensions):
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
 
+        is_outlet = "outlet" in url_extension
+        url_extension = url_extension.split("outlet ")[-1]
+        outlet_path = "outlet/" if is_outlet else ""
         page = 1
+
         while True:
             payload = {
                 "pageFilterId": url_extension,
@@ -45,9 +50,7 @@ class Lenovo(StoreWithUrlExtensions):
 
             payload_str = json.dumps(payload)
             encoded_payload = quote(payload_str)
-            endpoint = "https://openapi.lenovo.com/cl/es/ofp/search/dlp/product/query/get/_tsc?subSeriesCode=&loyalty=false&pageFilterId={}&params={}".format(
-                url_extension, encoded_payload
-            )
+            endpoint = f"https://openapi.lenovo.com/cl/{outlet_path}es/ofp/search/dlp/product/query/get/_tsc?subSeriesCode=&loyalty=false&pageFilterId={url_extension}&params={encoded_payload}"
             res = session.get(endpoint)
             products_data = res.json()
             product_entries = products_data["data"]["data"][0]["products"]
@@ -58,15 +61,18 @@ class Lenovo(StoreWithUrlExtensions):
                 break
 
             for entry in product_entries:
-                subseries_code = entry.get("subseriesCode", None)
-                if subseries_code:
-                    product_url = "https://www.lenovo.com{}/p/{}".format(
-                        cls.region_extension, subseries_code
-                    )
+                if is_outlet:
+                    product_url = f"https://www.lenovo.com/cl/outlet/es{entry['url']}"
                 else:
-                    product_url = "https://www.lenovo.com{}{}".format(
-                        cls.region_extension, entry["url"]
-                    )
+                    subseries_code = entry.get("subseriesCode", None)
+                    if subseries_code:
+                        product_url = "https://www.lenovo.com{}/p/{}".format(
+                            cls.region_extension, subseries_code
+                        )
+                    else:
+                        product_url = "https://www.lenovo.com{}{}".format(
+                            cls.region_extension, entry["url"]
+                        )
                 product_urls.append(product_url)
 
             page += 1
@@ -127,14 +133,14 @@ class Lenovo(StoreWithUrlExtensions):
 
         payload_str = json.dumps(payload)
         encoded_payload = quote(payload_str)
-        endpoint = "https://openapi.lenovo.com/cl/es/ofp/search/dlp/product/query/get/_tsc?subSeriesCode=&loyalty=false&params={}".format(
-            encoded_payload
-        )
+        is_outlet = "outlet" in url
+        outlet_path = "outlet/" if is_outlet else ""
+        endpoint = f"https://openapi.lenovo.com/cl/{outlet_path}es/ofp/search/dlp/product/query/get/_tsc?subSeriesCode=&loyalty=false&params={encoded_payload}"
         res = session.get(endpoint)
         products_data = res.json()
         products = []
-
         product_entries = products_data["data"]["data"]
+
         if not product_entries:
             return []
 
@@ -147,8 +153,8 @@ class Lenovo(StoreWithUrlExtensions):
             variant_url = "https://www.lenovo.com{}{}".format(
                 cls.region_extension, entry["url"]
             )
-
             picture_urls = []
+
             for image_entry in entry.get("media", {}).get("gallery", []):
                 image_url = image_entry["imageAddress"]
                 if not image_url.startswith("https"):
@@ -157,13 +163,23 @@ class Lenovo(StoreWithUrlExtensions):
                     continue
                 picture_urls.append(image_url)
 
+            key = f"{sku}-OUTLET" if is_outlet else sku
+            condition = "https://schema.org/NewCondition"
+
+            if "caja abierta" in name.lower():
+                condition = "https://schema.org/OpenBoxCondition"
+                key += "-OB"
+            elif "reacondicionado" in name.lower():
+                condition = "https://schema.org/RefurbishedCondition"
+                key += "REF"
+
             p = Product(
                 name,
                 cls.__name__,
                 category,
                 variant_url,
                 url,
-                sku,
+                key,
                 stock,
                 price,
                 price,
@@ -172,6 +188,7 @@ class Lenovo(StoreWithUrlExtensions):
                 part_number=sku,
                 description=description,
                 picture_urls=picture_urls,
+                condition=condition,
             )
             products.append(p)
 
@@ -182,14 +199,18 @@ class Lenovo(StoreWithUrlExtensions):
         product_data = json.loads(
             soup.findAll("script", {"type": "application/ld+json"})[1].text
         )
+        is_outlet = "outlet" in url
         name = product_data["name"]
         sku = product_data["sku"]
+
         if product_data["offers"]["availability"] == "http://schema.org/InStock":
             stock = -1
         else:
             stock = 0
+
         price = Decimal(product_data["offers"]["price"])
         picture_urls = []
+
         for entry in product_data["image"]:
             picture_url = entry if entry.startswith("https") else "https:" + entry
             picture_urls.append(picture_url)
@@ -211,13 +232,23 @@ class Lenovo(StoreWithUrlExtensions):
         for spec in specs_root[0]["specs"]:
             description += "{}: {}\n".format(spec["headline"], spec["text"])
 
+        key = f"{sku}-OUTLET" if is_outlet else sku
+        condition = "https://schema.org/NewCondition"
+
+        if "caja abierta" in name.lower():
+            condition = "https://schema.org/OpenBoxCondition"
+            key += "-OB"
+        elif "reacondicionado" in name.lower():
+            condition = "https://schema.org/RefurbishedCondition"
+            key += "-REF"
+
         p = Product(
             name,
             cls.__name__,
             category,
             url,
             url,
-            sku,
+            key,
             stock,
             price,
             price,
@@ -226,5 +257,7 @@ class Lenovo(StoreWithUrlExtensions):
             part_number=sku,
             description=description,
             picture_urls=picture_urls,
+            condition=condition,
         )
+
         return [p]
