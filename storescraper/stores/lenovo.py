@@ -171,7 +171,7 @@ class Lenovo(StoreWithUrlExtensions):
                 key += "-OB"
             elif "reacondicionado" in name.lower():
                 condition = "https://schema.org/RefurbishedCondition"
-                key += "REF"
+                key += "-REF"
 
             p = Product(
                 name,
