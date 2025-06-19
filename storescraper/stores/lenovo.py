@@ -177,7 +177,7 @@ class Lenovo(StoreWithUrlExtensions):
                 name,
                 cls.__name__,
                 category,
-                url if is_outlet else variant_url,
+                f"{url.rsplit('/', 1)[0]}/{sku}" if is_outlet else variant_url,
                 url,
                 key,
                 stock,
