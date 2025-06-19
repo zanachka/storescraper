@@ -21,6 +21,7 @@ from storescraper.categories import (
     KEYBOARD_MOUSE_COMBO,
     HEADPHONES,
     USB_FLASH_DRIVE,
+    GAMING_CHAIR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -47,6 +48,7 @@ class InforIngen(StoreWithUrlExtensions):
         ["teclados-y-mouse", KEYBOARD_MOUSE_COMBO],
         ["audifonos", HEADPHONES],
         ["pendrives", USB_FLASH_DRIVE],
+        ["sillas-gamer", GAMING_CHAIR],
     ]
 
     @classmethod
