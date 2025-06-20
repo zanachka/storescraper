@@ -74,9 +74,16 @@ class LgV6(Store):
                     for subproduct_entry in product_entry["childResults"] + [
                         product_entry
                     ]:
-                        is_active = (
-                            "ACTIVE" in subproduct_entry["raw"]["ec_model_status_code"]
-                        )
+                        # Bundles are marked as "Hidden" but are published
+                        for active_option in ["ACTIVE", "HIDDEN"]:
+                            if (
+                                active_option
+                                in subproduct_entry["raw"]["ec_model_status_code"]
+                            ):
+                                is_active = True
+                                break
+                        else:
+                            is_active = False
                         if cls.skip_products_without_price:
                             price = Decimal(
                                 subproduct_entry["raw"].get("ec_price", 0)
@@ -144,6 +151,7 @@ class LgV6(Store):
         if cls.skip_products_without_price and not price:
             return []
 
+        # Bundles are marked as "Hidden" but are published
         for active_option in ["ACTIVE", "HIDDEN"]:
             if active_option in json_data["ec_model_status_code"]:
                 is_active = True
