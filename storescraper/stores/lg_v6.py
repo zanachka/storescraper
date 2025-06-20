@@ -1,4 +1,3 @@
-import json
 import logging
 import urllib
 import time
@@ -8,7 +7,7 @@ from decimal import Decimal
 
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import session_with_proxy
 
 
 class LgV6(Store):
@@ -34,21 +33,20 @@ class LgV6(Store):
         category_paths = cls._category_paths()
         session = session_with_proxy(extra_args)
         session.headers["Authorization"] = "Bearer {}".format(extra_args["coveo_token"])
-        discovered_urls = []
         page_size = 50
 
         for category_id, local_category in category_paths:
             if local_category != category:
                 continue
 
-            search_hub_type = "Listing" if "CT" in category_id else "Promotion"
             page = 0
             while True:
+                # The search hub uses "Promotion" instead of "Listing" because bundles are not returned in Listing
                 payload = {
                     "aq": '@ec_sub_category_id=="{0}" OR @ec_category_id=="{0}" OR @ec_promotion_id="{0}"'.format(
                         category_id
                     ),
-                    "searchHub": "{}-B2C-{}".format(cls.region_code, search_hub_type),
+                    "searchHub": "{}-B2C-Promotion".format(cls.region_code),
                     "numberOfResults": page_size,
                     "firstResult": page * page_size,
                 }
@@ -92,12 +90,8 @@ class LgV6(Store):
                         product_url = (
                             cls.base_url + subproduct_entry["raw"]["ec_model_url_path"]
                         )
-                        # if subproduct_entry['raw']['ec_where_to_buy_flag'] == 'N' and is_active:
-                        #     print(subproduct_entry['raw']['ec_model_id'], subproduct_entry['raw']['ec_sku'], product_url, sep='¬')
-                        discovered_urls.append(product_url)
+                        yield product_url
                 page += 1
-
-        return discovered_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -118,9 +112,10 @@ class LgV6(Store):
 
         session.headers["Authorization"] = "Bearer {}".format(extra_args["coveo_token"])
         path = urllib.parse.urlparse(url).path
+        # The search hub uses "Promotion" instead of "Listing" because bundles are not returned in Listing
         payload = {
             "aq": '@ec_model_url_path=="{}"'.format(path),
-            "searchHub": "{}-B2C-Listing".format(cls.region_code),
+            "searchHub": "{}-B2C-Promotion".format(cls.region_code),
             "numberOfResults": 10,
             "firstResult": 0,
         }
@@ -149,7 +144,13 @@ class LgV6(Store):
         if cls.skip_products_without_price and not price:
             return []
 
-        is_active = "ACTIVE" in json_data["ec_model_status_code"]
+        for active_option in ["ACTIVE", "HIDDEN"]:
+            if active_option in json_data["ec_model_status_code"]:
+                is_active = True
+                break
+        else:
+            is_active = False
+
         is_in_stock = json_data.get("ec_stock_status", "OUT_OF_STOCK") == "IN_STOCK"
 
         if is_in_stock and is_active:
@@ -157,24 +158,7 @@ class LgV6(Store):
         else:
             stock = 0
 
-        section_path_components = []
-
-        for i in range(1, 5):
-            section_key = "ec_classification_flag_lv_{}".format(i)
-
-            if section_key not in json_data:
-                continue
-
-            section_path_components.append(json_data[section_key])
-
-        if section_path_components:
-            section_path = " > ".join(section_path_components)
-        else:
-            section_path = "N/A"
-
-        # positions = [(section_path, 1)]
         sku = json_data["ec_sku"]
-
         pdp_data = soup.find("div", {"id": "pdp-overview-section"})
 
         if pdp_data:
@@ -206,7 +190,6 @@ class LgV6(Store):
                 sku=sku,
                 picture_urls=picture_urls,
                 part_number=sku,
-                # positions=positions,
                 allow_zero_prices=not cls.skip_products_without_price,
                 description=description,
                 review_count=review_count,
@@ -228,24 +211,3 @@ class LgV6(Store):
         json_response = response.json()
         coveo_token = json_response["token"]
         return {"coveo_token": coveo_token}
-
-    def string_to_dict(input_string):
-        entries = input_string.split("};")
-
-        result = []
-
-        for entry in entries:
-            entry = entry.strip().lstrip("{")
-            elements = entry.split(", ")
-            entry_dict = {}
-
-            for element in elements:
-                try:
-                    key, value = element.split("=", 1)
-                    entry_dict[key] = value
-                except ValueError:
-                    continue
-
-            result.append(entry_dict)
-
-        return result

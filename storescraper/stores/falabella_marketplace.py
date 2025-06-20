@@ -51,4 +51,4 @@ class FalabellaMarketplace(Falabella):
 
     @classmethod
     def banners(cls, extra_args=None):
-        raise NotImplementedError("This method is not needed for this scraper")
+        raise AttributeError("This method is not needed for this scraper")
