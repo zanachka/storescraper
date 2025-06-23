@@ -9,37 +9,34 @@ class FalabellaMarketplace(Falabella):
         ["LG ELECTRONICS", TELEVISION, None],
         ["SAMSUNG", TELEVISION, None],
     ]
-    sellers = [seller for seller, _, _ in category_paths]
 
     @classmethod
     def _get_product_urls(cls, session, category_id, extra_params, seller_id, zones):
+        # In the context of FalabellaMarketplace "category_id" maps to the name of the seller
         discovered_urls = set()
         page = 1
+        while True:
+            if page > 210:
+                raise Exception(f"Page overflow: {category_id}")
 
-        for seller in cls.sellers:
-            while True:
-                if page > 210:
-                    raise Exception(f"Page overflow: {category_id}")
+            url = f"https://www.falabella.com/s/browse/v1/seller/cl?name=undefined&page={page}&sellerName={category_id}&pgid=96&pid=d83bd30c-804e-438a-a097-8bbc915b7a9d"
+            print(url)
+            res = cls.retrieve_json_page(session, url)
 
-                url = f"https://www.falabella.com/s/browse/v1/seller/cl?name=undefined&page={page}&sellerName={seller}&pgid=96&pid=d83bd30c-804e-438a-a097-8bbc915b7a9d"
-                print(url)
-                res = cls.retrieve_json_page(session, url)
+            if "results" not in res or not res["results"]:
+                if page == 1:
+                    logging.warning(f"Empty page: {category_id} - {extra_params}")
+                break
 
-                if "results" not in res or not res["results"]:
-                    if page == 1:
-                        logging.warning(f"Empty page: {category_id} - {extra_params}")
-                    break
+            for result in res["results"]:
+                product_url = cls.product_url_template.format(
+                    result["productId"], result["skuId"]
+                )
 
-                for result in res["results"]:
-                    product_url = cls.product_url_template.format(
-                        result["productId"], result["skuId"]
-                    )
-
-                    if product_url not in discovered_urls:
-                        discovered_urls.add(product_url)
-                        yield product_url
-
-                page += 1
+                if product_url not in discovered_urls:
+                    discovered_urls.add(product_url)
+                    yield product_url
+            page += 1
 
     @classmethod
     def sections(cls):
