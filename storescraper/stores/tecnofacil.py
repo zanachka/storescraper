@@ -1,6 +1,7 @@
-from decimal import Decimal
-
+import json
+import time
 from bs4 import BeautifulSoup
+from decimal import Decimal
 
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
@@ -8,12 +9,12 @@ from storescraper.store import Store
 from storescraper.utils import (
     session_with_proxy,
     html_to_markdown,
-    magento_picture_urls,
-    remove_words,
 )
 
 
 class Tecnofacil(Store):
+    preferred_products_for_url_concurrency = 1
+
     @classmethod
     def categories(cls):
         return [
@@ -25,35 +26,37 @@ class Tecnofacil(Store):
         url_extensions = [TELEVISION]
 
         session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = "curl/7.68.0"
+        headers = {
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+            "x-api-key": "ROGi1LWB3saRqFw4Xdqc4Z9jGWVxYLl9ZEZjbJu9",
+            "channel": "2",
+        }
+        session.headers = headers
         product_urls = []
+
         for local_category in url_extensions:
             if local_category != category:
                 continue
             page = 1
+
             while True:
                 if page >= 25:
                     raise Exception("Page overflow")
 
-                url = "https://www.tecnofacil.com.gt/marcas/productos-lg"
-
-                if page > 1:
-                    url += "?p={}".format(page)
-
+                url = f"https://apigt.tienda.max.com.gt/v2/products?sort=DESC&sortBy=relevance&categories=5909&page={page}&pageSize=12"
                 print(url)
-                response = session.get(url)
-                soup = BeautifulSoup(response.text, "lxml")
-                product_containers = soup.find("div", "products-grid")
 
-                if not product_containers:
+                response = session.get(url)
+                products = response.json()["products"]
+
+                if not products:
                     break
 
-                for container in product_containers.findAll("li", "product-item"):
-                    product_url = container.find("a")["href"]
-                    print(product_url)
-                    if product_url in product_urls:
-                        return product_urls
-                    product_urls.append(product_url)
+                for product in products:
+                    product_urls.append(
+                        f"https://www.tecnofacil.com.gt/{product['slug']}"
+                    )
+
                 page += 1
 
         return product_urls
@@ -63,42 +66,36 @@ class Tecnofacil(Store):
         print(url)
         session = session_with_proxy(extra_args)
         session.headers["User-Agent"] = "curl/7.68.0"
-        data = session.get(url).text
-        soup = BeautifulSoup(data, "lxml")
-        sku_container = soup.find("div", {"itemprop": "sku"})
+        tries = 0
 
-        if not sku_container:
+        while tries < 5:
+            response = session.get(url)
+
+            if response.status_code == 200:
+                break
+
+            time.sleep(20)
+            tries += 1
+
+        if response.status_code != 200:
             return []
 
-        sku = sku_container.text.strip()
-        key = soup.find("div", "product-add-form").find("input", {"name": "product"})[
-            "value"
-        ]
-        name = "{} ({})".format(
-            soup.find("span", {"itemprop": "name"}).text.strip(), sku
+        soup = BeautifulSoup(response.text, "lxml")
+        product_data = json.loads(
+            soup.find("script", {"type": "application/ld+json"}).text
         )
-
-        if not soup.find(
-            "img", {"src": "https://www.tecnofacil.com.gt/" "media/marcas/LG.jpg"}
-        ):
-            stock = 0
-        elif soup.find("button", "add-cart"):
-            stock = -1
-        else:
-            stock = 0
-        price_container = soup.find("span", "price-wrapper")
-        price_integer = int(
-            remove_words(
-                price_container.find("span", "price-integer").text, blacklist=["Q", ","]
+        sku = product_data["sku"]
+        name = product_data["name"]
+        price = Decimal(product_data["offers"][0]["price"])
+        stock = (
+            -1
+            if soup.find(
+                "div", {"id": "product-detail-page-add-to-cart-button-section-desktop"}
             )
+            else 0
         )
-        price_decimal = float(price_container.find("span", "price-decimal").text)
-        price = Decimal(price_integer + price_decimal)
-
-        picture_urls = magento_picture_urls(soup)
-        description = html_to_markdown(
-            str(soup.find("div", "additional-attributes-wrapper"))
-        )
+        picture_urls = product_data["image"]
+        description = html_to_markdown(product_data["description"])
 
         p = Product(
             name,
@@ -106,7 +103,7 @@ class Tecnofacil(Store):
             category,
             url,
             url,
-            key,
+            sku,
             stock,
             price,
             price,
