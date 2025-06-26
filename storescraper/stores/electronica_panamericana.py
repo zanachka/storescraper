@@ -1,8 +1,5 @@
-from decimal import Decimal
-
 from bs4 import BeautifulSoup
-from curl_cffi import requests
-
+from decimal import Decimal
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
@@ -31,20 +28,20 @@ class ElectronicaPanamericana(Store):
         page = 1
 
         while True:
-            url = f"https://electronicapanamericana.com/page/{page}/?s=LG&product_cat=0&post_type=product"
+            if page >= 25:
+                raise Exception("Page overflow")
+
+            url = f"https://electronicapanamericana.com/page/{page}/?post_type=product&brnd=lg"
             print(url)
             response = session.get(url, verify=False, timeout=30)
+            soup = BeautifulSoup(response.text, "lxml")
+            products = soup.findAll("div", "type-product")
 
-            if response.status_code in [404, 403]:
+            if not products:
                 break
 
-            soup = BeautifulSoup(response.text, "lxml")
-
-            for container in soup.findAll("li", "product"):
-                product_url = container.find(
-                    "a", "woocommerce-LoopProduct-link woocommerce-loop-product__link"
-                )["href"]
-                product_urls.append(product_url)
+            for product in products:
+                product_urls.append(product.find("a")["href"])
 
             page += 1
 
