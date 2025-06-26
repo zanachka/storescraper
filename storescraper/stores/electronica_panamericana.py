@@ -1,9 +1,10 @@
 from bs4 import BeautifulSoup
 from decimal import Decimal
+
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class ElectronicaPanamericana(Store):
@@ -23,7 +24,7 @@ class ElectronicaPanamericana(Store):
         if category != TELEVISION:
             return []
 
-        session = requests.Session(impersonate="chrome120")
+        session = session_with_proxy(extra_args)
         product_urls = []
         page = 1
 
@@ -53,7 +54,7 @@ class ElectronicaPanamericana(Store):
         #     raise Exception("BrightData Web Unlocker proxy arg is required")
 
         print(url)
-        session = requests.Session(impersonate="chrome120")
+        session = session_with_proxy(extra_args)
         response = session.get(url, verify=False, timeout=30)
         soup = BeautifulSoup(response.text, "html5lib")
 
