@@ -1,11 +1,11 @@
-from bs4 import BeautifulSoup
-from decimal import Decimal
 import json
 import re
+from bs4 import BeautifulSoup
+from decimal import Decimal
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import session_with_proxy, html_to_markdown
-from storescraper.categories import KEYBOARD_MOUSE_COMBO, NOTEBOOK, ALL_IN_ONE
+from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.categories import ALL_IN_ONE, KEYBOARD_MOUSE_COMBO, NOTEBOOK
 
 
 class ZTech(StoreWithUrlExtensions):
@@ -46,17 +46,12 @@ class ZTech(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         soup = BeautifulSoup(session.get(url).text, "lxml")
-        product_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[1].text
-        )
+        raw_data = soup.findAll("script", {"type": "application/ld+json"})[1].text
+        product_data = json.loads(raw_data.replace("\n", " "))
+
         name = product_data["name"]
         part_number = re.search(r"\[([^]]+)](?!.*\[[^]]+])", name)
-
-        if part_number:
-            part_number = part_number.group(1)
-        elif category == NOTEBOOK:
-            return []
-
+        part_number = part_number.group(1) if part_number else None
         description = html_to_markdown(product_data["description"])
         picture_urls = [
             f"https:{slide.find('img')['src']}"
@@ -106,9 +101,9 @@ class ZTech(StoreWithUrlExtensions):
             return products
         else:
             offer = product_data["offers"]
-            key = offer["url"].split("?variant=")[1]
+            key = soup.find("input", {"type": "hidden", "name": "id"})["value"]
             price = Decimal(offer["price"])
-            stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+            stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
 
             p = Product(
                 name,
