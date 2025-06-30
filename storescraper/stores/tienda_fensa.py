@@ -1,7 +1,7 @@
+from bs4 import BeautifulSoup
 from decimal import Decimal
 import json
 import logging
-import re
 from storescraper.categories import (
     OVEN,
     REFRIGERATOR,
@@ -43,12 +43,10 @@ class TiendaFensa(StoreWithUrlExtensions):
             print(url_webpage)
 
             response = session.get(url_webpage)
-
-            product_container = re.search(
-                r"__STATE__ = {(.+)}", response.text
-            ).groups()[0]
-
-            json_product = json.loads("{" + product_container + "}")
+            soup = BeautifulSoup(response.text, "lxml")
+            json_product = json.loads(
+                soup.find("template", {"data-varname": "__STATE__"}).find("script").text
+            )
             done = True
 
             for key, value in json_product.items():
@@ -73,11 +71,10 @@ class TiendaFensa(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         res = session.get(url)
-
-        product_container = re.search(r"__STATE__ = {(.+)}", res.text).groups()[0]
-
-        product_data = json.loads("{" + product_container + "}")
-
+        soup = BeautifulSoup(res.text, "lxml")
+        product_data = json.loads(
+            soup.find("template", {"data-varname": "__STATE__"}).find("script").text
+        )
         base_json_keys = list(product_data.keys())
 
         if not base_json_keys:
