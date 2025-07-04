@@ -18,6 +18,7 @@ from storescraper.categories import (
     SOLID_STATE_DRIVE,
     ALL_IN_ONE,
     MOUSE,
+    PROJECTOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -44,6 +45,7 @@ class TecnoSite(StoreWithUrlExtensions):
         ["componentes/almacenamiento", SOLID_STATE_DRIVE],
         ["accesorios/kit-tecl", KEYBOARD_MOUSE_COMBO],
         ["accesorios/perifericos", KEYBOARD_MOUSE_COMBO],
+        ["proyectores", PROJECTOR],
     ]
 
     @classmethod
