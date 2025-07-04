@@ -18,7 +18,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import get_price_from_price_specification, session_with_proxy
+from storescraper.utils import get_price_from_price_specification, cf_session_with_proxy
 
 
 class EvoPc(StoreWithUrlExtensions):
@@ -39,7 +39,7 @@ class EvoPc(StoreWithUrlExtensions):
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         session.headers = {
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
         }
@@ -74,7 +74,7 @@ class EvoPc(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         soup = BeautifulSoup(session.get(url).text, "lxml")
         page_data = json.loads(
             soup.find("script", {"type": "application/ld+json"}).text
