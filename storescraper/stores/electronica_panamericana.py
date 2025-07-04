@@ -1,12 +1,10 @@
-from decimal import Decimal
-
 from bs4 import BeautifulSoup
-from curl_cffi import requests
+from decimal import Decimal
 
 from storescraper.categories import TELEVISION
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class ElectronicaPanamericana(Store):
@@ -26,25 +24,25 @@ class ElectronicaPanamericana(Store):
         if category != TELEVISION:
             return []
 
-        session = requests.Session(impersonate="chrome120")
+        session = session_with_proxy(extra_args)
         product_urls = []
         page = 1
 
         while True:
-            url = f"https://electronicapanamericana.com/page/{page}/?s=LG&product_cat=0&post_type=product"
+            if page >= 25:
+                raise Exception("Page overflow")
+
+            url = f"https://electronicapanamericana.com/page/{page}/?post_type=product&brnd=lg"
             print(url)
             response = session.get(url, verify=False, timeout=30)
+            soup = BeautifulSoup(response.text, "lxml")
+            products = soup.findAll("div", "type-product")
 
-            if response.status_code in [404, 403]:
+            if not products:
                 break
 
-            soup = BeautifulSoup(response.text, "lxml")
-
-            for container in soup.findAll("li", "product"):
-                product_url = container.find(
-                    "a", "woocommerce-LoopProduct-link woocommerce-loop-product__link"
-                )["href"]
-                product_urls.append(product_url)
+            for product in products:
+                product_urls.append(product.find("a")["href"])
 
             page += 1
 
@@ -56,7 +54,7 @@ class ElectronicaPanamericana(Store):
         #     raise Exception("BrightData Web Unlocker proxy arg is required")
 
         print(url)
-        session = requests.Session(impersonate="chrome120")
+        session = session_with_proxy(extra_args)
         response = session.get(url, verify=False, timeout=30)
         soup = BeautifulSoup(response.text, "html5lib")
 

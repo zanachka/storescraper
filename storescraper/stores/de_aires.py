@@ -20,17 +20,19 @@ class DeAires(StoreWithUrlExtensions):
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
         product_urls = []
         session = session_with_proxy(extra_args)
-        del session.headers["Accept-Encoding"]
+        session.headers["User-Agent"] = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+        )
         page = 1
 
         while True:
             if page > 10:
                 raise Exception("Page overflow")
 
-            url = "https://deaires.cl/{}/page/{}/".format(url_extension, page)
+            url = f"https://deaires.cl/{url_extension}/page/{page}/"
             print(url)
-            response = session.get(url)
 
+            response = session.get(url)
             soup = BeautifulSoup(response.text, "lxml")
             products = soup.findAll("li", "product")
 
@@ -49,7 +51,9 @@ class DeAires(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        del session.headers["Accept-Encoding"]
+        session.headers["User-Agent"] = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+        )
         res = session.get(url)
         soup = BeautifulSoup(res.text, "lxml")
 
