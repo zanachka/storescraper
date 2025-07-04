@@ -45,6 +45,7 @@ class Clie(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         product_urls = []
         page = 1
+
         while True:
             if page > 16:
                 raise Exception("page overflow: " + url_extension)
@@ -55,19 +56,21 @@ class Clie(StoreWithUrlExtensions):
             )
             print(url_webpage)
             response = session.get(url_webpage)
+
+            if response.url == "https://www.clie.cl":
+                break
+
             soup = BeautifulSoup(response.text, "lxml")
             product_containers = soup.findAll("li", "type-product")
 
-            if not product_containers:
-                if page == 1:
-                    logging.warning("empty category: " + url_extension)
-                break
             for container in product_containers:
                 product_url = container.find("a", "woocommerce-LoopProduct-link")[
                     "href"
                 ]
                 product_urls.append(product_url)
+
             page += 1
+
         return product_urls
 
     @classmethod
@@ -80,9 +83,13 @@ class Clie(StoreWithUrlExtensions):
         if soup.find("section", "error-404 not-found"):
             return []
 
-        product_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[1].text
-        )["@graph"][1]
+        try:
+            product_data = json.loads(
+                soup.findAll("script", {"type": "application/ld+json"})[1].text
+            )["@graph"][1]
+        except IndexError:
+            return []
+
         name = product_data["name"]
         key = str(product_data["sku"])
         offer = product_data["offers"][0]
