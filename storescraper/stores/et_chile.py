@@ -121,7 +121,8 @@ class ETChile(StoreWithUrlExtensions):
                 sku = variation["sku"]
                 key = str(variation["variation_id"])
                 stock = variation["max_qty"]
-                price = Decimal(variation["display_price"]).quantize(0)
+                offer_price = Decimal(variation["display_price"]).quantize(0)
+                normal_price = (offer_price * Decimal("1.05")).quantize(0)
                 picture_urls = [variation["image"]["url"]]
 
                 p = Product(
@@ -132,8 +133,8 @@ class ETChile(StoreWithUrlExtensions):
                     url,
                     key,
                     stock,
-                    price,
-                    price,
+                    normal_price,
+                    offer_price,
                     "CLP",
                     sku=sku,
                     part_number=sku,
@@ -161,11 +162,15 @@ class ETChile(StoreWithUrlExtensions):
                 stock = 0
 
             if soup.find("p", "price").find("ins"):
-                price = Decimal(
+                offer_price = Decimal(
                     remove_words(soup.find("p", "price").find("ins").text.strip())
                 )
             else:
-                price = Decimal(remove_words(soup.find("p", "price").text.strip()))
+                offer_price = Decimal(
+                    remove_words(soup.find("p", "price").text.strip())
+                )
+
+            normal_price = (offer_price * Decimal("1.05")).quantize(0)
 
             picture_urls = [
                 tag.find("img")["data-src"].split("?")[0]
@@ -182,8 +187,8 @@ class ETChile(StoreWithUrlExtensions):
                 url,
                 key,
                 stock,
-                price,
-                price,
+                normal_price,
+                offer_price,
                 "CLP",
                 sku=sku,
                 part_number=sku,
