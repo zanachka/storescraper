@@ -1,7 +1,4 @@
-from decimal import Decimal
 import json
-import logging
-
 import validators
 from bs4 import BeautifulSoup
 from storescraper.categories import (
@@ -50,14 +47,14 @@ class Clie(StoreWithUrlExtensions):
             if page > 16:
                 raise Exception("page overflow: " + url_extension)
             url_webpage = (
-                "https://www.clie.cl/index.php/categoria-producto/{}/page/{}/".format(
+                "https://clie.cl/index.php/categoria-producto/{}/page/{}/".format(
                     url_extension, page
                 )
             )
             print(url_webpage)
             response = session.get(url_webpage)
 
-            if response.url == "https://www.clie.cl":
+            if response.url == "https://www.clie.cl" or response.status_code == 404:
                 break
 
             soup = BeautifulSoup(response.text, "lxml")
