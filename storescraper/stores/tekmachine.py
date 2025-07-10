@@ -65,7 +65,8 @@ class Tekmachine(StoreWithUrlExtensions):
         sku_tag = soup.find("span", "sku")
         sku = sku_tag.text.strip()[:45] if sku_tag else None
 
-        if soup.find("p", "out-of-stock") or soup.find("p", "available-on-backorder"):
+        stock_tag = soup.find("p", "in-stock")
+        if not stock_tag or "backorder" in stock_tag.text.lower():
             stock = 0
         else:
             stock = -1
