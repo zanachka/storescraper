@@ -36,7 +36,7 @@ class Tekmachine(StoreWithUrlExtensions):
             if page > 15:
                 raise Exception("page overflow: " + url_extension)
 
-            url_webpage = f"https://tekmachine.cl/product-category/{url_extension}/page/{page}/?_pjax=.main-page-wrapper"
+            url_webpage = f"https://tekmachine.cl/product-category/{url_extension}/page/{page}/?stock_status=instock,onsale&_pjax=.main-page-wrapper"
             print(url_webpage)
             response = session.get(url_webpage)
             soup = BeautifulSoup(response.text, "lxml")
