@@ -596,11 +596,8 @@ class MercadoLibreChile(Store):
             try:
                 page_source = session.get(url).text
                 soup = BeautifulSoup(page_source, "lxml")
-
-                new_mode_data = re.search(
-                    r"window.__PRELOADED_STATE__ =([\S\s]+?);\n", page_source
-                )
-                data = json.loads(new_mode_data.groups()[0])
+                new_mode_data = soup.find("script", {"id": "__PRELOADED_STATE__"})
+                data = json.loads(new_mode_data.text)["pageState"]
                 break
             except Exception:
                 tries += 1
