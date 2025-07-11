@@ -21,6 +21,7 @@ from storescraper.categories import (
     PROCESSOR,
     VIDEO_CARD,
     PRINTER_SUPPLY,
+    PROJECTOR,
 )
 
 
@@ -50,13 +51,12 @@ class ScGlobal(StoreWithUrlExtensions):
         ["tarjetas-de-video-56", VIDEO_CARD],
         ["toners-44", PRINTER_SUPPLY],
         ["tintas-45", PRINTER_SUPPLY],
+        ["proyectores-18", PROJECTOR],
     ]
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-
-        product_urls = []
         page = 1
 
         while True:
@@ -80,11 +80,9 @@ class ScGlobal(StoreWithUrlExtensions):
 
             for cell in product_cells:
                 product_url = cell.find("a")["href"]
-                product_urls.append(product_url)
+                yield product_url
 
             page += 1
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
