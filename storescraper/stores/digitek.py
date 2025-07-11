@@ -78,7 +78,7 @@ class Digitek(StoreWithUrlExtensions):
         products = []
         name = product_data["name"]
         description = html_to_markdown(product_data["description"])
-        pictures_container = soup.find("media-gallery").findAll("a")
+        pictures_container = soup.find("media-gallery").findAll("a", "media--cover")
         picture_urls = [f"https:{a['href'].split('?')[0]}" for a in pictures_container]
         product_details = soup.find("div", "product-details").text
 
