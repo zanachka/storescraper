@@ -23,9 +23,9 @@ class Wom(Store):
 
         elif category == CELL:
             session = session_with_proxy(extra_args)
-            equipos_url = (
-                "https://store-srv.wom.cl/rest/V1/content/getList?"
-                "searchCriteria[filterGroups][0][filters][0]"
+            skus_url = (
+                "https://store-srv.wom.cl/rest/V1/content/getSkus?"
+                "product_type=1&searchCriteria[filterGroups][0][filters][0]"
                 "[field]=attribute_set_id&searchCriteria"
                 "[filterGroups][0][filters][0][value]=11&"
                 "searchCriteria[filterGroups][1][filters][0]"
@@ -41,11 +41,10 @@ class Wom(Store):
                 "[filters][0][field]=status&searchCriteria"
                 "[filterGroups][10][filters][0][value]=1"
             )
-            response = session.get(equipos_url)
-
+            response = session.get(skus_url)
             json_response = json.loads(response.text)
 
-            for idx, cell_entry in enumerate(json_response["items"]):
+            for _, cell_entry in enumerate(json_response):
                 cell_url = (
                     "https://store.wom.cl/equipos/"
                     + str(cell_entry["sku"])
@@ -148,6 +147,9 @@ class Wom(Store):
         response = session.get(stock_endpoint)
         stock_json = response.json()
         stock_dict = {}
+
+        if "items" not in stock_json:
+            return []
 
         for x in stock_json["items"][0]["child"]:
             if x["saleable_info"]:
