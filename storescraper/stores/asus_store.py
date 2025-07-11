@@ -106,16 +106,13 @@ class AsusStore(StoreWithUrlExtensions):
         products = []
 
         if variations_data and "[data-role=swatch-options]" in variations_data:
-            description = html_to_markdown(
-                str(soup.find("div", {"id": "specification"}))
-            )
             variations_data = variations_data["[data-role=swatch-options]"][
                 "Magento_Swatches/js/swatch-renderer"
             ]["jsonConfig"]
             for key, sku in variations_data["sku"].items():
                 name = variations_data["sales_model_name"][key]
-                description = json.dumps(
-                    json.loads(variations_data["product_spec"][key])
+                description = html_to_markdown(
+                    variations_data["dynamic"]["short_description"][key]["value"]
                 )
                 price = Decimal(
                     variations_data["optionPrices"][key]["finalPrice"]["amount"]
