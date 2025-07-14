@@ -8,6 +8,9 @@ from storescraper.utils import html_to_markdown, cf_session_with_proxy, remove_w
 
 
 class Tekmachine(StoreWithUrlExtensions):
+    preferred_discover_urls_concurrency = 3
+    preferred_products_for_url_concurrency = 3
+
     url_extensions = [
         ["procesadores", PROCESSOR],
         ["placas-madres", MOTHERBOARD],
