@@ -68,7 +68,7 @@ class PortalDelAire(StoreWithUrlExtensions):
             name = variant["name"]
             key = str(variant["id"])
             sku = variant["sku"] or None
-            stock = product_data["inventories"][key]["inventory_quantity"]
+            stock = max(product_data["inventories"][key]["inventory_quantity"], 0)
             price = Decimal(variant["price"] / 100)
 
             p = Product(
