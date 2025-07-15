@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from bs4 import BeautifulSoup
 from decimal import Decimal
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -59,8 +60,9 @@ class LgShopEc(StoreWithUrlExtensions):
             url = f"https://www.lgshop.com.ec/{url_extension}?page={page}"
             print(url)
             response = session.get(url)
-            match = re.search(r"__STATE__ = {(.+)}", response.text)
-            products_container = json.loads(f"{{{match.group(1)}}}")
+            soup = BeautifulSoup(response.text, "lxml")
+            state = soup.find("template", {"data-varname": "__STATE__"}).find("script")
+            products_container = json.loads(state.text)
             products = [
                 key
                 for key in products_container
@@ -85,8 +87,11 @@ class LgShopEc(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
-        product_match = re.search(r"__STATE__ = {(.+)}", response.text)
-        product_data = json.loads(f"{{{product_match.groups()[0]}}}")
+        soup = BeautifulSoup(response.text, "lxml")
+        product_match = soup.find("template", {"data-varname": "__STATE__"}).find(
+            "script"
+        )
+        product_data = json.loads(product_match.text)
         base_json_key = list(product_data.keys())[0]
         product_specs = product_data[base_json_key]
         description = html_to_markdown(product_specs.get("description", None))
