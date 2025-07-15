@@ -25,6 +25,7 @@ class AcerStore(StoreWithUrlExtensions):
         ["mouse", MOUSE],
         ["headset", HEADPHONES],
         ["notebook", NOTEBOOK],
+        ["notebook-gamer", NOTEBOOK],
         ["tablets", TABLET],
     ]
 

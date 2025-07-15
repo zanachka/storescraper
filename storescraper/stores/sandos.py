@@ -139,7 +139,7 @@ class Sandos(StoreWithUrlExtensions):
         response = session.get(url, timeout=60)
         soup = BeautifulSoup(response.text, "lxml")
 
-        name = soup.find("div", "pro-group mb-3").find("h2").text
+        name = soup.find("div", "pro-group mb-3").find("h1").text
         condition = "https://schema.org/NewCondition"
 
         if "OPEN BOX" in name.upper() or "OPENBOX" in name.upper():

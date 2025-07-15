@@ -4,10 +4,13 @@ from bs4 import BeautifulSoup
 from storescraper.categories import *
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, cf_session_with_proxy, remove_words
 
 
 class Tekmachine(StoreWithUrlExtensions):
+    preferred_discover_urls_concurrency = 3
+    preferred_products_for_url_concurrency = 3
+
     url_extensions = [
         ["procesadores", PROCESSOR],
         ["placas-madres", MOTHERBOARD],
@@ -28,7 +31,7 @@ class Tekmachine(StoreWithUrlExtensions):
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         product_urls = []
         page = 1
 
@@ -36,7 +39,7 @@ class Tekmachine(StoreWithUrlExtensions):
             if page > 15:
                 raise Exception("page overflow: " + url_extension)
 
-            url_webpage = f"https://tekmachine.cl/product-category/{url_extension}/page/{page}/?_pjax=.main-page-wrapper"
+            url_webpage = f"https://tekmachine.cl/product-category/{url_extension}/page/{page}/?stock_status=instock,onsale&_pjax=.main-page-wrapper"
             print(url_webpage)
             response = session.get(url_webpage)
             soup = BeautifulSoup(response.text, "lxml")
@@ -57,15 +60,16 @@ class Tekmachine(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "html5lib")
-        name = soup.find("h1", "product_title").text.strip()
+        name = soup.find("span", "breadcrumb-last").text.strip()
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
         sku_tag = soup.find("span", "sku")
         sku = sku_tag.text.strip()[:45] if sku_tag else None
 
-        if soup.find("p", "out-of-stock") or soup.find("p", "available-on-backorder"):
+        stock_tag = soup.find("p", "in-stock")
+        if not stock_tag or "backorder" in stock_tag.text.lower():
             stock = 0
         else:
             stock = -1

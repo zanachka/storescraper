@@ -62,7 +62,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy, chunks
+from storescraper.utils import chunks, cf_session_with_proxy
 
 
 class MercadoLibreChile(Store):
@@ -525,7 +525,7 @@ class MercadoLibreChile(Store):
             if category != local_category:
                 continue
 
-            session = session_with_proxy(extra_args)
+            session = cf_session_with_proxy(extra_args)
             session.headers["Authorization"] = "Bearer {}".format(
                 extra_args["access_token"]
             )
@@ -585,7 +585,7 @@ class MercadoLibreChile(Store):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
@@ -596,11 +596,8 @@ class MercadoLibreChile(Store):
             try:
                 page_source = session.get(url).text
                 soup = BeautifulSoup(page_source, "lxml")
-
-                new_mode_data = re.search(
-                    r"window.__PRELOADED_STATE__ =([\S\s]+?);\n", page_source
-                )
-                data = json.loads(new_mode_data.groups()[0])
+                new_mode_data = soup.find("script", {"id": "__PRELOADED_STATE__"})
+                data = json.loads(new_mode_data.text)["pageState"]
                 break
             except Exception:
                 tries += 1
@@ -629,7 +626,7 @@ class MercadoLibreChile(Store):
         cls, discovery_url, data, soup, extra_args, category, url=None
     ):
         print("Type3")
-        api_session = session_with_proxy(extra_args)
+        api_session = cf_session_with_proxy(extra_args)
         api_session.headers["Authorization"] = "Bearer {}".format(
             extra_args["access_token"]
         )
@@ -875,7 +872,7 @@ class MercadoLibreChile(Store):
 
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         offset = 0
         result = []
 
@@ -909,7 +906,7 @@ class MercadoLibreChile(Store):
         extra_args = extra_args or {}
         retries = extra_args.get("retries", 3)
         extra_args["skip_whitelist"] = True
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, "
             "like Gecko) Chrome/66.0.3359.117 Safari/537.36"
@@ -976,7 +973,7 @@ class MercadoLibreChile(Store):
         # -d 'redirect_uri=https://www.solotodo.com'
         # Replacing the APP_ID, APP_SECRET and CODE accordingly
         # 5. Copy the refresh token returned in the previous step
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         url = "https://api.mercadolibre.com/oauth/token"
         session.headers["accept"] = "application/json"
         session.headers["content-type"] = "application/x-www-form-urlencoded"
@@ -1000,7 +997,7 @@ class MercadoLibreChile(Store):
     def get_catalog_competitors_for_seller(cls, seller_id, access_token):
         offset = 50
         page = 0
-        session = session_with_proxy(None)
+        session = cf_session_with_proxy(None)
         session.headers["Authorization"] = "Bearer {}".format(access_token)
         result = []
         seller_data = {}

@@ -5,72 +5,31 @@ from bs4 import BeautifulSoup
 
 from storescraper.categories import NOTEBOOK, CELL, TABLET, WEARABLE, HEADPHONES
 from storescraper.product import Product
-from storescraper.store import Store
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, session_with_proxy
 
 
-class HuaweiShop(Store):
-    @classmethod
-    def categories(cls):
-        return [NOTEBOOK, CELL, TABLET, WEARABLE, HEADPHONES]
+class HuaweiShop(StoreWithUrlExtensions):
+    url_extensions = [
+        # Cells
+        ["smartphones", CELL],
+        # Notebooks
+        ["notebooks", NOTEBOOK],
+        # Tablets
+        ["tablets", TABLET],
+        # Wearables
+        ["wearables", WEARABLE],
+        # Headphones
+        ["audio", HEADPHONES],
+    ]
 
     @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        url_extensions = [
-            # Cells
-            ["smartphones", CELL, "NEW"],
-            # Notebooks
-            ["notebooks", NOTEBOOK, "OLD"],
-            # Tablets
-            ["tablets", TABLET, "NEW"],
-            # Wearables
-            ["wearables", WEARABLE, "NEW"],
-            # Headphones
-            ["audio", HEADPHONES, "NEW"],
-        ]
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
+        if url_extension == "notebooks":
+            # Discontinued category, just return the sole product remaining
+            return ["https://consumer.huawei.com/cl/laptops/matebook-d-16-2024/buy/"]
 
-        for url_extension, local_category, mode in url_extensions:
-            if category != local_category:
-                continue
-            if mode == "OLD":
-                return cls.discover_urls_for_category_old(url_extension, extra_args)
-            else:
-                return cls.discover_urls_for_category_new(url_extension, extra_args)
-
-    @classmethod
-    def discover_urls_for_category_old(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-
-        product_urls = []
-        url_webpage = "https://consumer.huawei.com/cl/offer" "/{}/".format(
-            url_extension
-        )
-
-        data = session.get(url_webpage).text
-        soup = BeautifulSoup(data, "lxml")
-        product_containers = soup.findAll("div", {"card-wcm-mode": "DISABLED"})
-
-        for container in product_containers:
-            try:
-                urls_container = json.loads(container["card-instance"])["props"][
-                    "configuration"
-                ]["custom"]["cardParameter"]["editModelParameter"]["specialZone"][
-                    "productSets"
-                ]
-                for product_url_container in urls_container:
-                    product_url = product_url_container["linkUrl"]
-                    if "https" not in product_url:
-                        product_url = "https://consumer.huawei.com" + product_url
-                    product_urls.append(product_url)
-            except Exception:
-                continue
-
-        return product_urls
-
-    @classmethod
-    def discover_urls_for_category_new(cls, url_extension, extra_args=None):
-        session = session_with_proxy(extra_args)
-
         product_urls = []
         url_webpage = "https://consumer.huawei.com/cl/offer/{}/".format(url_extension)
 
@@ -79,17 +38,15 @@ class HuaweiShop(Store):
 
         candidate_tags = soup.findAll("item", {"data-key": "card-instance"})
         for tag in candidate_tags:
+            tag_value = json.loads(tag["data-value"])
             try:
-                tag_value = json.loads(tag["data-value"])
                 product_list = tag_value["props"]["configuration"]["custom"][
                     "cardParameter"
                 ]["allEnds"]["moduleData"]["productList"]
                 for product_entry in product_list:
-                    product_url = product_entry["linkUrl"]
-                    if not product_url.startswith("https"):
-                        product_url = "https://consumer.huawei.com" + product_url
-
-                    product_urls.append(product_url)
+                    product_url = cls._clean_discovery_url(product_entry["linkUrl"])
+                    if product_url not in product_urls:
+                        product_urls.append(product_url)
             except KeyError:
                 pass
 
@@ -98,14 +55,23 @@ class HuaweiShop(Store):
                     "cardParameter"
                 ]["allEnds"]["moduleData"]["productSets"]["productInfo"]
                 for product_entry in product_list:
-                    product_url = product_entry["pdpLinkUrl"]
-                    if not product_url.startswith("https"):
-                        product_url = "https://consumer.huawei.com" + product_url
-                    product_urls.append(product_url)
+                    product_url = cls._clean_discovery_url(product_entry["linkUrl"])
+                    if product_url not in product_urls:
+                        product_urls.append(product_url)
             except KeyError:
                 pass
 
         return product_urls
+
+    @classmethod
+    def _clean_discovery_url(cls, product_url):
+        if not product_url.startswith("https"):
+            product_url = "https://consumer.huawei.com" + product_url
+        if "huawei.com//" in product_url:
+            product_url = product_url.replace("huawei.com//", "huawei.com/")
+        if not product_url.startswith("https://consumer.huawei.com/cl/product/buy/"):
+            product_url = product_url.split("?")[0]
+        return product_url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
