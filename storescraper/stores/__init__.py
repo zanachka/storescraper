@@ -118,6 +118,7 @@ from .my_shop import MyShop
 from .natcom import Natcom
 from .new_horizons import NewHorizons
 from .nice_one import NiceOne
+from .noe_computacion import NoeComputacion
 from .notebook_store import NotebookStore
 from .notebooks_ya import NotebooksYa
 from .novey import Novey

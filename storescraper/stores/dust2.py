@@ -150,6 +150,11 @@ class Dust2(StoreWithUrlExtensions):
         else:
             ean = None
 
+        if sku.startswith("OB"):
+            condition = "https://schema.org/OpenBoxCondition"
+        else:
+            condition = "https://schema.org/NewCondition"
+
         p = Product(
             name,
             cls.__name__,
@@ -165,6 +170,7 @@ class Dust2(StoreWithUrlExtensions):
             ean=ean,
             picture_urls=picture_urls if picture_urls != [""] else None,
             description=description,
+            condition=condition,
         )
 
         return [p]
