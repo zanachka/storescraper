@@ -57,14 +57,8 @@ class ElectronicaPanamericana(Store):
         session = cf_session_with_proxy(extra_args)
         response = session.get(url, verify=False, timeout=30)
         soup = BeautifulSoup(response.text, "html5lib")
-
-        sku = soup.find("span", "sku")
-
-        if not sku:
-            return []
-        else:
-            sku = sku.text.strip()
-
+        sku_tag = soup.find("b", string="SKU:")
+        sku = sku_tag.next_sibling.strip()
         name = "{} - {}".format(sku, soup.find("h2", "product_title").text.strip())[
             :255
         ]
