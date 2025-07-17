@@ -57,15 +57,7 @@ class ZTech(StoreWithUrlExtensions):
             f"https:{slide.find('img')['src']}"
             for slide in soup.findAll("div", "product__media media media--transparent")
         ]
-        condition = (
-            "https://schema.org/RefurbishedCondition"
-            if "reacondicionado" in name.lower()
-            or "reacondicionado"
-            in soup.find(
-                "section", "product__info-container product__column-sticky"
-            ).text.lower()
-            else "https://schema.org/NewCondition"
-        )
+        condition = "https://schema.org/RefurbishedCondition"
 
         if "hasVariant" in product_data:
             products = []
