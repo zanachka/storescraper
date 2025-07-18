@@ -25,89 +25,61 @@ from storescraper.categories import (
     VIDEO_GAME_CONSOLE,
 )
 from storescraper.product import Product
-from storescraper.store import Store
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
 
 
-class TruluStore(Store):
-    @classmethod
-    def categories(cls):
-        return [
-            HEADPHONES,
-            POWER_SUPPLY,
-            COMPUTER_CASE,
-            RAM,
-            PROCESSOR,
-            CPU_COOLER,
-            VIDEO_CARD,
-            KEYBOARD_MOUSE_COMBO,
-            MOUSE,
-            STEREO_SYSTEM,
-            GAMING_CHAIR,
-            KEYBOARD,
-            MONITOR,
-            GAMING_DESK,
-            MICROPHONE,
-            SOLID_STATE_DRIVE,
-            MOTHERBOARD,
-            VIDEO_GAME_CONSOLE,
-        ]
+class TruluStore(StoreWithUrlExtensions):
+    url_extensions = [
+        ["componentes-pc/almacenamiento", SOLID_STATE_DRIVE],
+        ["componentes-pc/fuentes-de-poder", POWER_SUPPLY],
+        ["componentes-pc/gabinetes", COMPUTER_CASE],
+        ["componentes-pc/memoria-ram", RAM],
+        ["componentes-pc/placas-madre", MOTHERBOARD],
+        ["componentes-pc/procesadores", PROCESSOR],
+        ["componentes-pc/refrigeracion", CPU_COOLER],
+        ["componentes-pc/tarjetas-de-video", VIDEO_CARD],
+        ["escritorios", GAMING_DESK],
+        ["monitores-gamer", MONITOR],
+        ["perifericos/audifonos-y-accesorios", HEADPHONES],
+        ["perifericos/kit-perifericos", KEYBOARD_MOUSE_COMBO],
+        ["perifericos/microfonos", MICROPHONE],
+        ["perifericos/mouse", MOUSE],
+        ["perifericos/parlantes", STEREO_SYSTEM],
+        ["perifericos/teclados", KEYBOARD],
+        ["sillas", GAMING_CHAIR],
+        ["consolas", VIDEO_GAME_CONSOLE],
+    ]
 
     @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        url_extensions = [
-            ["componentes-pc/almacenamiento", SOLID_STATE_DRIVE],
-            ["componentes-pc/fuentes-de-poder", POWER_SUPPLY],
-            ["componentes-pc/gabinetes", COMPUTER_CASE],
-            ["componentes-pc/memoria-ram", RAM],
-            ["componentes-pc/placas-madre", MOTHERBOARD],
-            ["componentes-pc/procesadores", PROCESSOR],
-            ["componentes-pc/refrigeracion", CPU_COOLER],
-            ["componentes-pc/tarjetas-de-video", VIDEO_CARD],
-            ["escritorios", GAMING_DESK],
-            ["monitores-gamer", MONITOR],
-            ["perifericos/audifonos-y-accesorios", HEADPHONES],
-            ["perifericos/kit-perifericos", KEYBOARD_MOUSE_COMBO],
-            ["perifericos/microfonos", MICROPHONE],
-            ["perifericos/mouse", MOUSE],
-            ["perifericos/parlantes", STEREO_SYSTEM],
-            ["perifericos/teclados", KEYBOARD],
-            ["sillas", GAMING_CHAIR],
-            ["consolas", VIDEO_GAME_CONSOLE],
-        ]
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-        product_urls = []
 
-        for url_extension, local_category in url_extensions:
-            if local_category != category:
-                continue
-            page = 1
+        page = 1
 
-            while True:
-                if page > 10:
-                    raise Exception("page overflow: " + url_extension)
+        while True:
+            if page > 10:
+                raise Exception("page overflow: " + url_extension)
 
-                url_webpage = (
-                    "https://trulustore.cl/categoria-producto/"
-                    "{}/page/{}/".format(url_extension, page)
-                )
-                print(url_webpage)
-                response = session.get(url_webpage)
-                soup = BeautifulSoup(response.text, "lxml")
-                product_containers = soup.findAll("div", "product-small")
+            url_webpage = (
+                "https://trulustore.cl/categoria-producto/"
+                "{}/page/{}/".format(url_extension, page)
+            )
+            print(url_webpage)
+            response = session.get(url_webpage)
+            soup = BeautifulSoup(response.text, "lxml")
+            product_containers = soup.findAll("div", "product-small")
 
-                if not product_containers:
-                    if page == 1:
-                        logging.warning("Empty category: " + url_extension)
-                    break
+            if not product_containers:
+                if page == 1:
+                    logging.warning("Empty category: " + url_extension)
+                break
 
-                for container in product_containers:
-                    product_url = container.find("a")["href"]
-                    product_urls.append(product_url)
+            for container in product_containers:
+                product_url = container.find("a")["href"]
+                yield product_url
 
-                page += 1
-
-        return product_urls
+            page += 1
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -140,12 +112,8 @@ class TruluStore(Store):
         else:
             offer_price = Decimal(remove_words(price_container.find("bdi").text))
 
-        normal_price_container = soup.find("p", "price").find("div", "ww-price")
-
-        if normal_price_container:
-            normal_price = Decimal(remove_words(normal_price_container.text))
-        else:
-            normal_price = offer_price
+        normal_price_container = soup.findAll("div", "ww-price")[-1]
+        normal_price = Decimal(remove_words(normal_price_container.text))
 
         picture_tags = soup.find("div", "product-thumbnails")
 
