@@ -91,7 +91,6 @@ class KDTec(StoreWithUrlExtensions):
         ["procesador-servidor", PROCESSOR],
         ["memoria-ram-servidor", RAM],
         ["discos-servidor", SOLID_STATE_DRIVE],
-        ["disco-duro-servidor", SOLID_STATE_DRIVE],
         ["celulares", CELL],
         ["pantallas-interactivas", MONITOR],
         ["parlantes-audio", STEREO_SYSTEM],
