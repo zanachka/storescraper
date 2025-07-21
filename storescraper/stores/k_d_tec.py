@@ -34,6 +34,7 @@ from storescraper.categories import (
     RAM,
     CELL,
     PRINTER_SUPPLY,
+    VACUUM_CLEANER,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -58,6 +59,7 @@ class KDTec(StoreWithUrlExtensions):
         ["disco-duro-externo", EXTERNAL_STORAGE_DRIVE],
         ["disco-ssd-externo", EXTERNAL_STORAGE_DRIVE],
         ["disco-duro-interno", STORAGE_DRIVE],
+        ["disco-duro-servidor", STORAGE_DRIVE],
         ["disco-ssd", SOLID_STATE_DRIVE],
         ["monitor", MONITOR],
         ["monitor-gamer", MONITOR],
@@ -95,6 +97,7 @@ class KDTec(StoreWithUrlExtensions):
         ["parlantes-audio", STEREO_SYSTEM],
         ["tintas", PRINTER_SUPPLY],
         ["toner", PRINTER_SUPPLY],
+        ["aspiradoras-electrodomesticos", VACUUM_CLEANER],
     ]
 
     @classmethod
