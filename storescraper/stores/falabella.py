@@ -898,8 +898,6 @@ class Falabella(Store):
             if seller_id:
                 pag_url += "&f.derived.variant.sellerId={}".format(seller_id)
 
-            print(pag_url)
-
             res = cls.retrieve_json_page(session, pag_url)
 
             if "results" not in res or not res["results"]:
