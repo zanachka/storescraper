@@ -440,7 +440,7 @@ class Falabella(Store):
             "Home > Electrohogar-Climatización > Aire acondicionado",
         ],
         [
-            "cat4850013",
+            "CATG34744",
             NOTEBOOK,
             "Home > Especiales-Otras categorias > PC gamer",
         ],
@@ -863,11 +863,19 @@ class Falabella(Store):
     @classmethod
     def _get_product_urls(cls, session, category_id, extra_params, seller_id, zones):
         discovered_urls = []
-        # For some reason the "categoryName" param activates the sponsored
-        # results
+        base_url = f"https://www.falabella.com/s/browse/v1/listing/cl?pid=15c37b0b-a392-41a9-8b3b-978376c700d5&categoryId={category_id}"
+        category_details = json.loads(session.get(base_url).text)["data"][
+            "categoryParentDetails"
+        ]
+        category_name = None
+
+        for category in category_details:
+            if category_id == category["id"]:
+                category_name = category["link"].split("/")[-1]
+
         base_url = (
             "https://www.falabella.com/s/browse/v1/listing/cl?"
-            "&pid=15c37b0b-a392-41a9-8b3b-978376c700d5&categoryId={}&categoryName=foo&page={}"
+            "&pid=15c37b0b-a392-41a9-8b3b-978376c700d5&categoryName={}&categoryId={}&page={}"
         )
 
         for key, value in extra_params.items():
@@ -880,7 +888,7 @@ class Falabella(Store):
             if page > 210:
                 raise Exception("Page overflow: " + category_id)
 
-            pag_url = base_url.format(category_id, page)
+            pag_url = base_url.format(category_name, category_id, page)
 
             if cls.store_and_subdomain:
                 pag_url += "&subdomain={}&store={}".format(
