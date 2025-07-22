@@ -878,7 +878,13 @@ class Ripley(Store):
         return cf_session_with_proxy(extra_args)
 
     @classmethod
-    def _get_product_urls(cls, category_path, exclude_marketplace, extra_args=None):
+    def _get_product_urls(
+        cls,
+        category_path,
+        exclude_marketplace,
+        extra_args=None,
+        add_sponsored_data=False,
+    ):
         session = cls.get_session(extra_args)
         page = 1
 
@@ -906,7 +912,13 @@ class Ripley(Store):
             assert products
 
             for product in products:
-                yield product["url"]
+                if add_sponsored_data:
+                    yield (
+                        product["url"],
+                        "isMabayaProduct" in product and product["isMabayaProduct"],
+                    )
+                else:
+                    yield product["url"]
 
             if (
                 response["pagination"]["actualPage"]
@@ -926,9 +938,12 @@ class Ripley(Store):
             if section != section_path:
                 continue
 
-            for idx, product_url in enumerate(
+            for idx, data in enumerate(
                 cls._get_product_urls(
-                    category_path, exclude_marketplace=False, extra_args=extra_args
+                    category_path,
+                    exclude_marketplace=False,
+                    extra_args=extra_args,
+                    add_sponsored_data=True,
                 )
             ):
                 if idx >= 300:
@@ -936,7 +951,8 @@ class Ripley(Store):
 
                 yield {
                     "field": "discovery_url",
-                    "value": product_url,
+                    "value": data[0],
                     "position": idx + 1,
                     "section": section,
+                    "is_sponsored": data[1],
                 }
