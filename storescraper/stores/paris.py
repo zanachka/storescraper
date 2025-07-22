@@ -545,18 +545,21 @@ class Paris(Store):
                 exclude_marketplace=False,
                 extra_args=extra_args,
                 additional_filter=additional_filter,
+                add_sponsored_data=True,
             )
 
-            for idx, url in enumerate(section_urls):
+            for idx, data in enumerate(section_urls):
                 if idx >= 300:
                     break
 
                 section_position = {
                     "field": "discovery_url",
-                    "value": url,
+                    "value": data[0],
                     "position": idx + 1,
                     "section": section,
+                    "is_sponsored": data[1],
                 }
+
                 yield section_position
 
     @classmethod
@@ -633,7 +636,12 @@ class Paris(Store):
 
     @classmethod
     def _get_product_urls(
-        cls, category_id, exclude_marketplace, extra_args=None, additional_filter=None
+        cls,
+        category_id,
+        exclude_marketplace,
+        extra_args=None,
+        additional_filter=None,
+        add_sponsored_data=False,
     ):
         session = cls.get_session(extra_args)
         page = 1
@@ -643,8 +651,8 @@ class Paris(Store):
                 raise Exception("Page overflow: " + category_id)
 
             payload = {
-                "filters": [{"key": "group_id", "stringValues": [category_id]}],
-                "pagination": {"page": page, "pageSize": cls.RESULTS_PER_PAGE},
+                "filters": [{"key": "group_id", "stringValues": ["elcTelevision"]}],
+                "pagination": {"page": page, "pageSize": 30},
                 "sortBy": "relevance",
                 "serviceAbility": {
                     "sameDayDelivery": False,
@@ -652,6 +660,8 @@ class Paris(Store):
                     "storePickUp": False,
                 },
                 "sponsoredProducts": True,
+                "applicationId": "34bb8686968a85a272a6c546ddcb9860db1ea14ee72f5207ef0c028280a6e7bc",
+                "term": "",
             }
 
             if additional_filter:
@@ -680,6 +690,10 @@ class Paris(Store):
 
             for container in containers_data:
                 product_url = f"https://www.paris.cl/{container['slug']['es-CL']}.html"
-                yield product_url
+
+                if add_sponsored_data:
+                    yield (product_url, "resolvedBidId" in container)
+                else:
+                    yield product_url
 
             page += 1
