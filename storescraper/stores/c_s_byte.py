@@ -33,7 +33,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
 
 
 class CSByte(StoreWithUrlExtensions):
@@ -200,13 +200,7 @@ class CSByte(StoreWithUrlExtensions):
                 stock = 0
 
             price = Decimal(
-                min(
-                    [
-                        x["price"]
-                        for x in offer["priceSpecification"]
-                        if x["@type"] == "UnitPriceSpecification"
-                    ]
-                )
+                remove_words(soup.find("p", "price").find_all("bdi")[-1].text)
             )
 
             if "image" in json_data:
