@@ -839,6 +839,7 @@ class Falabella(Store):
                     extra_params,
                     section_variant["id"],
                     extra_args["zones"],
+                    add_sponsored_data=True,
                 )
 
                 if section_variant["section_prefix"]:
@@ -848,20 +849,30 @@ class Falabella(Store):
                 else:
                     full_section_name = section_name
 
-                for idx, url in enumerate(category_product_urls):
+                for idx, data in enumerate(category_product_urls):
                     if idx >= 300:
                         break
 
                     section_position = {
                         "field": "discovery_url",
-                        "value": url,
+                        "value": data[0],
                         "position": idx + 1,
                         "section": full_section_name,
+                        "is_sponsored": data[1],
                     }
+
                     yield section_position
 
     @classmethod
-    def _get_product_urls(cls, session, category_id, extra_params, seller_id, zones):
+    def _get_product_urls(
+        cls,
+        session,
+        category_id,
+        extra_params,
+        seller_id,
+        zones,
+        add_sponsored_data=False,
+    ):
         discovered_urls = []
         base_url = f"https://www.falabella.com/s/browse/v1/listing/cl?pid=15c37b0b-a392-41a9-8b3b-978376c700d5&categoryId={category_id}"
         category_details = json.loads(session.get(base_url).text)["data"][
@@ -874,7 +885,7 @@ class Falabella(Store):
                 category_name = category["link"].split("/")[-1]
 
         base_url = (
-            "https://www.falabella.com/s/browse/v1/listing/cl?"
+            "https://www.falabella.com/s/browse/v1/listing/cl?sortBy=_score,desc"
             "&pid=15c37b0b-a392-41a9-8b3b-978376c700d5&categoryName={}&categoryId={}&page={}"
         )
 
@@ -912,9 +923,12 @@ class Falabella(Store):
                     result["productId"], result["skuId"]
                 )
 
-                if product_url not in discovered_urls:
-                    discovered_urls.append(product_url)
-                    yield product_url
+                if add_sponsored_data:
+                    yield (product_url, result["isSponsored"])
+                else:
+                    if product_url not in discovered_urls:
+                        discovered_urls.append(product_url)
+                        yield product_url
 
             page += 1
 
