@@ -558,6 +558,7 @@ class Lider(Store):
                     "value": product.key,
                     "position": idx + 1,
                     "section": section,
+                    "is_sponsored": False,
                 }
 
     @classmethod
