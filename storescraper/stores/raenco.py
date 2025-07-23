@@ -104,7 +104,7 @@ class Raenco(Store):
         session = session_with_proxy(extra_args)
         response = session.get(url, allow_redirects=False)
 
-        if response.status_code in [303, 500]:
+        if response.status_code in [303, 500, 404]:
             return []
 
         data = response.text
