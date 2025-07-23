@@ -30,20 +30,20 @@ class Raenco(Store):
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         category_filters = [
-            ["aires-acondicionados.html", SPLIT_AIR_CONDITIONER],
-            ["audio-y-video/tv.html", TELEVISION],
+            ["aires-acondicionado.html", SPLIT_AIR_CONDITIONER],
+            ["audio-y-video/televisores.html", TELEVISION],
             ["audio-y-video/equipos-de-sonido.html", STEREO_SYSTEM],
             ["electrodomesticos/microondas.html", OVEN],
             ["linea-blanca/refrigeradoras.html", REFRIGERATOR],
-            ["linea-blanca/lavadora.html", WASHING_MACHINE],
+            ["linea-blanca/lavadoras.html", WASHING_MACHINE],
             ["linea-blanca/secadoras.html", WASHING_MACHINE],
             ["linea-blanca/lavaplatos.html", DISH_WASHER],
-            ["linea-blanca/cogeladores.html", REFRIGERATOR],
+            ["linea-blanca/congeladores.html", REFRIGERATOR],
             ["tecnologia/celulares.html", CELL],
-            ["tecnologia/computadoras/monitores.html", MONITOR],
+            ["tecnologia/monitores.html", MONITOR],
             ["tecnologia/tablet.html", TABLET],
             ["tecnologia/reloj-smartwatch.html", WEARABLE],
-            ["tecnologia/audifonos-y-bocinas.html", HEADPHONES],
+            ["tecnologia/bocinas.html", STEREO_SYSTEM],
         ]
 
         session = session_with_proxy(extra_args)
@@ -62,7 +62,7 @@ class Raenco(Store):
                 if page >= 15:
                     raise Exception("Page overflow")
 
-                url = "https://www.raenco.com/departamentos/{}?" "marca=221".format(
+                url = "https://raenco.com/departamentos/{}?" "marca=381".format(
                     category_path
                 )
 
@@ -79,9 +79,12 @@ class Raenco(Store):
                 soup = BeautifulSoup(res.text, "lxml")
                 product_containers = soup.findAll("li", "product")
 
-                if not product_containers and page == 1:
-                    logging.warning("Empty section {}".format(category_path))
-                    break
+                if not product_containers:
+                    if page == 1:
+                        logging.warning("Empty section {}".format(category_path))
+                        break
+                    else:
+                        break
 
                 for container in product_containers:
                     product_url = container.find("a")["href"]
