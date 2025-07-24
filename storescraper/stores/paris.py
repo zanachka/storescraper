@@ -651,7 +651,7 @@ class Paris(Store):
                 raise Exception("Page overflow: " + category_id)
 
             payload = {
-                "filters": [{"key": "group_id", "stringValues": ["elcTelevision"]}],
+                "filters": [{"key": "group_id", "stringValues": [category_id]}],
                 "pagination": {"page": page, "pageSize": 30},
                 "sortBy": "relevance",
                 "serviceAbility": {
