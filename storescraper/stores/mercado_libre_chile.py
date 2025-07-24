@@ -526,9 +526,10 @@ class MercadoLibreChile(Store):
                 continue
 
             session = cf_session_with_proxy(extra_args)
-            session.headers["Authorization"] = "Bearer {}".format(
-                extra_args["access_token"]
-            )
+            session.headers["Cookie"] = extra_args["cookie"]
+            # session.headers["Authorization"] = "Bearer {}".format(
+            #     extra_args["access_token"]
+            # )
             offset = 0
 
             while True:
@@ -586,6 +587,7 @@ class MercadoLibreChile(Store):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = cf_session_with_proxy(extra_args)
+        session.headers["Cookie"] = extra_args["cookie"]
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
