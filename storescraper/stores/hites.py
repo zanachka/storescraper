@@ -587,6 +587,7 @@ class Hites(Store):
                     "value": product_url,
                     "position": idx + 1,
                     "section": section,
+                    "is_sponsored": False,
                 }
 
     @classmethod

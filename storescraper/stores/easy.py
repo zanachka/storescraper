@@ -350,7 +350,9 @@ class Easy(Store):
                     "value": url,
                     "position": idx + 1,
                     "section": section,
+                    "is_sponsored": False,
                 }
+
                 yield section_position
 
     @classmethod
