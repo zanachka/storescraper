@@ -924,7 +924,7 @@ class Falabella(Store):
                 )
 
                 if add_sponsored_data:
-                    yield (product_url, result["isSponsored"])
+                    yield (product_url, result["isSponsored"] or False)
                 else:
                     if product_url not in discovered_urls:
                         discovered_urls.append(product_url)
