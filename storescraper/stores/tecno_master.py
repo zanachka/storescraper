@@ -171,15 +171,18 @@ class TecnoMaster(Store):
             stock = int(soup.find("p", "stock in-stock").text.split()[0])
         else:
             stock = -1
+
         price_container = soup.find("p", "price")
 
         if not price_container.text:
             return []
-
         elif price_container.find("ins"):
             offer_price = Decimal(remove_words(price_container.find("ins").text))
         else:
-            offer_price = Decimal(remove_words(soup.find("p", "price").text))
+            offer_price = Decimal(
+                remove_words(soup.find("p", "price").find("bdi").text)
+            )
+
         normal_price = (offer_price * Decimal(1.025)).quantize(0)
 
         picture_urls = [
