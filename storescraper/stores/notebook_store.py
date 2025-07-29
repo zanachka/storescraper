@@ -69,7 +69,7 @@ class NotebookStore(StoreWithUrlExtensions):
             "sistemas-de-enfriamiento",
             CPU_COOLER,
         ],
-        ["equipos/memorias/tarjetas-de-memoria-flash", MEMORY_CARD],
+        ["equipos/memorias/memoria-flash", MEMORY_CARD],
         ["equipos/memorias/ram-para-notebooks", RAM],
         ["equipos/memorias/ram-para-pc-y-servidores", RAM],
         ["ups/respaldo-de-energia", UPS],
@@ -83,9 +83,9 @@ class NotebookStore(StoreWithUrlExtensions):
         ["audio-video-y-foto/audio-y-video/audifonos-y-headset", HEADPHONES],
         ["impresion/impresoras-y-escaneres/impresoras-ink-jet", PRINTER],
         ["impresion/impresoras-y-escaneres/impresoras-laser", PRINTER],
-        ["impresion/impresoras-y-escaneres/impresoras-multifuncionales", PRINTER],
+        ["impresion/impresoras-y-escaneres/multifuncionales", PRINTER],
         ["impresion/impresoras-y-escaneres/impresoras-fotograficas", PRINTER],
-        ["impresion/impresoras-y-escaneres/impresoras-plotter", PRINTER],
+        ["impresion/impresoras-y-escaneres/plotter", PRINTER],
         ["gaming/equipos/notebooks", NOTEBOOK],
         ["gaming/equipos/monitores", MONITOR],
         ["gaming/componentes/procesadores", MONITOR],
@@ -102,7 +102,7 @@ class NotebookStore(StoreWithUrlExtensions):
         ["gaming/videojuegos/consolas", VIDEO_GAME_CONSOLE],
         ["apple/equipos/macbook", NOTEBOOK],
         ["imac-/-mini-/-pro/studio", ALL_IN_ONE],
-        ["ipad/ipod", TABLET],
+        ["ipad", TABLET],
         ["apple/articulos/apple-watch", WEARABLE],
         ["apple-tv/airpods", HEADPHONES],
         ["apple/articulos/perifericos", KEYBOARD],
@@ -129,7 +129,14 @@ class NotebookStore(StoreWithUrlExtensions):
             url = "https://notebookstore.cl/{}?page={}".format(url_extension, page)
             print(url)
 
-            soup = BeautifulSoup(session.get(url).text, "html5lib")
+            response = session.get(url)
+
+            if response.url != url:
+                raise Exception(
+                    f"Section changed its path, this breaks pagination. Sent: {url}, Received: {response.url}"
+                )
+
+            soup = BeautifulSoup(response.text, "html5lib")
             products = soup.findAll("div", "product-block")
 
             if not products:
@@ -140,12 +147,11 @@ class NotebookStore(StoreWithUrlExtensions):
             for product in products:
                 product_url = "https://notebookstore.cl" + product.find("a")["href"]
                 if product_url in product_urls:
-                    return product_urls
+                    return
                 product_urls.append(product_url)
+                yield product_url
 
             page += 1
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
