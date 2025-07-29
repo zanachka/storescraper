@@ -36,7 +36,6 @@ class Alca(StoreWithUrlExtensions):
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = cls.get_session(extra_args)
-        product_urls = []
 
         page = 1
 
@@ -62,11 +61,9 @@ class Alca(StoreWithUrlExtensions):
 
             for container in product_containers:
                 product_url = container.find("a")["href"]
-                product_urls.append(product_url)
+                yield product_url
 
             page += 1
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
