@@ -11,7 +11,15 @@ class FalabellaMarketplace(Falabella):
     ]
 
     @classmethod
-    def _get_product_urls(cls, session, category_id, extra_params, seller_id, zones):
+    def _get_product_urls(
+        cls,
+        session,
+        category_id,
+        extra_params,
+        seller_id,
+        zones,
+        add_sponsored_data=False,
+    ):
         # In the context of FalabellaMarketplace "category_id" maps to the name of the seller
         discovered_urls = set()
         page = 1
