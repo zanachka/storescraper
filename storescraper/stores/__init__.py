@@ -66,7 +66,6 @@ from .gestion_y_equipos import GestionYEquipos
 from .global_box import Globalbox
 from .gollo_tienda import GolloTienda
 from .hites import Hites
-from .hites_test import HitesTest
 from .hp_online import HpOnline
 from .huawei_shop import HuaweiShop
 from .ibeam import Ibeam
