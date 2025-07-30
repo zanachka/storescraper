@@ -140,14 +140,22 @@ class Centrale(StoreWithUrlExtensions):
         elif "mpn" in product_data:
             part_number = product_data["mpn"]
         else:
-            part_number = soup.find("span", {"id": "solotodo"}).text.split("MPN: ")[-1]
+            part_number = (
+                soup.find("span", {"id": "solotodo"}).text.split("MPN: ")[-1].strip()
+            )
 
         sku = product_data["sku"]
         name = product_data["name"].strip()
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
+        stock_tag = soup.find("p", "stock in-stock")
+        on_demand_tag = soup.find(
+            "div", "product-title-container is-large"
+        ).find_next_sibling(lambda tag: tag.name == "p")
 
-        if soup.find("p", "stock in-stock"):
-            stock = int(soup.find("p", "stock in-stock").text.split()[0])
+        if on_demand_tag and "Producto a pedido" in on_demand_tag.text:
+            stock = 0
+        elif stock_tag:
+            stock = int(stock_tag.text.split()[0])
         else:
             stock = 0
 
