@@ -1,4 +1,5 @@
 import json
+import re
 from bs4 import BeautifulSoup
 from decimal import Decimal
 from storescraper.categories import CELL, CELL_PLAN
@@ -107,8 +108,13 @@ class Movistar(Store):
 
         for plan_container in soup.findAll("div", "card"):
             plan_link = plan_container.find("a")
+
+            if not plan_link:
+                continue
+
             plan_url = plan_link["href"]
             base_plan_name = plan_container.find("p").text.strip()
+            base_plan_name = re.sub(r"\s+", " ", base_plan_name).strip()
             price_text = plan_container.find("div", "precio").find("span").text
             price = Decimal(remove_words(price_text.split()[0]))
             portability_suffixes = ["", " Portabilidad"]
