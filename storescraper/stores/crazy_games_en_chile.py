@@ -142,6 +142,9 @@ class CrazyGamesenChile(StoreWithUrlExtensions):
         else:
             price = Decimal(str(json_data["offers"]["price"]))
 
+        if price == 0:
+            return []
+
         if "disabled" in soup.find("button", "product-form__submit").attrs:
             stock = 0
         else:
