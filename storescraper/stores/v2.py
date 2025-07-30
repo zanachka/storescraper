@@ -118,7 +118,7 @@ class V2(Store):
                     condition = "https://schema.org/RefurbishedCondition"
                 break
         else:
-            raise Exception("No codition found")
+            condition = "https://schema.org/NewCondition"
 
         offer_price = Decimal(json_container["price_amount"])
         normal_price = (offer_price * Decimal("1.03")).quantize(0)
