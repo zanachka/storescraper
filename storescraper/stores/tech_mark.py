@@ -65,7 +65,7 @@ class TechMark(StoreWithUrlExtensions):
         if not sku_tag:
             return []
 
-        sku = sku_tag.text.strip()
+        sku = sku_tag.text.strip()[:50]
         key = soup.find("meta", {"property": "og:id"})["content"]
         name = soup.find("h1", "page-header").text.strip()
         availability_tag = soup.find("meta", {"property": "product:availability"})
