@@ -137,8 +137,10 @@ class Centrale(StoreWithUrlExtensions):
                 part_number_components.append(component_mpn)
 
             part_number = " + ".join(part_number_components) or None
-        else:
+        elif "mpn" in product_data:
             part_number = product_data["mpn"]
+        else:
+            part_number = soup.find("span", {"id": "solotodo"}).text.split("MPN: ")[-1]
 
         sku = product_data["sku"]
         name = product_data["name"].strip()
