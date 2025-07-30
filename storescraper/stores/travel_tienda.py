@@ -53,7 +53,7 @@ class TravelTienda(StoreWithUrlExtensions):
         ("742795275", STEREO_SYSTEM),  # Tech > Audio > Soundbar
         ("1095159098", STEREO_SYSTEM),  # Tech > Audio Hi-Fi > Parlantes y
         ("3555399911", STEREO_SYSTEM),  # Tech > Audio Hi-Fi > Stereo
-        ("1379171641", STEREO_SYSTEM),  # Tech > Audio Hi-Fi > Subwoofer y
+        # ("1379171641", STEREO_SYSTEM),  # Tech > Audio Hi-Fi > Subwoofer y
         ("4064311224", STEREO_SYSTEM),  # Tech > Audio
         ("1479054651", STEREO_SYSTEM),  # Tech > Audio HiFi
         ("2074305120", REFRIGERATOR),  # Home > Electrohogar > Refrigeración
