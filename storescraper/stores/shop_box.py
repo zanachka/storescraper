@@ -141,7 +141,7 @@ class ShopBox(StoreWithUrlExtensions):
         description = html_to_markdown(products_data["description"])
 
         if "reacondicionado" in original_name.lower():
-            condition = "https://schema.org/Refurbished"
+            condition = "https://schema.org/RefurbishedCondition"
         elif "segunda mano" in original_name.lower():
             condition = "https://schema.org/UsedCondition"
         elif "caja abierta" in original_name.lower():
