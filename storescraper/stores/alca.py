@@ -83,7 +83,12 @@ class Alca(StoreWithUrlExtensions):
 
         for entry in json_data["@graph"]:
             if entry["@type"] == "Product":
-                key = soup.find("button", {"name": "add-to-cart"})["value"]
+                yith_tag = soup.find("div", "yith-ywraq-add-button show")
+                key = (
+                    yith_tag["data-product_id"]
+                    if yith_tag
+                    else soup.find("button", {"name": "add-to-cart"})["value"]
+                )
                 product_data = entry
                 name = product_data["name"]
                 sku = product_data["sku"][:50] if "sku" in product_data else None
