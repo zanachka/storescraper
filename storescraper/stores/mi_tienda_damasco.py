@@ -71,7 +71,7 @@ class MiTiendaDamasco(StoreWithUrlExtensions):
         if not low_price:
             return []
 
-        price = Decimal(price_data["lowPrice"])
+        price = Decimal(price_data["lowPrice"]).quantize(0)
         description = html_to_markdown(
             json_data[f"Product:{reference_name}"]["description"]
         )
