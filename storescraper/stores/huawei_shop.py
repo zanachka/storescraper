@@ -103,7 +103,7 @@ class HuaweiShop(StoreWithUrlExtensions):
             sbom_codes = []
 
             if "errorDetail" in product_json["data"]:
-                return []
+                continue
 
             for product_entry in product_json["data"]["sbomList"]:
                 sbom_codes.append(product_entry["sbomCode"])
@@ -181,29 +181,28 @@ class HuaweiShop(StoreWithUrlExtensions):
                         )
                         products.append(p)
 
-                else:
-                    sku = product["sbomCode"]
+                sku = product["sbomCode"]
 
-                    if sku not in price_per_sbom:
-                        continue
+                if sku not in price_per_sbom:
+                    continue
 
-                    price = price_per_sbom[sku]
+                price = price_per_sbom[sku]
 
-                    p = Product(
-                        name,
-                        cls.__name__,
-                        category,
-                        url,
-                        url,
-                        sku,
-                        base_stock,
-                        price,
-                        price,
-                        "CLP",
-                        sku=sku,
-                        picture_urls=picture_urls,
-                        description=description,
-                    )
-                    products.append(p)
+                p = Product(
+                    name,
+                    cls.__name__,
+                    category,
+                    url,
+                    url,
+                    sku,
+                    base_stock,
+                    price,
+                    price,
+                    "CLP",
+                    sku=sku,
+                    picture_urls=picture_urls,
+                    description=description,
+                )
+                products.append(p)
 
         return products
