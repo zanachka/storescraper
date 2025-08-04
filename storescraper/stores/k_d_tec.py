@@ -22,6 +22,7 @@ from storescraper.categories import (
     POWER_SUPPLY,
     PRINTER,
     PROCESSOR,
+    PROJECTOR,
     SOLID_STATE_DRIVE,
     STEREO_SYSTEM,
     STORAGE_DRIVE,
@@ -97,6 +98,7 @@ class KDTec(StoreWithUrlExtensions):
         ["tintas", PRINTER_SUPPLY],
         ["toner", PRINTER_SUPPLY],
         ["aspiradoras-electrodomesticos", VACUUM_CLEANER],
+        ["proyectores", PROJECTOR],
     ]
 
     @classmethod
