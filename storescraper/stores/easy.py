@@ -210,7 +210,7 @@ class Easy(Store):
             headers={"X-Api-Key": "jFt3XhoLqFAGr6qN9SCpr9K6y83HpakP"},
         )
 
-        if response.status_code == 404:
+        if response.status_code in [500, 404]:
             return []
 
         response = response.json()
