@@ -15,6 +15,7 @@ from storescraper.categories import (
     MONITOR,
     PRINTER_SUPPLY,
     TABLET,
+    PROJECTOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -31,6 +32,7 @@ class Alca(StoreWithUrlExtensions):
         ("monitores", MONITOR),
         ("suministro", PRINTER_SUPPLY),
         ("tablets", TABLET),
+        ("proyectores", PROJECTOR),
     ]
 
     @classmethod
@@ -42,12 +44,11 @@ class Alca(StoreWithUrlExtensions):
         while True:
             if page > 80:
                 raise Exception("Page overflow: " + url_extension)
-            url_webpage = "https://www.alcaplus.cl/solotodo/{}/page/{}/".format(
-                url_extension, page
+            url_webpage = (
+                "https://www.alcaplus.cl/solotodo/{}/page/{}/?instock_filter=1".format(
+                    url_extension, page
+                )
             )
-
-            if url_extension == "suministro":
-                url_webpage += "?instock_filter=1"
 
             print(url_webpage)
             data = session.get(url_webpage).text
