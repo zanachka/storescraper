@@ -129,8 +129,12 @@ class LgV6(Store):
         response = session.post(cls.endpoint_url, json=payload)
         json_data = response.json()["results"][0]["raw"]
         model_id = json_data["ec_model_id"]
-        name = "{} - {}".format(
-            json_data["ec_sales_model_code"], json_data.get("systitle", "")
+        name = (
+            "{} - {}".format(
+                json_data["ec_sales_model_code"], json_data.get("systitle", "")
+            )
+            if "ec_sales_model_code" in json_data
+            else json_data["ec_user_friendly_name"]
         )
 
         # Unavailable products do not have a price, but we still need to
