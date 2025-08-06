@@ -763,18 +763,7 @@ class Falabella(Store):
             ):
                 stock = -1
             elif model.get("isPurchaseable", True):
-                availabilities = model["availability"]
-
-                for availability in availabilities:
-                    if availability["shippingOptionType"] in [
-                        "All",
-                        "HomeDelivery",
-                        "SiteToStore",
-                        "PickupInStore",
-                    ]:
-                        if availability["quantity"]:
-                            stock = -1
-                            break
+                stock = -1
 
             if "reacondicionado" in base_name.lower():
                 condition = "https://schema.org/RefurbishedCondition"
