@@ -762,8 +762,12 @@ class Falabella(Store):
                 or seller_entry.get("isActive", False)
             ):
                 stock = -1
-            elif model.get("isPurchaseable", True):
+            elif not product_data["isOutOfStock"] and model.get(
+                "isOnlineSellable", False
+            ):
                 stock = -1
+            else:
+                stock = 0
 
             if "reacondicionado" in base_name.lower():
                 condition = "https://schema.org/RefurbishedCondition"
