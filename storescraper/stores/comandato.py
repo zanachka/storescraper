@@ -28,13 +28,13 @@ class Comandato(Store):
 
         url = "https://www.comandato.com/lg?PS=200"
         soup = BeautifulSoup(session.get(url).text, "lxml")
-        products = soup.findAll("div", "producto")
+        products = soup.findAll("div", "vtex-search-result-3-x-galleryItem")
 
         if not products:
             logging.warning("Empty url {}".format(url))
 
         for product in products:
-            product_url = product.find("a")["href"]
+            product_url = f"https://www.comandato.com{product.find('a')['href']}"
             product_urls.append(product_url)
 
         return product_urls
@@ -50,37 +50,28 @@ class Comandato(Store):
 
         data = response.text
         soup = BeautifulSoup(data, "lxml")
-
-        name_container = soup.find("div", "productDescriptionShort")
-
-        if not name_container:
-            return []
-
-        name = name_container.text
-        sku = soup.find("div", "skuReference").text
-        stock = 0
-        if (
-            soup.find("link", {"itemprop": "availability"})["href"]
-            == "http://schema.org/InStock"
-        ):
-            stock = -1
-
-        pricing_data = re.search(r"vtex.events.addData\(([\S\s]+?)\);", data).groups()[
-            0
-        ]
-        pricing_data = json.loads(pricing_data)
-
-        tax = Decimal("1.12")
-        price = (Decimal(pricing_data["productPriceFrom"]) * tax).quantize(
-            Decimal("0.01")
+        product_data = json.loads(
+            soup.find("script", {"type": "application/ld+json"}).text
+        )
+        name = product_data["name"]
+        sku = product_data["mpn"]
+        offers = product_data["offers"]["offers"]
+        assert len(offers) == 1
+        offer = offers[0]
+        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        price_tag = soup.find("span", "vtex-product-price-1-x-currencyContainer")
+        price = Decimal(
+            price_tag.text.replace("$", "").replace(".", "").replace(",", ".")
         )
 
         picture_urls = [
-            a["zoom"].replace(" ", "%20")
-            for a in soup.findAll("a", {"id": "botaoZoom"})
+            img["src"].split("?")[0]
+            for img in soup.find_all("img", "vtex-store-components-3-x-productImageTag")
         ]
 
-        description = html_to_markdown(str(soup.find("div", {"id": "caracteristicas"})))
+        description = html_to_markdown(
+            str(soup.find("div", "vtex-disclosure-layout-1-x-content--product-info"))
+        )
 
         p = Product(
             name,
