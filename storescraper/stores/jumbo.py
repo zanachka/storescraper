@@ -1,132 +1,188 @@
-import json
-from collections import defaultdict
-
 from decimal import Decimal
-import validators
-
+from urllib.parse import quote, urlsplit, urlunsplit
+from storescraper.categories import GROCERIES
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy, check_ean13
+from storescraper.utils import session_with_proxy
 
 
 class Jumbo(Store):
+    base_url = "https://www.jumbo.cl"
+    api_key = "be-reg-groceries-jumbo-catalog-w54byfvkmju5"
+    store = "jumboclj512"
+
+    url_extensions = [
+        # Supermercado
+        ("congelados", GROCERIES),
+        ("desayuno", GROCERIES),
+        ("chocolates-galletas-y-dulces", GROCERIES),
+        ("fiambreria-y-encurtidos", GROCERIES),
+        ("panaderia-y-pasteleria", GROCERIES),
+        ("pescaderia", GROCERIES),
+        ("comidas-preparadas", GROCERIES),
+        # Lácteos y Quesos
+        ("lacteos-y-quesos/queseria", GROCERIES),
+        ("lacteos-y-quesos/leches", GROCERIES),
+        ("lacteos-y-quesos/yoghurt", GROCERIES),
+        ("lacteos-y-quesos/postres", GROCERIES),
+        ("lacteos-y-quesos/mantequillas-y-margarinas", GROCERIES),
+        ("lacteos-y-quesos/huevos", GROCERIES),
+        ("despensa/reposteria/cremas", GROCERIES),
+        ("lacteos-y-quesos/leches-cultivadas-y-bebidas-lacteas", GROCERIES),
+        # Despensa
+        ("despensa/pastas-y-salsas", GROCERIES),
+        ("despensa/arroz-y-legumbres", GROCERIES),
+        ("despensa/aceites-sal-y-condimentos", GROCERIES),
+        ("despensa/conservas", GROCERIES),
+        ("despensa/coctel-y-snacks", GROCERIES),
+        ("despensa/aderezos-y-salsas", GROCERIES),
+        ("despensa/instantaneos-y-sopas", GROCERIES),
+        ("despensa/harina-y-complementos", GROCERIES),
+        ("despensa/reposteria", GROCERIES),
+        ("despensa/comidas-etnicas", GROCERIES),
+        # Frutas y Verduras
+        ("frutas-y-verduras/frutas", GROCERIES),
+        ("frutas-y-verduras/verduras", GROCERIES),
+        ("frutas-y-verduras/frutas-y-verduras-organicas", GROCERIES),
+        ("frutas-y-verduras/frutos-secos-y-semillas", GROCERIES),
+        # Carnicería
+        ("carniceria/vacuno", GROCERIES),
+        ("carniceria/cerdo", GROCERIES),
+        ("carniceria/cordero", GROCERIES),
+        ("carniceria/pavo", GROCERIES),
+        ("carniceria/pollo", GROCERIES),
+        # Licores, Bebidas y Aguas
+        ("licores-bebidas-y-aguas/sin-alcohol", GROCERIES),
+        ("licores-bebidas-y-aguas/bebidas-gaseosas", GROCERIES),
+        ("licores-bebidas-y-aguas/aguas", GROCERIES),
+        ("licores-bebidas-y-aguas/agua-tonica-y-ginger-beer", GROCERIES),
+        ("licores-bebidas-y-aguas/jugos", GROCERIES),
+        ("licores-bebidas-y-aguas/bebidas-energeticas", GROCERIES),
+        ("licores-bebidas-y-aguas/bebidas-isotonicas-y-sueros", GROCERIES),
+        ("licores-bebidas-y-aguas/infusiones-frias", GROCERIES),
+    ]
+
     @classmethod
     def categories(cls):
-        return ["Groceries"]
+        return [GROCERIES]
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
-        url_extensions = [
-            ["despensa", ["Groceries"], "Despensa", 1],
-        ]
-
         session = session_with_proxy(extra_args)
-        session.headers["x-api-key"] = "IuimuMneIKJd3tapno2Ag1c1WcAES97j"
-        product_urls = []
+        session.headers["apikey"] = cls.api_key
 
         for (
             url_extension,
-            local_categories,
-            section_name,
-            category_weight,
-        ) in url_extensions:
-
-            if category not in local_categories:
+            local_category,
+        ) in cls.url_extensions:
+            if category != local_category:
                 continue
 
-            page = 1
+            page_size = 40
+            index_from = 0
 
             while True:
-                if page >= 75:
-                    raise Exception("Page overflow: " + url_extension)
+                index_to = index_from + page_size
 
-                api_url = (
-                    "https://apijumboweb.smdigital.cl/catalog/api/v2/"
-                    "products/{}?page={}".format(url_extension, page)
+                if index_from >= 2000:
+                    raise Exception(f"Page overflow: {url_extension}")
+
+                print(f"{url_extension} from {index_from} to {index_to}")
+
+                payload = {
+                    "store": cls.store,
+                    "from": index_from,
+                    "to": index_to,
+                    "selectedFacets": [
+                        {"key": "category1", "value": f"/{url_extension}"}
+                    ],
+                    "promotionalCards": True,
+                    "sponsoredProducts": True,
+                }
+
+                response = session.post(
+                    "https://bff.jumbo.cl/catalog/plp", json=payload
                 )
-                print(api_url)
+                json_data = response.json()
+                products = [
+                    product
+                    for product in json_data["products"]
+                    if product.get("type") != "card"
+                ]
 
-                retries = 3
-                while retries:
-                    response = session.get(api_url)
-                    if response.status_code == 200:
-                        break
-                    retries -= 1
-                else:
-                    raise Exception("Fetch error")
-
-                json_data = json.loads(response.text)
-
-                if "status" in json_data and (
-                    json_data["status"] == 500 or json_data["status"] == 400
-                ):
+                if not products:
+                    if index_from == 0:
+                        raise Exception(f"Empty section: {url_extension}")
                     break
 
-                for product in json_data["products"]:
-                    product_url = "https://www.jumbo.cl/{}/p".format(
-                        product["linkText"]
-                    )
-                    product_urls.append(product_url)
+                for product in products:
+                    product_url = f"{cls.base_url}/{product['slug']}/p"
+                    yield product_url
 
-                page += 1
-
-        return product_urls
+                index_from += page_size
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        api_url = (
-            "https://apijumboweb.smdigital.cl/catalog/api/v1"
-            "/catalog_system/pub/products/search/{}/p?sc=11".format(url.split("/")[3])
-        )
-        session.headers["x-api-key"] = "IuimuMneIKJd3tapno2Ag1c1WcAES97j"
-        api_request = session.get(api_url)
-        data = api_request.json()
+        session.headers["apikey"] = cls.api_key
+        payload = {
+            "slug": url.split(f"{cls.base_url}/")[1].split("/p")[0],
+            "store": cls.store,
+        }
+        response = session.post("https://bff.jumbo.cl/catalog/pdp", json=payload)
 
-        if len(data) == 0:
+        if response.status_code == 204:
             return []
 
-        api_json = data[0]
-        name = api_json["brand"] + " - " + api_json["productName"]
-        sku = api_json["productReference"]
-        description = (
-            f'Marca: {api_json["brand"]}. Descripcion: {api_json["description"]}'
-        )
+        product_data = response.json()
+        brand = product_data["brand"]
+        specs = [
+            f"- {item['key']}: {item['value']}"
+            for item in product_data["characteristicsTable"]
+        ]
+        specs = f"- Marca: {brand}\n{'\n'.join(specs)}\n\n"
+        description = f"{specs}{product_data['description']}"
+        items = product_data["items"]
 
-        product_item = api_json["items"][0]
-        seller_info = product_item["sellers"][0]["commertialOffer"]
-        ean = product_item.get("ean", None)
+        for item in items:
+            name = f"{brand} - {item['name']}"
+            sku = item["skuId"]
+            price = Decimal(item["price"])
+            promotions = item["promotions"]
 
-        if ean and not check_ean13(ean):
-            ean = None
+            cencosud_promotions = [
+                promotion["unitPrice"]
+                for promotion in promotions
+                if promotion["paymentMethods"] == "CENCOSUD_CARD"
+            ]
 
-        price = Decimal(seller_info["Price"])
+            offer_price = (
+                Decimal(min(cencosud_promotions)) if cencosud_promotions else price
+            )
+            stock = -1 if item["stock"] else 0
+            picture_urls = []
 
-        if seller_info["AvailableQuantity"] == 0:
-            return []
+            for img in item["images"]:
+                parts = urlsplit(img.split("?")[0])
+                safe_path = quote(parts.path, safe="/")
+                safe_url = urlunsplit((parts.scheme, parts.netloc, safe_path, "", ""))
+                picture_urls.append(safe_url)
 
-        picture_urls = []
-        for i in product_item["images"]:
-            image = i["imageUrl"].split("?")[0]
-            if validators.url(image):
-                picture_urls.append(image)
+            p = Product(
+                name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                sku,
+                stock,
+                price,
+                offer_price,
+                "CLP",
+                sku=sku,
+                picture_urls=picture_urls,
+                description=description,
+            )
 
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            sku,
-            -1,
-            price,
-            price,
-            "CLP",
-            sku=sku,
-            ean=ean,
-            picture_urls=picture_urls,
-            description=description,
-        )
-
-        return [p]
+            yield p
