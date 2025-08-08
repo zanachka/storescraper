@@ -124,6 +124,8 @@ OPTICAL_DISK_PLAYER = "OpticalDiskPlayer"
 OPTICAL_DRIVE = "OpticalDrive"
 # Perfumes
 PERFUME = "Perfume"
+# Abarrotes
+GROCERIES = "Groceries"
 
 #########################
 # Legacy (no usar)
