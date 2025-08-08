@@ -25,7 +25,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy
+from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
 
 
 class PlayFactory(StoreWithUrlExtensions):
@@ -85,17 +85,10 @@ class PlayFactory(StoreWithUrlExtensions):
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
         base_name = soup.find("h1", "product_title").text.strip()
-
-        picture_urls = []
-        figures = soup.find("div", "woocommerce-product-gallery__wrapper")
-
-        for a in figures.findAll("img"):
-            if validators.url(a["src"]):
-                picture_urls.append(a["src"])
-
+        images = soup.find("div", "woocommerce-product-gallery__wrapper").find_all("a")
+        picture_urls = [img["href"] for img in images]
         description_tag = soup.find("div", {"id": "tab-description"})
         description = description_tag.text if description_tag else None
-
         products = []
         variants_form = soup.find("form", "variations_form cart")
 
@@ -133,6 +126,11 @@ class PlayFactory(StoreWithUrlExtensions):
         else:
             sku_match = re.search(r'"postID":(\d+)', response.text)
             sku = sku_match.groups()[0]
+
+            webpay_td = soup.find("td", string=lambda t: t and "Webpay Plus" in t)
+            price_td = webpay_td.find_next("td")
+            normal_price = Decimal(remove_words(price_td.get_text(strip=True)))
+
             offer_price = Decimal(
                 soup.find("meta", {"property": "product:price:amount"})["content"]
             )
@@ -140,7 +138,6 @@ class PlayFactory(StoreWithUrlExtensions):
             if not offer_price:
                 return []
 
-            normal_price = (offer_price * Decimal("1.025")).quantize(0)
             stock = 0
             qty_input = soup.find("input", "qty")
 
