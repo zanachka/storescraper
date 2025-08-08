@@ -146,6 +146,7 @@ from .rodelag import Rodelag
 from .r_s_tech import RSTech
 from .samsung_shop import SamsungShop
 from .sandos import Sandos
+from .santa_isabel import SantaIsabel
 from .sc_global import ScGlobal
 from .shop_box import ShopBox
 from .siman_el_salvador import SimanElSalvador
