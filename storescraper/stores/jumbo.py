@@ -141,7 +141,8 @@ class Jumbo(Store):
             f"- {item['key']}: {item['value']}"
             for item in product_data["characteristicsTable"]
         ]
-        specs = f"- Marca: {brand}\n{'\n'.join(specs)}\n\n"
+        specs_str = "\n".join(specs)
+        specs = f"- Marca: {brand}\n{specs_str}\n\n"
         description = f"{specs}{product_data['description']}"
         items = product_data["items"]
 
