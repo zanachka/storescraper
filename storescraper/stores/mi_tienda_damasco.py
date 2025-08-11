@@ -59,7 +59,11 @@ class MiTiendaDamasco(StoreWithUrlExtensions):
         soup = BeautifulSoup(response.text, "lxml")
         state_match = re.search("__STATE__ = (.+)", response.text)
         json_data = json.loads(state_match.groups()[0])
-        product_data = json_data[f"Product:{reference_name}.items.0"]
+
+        try:
+            product_data = json_data[f"Product:{reference_name}.items.0"]
+        except KeyError:
+            return []
 
         name = product_data["name"]
         key = product_data["itemId"]
