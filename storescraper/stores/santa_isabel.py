@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from storescraper.categories import GROCERIES
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import check_ean13, session_with_proxy
+from storescraper.utils import check_ean13, html_to_markdown, session_with_proxy
 
 
 class SantaIsabel(Store):
@@ -157,7 +157,7 @@ class SantaIsabel(Store):
             if spec_name in product_data
         ]
         specs = "".join(specs)
-        description = specs + "\n" + product_data["description"]
+        description = specs + "\n" + html_to_markdown(product_data["description"])
         product_id = product_data["productId"]
 
         for item in product_data["items"]:
