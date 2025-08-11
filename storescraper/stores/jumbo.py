@@ -148,6 +148,13 @@ class Jumbo(Store):
 
         for item in items:
             name = f"{brand} - {item['name']}"
+
+            multiplier = item["unitMultiplier"]
+            measurement = item["measurementUnit"]
+
+            if multiplier != 1 or measurement != "un":
+                name += f" ({item['unitMultiplier']} {item['measurementUnit']})"
+
             sku = item["skuId"]
             price = Decimal(item["price"])
             promotions = item["promotions"]
