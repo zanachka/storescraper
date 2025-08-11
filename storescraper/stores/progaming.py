@@ -22,6 +22,7 @@ from storescraper.categories import (
     USB_FLASH_DRIVE,
     WEARABLE,
     COFFE_MAKER,
+    CELL,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -49,6 +50,7 @@ class Progaming(StoreWithUrlExtensions):
         ["otros-productos/pendrivers-memorias", USB_FLASH_DRIVE],
         ["otros-productos/relojes-inteligentes", WEARABLE],
         ["cafeteras", COFFE_MAKER],
+        ["otros-productos/smartphones", CELL],
     ]
 
     @classmethod
