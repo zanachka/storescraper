@@ -66,22 +66,24 @@ class XtremeComponents(StoreWithUrlExtensions):
             raise Exception("No product tag found")
 
         name = product_data["name"]
+        offers = product_data["offers"]
 
-        assert len(product_data["offers"]) == 1
+        assert len(offers) == 1
 
         if "RESERVA" in name.upper():
             stock = 0
-        elif soup.find("a", "add-to-cart-button"):
-            stock = -1
         else:
-            stock = 0
+            stock = (
+                -1 if offers[0]["availability"] == "http://schema.org/InStock" else 0
+            )
 
         price = get_price_from_price_specification(product_data)
         sku = str(product_data["sku"])
         description = html_to_markdown(product_data["description"])
-        picture_urls = [
-            soup.find("div", "woocommerce-product-gallery__image").find("a")["href"]
-        ]
+        picture_container_tag = soup.find("div", "woocommerce-product-gallery__image")
+        picture_urls = (
+            [picture_container_tag.find("a")["href"]] if picture_container_tag else []
+        )
 
         p = Product(
             name,
