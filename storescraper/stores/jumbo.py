@@ -137,19 +137,6 @@ class Jumbo(Store):
 
         product_data = response.json()
         brand = product_data["brand"]
-        marcas_file = "marcas_jumbo.txt"
-
-        try:
-            with open(marcas_file, "r", encoding="utf-8") as f:
-                marcas_existentes = set(line.strip() for line in f if line.strip())
-        except FileNotFoundError:
-            marcas_existentes = set()
-
-        if brand not in marcas_existentes:
-            with open(marcas_file, "a", encoding="utf-8") as f:
-                f.write(brand + "\n")
-
-        marcas_existentes.add(brand)
         specs = [
             f"- {item['key']}: {item['value']}"
             for item in product_data["characteristicsTable"]
@@ -157,8 +144,6 @@ class Jumbo(Store):
         specs_str = "\n".join(specs)
         specs = f"- Marca: {brand}\n{specs_str}\n\n"
         description = f"{specs}{html_to_markdown(product_data['description'])}"
-        print(description)
-        exit()
         items = product_data["items"]
 
         for item in items:
