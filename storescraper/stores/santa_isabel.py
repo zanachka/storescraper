@@ -117,9 +117,7 @@ class SantaIsabel(Store):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        promotions_data = session.get(
-            "https://assets.jumbo.cl/json/santaisabel/promotions-v2.json"
-        ).json()
+        promotions_data = extra_args["promotions_data"]
         response = session.get(url)
 
         if response.status_code == 404:
@@ -157,7 +155,7 @@ class SantaIsabel(Store):
             if spec_name in product_data
         ]
         specs = "".join(specs)
-        description = specs + "\n" + html_to_markdown(product_data["description"])
+        description = "Marca: " + product_data['brand'] + "\n" + specs + "\n" + html_to_markdown(product_data["description"])
         product_id = product_data["productId"]
 
         for item in product_data["items"]:
@@ -213,3 +211,11 @@ class SantaIsabel(Store):
             )
 
             yield p
+
+    @classmethod
+    def preflight(cls, extra_args=None):
+        session = session_with_proxy(extra_args)
+        promotions_data = session.get(
+            "https://assets.jumbo.cl/json/santaisabel/promotions-v2.json"
+        ).json()
+        return {"promotions_data": promotions_data}
