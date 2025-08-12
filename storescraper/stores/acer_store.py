@@ -72,6 +72,9 @@ class AcerStore(StoreWithUrlExtensions):
         sku = product_data["sku"]
         part_number = product_data["category"]
         description = html_to_markdown(soup.find("p", "product__text").text)
+        specs_table = soup.find("table", "pivot-product-description__table")
+        if specs_table:
+            description += "\n" + html_to_markdown(specs_table.text)
         description_lower = description.lower()
         name_lower = name.lower()
 
