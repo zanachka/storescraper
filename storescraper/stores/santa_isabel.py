@@ -155,7 +155,14 @@ class SantaIsabel(Store):
             if spec_name in product_data
         ]
         specs = "".join(specs)
-        description = "Marca: " + product_data['brand'] + "\n" + specs + "\n" + html_to_markdown(product_data["description"])
+        description = (
+            "Marca: "
+            + product_data["brand"]
+            + "\n"
+            + specs
+            + "\n"
+            + html_to_markdown(product_data["description"])
+        )
         product_id = product_data["productId"]
 
         for item in product_data["items"]:
