@@ -134,6 +134,7 @@ class Jumbo(StoreWithUrlExtensions):
         specs_str = "\n".join(specs)
         specs = f"- Marca: {brand}\n{specs_str}\n\n"
         description = f"{specs}{html_to_markdown(product_data['description'])}"
+        sku = product_data["reference"]
         items = product_data["items"]
 
         for item in items:
@@ -145,7 +146,7 @@ class Jumbo(StoreWithUrlExtensions):
             if multiplier != 1 or measurement != "un":
                 name += f" ({item['unitMultiplier']} {item['measurementUnit']})"
 
-            sku = item["skuId"]
+            key = item["skuId"]
             price = Decimal(item["price"])
             promotions = item["promotions"]
 
@@ -173,7 +174,7 @@ class Jumbo(StoreWithUrlExtensions):
                 category,
                 url,
                 url,
-                sku,
+                key,
                 stock,
                 price,
                 offer_price,
