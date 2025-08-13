@@ -17,7 +17,6 @@ class SantaIsabel(Store):
         ("desayuno", GROCERIES),
         ("chocolates-galletas-y-dulces", GROCERIES),
         ("congelados", GROCERIES),
-        ("pescaderia", GROCERIES),
         ("comidas-preparadas", GROCERIES),
         ("mundo-vegano", GROCERIES),
         # Lácteos y Quesos
@@ -46,10 +45,14 @@ class SantaIsabel(Store):
         ("frutas-y-verduras/frutas-y-verduras-organicas", GROCERIES),
         ("frutas-y-verduras/frutos-secos-y-semillas", GROCERIES),
         # Carnicería
-        ("carniceria/vacuno", GROCERIES),
-        ("carniceria/cerdo", GROCERIES),
-        ("carniceria/pavo", GROCERIES),
-        ("carniceria/pollo", GROCERIES),
+        ("carnes-y-pescados/vacuno", GROCERIES),
+        ("carnes-y-pescados/cerdo", GROCERIES),
+        ("carnes-y-pescados/pavo", GROCERIES),
+        ("carnes-y-pescados/pollo", GROCERIES),
+        ("carnes-y-pescados/pescados", GROCERIES),
+        ("carnes-y-pescados/camarones", GROCERIES),
+        ("carnes-y-pescados/mariscos", GROCERIES),
+        ("carnes-y-pescados/gourmet-del-mar", GROCERIES),
         # Botillería
         ("vinos-cervezas-y-licores/sin-alcohol", GROCERIES),
         ("bebidas-aguas-y-jugos/bebidas-gaseosas", GROCERIES),

@@ -115,6 +115,10 @@ class Centrale(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
+
+        if response.status_code == 404:
+            return []
+
         soup = BeautifulSoup(response.text, "lxml")
         script_text = soup.findAll("script", {"type": "application/ld+json"})[-1].text
         script_text = re.sub(
