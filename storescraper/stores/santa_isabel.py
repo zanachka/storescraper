@@ -9,6 +9,8 @@ from storescraper.utils import check_ean13, html_to_markdown, session_with_proxy
 
 
 class SantaIsabel(Store):
+    preferred_products_for_url_concurrency = 20
+
     url_extensions = [
         # Supermercado
         ("bebidas-aguas-y-jugos", GROCERIES),

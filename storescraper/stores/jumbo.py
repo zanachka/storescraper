@@ -7,6 +7,7 @@ from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class Jumbo(Store):
+    preferred_products_for_url_concurrency = 20
     base_url = "https://www.jumbo.cl"
     api_key = "be-reg-groceries-jumbo-catalog-w54byfvkmju5"
     store = "jumboclj512"
