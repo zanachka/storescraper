@@ -188,6 +188,13 @@ class SantaIsabel(Store):
             key = item["itemId"]
             ean = item["ean"]
 
+            for entry in item["referenceId"]:
+                if entry["Key"] == "RefId":
+                    sku = entry["Value"]
+                    break
+            else:
+                sku = None
+
             promotions = promotions_data["products"].get(product_id, [])
             promotion_prices = [
                 promotions_data["promotions"][promo]["value"]
@@ -222,6 +229,7 @@ class SantaIsabel(Store):
                 picture_urls=picture_urls,
                 ean=ean if check_ean13(ean) else None,
                 description=description,
+                sku=sku,
             )
 
             yield p
