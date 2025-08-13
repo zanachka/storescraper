@@ -19,7 +19,6 @@ class Jumbo(Store):
         ("chocolates-galletas-y-dulces", GROCERIES),
         ("fiambreria-y-encurtidos", GROCERIES),
         ("panaderia-y-pasteleria", GROCERIES),
-        ("pescaderia", GROCERIES),
         ("comidas-preparadas", GROCERIES),
         # Lácteos y Quesos
         ("lacteos-y-quesos/queseria", GROCERIES),
@@ -46,12 +45,16 @@ class Jumbo(Store):
         ("frutas-y-verduras/verduras", GROCERIES),
         ("frutas-y-verduras/frutas-y-verduras-organicas", GROCERIES),
         ("frutas-y-verduras/frutos-secos-y-semillas", GROCERIES),
-        # Carnicería
-        ("carniceria/vacuno", GROCERIES),
-        ("carniceria/cerdo", GROCERIES),
-        ("carniceria/cordero", GROCERIES),
-        ("carniceria/pavo", GROCERIES),
-        ("carniceria/pollo", GROCERIES),
+        # Carnes y Pescados
+        ("carnes-y-pescados/vacuno", GROCERIES),
+        ("carnes-y-pescados/cerdo", GROCERIES),
+        ("carnes-y-pescados/pollo", GROCERIES),
+        ("carnes-y-pescados/pavo", GROCERIES),
+        ("carnes-y-pescados/cordero", GROCERIES),
+        ("carnes-y-pescados/camarones", GROCERIES),
+        ("carnes-y-pescados/pescados", GROCERIES),
+        ("carnes-y-pescados/gourmet-del-mar", GROCERIES),
+        ("carnes-y-pescados/mariscos", GROCERIES),
         # Licores, Bebidas y Aguas
         ("licores-bebidas-y-aguas/sin-alcohol", GROCERIES),
         ("licores-bebidas-y-aguas/bebidas-gaseosas", GROCERIES),
