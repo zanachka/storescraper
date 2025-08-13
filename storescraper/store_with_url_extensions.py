@@ -14,11 +14,16 @@ class StoreWithUrlExtensions(Store):
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
+        seen_urls = []
+
         for url_extension, local_category in cls.url_extensions:
             if local_category != category:
                 continue
 
-            yield from cls.discover_urls_for_url_extension(url_extension, extra_args)
+            for url in cls.discover_urls_for_url_extension(url_extension, extra_args):
+                if url not in seen_urls:
+                    seen_urls.append(url)
+                    yield url
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):

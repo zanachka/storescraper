@@ -1,12 +1,13 @@
+import logging
 from decimal import Decimal
 from urllib.parse import quote, urlsplit, urlunsplit
 from storescraper.categories import GROCERIES
 from storescraper.product import Product
-from storescraper.store import Store
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, session_with_proxy
 
 
-class Jumbo(Store):
+class Jumbo(StoreWithUrlExtensions):
     preferred_products_for_url_concurrency = 20
     base_url = "https://www.jumbo.cl"
     api_key = "be-reg-groceries-jumbo-catalog-w54byfvkmju5"
@@ -64,63 +65,48 @@ class Jumbo(Store):
     ]
 
     @classmethod
-    def categories(cls):
-        return [GROCERIES]
-
-    @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
         session.headers["apikey"] = cls.api_key
 
-        for (
-            url_extension,
-            local_category,
-        ) in cls.url_extensions:
-            if category != local_category:
-                continue
+        page_size = 40
+        index_from = 0
 
-            page_size = 40
-            index_from = 0
+        while True:
+            index_to = index_from + page_size
 
-            while True:
-                index_to = index_from + page_size
+            if index_from >= 2000:
+                raise Exception(f"Page overflow: {url_extension}")
 
-                if index_from >= 2000:
-                    raise Exception(f"Page overflow: {url_extension}")
+            print(f"{url_extension} from {index_from} to {index_to}")
 
-                print(f"{url_extension} from {index_from} to {index_to}")
+            payload = {
+                "store": cls.store,
+                "from": index_from,
+                "to": index_to,
+                "selectedFacets": [{"key": "category1", "value": f"/{url_extension}"}],
+                "promotionalCards": True,
+                "sponsoredProducts": True,
+            }
 
-                payload = {
-                    "store": cls.store,
-                    "from": index_from,
-                    "to": index_to,
-                    "selectedFacets": [
-                        {"key": "category1", "value": f"/{url_extension}"}
-                    ],
-                    "promotionalCards": True,
-                    "sponsoredProducts": True,
-                }
+            response = session.post("https://bff.jumbo.cl/catalog/plp", json=payload)
+            json_data = response.json()
+            products = [
+                product
+                for product in json_data["products"]
+                if product.get("type") != "card"
+            ]
 
-                response = session.post(
-                    "https://bff.jumbo.cl/catalog/plp", json=payload
-                )
-                json_data = response.json()
-                products = [
-                    product
-                    for product in json_data["products"]
-                    if product.get("type") != "card"
-                ]
+            if not products:
+                if index_from == 0:
+                    logging.warning(f"Empty section: {url_extension}")
+                break
 
-                if not products:
-                    if index_from == 0:
-                        raise Exception(f"Empty section: {url_extension}")
-                    break
+            for product in products:
+                product_url = f"{cls.base_url}/{product['slug']}/p"
+                yield product_url
 
-                for product in products:
-                    product_url = f"{cls.base_url}/{product['slug']}/p"
-                    yield product_url
-
-                index_from += page_size
+            index_from += page_size
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
