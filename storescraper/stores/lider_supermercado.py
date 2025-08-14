@@ -120,18 +120,24 @@ class LiderSupermercado(StoreWithUrlExtensions):
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
+        return [f"{cls.base_url}/category/{url_extension.replace(' ', '_')}"]
+
+    @classmethod
+    def products_for_url(cls, url, category=None, extra_args=None):
         session = session_with_proxy(extra_args)
         session.headers = cls.headers
         page = 1
+        seen_keys = set()
+        section = url.split(f"{cls.base_url}/category/")[-1].replace("_", " ")
 
         while True:
             if page >= 50:
-                raise Exception(f"Page overflow: {url_extension}")
+                raise Exception(f"Page overflow: {section}")
 
-            print(f"{url_extension} page {page}")
+            print(f"{section} page {page}")
 
             payload = {
-                "categories": url_extension,
+                "categories": section,
                 "page": page,
                 "facets": [],
                 "sortBy": "",
@@ -143,52 +149,49 @@ class LiderSupermercado(StoreWithUrlExtensions):
 
             if not products:
                 if page == 1:
-                    raise Exception(f"Empty section: {url_extension}")
+                    raise Exception(f"Empty section: {url}")
                 break
 
             for product in products:
-                product_url = f"{cls.base_url}/product/sku/{product['sku']}"
-                yield product_url
+                key = product["ID"]
+
+                if key in seen_keys:
+                    continue
+
+                seen_keys.add(key)
+                brand = product["brand"]
+                specs = [
+                    f"- {item['name']}: {item['value']}"
+                    for item in product["specifications"]
+                ]
+                specs_str = "\n".join(specs)
+                specs = f"- Marca: {brand}\n{specs_str}\n\n"
+                description = f"{specs}{html_to_markdown(product['longDescription'])}"
+                name = f"{brand} - {product['displayName']}"
+                price = Decimal(product["price"]["BasePriceSales"])
+                stock = -1 if product["available"] else 0
+                picture_urls = [
+                    f"{img}=0" for img in product["images"]["availableImages"]
+                ]
+                sku = product["itemNumber"]
+                discovery_url = f"{cls.base_url}/product/sku/{key.split('PROD_')[1]}"
+
+                p = Product(
+                    name,
+                    cls.__name__,
+                    category,
+                    url,
+                    discovery_url,
+                    key,
+                    stock,
+                    price,
+                    price,
+                    "CLP",
+                    sku=sku,
+                    picture_urls=picture_urls,
+                    description=description,
+                )
+
+                yield p
 
             page += 1
-
-    @classmethod
-    def products_for_url(cls, url, category=None, extra_args=None):
-        print(url)
-        key = url.split("/")[-1]
-        session = session_with_proxy(extra_args)
-        session.headers = cls.headers
-        response = session.get(f"{cls.base_url}/bff/products/{key}")
-        product_data = response.json()
-
-        brand = product_data["brand"]
-        specs = [
-            f"- {item['name']}: {item['value']}"
-            for item in product_data["specifications"]
-        ]
-        specs_str = "\n".join(specs)
-        specs = f"- Marca: {brand}\n{specs_str}\n\n"
-        description = f"{specs}{html_to_markdown(product_data['longDescription'])}"
-        name = f"{brand} - {product_data['displayName']}"
-        price = Decimal(product_data["price"]["BasePriceSales"])
-        stock = -1 if product_data["available"] else 0
-        picture_urls = [f"{img}=0" for img in product_data["images"]["availableImages"]]
-        sku = product_data["itemNumber"]
-
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            key,
-            stock,
-            price,
-            price,
-            "CLP",
-            sku=sku,
-            picture_urls=picture_urls,
-            description=description,
-        )
-
-        yield p
