@@ -149,7 +149,7 @@ class LiderSupermercado(StoreWithUrlExtensions):
 
             if not products:
                 if page == 1:
-                    raise Exception(f"Empty section: {url}")
+                    raise Exception(f"Empty section: {section}")
                 break
 
             for product in products:
