@@ -119,50 +119,38 @@ class LiderSupermercado(StoreWithUrlExtensions):
     ]
 
     @classmethod
-    def categories(cls):
-        return [GROCERIES]
-
-    @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
         session.headers = cls.headers
+        page = 1
 
-        for (
-            url_extension,
-            local_category,
-        ) in cls.url_extensions:
-            if category != local_category:
-                continue
+        while True:
+            if page >= 50:
+                raise Exception(f"Page overflow: {url_extension}")
 
-            page = 1
+            print(f"{url_extension} page {page}")
 
-            while True:
-                if page >= 50:
-                    raise Exception(f"Page overflow: {url_extension}")
+            payload = {
+                "categories": url_extension,
+                "page": page,
+                "facets": [],
+                "sortBy": "",
+                "hitsPerPage": 16,
+            }
+            response = session.post(f"{cls.base_url}/bff/category", json=payload)
+            json_data = response.json()
+            products = json_data["products"]
 
-                print(f"{url_extension} page {page}")
+            if not products:
+                if page == 1:
+                    raise Exception(f"Empty section: {url_extension}")
+                break
 
-                payload = {
-                    "categories": url_extension,
-                    "page": page,
-                    "facets": [],
-                    "sortBy": "",
-                    "hitsPerPage": 16,
-                }
-                response = session.post(f"{cls.base_url}/bff/category", json=payload)
-                json_data = response.json()
-                products = json_data["products"]
+            for product in products:
+                product_url = f"{cls.base_url}/product/sku/{product['sku']}"
+                yield product_url
 
-                if not products:
-                    if page == 1:
-                        raise Exception(f"Empty section: {url_extension}")
-                    break
-
-                for product in products:
-                    product_url = f"{cls.base_url}/product/sku/{product['sku']}"
-                    yield product_url
-
-                page += 1
+            page += 1
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):

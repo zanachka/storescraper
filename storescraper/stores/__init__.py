@@ -94,6 +94,7 @@ from .lg_ec import LgEc
 from .lg_pe import LgPe
 from .lg_shop_ec import LgShopEc
 from .lider import Lider
+from .lider_supermercado import LiderSupermercado
 from .lifemax import Lifemax
 from .llevatelo import Llevatelo
 from .loi_chile import LoiChile
