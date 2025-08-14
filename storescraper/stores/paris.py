@@ -172,7 +172,10 @@ class Paris(Store):
             "lblElectrodomesticos",
             AIR_FRYER,
             "Electro y Línea Blanca > Electrodomésticos",
-            "Freidoras de Aire",
+            {
+                "key": "tipoProductoAll",
+                "stringValues": "Freidoras de Aire",
+            },
         ),
         (
             "lblElcBatidorasLicuadoras",
@@ -403,7 +406,21 @@ class Paris(Store):
             "blzCapilar",
             HAIR_CARE,
             "Belleza > Cuidado Capilar",
-            "Cepillos Alisadores,Alisadores de Pelo,Secadores de Pelo,Onduladores de Pelo",
+            {
+                "key": "tipoProductoAll",
+                "stringValues": [
+                    "Cepillos Alisadores",
+                    "Alisadores de Pelo",
+                    "Secadores de Pelo",
+                    "Onduladores de Pelo",
+                ],
+            },
+        ),
+        (
+            "jugFigurasJuegos",
+            ACCESORIES,
+            "Juguetes > Figuras y Juegos de Acción",
+            {"key": "brand", "stringValues": ["Beyblade"]},
         ),
     ]
 
@@ -665,12 +682,7 @@ class Paris(Store):
             }
 
             if additional_filter:
-                payload["filters"].append(
-                    {
-                        "key": "tipoProductoAll",
-                        "stringValues": additional_filter.split(","),
-                    }
-                )
+                payload["filters"].append(additional_filter)
 
             if exclude_marketplace:
                 payload["filters"].append(

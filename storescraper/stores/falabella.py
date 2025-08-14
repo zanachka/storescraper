@@ -521,6 +521,12 @@ class Falabella(Store):
             HAIR_CARE,
             "Home > Belleza, higiene y salud > Tecnología para la Belleza > Onduladores de pelo",
         ],
+        [
+            "cat14680031",
+            ACCESORIES,
+            "Home > Niños y Juguetería - Juguetes",
+            {"f.derived.product.brandNamePopular": "BEYBLADE_popular"},
+        ],
     ]
 
     @classmethod

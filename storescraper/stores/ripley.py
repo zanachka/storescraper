@@ -277,6 +277,11 @@ class Ripley(Store):
             HAIR_CARE,
             "Electro > Cuidado personal > Onduladores",
         ],
+        [
+            "jugueteria-y-ninos/juguetes?facet=Marca%3ABEYBLADE",
+            ACCESORIES,
+            "Juguetería y niños > Juguetes",
+        ],
     ]
 
     @classmethod
