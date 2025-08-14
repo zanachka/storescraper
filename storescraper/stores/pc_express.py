@@ -178,6 +178,9 @@ class PcExpress(StoreWithUrlExtensions):
         normal_price = soup.find("div", "rm-product__price--normal").h3.text
         normal_price = Decimal(remove_words(normal_price))
 
+        if offer_price == 0 or normal_price == 0:
+            return []
+
         description = html_to_markdown(str(soup.find("div", {"id": "tab-description"})))
 
         picture_urls = None
