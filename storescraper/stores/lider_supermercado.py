@@ -1,14 +1,14 @@
 from decimal import Decimal
 from storescraper.categories import GROCERIES
 from storescraper.product import Product
-from storescraper.store import Store
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import (
     html_to_markdown,
     session_with_proxy,
 )
 
 
-class LiderSupermercado(Store):
+class LiderSupermercado(StoreWithUrlExtensions):
     base_url = "https://apps.lider.cl/supermercado"
     headers = {
         "User-Agent": "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
@@ -151,7 +151,7 @@ class LiderSupermercado(Store):
                 }
                 response = session.post(f"{cls.base_url}/bff/category", json=payload)
                 json_data = response.json()
-                products = [product for product in json_data["products"]]
+                products = json_data["products"]
 
                 if not products:
                     if page == 1:
