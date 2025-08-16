@@ -174,7 +174,7 @@ class Paris(Store):
             "Electro y Línea Blanca > Electrodomésticos",
             {
                 "key": "tipoProductoAll",
-                "stringValues": "Freidoras de Aire",
+                "stringValues": ["Freidoras de Aire"],
             },
         ),
         (
