@@ -174,14 +174,14 @@ class LiderSupermercado(StoreWithUrlExtensions):
                     f"{img}=0" for img in product["images"]["availableImages"]
                 ]
                 sku = product["itemNumber"]
-                discovery_url = f"{cls.base_url}/product/sku/{key.split('PROD_')[1]}"
+                product_url = f"{cls.base_url}/product/sku/{key.split('PROD_')[1]}"
 
                 p = Product(
                     name,
                     cls.__name__,
                     category,
+                    product_url,
                     url,
-                    discovery_url,
                     key,
                     stock,
                     price,
