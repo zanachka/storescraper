@@ -48,6 +48,7 @@ class Product:
         has_virtual_assistant=None,
         seller=None,
         allow_zero_prices=False,
+        skip_picture_url_validation=False,
     ):
         assert isinstance(key, str)
         assert isinstance(stock, int)
@@ -65,7 +66,7 @@ class Product:
         if cell_plan_name:
             assert len(cell_plan_name) <= 60
 
-        if picture_urls:
+        if picture_urls and not skip_picture_url_validation:
             for picture_url in picture_urls:
                 assert validators.url(picture_url), picture_url
 

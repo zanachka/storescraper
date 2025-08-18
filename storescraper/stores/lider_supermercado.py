@@ -1,3 +1,4 @@
+import urllib
 from decimal import Decimal
 from storescraper.categories import GROCERIES
 from storescraper.product import Product
@@ -170,9 +171,7 @@ class LiderSupermercado(StoreWithUrlExtensions):
                 name = f"{brand} - {product['displayName']}"
                 price = Decimal(product["price"]["BasePriceSales"])
                 stock = -1 if product["available"] else 0
-                picture_urls = [
-                    f"{img}=0" for img in product["images"]["availableImages"]
-                ]
+                picture_urls = [product["images"]["largeImage"]]
                 sku = product["itemNumber"]
                 product_url = f"{cls.base_url}/product/sku/{key.split('PROD_')[1]}"
 
@@ -190,6 +189,7 @@ class LiderSupermercado(StoreWithUrlExtensions):
                     sku=sku,
                     picture_urls=picture_urls,
                     description=description,
+                    skip_picture_url_validation=True,
                 )
 
                 yield p
