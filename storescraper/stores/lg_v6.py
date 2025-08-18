@@ -7,7 +7,7 @@ from decimal import Decimal
 
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class LgV6(Store):
@@ -114,7 +114,7 @@ class LgV6(Store):
         ]
         if not picture_urls:
             standalone_picture_tag = soup.find("link", {"as": "image"})
-            if standalone_picture_tag:
+            if standalone_picture_tag and "href" in standalone_picture_tag:
                 picture_urls = ["https://www.lg.com" + standalone_picture_tag["href"]]
 
         session.headers["Authorization"] = "Bearer {}".format(extra_args["coveo_token"])
@@ -174,7 +174,9 @@ class LgV6(Store):
         pdp_data = soup.find("div", {"id": "pdp-overview-section"})
 
         if pdp_data:
-            description = str(pdp_data).replace('="/', '="https://www.lg.com/')
+            description = html_to_markdown(
+                str(pdp_data).replace('="/', '="https://www.lg.com/')
+            )
         else:
             description = None
 
