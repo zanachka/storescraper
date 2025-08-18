@@ -11,6 +11,7 @@ from storescraper.utils import (
 class Acuenta(StoreWithUrlExtensions):
     base_url = "https://www.acuenta.cl"
     url_extensions = [
+        # Bodegazo
         ("600106", GROCERIES),
         ("600107", GROCERIES),
         ("600109", GROCERIES),
@@ -28,6 +29,7 @@ class Acuenta(StoreWithUrlExtensions):
         ("600305", GROCERIES),
         ("600303", GROCERIES),
         ("600311", GROCERIES),
+        # Despensa
         ("050101", GROCERIES),
         ("050102", GROCERIES),
         ("050103", GROCERIES),
@@ -69,6 +71,7 @@ class Acuenta(StoreWithUrlExtensions):
         ("051702", GROCERIES),
         ("051701", GROCERIES),
         ("051704", GROCERIES),
+        # Frescos y Lácteos
         ("070301", GROCERIES),
         ("070302", GROCERIES),
         ("070309", GROCERIES),
@@ -98,6 +101,7 @@ class Acuenta(StoreWithUrlExtensions):
         ("070603", GROCERIES),
         ("070901", GROCERIES),
         ("070902", GROCERIES),
+        # Carnes y Pescados
         ("0305", GROCERIES),
         ("0304", GROCERIES),
         ("0302", GROCERIES),
@@ -106,6 +110,7 @@ class Acuenta(StoreWithUrlExtensions):
         ("0309", GROCERIES),
         ("0307", GROCERIES),
         ("0310", GROCERIES),
+        # Bebidas y Snacks
         ("020101", GROCERIES),
         ("020102", GROCERIES),
         ("020103", GROCERIES),
@@ -130,6 +135,7 @@ class Acuenta(StoreWithUrlExtensions):
         ("020701", GROCERIES),
         ("020702", GROCERIES),
         ("020703", GROCERIES),
+        # Desayuno y Dulces
         ("440101", GROCERIES),
         ("440102", GROCERIES),
         ("440105", GROCERIES),
@@ -156,15 +162,19 @@ class Acuenta(StoreWithUrlExtensions):
         ("440506", GROCERIES),
         ("440505", GROCERIES),
         ("440507", GROCERIES),
+        # El Bar
         ("8004", GROCERIES),
+        # Congelados
         ("0409", GROCERIES),
         ("0407", GROCERIES),
         ("0403", GROCERIES),
         ("0406", GROCERIES),
         ("0402", GROCERIES),
         ("0405", GROCERIES),
+        # Frutas y Verduras
         ("0601", GROCERIES),
         ("0602", GROCERIES),
+        # Panadería y Pastelería
         ("100101", GROCERIES),
         ("100102", GROCERIES),
         ("100103", GROCERIES),
