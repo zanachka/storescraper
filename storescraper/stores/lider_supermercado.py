@@ -203,7 +203,15 @@ class LiderSupermercado(StoreWithUrlExtensions):
                 name = f"{brand} - {product['displayName']}"
                 price = Decimal(product["price"]["BasePriceSales"])
                 stock = -1 if product["available"] else 0
-                picture_urls = [product["images"]["largeImage"]]
+                images = product.get("images", {})
+
+                if "largeImage" in images:
+                    picture_urls = [images["largeImage"]]
+                elif "defaultImage" in images:
+                    picture_urls = [images["defaultImage"]]
+                else:
+                    picture_urls = []
+
                 sku = product["itemNumber"]
                 product_url = f"{cls.base_url}/product/sku/{key.split('PROD_')[1]}"
 
