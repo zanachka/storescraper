@@ -29,6 +29,7 @@ from storescraper.categories import (
     ACCESORIES,
     IRON,
     HAIR_CARE,
+    CALCULATOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -81,6 +82,10 @@ class TravelTienda(StoreWithUrlExtensions):
             "2387626197",
             HAIR_CARE,
         ),  # Electrohogar > Cuidado Personal > Alisadores y Onduladores
+        (
+            "3685022435",
+            CALCULATOR,
+        ),  # Calculadoras
     ]
 
     @classmethod

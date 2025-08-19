@@ -126,6 +126,8 @@ OPTICAL_DRIVE = "OpticalDrive"
 PERFUME = "Perfume"
 # Abarrotes
 GROCERIES = "Groceries"
+# Calculadoras
+CALCULATOR = "Calculator"
 
 #########################
 # Legacy (no usar)

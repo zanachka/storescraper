@@ -38,6 +38,7 @@ from storescraper.categories import (
     HEADPHONES,
     DISH_WASHER,
     PRINTER_SUPPLY,
+    CALCULATOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -88,6 +89,7 @@ class PcFactory(StoreWithUrlExtensions):
         ["648", CPU_COOLER],
         ["286", OPTICAL_DRIVE],
         ["12,442,444,725,973", PRINTER_SUPPLY],
+        ["823", CALCULATOR],
     ]
 
     @classmethod

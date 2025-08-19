@@ -16,6 +16,7 @@ from storescraper.categories import (
     MICROPHONE,
     ACCESORIES,
     ELECTRIC_GRILL,
+    CALCULATOR,
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -52,6 +53,7 @@ class CasaRoyal(StoreWithUrlExtensions):
         ["audio/microfonos", MICROPHONE],
         ["hogar/parrillas-y-accesorios/parrillas", ELECTRIC_GRILL],
         ["electro/electrodomesticos", ACCESORIES],
+        ["calculadoras", CALCULATOR],
     ]
 
     @classmethod

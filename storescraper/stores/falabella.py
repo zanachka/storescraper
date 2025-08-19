@@ -527,6 +527,7 @@ class Falabella(Store):
             "Home > Niños y Juguetería - Juguetes",
             {"f.derived.product.brandNamePopular": "BEYBLADE_popular"},
         ],
+        ["cat2012", CALCULATOR, "Home > Útiles escolares - Calculadoras"],
     ]
 
     @classmethod
