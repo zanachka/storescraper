@@ -1,3 +1,4 @@
+import time
 import urllib
 from decimal import Decimal
 from storescraper.categories import GROCERIES
@@ -12,10 +13,25 @@ from storescraper.utils import (
 class LiderSupermercado(StoreWithUrlExtensions):
     base_url = "https://apps.lider.cl/supermercado"
     headers = {
-        "User-Agent": "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
         "tenant": "supermercado",
         "x-channel": "SOD",
     }
+    user_agents = [
+        "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
+        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0",
+        "Mozilla/5.0 (X11; Debian; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
+        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:115.0) Gecko/20100101 Firefox/115.0",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
+        "Mozilla/5.0 (X11; Arch Linux; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
+        "Mozilla/5.0 (Linux; Android 13; Redmi Note 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36",
+        "Mozilla/5.0 (Linux; Android 11; Pixel 4a) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
+        "Mozilla/5.0 (Linux; Android 12; SM-G998B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/131.0.6778.135 Mobile Safari/537.36",
+        "Mozilla/5.0 (Linux; Android 13; SAMSUNG SM-G990B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/123.0.6312.105 Mobile Safari/537.36",
+        "Mozilla/5.0 (Linux; Android 12; 220733SG Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.3",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Mobile/15E148 Safari/604.1",
+        "Mozilla/5.0 (iPad; CPU OS 16_4 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.2420.65",
+    ]
     url_extensions = [
         # Marcas Propias
         ("Marcas Propias/Despensa", GROCERIES),
@@ -144,9 +160,25 @@ class LiderSupermercado(StoreWithUrlExtensions):
                 "sortBy": "",
                 "hitsPerPage": 16,
             }
-            response = session.post(f"{cls.base_url}/bff/category", json=payload)
-            json_data = response.json()
-            products = json_data["products"]
+            tries = 0
+
+            while True:
+                try:
+                    user_agent = cls.user_agents[tries]
+                    session.headers["User-Agent"] = user_agent
+                    response = session.post(
+                        f"{cls.base_url}/bff/category", json=payload
+                    )
+                    json_data = response.json()
+                    products = json_data["products"]
+
+                    break
+                except Exception as e:
+                    tries += 1
+                    time.sleep(10)
+
+                    if tries > len(cls.user_agents) - 1:
+                        raise e
 
             if not products:
                 if page == 1:
