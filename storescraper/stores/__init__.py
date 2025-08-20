@@ -192,6 +192,7 @@ from .travel_tienda import TravelTienda
 from .trulu_store import TruluStore
 from .todoclick import Todoclick
 from .tottus import Tottus
+from .tottus_supermercado import TottusSupermercado
 from .ultra_pc import UltraPc
 from .ultimate_gamer_store import UltimateGamerStore
 from .v_gamers import VGamers
