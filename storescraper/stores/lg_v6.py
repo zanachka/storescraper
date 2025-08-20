@@ -218,10 +218,7 @@ class LgV6(Store):
     @classmethod
     def preflight(cls, extra_args=None):
         session = session_with_proxy(extra_args)
-        coveo_token_url = (
-            "https://www.lg.com/{}/jcr:" "content.coveoToken.json"
-        ).format(cls.region_code.lower())
-        response = session.get(coveo_token_url)
+        response = session.get("https://www.lg.com/ncms/latam/api/v1/coveo/token")
         json_response = response.json()
         coveo_token = json_response["token"]
         return {"coveo_token": coveo_token}
