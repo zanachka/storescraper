@@ -72,10 +72,22 @@ class CalculadorasCl(StoreWithUrlExtensions):
             offer_price = normal_price
         picture_urls = [x["url"] for x in product_data["images"]]
 
-        description_match = re.search(
-            r"15:(.+?),([\s\S]+)7:\[", response_text
-        ).groups()[1]
-        description_soup = BeautifulSoup(description_match, "lxml")
+        # Iterate over each chunk of lines, each chunk starts with a hexadecimal value.
+        # Find the chunk that contains the text "characteristics", this one has the product description
+        current_text = ""
+        description_found = False
+        for line in response_text.split("\n"):
+            if re.match("[0-9a-f]+:", line):
+                if description_found:
+                    break
+                else:
+                    current_text = line + "\n"
+
+            current_text += line + "\n"
+            if "characteristics" in line:
+                description_found = True
+
+        description_soup = BeautifulSoup(current_text, "lxml")
         description = html_to_markdown(str(description_soup))
 
         if "OPEN BOX" in name:
