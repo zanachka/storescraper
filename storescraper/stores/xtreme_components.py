@@ -99,7 +99,7 @@ class XtremeComponents(StoreWithUrlExtensions):
             sku=sku,
             description=description,
             picture_urls=picture_urls,
-            condition="https://schema.org/RefurbishedCondition",
+            condition="https://schema.org/UsedCondition",
         )
 
         return [p]
