@@ -8,6 +8,7 @@ from .alfaomega import Alfaomega
 from .alltec import AllTec
 from .almacenes_japon import AlmacenesJapon
 from .almacenes_la_ganga import AlmacenesLaGanga
+from .alvi import Alvi
 from .apple_store import AppleStore
 from .artefacta import Artefacta
 from .asus_store import AsusStore
