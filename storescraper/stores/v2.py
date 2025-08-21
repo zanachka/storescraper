@@ -17,74 +17,50 @@ from storescraper.categories import (
     CELL,
 )
 from storescraper.product import Product
-from storescraper.store import Store
+from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import html_to_markdown, session_with_proxy
 
 
-class V2(Store):
-    @classmethod
-    def categories(cls):
-        return [
-            NOTEBOOK,
-            MONITOR,
-            MOUSE,
-            RAM,
-            TABLET,
-            KEYBOARD,
-            SOLID_STATE_DRIVE,
-            HEADPHONES,
-            VIDEO_CARD,
-            CELL,
-        ]
+class V2(StoreWithUrlExtensions):
+    url_extensions = [
+        ["3-notebooks", NOTEBOOK],
+        ["14-monitores", MONITOR],
+        ["28-mouse", MOUSE],
+        ["35-memorias-ram", RAM],
+        ["29-tablets", TABLET],
+        ["22-teclados", KEYBOARD],
+        ["25-discos-ssd", SOLID_STATE_DRIVE],
+        ["36-headsets", HEADPHONES],
+        ["39-tarjetas-de-video", VIDEO_CARD],
+        ["40-almacenamiento", SOLID_STATE_DRIVE],
+        ["44-audifonos", HEADPHONES],
+        ["46-celulares", CELL],
+    ]
 
     @classmethod
-    def discover_urls_for_category(cls, category, extra_args=None):
-        url_extensions = [
-            ["3-notebooks", NOTEBOOK],
-            ["14-monitores", MONITOR],
-            ["28-mouse", MOUSE],
-            ["35-memorias-ram", RAM],
-            ["29-tablets", TABLET],
-            ["22-teclados", KEYBOARD],
-            ["25-discos-ssd", SOLID_STATE_DRIVE],
-            ["36-headsets", HEADPHONES],
-            ["39-tarjetas-de-video", VIDEO_CARD],
-            ["40-almacenamiento", SOLID_STATE_DRIVE],
-            ["44-audifonos", HEADPHONES],
-            ["46-celulares", CELL],
-        ]
+    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-        product_urls = []
+        page = 1
 
-        for url_extension, local_category in url_extensions:
-            if local_category != category:
-                continue
-            page = 1
+        while True:
+            if page > 10:
+                raise Exception("page overflow: " + url_extension)
+            url_webpage = "https://v2.cl/{}?page={}".format(url_extension, page)
+            print(url_webpage)
+            data = session.get(url_webpage).text
+            soup = BeautifulSoup(data, "lxml")
+            product_containers = soup.findAll("div", {"itemprop": "itemListElement"})
 
-            while True:
-                if page > 10:
-                    raise Exception("page overflow: " + url_extension)
-                url_webpage = "https://v2.cl/{}?page={}".format(url_extension, page)
-                print(url_webpage)
-                data = session.get(url_webpage).text
-                soup = BeautifulSoup(data, "lxml")
-                product_containers = soup.findAll(
-                    "div", {"itemprop": "itemListElement"}
-                )
+            if not product_containers:
+                if page == 1:
+                    logging.warning("Empty category: " + url_extension)
+                break
 
-                if not product_containers:
-                    if page == 1:
-                        logging.warning("Empty category: " + url_extension)
+            for container in product_containers:
+                product_url = container.find("a")["href"]
+                yield product_url
 
-                    break
-
-                for container in product_containers:
-                    product_url = container.find("a")["href"]
-                    product_urls.append(product_url)
-
-                page += 1
-
-        return product_urls
+            page += 1
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -103,6 +79,8 @@ class V2(Store):
             description.find("strong")
             and "Disponible desde" in description.find("strong").text
         ):
+            stock = 0
+        elif "PREVENTA" in json_container["description_short"].upper():
             stock = 0
         else:
             stock = json_container["quantity"]
