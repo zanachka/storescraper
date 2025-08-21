@@ -8,7 +8,8 @@ from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import (
     html_to_markdown,
     remove_words,
-    session_with_proxy,
+    cf_session_with_proxy,
+    check_ean13,
 )
 
 
@@ -100,10 +101,13 @@ class TottusSupermercado(StoreWithUrlExtensions):
     ]
 
     @classmethod
+    def get_session(cls, extra_args=None):
+        return cf_session_with_proxy(extra_args)
+
+    @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        session = session_with_proxy(extra_args)
+        session = cls.get_session()
         page = 1
-        seen_urls = set()
 
         while True:
             if page >= 50:
@@ -124,12 +128,6 @@ class TottusSupermercado(StoreWithUrlExtensions):
 
             for product in products:
                 product_url = product["url"]
-
-                if product_url in seen_urls:
-                    continue
-
-                seen_urls.add(product_url)
-
                 yield product_url
 
             page += 1
@@ -137,12 +135,11 @@ class TottusSupermercado(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cls.get_session()
         session.headers["User-Agent"] = (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
         )
         session.headers["origin"] = "https://www.tottus.cl"
-        next_container = None
 
         for _ in range(5):
             response = session.get(url)
@@ -151,10 +148,9 @@ class TottusSupermercado(StoreWithUrlExtensions):
 
             if next_container:
                 break
-            else:
-                time.sleep(5)
 
-        if not next_container:
+            time.sleep(5)
+        else:
             return []
 
         page_props = json.loads(next_container.contents[0])["props"]["pageProps"]
@@ -180,9 +176,10 @@ class TottusSupermercado(StoreWithUrlExtensions):
                 offer_price = normal_price
 
             picture_urls = [img["url"] for img in model["medias"]]
-            ean = model["okayToShopBarcodes"][0]
+            raw_ean = model["okayToShopBarcodes"][0]
+            ean = raw_ean if check_ean13(raw_ean) else None
             description_response = session.get(
-                f"https://api.okto.shop/snippet_v1/?url={url}&ean={ean}"
+                f"https://api.okto.shop/snippet_v1/?url={url}&ean={raw_ean}"
             )
 
             if description_response.text:
@@ -231,6 +228,7 @@ class TottusSupermercado(StoreWithUrlExtensions):
                 sku=sku,
                 picture_urls=picture_urls,
                 description=description,
+                ean=ean,
             )
 
             yield p
