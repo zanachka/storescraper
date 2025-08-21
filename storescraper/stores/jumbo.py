@@ -140,11 +140,11 @@ class Jumbo(StoreWithUrlExtensions):
         for item in items:
             name = f"{brand} - {item['name']}"
 
-            multiplier = item["unitMultiplier"]
-            measurement = item["measurementUnit"]
+            multiplier = item["unitMultiplierUn"]
+            measurement = item["measurementUnitUn"]
 
             if multiplier != 1 or measurement != "un":
-                name += f" ({item['unitMultiplier']} {item['measurementUnit']})"
+                name += f" ({multiplier} {measurement})"
 
             key = item["skuId"]
             price = Decimal(item["price"])
