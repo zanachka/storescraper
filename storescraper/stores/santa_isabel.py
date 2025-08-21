@@ -3,6 +3,7 @@ from decimal import Decimal
 import json
 from urllib.parse import quote, urlsplit, urlunsplit
 from bs4 import BeautifulSoup
+from requests import TooManyRedirects
 from storescraper.categories import GROCERIES
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
@@ -113,7 +114,11 @@ class SantaIsabel(StoreWithUrlExtensions):
         promotions_data = session.get(
             "https://assets.jumbo.cl/json/santaisabel/promotions-v2.json"
         ).json()
-        response = session.get(url)
+
+        try:
+            response = session.get(url)
+        except TooManyRedirects:
+            return []
 
         if response.status_code == 404:
             return []
