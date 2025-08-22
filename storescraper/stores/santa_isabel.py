@@ -171,14 +171,15 @@ class SantaIsabel(StoreWithUrlExtensions):
             assert len(sellers) == 1
 
             seller = sellers[0]
-            name = f"{product_data['brand']} - {item['name']}"
+            key = item["itemId"]
+            sku_data = json.loads(product_data["SkuData"][0])[str(key)]
+            name = f"{product_data['brand']} - {item['name']} ({sku_data['unit_multiplier_un']} {sku_data['measurement_unit_un']})"
             offer = seller["commertialOffer"]
             price = Decimal(int(offer["Price"]))
 
             if price == 0:
                 return []
 
-            key = item["itemId"]
             ean = item["ean"]
 
             for entry in item["referenceId"]:
