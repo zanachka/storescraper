@@ -32,6 +32,7 @@ class LiderSupermercado(StoreWithUrlExtensions):
         "Mozilla/5.0 (iPad; CPU OS 16_4 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.2420.65",
     ]
+
     url_extensions = [
         # Marcas Propias
         ("Marcas Propias/Despensa", GROCERIES),
@@ -193,18 +194,33 @@ class LiderSupermercado(StoreWithUrlExtensions):
 
                 seen_keys.add(key)
                 brand = product["brand"]
-                specs = [
-                    f"- {item['name']}: {item['value']}"
-                    for item in product["specifications"]
-                ]
-                specs_str = "\n".join(specs)
-                specs = f"- Marca: {brand}\n{specs_str}\n\n"
-                description = f"{specs}{html_to_markdown(product['longDescription'])}"
+
                 name = f"{brand} - {product['displayName']}"
                 content_uom = product["attributes"].get("contentUom", None)
+                specs = []
+                content = None
+                specifications = product["specifications"]
 
-                if content_uom:
-                    name += f" ({content_uom})"
+                for spec in specifications:
+                    specs.append(f"- {spec['name']}: {spec['value']}")
+                    if spec["name"] == "Contenido neto":
+                        content = spec["value"]
+
+                specs_str = "\n".join(specs) + "\n\n"
+                description = (
+                    f"{specs_str}{html_to_markdown(product['longDescription'])}"
+                )
+
+                if content:
+                    if content_uom and "un" in content_uom.lower():
+                        suffix = f"{content_uom} / {content}"
+                    else:
+                        suffix = content
+                else:
+                    suffix = content_uom
+
+                if suffix:
+                    name += f" ({suffix})"
 
                 price = Decimal(product["price"]["BasePriceSales"])
                 stock = -1 if product["available"] else 0
