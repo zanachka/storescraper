@@ -190,11 +190,11 @@ class TottusSupermercado(StoreWithUrlExtensions):
                 description += html_to_markdown(description_html)
 
             specifications = model["attributes"]["specifications"]
-            specs = [f"- Marca: {brand}"] + [
-                f"- {item['name']}: {item['value']}" for item in specifications
-            ]
+            specs = [f"- Marca: {brand}"]
 
             for specification in specifications:
+                specs.append(f"- {specification['name']}: {specification['value']}")
+
                 if specification["id"] == "formato":
                     name += f" ({specification['value']})"
 
