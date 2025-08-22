@@ -122,12 +122,11 @@ class Alvi(StoreWithUrlExtensions):
         key = product_data["productId"]
         sku = product_data["refId"]
         brand = product_data["brand"]
-        name = f"{brand} - {product_data['name']}"
+        name = f"{brand} - {product_data['name']} ({product_data['unitMultiplier']} {product_data['measurementUnit']} / {product_data['format']})"
         description = f"- Marca: {brand}" + "\n\n" + product_data["description"]
         picture_urls = product_data["images"]
         raw_ean = product_data["ean"]
         ean = raw_ean if check_ean13(raw_ean) else None
-        in_offer = False
 
         for seller in product_data["sellers"]:
             if seller["sellerName"] == "Alvi Supermercados Mayoristas S.A.":
@@ -135,6 +134,8 @@ class Alvi(StoreWithUrlExtensions):
                 in_offer = seller["inOffer"]
                 stock = 0 if seller["availableQuantity"] == 0 else -1
                 break
+        else:
+            return []
 
         offer_price = price
 
@@ -167,4 +168,4 @@ class Alvi(StoreWithUrlExtensions):
             ean=ean,
         )
 
-        yield p
+        return [p]
