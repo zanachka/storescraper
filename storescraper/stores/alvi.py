@@ -118,7 +118,6 @@ class Alvi(StoreWithUrlExtensions):
         slug = url.split("https://www.alvi.cl/product/")[1]
         response = session.get(f"https://bff-alvi-web.alvi.cl/products/by-slug/{slug}")
         product_data = response.json()
-
         key = product_data["productId"]
         sku = product_data["refId"]
         brand = product_data["brand"]
@@ -143,7 +142,6 @@ class Alvi(StoreWithUrlExtensions):
         for seller in product_data["sellers"]:
             if seller["sellerName"] == "Alvi Supermercados Mayoristas S.A.":
                 price = Decimal(seller["price"])
-                in_offer = seller["inOffer"]
                 stock = 0 if seller["availableQuantity"] == 0 else -1
                 break
         else:
@@ -151,11 +149,10 @@ class Alvi(StoreWithUrlExtensions):
 
         offer_price = price
 
-        if in_offer:
-            for price_step in product_data.get("priceSteps", []):
-                if price_step["minQuantity"] == 1:
-                    offer_price = Decimal(price_step["promotionalPrice"])
-                    break
+        for price_step in product_data.get("priceSteps", []):
+            if price_step["minQuantity"] == 1:
+                offer_price = Decimal(price_step["promotionalPrice"])
+                break
 
         if offer_price > price:
             offer_price = price
