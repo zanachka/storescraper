@@ -189,10 +189,15 @@ class TottusSupermercado(StoreWithUrlExtensions):
                 description_html = json.loads(description_soup)["html"]
                 description += html_to_markdown(description_html)
 
+            specifications = model["attributes"]["specifications"]
             specs = [f"- Marca: {brand}"] + [
-                f"- {item['name']}: {item['value']}"
-                for item in model["attributes"]["specifications"]
+                f"- {item['name']}: {item['value']}" for item in specifications
             ]
+
+            for specification in specifications:
+                if specification["id"] == "formato":
+                    name += f" ({specification['value']})"
+
             description += "\n" + "\n".join(specs)
             seller_entry = None
 
