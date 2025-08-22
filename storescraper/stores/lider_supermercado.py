@@ -201,6 +201,11 @@ class LiderSupermercado(StoreWithUrlExtensions):
                 specs = f"- Marca: {brand}\n{specs_str}\n\n"
                 description = f"{specs}{html_to_markdown(product['longDescription'])}"
                 name = f"{brand} - {product['displayName']}"
+                content_uom = product["attributes"].get("contentUom", None)
+
+                if content_uom:
+                    name += f" ({content_uom})"
+
                 price = Decimal(product["price"]["BasePriceSales"])
                 stock = -1 if product["available"] else 0
                 images = product.get("images", {})
