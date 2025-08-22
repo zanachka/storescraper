@@ -122,7 +122,19 @@ class Alvi(StoreWithUrlExtensions):
         key = product_data["productId"]
         sku = product_data["refId"]
         brand = product_data["brand"]
-        name = f"{brand} - {product_data['name']} ({product_data['unitMultiplier']} {product_data['measurementUnit']} / {product_data['format']})"
+
+        if (
+            product_data["unitMultiplier"] == 1
+            and product_data["measurementUnit"] == "un"
+        ):
+            # Use the given format or else the default (eg. https://www.alvi.cl/product/pan-blanco-bauducco-390gr)
+            suffix = product_data["format"] or "1 un"
+        else:
+            suffix = (
+                f"{product_data['unitMultiplier']} {product_data['measurementUnit']}"
+            )
+
+        name = f"{brand} - {product_data['name']} ({suffix})"
         description = f"- Marca: {brand}" + "\n\n" + product_data["description"]
         picture_urls = product_data["images"]
         raw_ean = product_data["ean"]
