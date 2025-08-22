@@ -65,12 +65,15 @@ class HuaweiShop(StoreWithUrlExtensions):
 
     @classmethod
     def _clean_discovery_url(cls, product_url):
-        if not product_url.startswith("https"):
+        if product_url.startswith("http://consumer.huawei.com"):
+            product_url = product_url.replace("http", "https")
+        elif not product_url.startswith("https"):
             product_url = "https://consumer.huawei.com" + product_url
         if "huawei.com//" in product_url:
             product_url = product_url.replace("huawei.com//", "huawei.com/")
         if not product_url.startswith("https://consumer.huawei.com/cl/product/buy/"):
             product_url = product_url.split("?")[0]
+
         return product_url
 
     @classmethod
