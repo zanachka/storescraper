@@ -46,7 +46,6 @@ class CentralGamer(StoreWithUrlExtensions):
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-        product_urls = []
         page = 1
         while True:
             if page > 10:
@@ -67,9 +66,8 @@ class CentralGamer(StoreWithUrlExtensions):
                 break
             for container in product_containers:
                 product_url = container.find("a")["href"]
-                product_urls.append(product_url)
+                yield product_url
             page += 1
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -87,6 +85,8 @@ class CentralGamer(StoreWithUrlExtensions):
         normal_price = Decimal(remove_words(price_tags[0].text))
         offer_price = Decimal(remove_words(price_tags[1].text))
         sku = soup.find("span", "sku").text.strip()
+        part_number_tag = soup.find("span", "part-number")
+        part_number = part_number_tag.text.strip() if part_number_tag else None
         picture_tags = soup.findAll("div", "swiper-slide zoom")
         picture_urls = [x["data-src"] for x in picture_tags]
         description = html_to_markdown(str(soup.find("div", "entry-product-section")))
@@ -103,7 +103,7 @@ class CentralGamer(StoreWithUrlExtensions):
             offer_price,
             "CLP",
             sku=sku,
-            part_number=sku,
+            part_number=part_number,
             picture_urls=picture_urls,
             description=description,
         )
