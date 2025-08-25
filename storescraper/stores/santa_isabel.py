@@ -174,7 +174,6 @@ class SantaIsabel(StoreWithUrlExtensions):
             seller = sellers[0]
             name = f"{product_data['brand']} - {item['name']}"
             key = item["itemId"]
-            sku_data = None
             quantity = product_data.get("Cantidad") or product_data.get("Contenido")
 
             if quantity:
@@ -184,7 +183,7 @@ class SantaIsabel(StoreWithUrlExtensions):
                 sku_data = json.loads(product_data["SkuData"][0]).get(str(key))
 
                 if sku_data:
-                    unit_text = f"{sku_data['unit_multiplier_un']} {sku_data['measurement_unit_un']}"
+                    unit_text = f"Cantidad total {sku_data['unit_multiplier_un']} {sku_data['measurement_unit_un']}"
                     if quantity:
                         name = name[:-1] + f" / {unit_text})"
                     else:
