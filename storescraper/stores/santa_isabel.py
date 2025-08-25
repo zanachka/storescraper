@@ -1,6 +1,7 @@
-import logging
-from decimal import Decimal
 import json
+import logging
+from datetime import datetime, timezone
+from decimal import Decimal
 from urllib.parse import quote, urlsplit, urlunsplit
 from bs4 import BeautifulSoup
 from requests import TooManyRedirects
@@ -182,6 +183,9 @@ class SantaIsabel(StoreWithUrlExtensions):
             offer = seller["commertialOffer"]
             price = Decimal(int(offer["Price"]))
 
+            if item["measurementUnit"] == "kg":
+                price = (price * Decimal(item["unitMultiplier"])).quantize(0)
+
             if price == 0:
                 return []
 
@@ -196,12 +200,28 @@ class SantaIsabel(StoreWithUrlExtensions):
 
             promotions = promotions_data["products"].get(product_id, [])
             promotion_prices = [
-                promotions_data["promotions"][promo]["value"]
+                promotions_data["promotions"][promo]
                 for promo in promotions
                 if promotions_data["promotions"][promo]["group"] == "t-cenco"
             ]
+            available_promotions = []
+            now = datetime.now(timezone.utc)
+
+            for promotion_price in promotion_prices:
+                promotion_start = datetime.strptime(
+                    promotion_price["start"], "%Y-%m-%dT%H:%M:%SZ"
+                ).replace(tzinfo=timezone.utc)
+                promotion_end = datetime.strptime(
+                    promotion_price["end"], "%Y-%m-%dT%H:%M:%SZ"
+                ).replace(tzinfo=timezone.utc)
+
+                if promotion_start <= now <= promotion_end:
+                    available_promotions.append(promotion_price["value"])
+
             offer_price = (
-                Decimal(int(min(promotion_prices))) if promotion_prices else price
+                Decimal(int(min(available_promotions)))
+                if available_promotions
+                else price
             )
 
             stock = offer["AvailableQuantity"]
