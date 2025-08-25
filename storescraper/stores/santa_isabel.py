@@ -190,8 +190,6 @@ class SantaIsabel(StoreWithUrlExtensions):
                     else:
                         name += f" ({unit_text})"
 
-            print(name)
-            exit()
             offer = seller["commertialOffer"]
             price = Decimal(int(offer["Price"]))
 
