@@ -611,8 +611,10 @@ class Hites(Store):
         while True:
             category_url = f"https://www.hites.com/{category_path}/?sz={step}&start={start}&srule=best-matches"
 
-            if exclude_marketplace:
-                category_url += "&prefn1=productoMKP&prefv1=Hites.com"
+            # The url params below shoudl work... but don't. Hites has a bug where some of the SKUs sold by them
+            # are not returned when including this flag
+            # if exclude_marketplace:
+            #     category_url += "&prefn1=productoMKP&prefv1=Hites.com"
 
             print(category_url)
 
@@ -640,6 +642,15 @@ class Hites(Store):
 
                 if not a_tag:
                     continue
+
+                if exclude_marketplace:
+                    seller = (
+                        product_entry.find("span", "marketplace-info-plp")
+                        .find("b")
+                        .text.strip()
+                    )
+                    if seller != "Hites":
+                        continue
 
                 path = a_tag["href"].split("?")[0]
                 product_url = (
