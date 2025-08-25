@@ -34,21 +34,19 @@ class Computron(Store):
                 if page > 10:
                     raise Exception("page overflow")
                 url_webpage = (
-                    f"https://www.computron.com.ec/brand/lg/page/{page}/?per_page=48"
+                    f"https://www.computron.com.ec/marca/lg/page/{page}/?per_page=48"
                 )
                 print(url_webpage)
                 response = session.get(url_webpage)
                 soup = BeautifulSoup(response.text, "lxml")
-                product_containers = soup.findAll("div", "product")
+                product_containers = soup.findAll("section", "product")
                 if not product_containers:
                     if page == 1:
                         logging.warning("empty category")
                     break
                 for container in product_containers:
-                    if "LG" in container.find("h3", "product-title").text.upper():
-                        product_url = container.find(
-                            "a", "woocommerce-LoopProduct-link"
-                        )["href"]
+                    if "LG" in container.find("h3", "product-name").text.upper():
+                        product_url = container.find("a")["href"]
                         if product_url in product_urls:
                             continue
                         product_urls.append(product_url)
@@ -71,11 +69,18 @@ class Computron(Store):
         json_data = json.loads(
             soup.findAll("script", {"type": "application/ld+json"})[-1].text
         )
+        product_data = None
 
-        name = json_data["name"]
-        sku = json_data["sku"]
-        description = json_data["description"]
-        price = round(get_price_from_price_specification(json_data) * Decimal(1.15), 2)
+        for entry in json_data["@graph"]:
+            if entry["@type"] == "Product":
+                product_data = entry
+
+        name = product_data["name"]
+        sku = product_data["sku"]
+        description = product_data["description"]
+        price = round(
+            get_price_from_price_specification(product_data) * Decimal(1.15), 2
+        )
 
         if soup.find("button", {"name": "add-to-cart"}):
             stock = -1
@@ -83,8 +88,10 @@ class Computron(Store):
             stock = 0
 
         picture_urls = [
-            tag["data-zoom-image"]
-            for tag in soup.findAll("img", "attachment-woocommerce_single")
+            a["href"]
+            for a in soup.find("div", "woocommerce-product-gallery__wrapper").find_all(
+                "a"
+            )
         ]
 
         p = Product(
