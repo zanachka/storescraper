@@ -1,4 +1,3 @@
-from storescraper.utils import cf_session_with_proxy
 from .mercado_libre_chile import MercadoLibreChile
 from ..categories import (
     STEREO_SYSTEM,
