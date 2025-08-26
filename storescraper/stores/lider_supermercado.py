@@ -195,32 +195,32 @@ class LiderSupermercado(StoreWithUrlExtensions):
                 brand = product["brand"]
 
                 name = f"{brand} - {product['displayName']}"
-                content_uom = product["attributes"].get("contentUom", None)
+                # content_uom = product["attributes"].get("contentUom", None)
                 specs = []
 
-                for spec in product["specifications"]:
-                    specs.append(f"- {spec['name']}: {spec['value']}")
-                    if spec["name"] == "Contenido neto":
-                        content = f"Contenido neto por unidad: {spec['value']}"
-                        break
-                else:
-                    content = None
+                # for spec in product["specifications"]:
+                #     specs.append(f"- {spec['name']}: {spec['value']}")
+                #     if spec["name"] == "Contenido neto":
+                #         content = f"Contenido neto por unidad: {spec['value']}"
+                #         break
+                # else:
+                #     content = None
 
                 specs_str = "\n".join(specs) + "\n\n"
                 description = (
                     f"{specs_str}{html_to_markdown(product['longDescription'])}"
                 )
 
-                if content:
-                    if content_uom and "un" in content_uom.lower():
-                        suffix = f"{content_uom} / {content}"
-                    else:
-                        suffix = content
-                else:
-                    suffix = content_uom
+                # if content:
+                #     if content_uom and "un" in content_uom.lower():
+                #         suffix = f"{content_uom} / {content}"
+                #     else:
+                #         suffix = content
+                # else:
+                #     suffix = content_uom
 
-                if suffix:
-                    name += f" ({suffix})"
+                # if suffix:
+                #     name += f" ({suffix})"
 
                 price = Decimal(product["price"]["BasePriceSales"])
                 stock = -1 if product["available"] else 0
