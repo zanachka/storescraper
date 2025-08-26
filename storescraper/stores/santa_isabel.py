@@ -191,6 +191,7 @@ class SantaIsabel(StoreWithUrlExtensions):
 
             offer = seller["commertialOffer"]
             price = Decimal(int(offer["Price"]))
+            reference_price = Decimal(offer["ListPrice"])
 
             if item["measurementUnit"] == "kg":
                 price = (price * Decimal(item["unitMultiplier"])).quantize(0)
@@ -213,8 +214,8 @@ class SantaIsabel(StoreWithUrlExtensions):
                 for promo in promotions
                 if promotions_data["promotions"][promo]["group"] == "t-cenco"
             ]
-            available_promotions = []
             now = datetime.now(timezone.utc)
+            offer_price = price
 
             for promotion_price in promotion_prices:
                 promotion_start = datetime.strptime(
@@ -225,13 +226,20 @@ class SantaIsabel(StoreWithUrlExtensions):
                 ).replace(tzinfo=timezone.utc)
 
                 if promotion_start <= now <= promotion_end:
-                    available_promotions.append(promotion_price["value"])
+                    if promotion_price["discountType"] == "maximum_unit_price":
+                        offer_price_candidate = Decimal(promotion_price["value"])
+                    elif promotion_price["discountType"] == "percentual":
+                        offer_price_candidate = (
+                            reference_price
+                            * Decimal(1 - promotion_price["value"] / 100)
+                        ).quantize(0)
+                    else:
+                        raise Exception(
+                            "Invalid promotion type: " + promotion_price["discountType"]
+                        )
 
-            offer_price = (
-                Decimal(int(min(available_promotions)))
-                if available_promotions
-                else price
-            )
+                    if offer_price_candidate < offer_price:
+                        offer_price = offer_price_candidate
 
             stock = offer["AvailableQuantity"]
             raw_picture_urls = [img["imageUrl"].split("?")[0] for img in item["images"]]
