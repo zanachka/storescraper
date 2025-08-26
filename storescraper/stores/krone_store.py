@@ -59,34 +59,66 @@ class KroneStore(StoreWithUrlExtensions):
         description = html_to_markdown(product_data["description"])
 
         if "hasVariant" in product_data:
-            variant = product_data["hasVariant"]
-            assert len(variant) == 1
-            product_data = variant[0]
+            products = []
 
-        sku = product_data["sku"]
-        offer = product_data["offers"]
-        price = Decimal(offer["price"])
-        key = offer["url"].split("?variant=")[-1]
-        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
-        picture_urls = [
-            f"https:{img['src'].split('?v=')[0]}"
-            for img in soup.find_all("img", "image-magnify-lightbox")
-        ]
+            for variant in product_data["hasVariant"]:
+                name = variant["name"]
+                sku = variant["sku"]
+                offer = variant["offers"]
+                price = Decimal(offer["price"])
+                key = offer["url"].split("?variant=")[-1]
+                stock = (
+                    -1 if offer["availability"] == "http://schema.org/InStock" else 0
+                )
+                picture_urls = [
+                    f"https:{img['src'].split('?v=')[0]}"
+                    for img in soup.find_all("img", "image-magnify-lightbox")
+                ]
 
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            key,
-            stock,
-            price,
-            price,
-            "CLP",
-            sku=sku,
-            description=description,
-            picture_urls=picture_urls,
-        )
+                p = Product(
+                    name,
+                    cls.__name__,
+                    category,
+                    url,
+                    url,
+                    key,
+                    stock,
+                    price,
+                    price,
+                    "CLP",
+                    sku=sku,
+                    description=description,
+                    picture_urls=picture_urls,
+                )
 
-        return [p]
+                products.append(p)
+
+            return products
+        else:
+            sku = product_data["sku"]
+            offer = product_data["offers"]
+            price = Decimal(offer["price"])
+            key = offer["url"].split("?variant=")[-1]
+            stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+            picture_urls = [
+                f"https:{img['src'].split('?v=')[0]}"
+                for img in soup.find_all("img", "image-magnify-lightbox")
+            ]
+
+            p = Product(
+                name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                key,
+                stock,
+                price,
+                price,
+                "CLP",
+                sku=sku,
+                description=description,
+                picture_urls=picture_urls,
+            )
+
+            return [p]
