@@ -1,3 +1,4 @@
+from storescraper.utils import cf_session_with_proxy
 from .mercado_libre_chile import MercadoLibreChile
 from ..categories import (
     STEREO_SYSTEM,
@@ -33,3 +34,8 @@ class MercadoLibreLg(MercadoLibreChile):
         for product in products:
             product.seller = None
             yield product
+
+    @classmethod
+    def preflight(cls, extra_args=None):
+        extra_args["cookie"] += ";_d2id=cbec39c3-857e-42a5-9bf5-7fefc694f6ae"
+        return super().preflight(extra_args)
