@@ -4,7 +4,11 @@ from bs4 import BeautifulSoup
 from storescraper.categories import *
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, cf_session_with_proxy, remove_words
+from storescraper.utils import (
+    html_to_markdown,
+    remove_words,
+    session_with_proxy,
+)
 
 
 class Tekmachine(StoreWithUrlExtensions):
@@ -31,7 +35,10 @@ class Tekmachine(StoreWithUrlExtensions):
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
-        session = cf_session_with_proxy(extra_args)
+        session = session_with_proxy(extra_args)
+        session.headers["user-agent"] = (
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
+        )
         product_urls = []
         page = 1
 
@@ -60,9 +67,12 @@ class Tekmachine(StoreWithUrlExtensions):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = cf_session_with_proxy(extra_args)
+        session = session_with_proxy(extra_args)
+        session.headers["user-agent"] = (
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
+        )
         response = session.get(url)
-        soup = BeautifulSoup(response.text, "html5lib")
+        soup = BeautifulSoup(response.text, "lxml")
         name = soup.find("span", "breadcrumb-last").text.strip()
         key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[1]
         sku_tag = soup.find("span", "sku")
@@ -90,8 +100,8 @@ class Tekmachine(StoreWithUrlExtensions):
             for a in soup.find(
                 "figure", "woocommerce-product-gallery__wrapper"
             ).find_all("a")
+            if a["href"] != "#"
         ]
-
         description_tag = soup.find("div", {"id": "tab-description"})
         description = (
             html_to_markdown(description_tag.text) if description_tag else None
