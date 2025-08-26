@@ -1,5 +1,4 @@
 import time
-import urllib
 from decimal import Decimal
 from storescraper.categories import GROCERIES
 from storescraper.product import Product
@@ -198,13 +197,14 @@ class LiderSupermercado(StoreWithUrlExtensions):
                 name = f"{brand} - {product['displayName']}"
                 content_uom = product["attributes"].get("contentUom", None)
                 specs = []
-                content = None
-                specifications = product["specifications"]
 
-                for spec in specifications:
+                for spec in product["specifications"]:
                     specs.append(f"- {spec['name']}: {spec['value']}")
                     if spec["name"] == "Contenido neto":
                         content = f"Contenido neto por unidad: {spec['value']}"
+                        break
+                else:
+                    content = None
 
                 specs_str = "\n".join(specs) + "\n\n"
                 description = (
