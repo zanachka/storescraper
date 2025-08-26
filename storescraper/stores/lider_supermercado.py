@@ -204,7 +204,7 @@ class LiderSupermercado(StoreWithUrlExtensions):
                 for spec in specifications:
                     specs.append(f"- {spec['name']}: {spec['value']}")
                     if spec["name"] == "Contenido neto":
-                        content = spec["value"]
+                        content = f"Contenido neto por unidad: {spec['value']}"
 
                 specs_str = "\n".join(specs) + "\n\n"
                 description = (
