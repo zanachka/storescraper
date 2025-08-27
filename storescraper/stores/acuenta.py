@@ -255,7 +255,13 @@ class Acuenta(StoreWithUrlExtensions):
 
             for product in products:
                 brand = product["brand"]
-                name = f"{brand} - {product['name']} ({product['clickMultiplier']} {product['unit']})"
+                name = f"{brand} - {product['name']}"
+
+                # There are cases like "Calán - Yogurt Sabor Vainilla y frutilla Pack 8 Un 720 g Calán" where
+                # the suffix would be "1 Unidad", skip the "1 Unidad" cases in general.
+                if product["clickMultiplier"] != 1 or product["unit"] != "Unidad":
+                    name += f"  ({product['clickMultiplier']} {product['unit']})"
+
                 base_price = Decimal(product["price"])
                 price = (Decimal(product["clickMultiplier"]) * base_price).quantize(0)
                 promotion = product["promotion"]
