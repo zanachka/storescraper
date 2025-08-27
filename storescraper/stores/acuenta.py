@@ -225,6 +225,7 @@ class Acuenta(StoreWithUrlExtensions):
                                 unit\
                                 subUnit\
                                 subQty\
+                                clickMultiplier\
                             }\
                         }\
                     }\
@@ -254,14 +255,9 @@ class Acuenta(StoreWithUrlExtensions):
 
             for product in products:
                 brand = product["brand"]
-                suffix = product["unit"]
-                sub_qty = product["subQty"]
-
-                if sub_qty:
-                    suffix += f" / {sub_qty} {product['subUnit']}"
-
-                name = f"{brand} - {product['name']} ({suffix})"
-                price = Decimal(product["price"])
+                name = f"{brand} - {product['name']} ({product['clickMultiplier']} {product['unit']})"
+                base_price = Decimal(product["price"])
+                price = (Decimal(product["clickMultiplier"]) * base_price).quantize(0)
                 promotion = product["promotion"]
 
                 if (
