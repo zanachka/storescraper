@@ -979,6 +979,7 @@ class MercadoLibreChile(Store):
         url = "https://api.mercadolibre.com/oauth/token"
         session.headers["accept"] = "application/json"
         session.headers["content-type"] = "application/x-www-form-urlencoded"
+        extra_args["cookie"] += ";_d2id=cbec39c3-857e-42a5-9bf5-7fefc694f6ae"
 
         payload = (
             "grant_type=refresh_token"
