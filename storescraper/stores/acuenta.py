@@ -222,6 +222,9 @@ class Acuenta(StoreWithUrlExtensions):
                                 sku\
                                 slug\
                                 stock\
+                                unit\
+                                subUnit\
+                                subQty\
                             }\
                         }\
                     }\
@@ -251,7 +254,13 @@ class Acuenta(StoreWithUrlExtensions):
 
             for product in products:
                 brand = product["brand"]
-                name = f"{brand} - {product['name']}"
+                suffix = product["unit"]
+                sub_qty = product["subQty"]
+
+                if sub_qty:
+                    suffix += f" / {product['subQty']} {product['subUnit']}"
+
+                name = f"{brand} - {product['name']} ({suffix})"
                 price = Decimal(product["price"])
                 promotion = product["promotion"]
 
