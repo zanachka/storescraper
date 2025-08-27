@@ -258,7 +258,7 @@ class Acuenta(StoreWithUrlExtensions):
                 sub_qty = product["subQty"]
 
                 if sub_qty:
-                    suffix += f" / {product['subQty']} {product['subUnit']}"
+                    suffix += f" / {sub_qty} {product['subUnit']}"
 
                 name = f"{brand} - {product['name']} ({suffix})"
                 price = Decimal(product["price"])
