@@ -159,7 +159,12 @@ def session_with_proxy(extra_args):
 def cf_session_with_proxy(extra_args):
     from curl_cffi import requests
 
-    session = requests.Session(impersonate="chrome120")
+    if extra_args and "impersonate" in extra_args:
+        impersonate = extra_args["impersonate"]
+    else:
+        impersonate = "chrome120"
+
+    session = requests.Session(impersonate=impersonate)
 
     if extra_args:
         if "proxy" in extra_args:
