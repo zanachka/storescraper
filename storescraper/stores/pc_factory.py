@@ -130,6 +130,10 @@ class PcFactory(StoreWithUrlExtensions):
         res = session.get(
             f"https://api.pcfactory.cl/pcfactory-services-catalogo/v1/catalogo/productos/{product_id}"
         )
+
+        if res.status_code == 404:
+            return []
+
         product_data = res.json()
         sku = str(product_data["id"])
         part_number = product_data["partNumber"]
