@@ -196,8 +196,24 @@ class TottusSupermercado(StoreWithUrlExtensions):
                 specs.append(f"- {specification['name']}: {specification['value']}")
 
                 if specification["id"] == "formato":
-                    name += f" ({specification['value']})"
+                    format_value = specification["value"]
+                    min_sale_qty = model["attributes"]["measurement"].get(
+                        "skuminsaleqty", None
+                    )
 
+                    if min_sale_qty:
+                        normal_price = (normal_price * Decimal(min_sale_qty)).quantize(
+                            0
+                        )
+                        offer_price = (offer_price * Decimal(min_sale_qty)).quantize(0)
+
+                    suffix = (
+                        f"{min_sale_qty} {format_value}"
+                        if min_sale_qty
+                        else format_value
+                    )
+
+            name += f" ({suffix})"
             description += "\n" + "\n".join(specs)
             seller_entry = None
 
