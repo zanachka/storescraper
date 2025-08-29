@@ -32,7 +32,6 @@ class LgV5(Store):
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         category_paths = cls._category_paths()
-        discovered_urls = []
         session = session_with_proxy(extra_args)
         session.headers["content-type"] = "application/x-www-form-urlencoded"
 
@@ -72,9 +71,7 @@ class LgV5(Store):
                         continue
 
                 product_url = cls.base_url + product_entry["modelUrlPath"]
-                discovered_urls.append(product_url)
-
-        return discovered_urls
+                yield product_url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -86,7 +83,7 @@ class LgV5(Store):
 
         soup = BeautifulSoup(response.text, "lxml")
         model_id = soup.find("input", {"id": "modelId"})["value"]
-        model_data = cls._retrieve_api_model(model_id)
+        model_data = cls._retrieve_api_model(model_id, extra_args)
         sibling_groups = model_data["siblings"]
         sibling_ids = [model_id]
 
@@ -101,16 +98,16 @@ class LgV5(Store):
         products = []
 
         for sibling_id in sibling_ids:
-            sibling = cls._retrieve_single_product(sibling_id, category)
+            sibling = cls._retrieve_single_product(sibling_id, category, extra_args)
             if sibling:
                 products.append(sibling)
 
         return products
 
     @classmethod
-    def _retrieve_single_product(cls, model_id, category):
+    def _retrieve_single_product(cls, model_id, category, extra_args):
         print(model_id)
-        model_data = cls._retrieve_api_model(model_id)
+        model_data = cls._retrieve_api_model(model_id, extra_args)
 
         if model_data["modelStatusCode"] in ["SUSPENDED", "DISCONTINUED"]:
             return None
@@ -219,7 +216,7 @@ class LgV5(Store):
             sku=sku,
             picture_urls=picture_urls,
             part_number=sku,
-            positions=positions,
+            # positions=positions,
             description=description,
             allow_zero_prices=not cls.skip_products_without_price,
             review_count=review_count,
@@ -233,20 +230,20 @@ class LgV5(Store):
         )
 
     @classmethod
-    def _retrieve_api_model(cls, model_id):
-        session = requests.Session()
+    def _retrieve_api_model(cls, model_id, extra_args):
+        session = session_with_proxy(extra_args)
         session.headers["content-type"] = "application/x-www-form-urlencoded"
         payload = "modelId={}".format(model_id)
         product_data = json.loads(session.post(cls._ajax_endpoint(), payload).text)
         return product_data["data"][0]
 
     @classmethod
-    def _retrieve_features(cls, url):
+    def _retrieve_features(cls, url, extra_args=None):
         # Standalone method the retrieves the featured specs of the given model
         # Used by a one-use script that loads the features in the LG CAC_EN
         # microsite for their landing
         # Safe to remove once the script finishes running
-        session = requests.Session()
+        session = session_with_proxy(extra_args)
         response = session.get(url, timeout=20)
         soup = BeautifulSoup(response.text, "lxml")
         feature_list_tag = soup.find("ul", "feature-list")
