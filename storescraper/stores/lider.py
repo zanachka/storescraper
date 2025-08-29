@@ -35,6 +35,7 @@ from storescraper.product import Product
 from storescraper.store import Store
 from storescraper.utils import (
     html_to_markdown,
+    remove_words,
     session_with_proxy,
     cf_session_with_proxy,
 )
@@ -431,6 +432,7 @@ class Lider(Store):
                 "fetchGallery": False,
                 "fetchDac": False,
                 "tenant": "CHILE_EA_GLASS",
+                "enablePromoData": True,
             }
 
             if exclude_marketplace:
@@ -490,6 +492,21 @@ class Lider(Store):
                 key = entry["offerId"]
                 price_info = entry["priceInfo"]
                 normal_price = Decimal(price_info["currentPrice"]["price"])
+                offer_price = normal_price
+                promo_data = [
+                    promo_entry
+                    for promo_entry in entry["promoData"]
+                    if promo_entry["type"] == "liderBCI"
+                ]
+
+                if promo_data:
+                    assert len(promo_data) == 1
+                    offer_price = Decimal(
+                        remove_words(
+                            promo_data[0]["templateData"]["priceString"].split(".")[0]
+                        )
+                    )
+
                 sku = entry["usItemId"]
                 picture_urls = [
                     img["url"]
@@ -520,7 +537,7 @@ class Lider(Store):
                     key,
                     stock,
                     normal_price,
-                    normal_price,
+                    offer_price,
                     "CLP",
                     sku=sku,
                     picture_urls=picture_urls,
