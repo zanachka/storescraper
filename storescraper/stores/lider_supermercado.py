@@ -1,11 +1,10 @@
-import time
 from decimal import Decimal
 from storescraper.categories import GROCERIES
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import (
     html_to_markdown,
-    session_with_proxy,
+    cf_session_with_proxy,
 )
 
 
@@ -15,21 +14,37 @@ class LiderSupermercado(StoreWithUrlExtensions):
         "tenant": "supermercado",
         "x-channel": "SOD",
     }
-    user_agents = [
-        "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
-        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0",
-        "Mozilla/5.0 (X11; Debian; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
-        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:115.0) Gecko/20100101 Firefox/115.0",
-        "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
-        "Mozilla/5.0 (X11; Arch Linux; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
-        "Mozilla/5.0 (Linux; Android 13; Redmi Note 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36",
-        "Mozilla/5.0 (Linux; Android 11; Pixel 4a) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
-        "Mozilla/5.0 (Linux; Android 12; SM-G998B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/131.0.6778.135 Mobile Safari/537.36",
-        "Mozilla/5.0 (Linux; Android 13; SAMSUNG SM-G990B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/123.0.6312.105 Mobile Safari/537.36",
-        "Mozilla/5.0 (Linux; Android 12; 220733SG Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.3",
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Mobile/15E148 Safari/604.1",
-        "Mozilla/5.0 (iPad; CPU OS 16_4 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.2420.65",
+    USER_AGENTS = [
+        # "chrome99",
+        # "chrome100",
+        # "chrome101",
+        # "chrome104",
+        # "chrome107",
+        # "chrome110",
+        # "chrome116",
+        # "chrome119",
+        # "chrome120",
+        # "chrome123",
+        # "chrome124",
+        # ----
+        "chrome131",
+        "chrome133a",
+        "chrome136",
+        "chrome99_android",
+        "chrome131_android",
+        "edge99",
+        "edge101",
+        "safari153",
+        "safari155",
+        "safari170",
+        "safari172_ios",
+        "safari180",
+        "safari180_ios",
+        "safari184",
+        "safari184_ios",
+        "safari260",
+        "safari260_ios",
+        "firefox133",
     ]
 
     url_extensions = [
@@ -141,8 +156,6 @@ class LiderSupermercado(StoreWithUrlExtensions):
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
-        session = session_with_proxy(extra_args)
-        session.headers = cls.headers
         page = 1
         seen_keys = set()
         section = url.split(f"{cls.base_url}/category/")[-1].replace("_", " ")
@@ -160,26 +173,23 @@ class LiderSupermercado(StoreWithUrlExtensions):
                 "sortBy": "",
                 "hitsPerPage": 16,
             }
-            tries = 0
 
-            while True:
+            for impersonator in cls.USER_AGENTS:
+                print("Trying " + impersonator)
+                extra_args = extra_args or {}
+                extra_args["impersonate"] = impersonator
+                session = cf_session_with_proxy(extra_args)
+                session.headers.update(cls.headers)
+                response = session.post(f"{cls.base_url}/bff/category", json=payload)
                 try:
-                    user_agent = cls.user_agents[tries]
-                    session.headers["User-Agent"] = user_agent
-                    response = session.post(
-                        f"{cls.base_url}/bff/category", json=payload
-                    )
                     json_data = response.json()
-                    products = json_data["products"]
-
                     break
-                except Exception as e:
-                    tries += 1
-                    time.sleep(10)
+                except Exception:
+                    continue
+            else:
+                raise Exception("No user agents left")
 
-                    if tries > len(cls.user_agents) - 1:
-                        raise e
-
+            products = json_data["products"]
             if not products:
                 if page == 1:
                     raise Exception(f"Empty section: {section}")
@@ -195,32 +205,11 @@ class LiderSupermercado(StoreWithUrlExtensions):
                 brand = product["brand"]
 
                 name = f"{brand} - {product['displayName']}"
-                # content_uom = product["attributes"].get("contentUom", None)
                 specs = []
-
-                # for spec in product["specifications"]:
-                #     specs.append(f"- {spec['name']}: {spec['value']}")
-                #     if spec["name"] == "Contenido neto":
-                #         content = f"Contenido neto por unidad: {spec['value']}"
-                #         break
-                # else:
-                #     content = None
-
                 specs_str = "\n".join(specs) + "\n\n"
                 description = (
                     f"{specs_str}{html_to_markdown(product['longDescription'])}"
                 )
-
-                # if content:
-                #     if content_uom and "un" in content_uom.lower():
-                #         suffix = f"{content_uom} / {content}"
-                #     else:
-                #         suffix = content
-                # else:
-                #     suffix = content_uom
-
-                # if suffix:
-                #     name += f" ({suffix})"
 
                 price = Decimal(product["price"]["BasePriceSales"])
                 stock = -1 if product["available"] else 0
