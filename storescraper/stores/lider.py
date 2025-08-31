@@ -36,7 +36,6 @@ from storescraper.store import Store
 from storescraper.utils import (
     html_to_markdown,
     remove_words,
-    session_with_proxy,
     cf_session_with_proxy,
 )
 from storescraper import banner_sections as bs
@@ -46,21 +45,36 @@ class Lider(Store):
     preferred_discover_urls_concurrency = 3
     preferred_products_for_url_concurrency = 3
     USER_AGENTS = [
-        "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
-        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0",
-        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
-        "Mozilla/5.0 (X11; Debian; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
-        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:115.0) Gecko/20100101 Firefox/115.0",
-        "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
-        "Mozilla/5.0 (X11; Arch Linux; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0",
-        "Mozilla/5.0 (Linux; Android 13; Redmi Note 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36",
-        "Mozilla/5.0 (Linux; Android 11; Pixel 4a) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.36 EdgA/131.0.2903.87",
-        "Mozilla/5.0 (Linux; Android 12; SM-G998B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/131.0.6778.135 Mobile Safari/537.36",
-        "Mozilla/5.0 (Linux; Android 13; SAMSUNG SM-G990B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/123.0.6312.105 Mobile Safari/537.36",
-        "Mozilla/5.0 (Linux; Android 12; 220733SG Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.135 Mobile Safari/537.3",
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Mobile/15E148 Safari/604.1",
-        "Mozilla/5.0 (iPad; CPU OS 16_4 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.2420.65",
+        # "chrome99",
+        # "chrome100",
+        # "chrome101",
+        # "chrome104",
+        # "chrome107",
+        # "chrome110",
+        # "chrome116",
+        # "chrome119",
+        # "chrome120",
+        # "chrome123",
+        # "chrome124",
+        # ----
+        "chrome131",
+        "chrome133a",
+        "chrome136",
+        "chrome99_android",
+        "chrome131_android",
+        "edge99",
+        "edge101",
+        "safari153",
+        "safari155",
+        "safari170",
+        "safari172_ios",
+        "safari180",
+        "safari180_ios",
+        "safari184",
+        "safari184_ios",
+        "safari260",
+        "safari260_ios",
+        "firefox133",
     ]
 
     tenant = "catalogo"
@@ -298,7 +312,11 @@ class Lider(Store):
 
     @classmethod
     def categories(cls):
-        return list({local_category for _, local_category, _ in cls.category_paths})
+        cats = []
+        for _, local_category, _ in cls.category_paths:
+            if local_category not in cats:
+                cats.append(local_category)
+        return cats
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
@@ -308,8 +326,8 @@ class Lider(Store):
     @classmethod
     def discover_urls_for_keyword(cls, keyword, threshold, extra_args=None):
         extra_args = extra_args or {}
-        session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = extra_args.get("user_agent", cls.USER_AGENTS[0])
+        extra_args["impersonate"] = "chrome"
+        session = cf_session_with_proxy(extra_args)
         session.headers["tenant"] = cls.tenant
         product_urls = []
 
@@ -372,8 +390,8 @@ class Lider(Store):
         extra_args = extra_args or {}
         base_url = "https://apps.lider.cl/catalogo/bff/banners?v=2"
         destination_url_base = "https://www.lider.cl/{}"
-        session = session_with_proxy(extra_args)
-        session.headers["User-Agent"] = cls.USER_AGENTS[0]
+        extra_args["impersonate"] = "chrome"
+        session = cf_session_with_proxy(extra_args)
         banners = []
         response = session.get(base_url)
 
@@ -410,6 +428,7 @@ class Lider(Store):
     def _get_products(
         cls, category_id, local_category, exclude_marketplace, extra_args=None
     ):
+        print(category_id)
         query_url = "https://www.lider.cl/orchestra/graphql/browse"
         path = Path(__file__).with_name("lider_request.txt")
 
@@ -420,6 +439,7 @@ class Lider(Store):
         page = 1
 
         while True:
+            print(page)
             graphql_variables = {
                 "page": page,
                 "prg": "desktop",
@@ -443,45 +463,33 @@ class Lider(Store):
                 "variables": graphql_variables,
             }
 
-            tries = 0
-            cf_session = False
-
-            while True:
+            for impersonator in cls.USER_AGENTS:
+                print("Trying " + impersonator)
                 extra_args = extra_args or {}
+                extra_args["impersonate"] = impersonator
+                session = cf_session_with_proxy(extra_args)
 
-                if cf_session:
-                    session = cf_session_with_proxy(extra_args)
-                else:
-                    session = session_with_proxy(extra_args)
+                session.headers.update(
+                    {
+                        "Content-Type": "application/json",
+                        "x-o-bu": "LIDER-CL",
+                        "x-o-mart": "B2C",
+                        "x-o-vertical": "EA",
+                        "X-APOLLO-OPERATION-NAME": "Browse",
+                    }
+                )
 
-                session.headers = {
-                    "Content-Type": "application/json",
-                    "User-Agent": cls.USER_AGENTS[tries],
-                    "x-o-bu": "LIDER-CL",
-                    "x-o-mart": "B2C",
-                    "x-o-vertical": "EA",
-                    "X-APOLLO-OPERATION-NAME": "Browse",
-                }
-
+                response = session.post(query_url, json=graphql_request_body)
                 try:
-                    response = session.post(query_url, json=graphql_request_body)
                     data = json.loads(response.text)
-                    products_data = data["data"]["search"]["searchResult"][
-                        "itemStacks"
-                    ][0]["itemsV2"]
-                    tries = 0
                     break
-                except Exception as e:
-                    exception = e
-
-                    if cf_session:
-                        cf_session = False
-                        tries += 1
-                    else:
-                        cf_session = True
-
-                if tries > len(cls.USER_AGENTS) - 1:
-                    raise exception
+                except Exception:
+                    continue
+            else:
+                raise Exception("No user agents left")
+            products_data = data["data"]["search"]["searchResult"]["itemStacks"][0][
+                "itemsV2"
+            ]
 
             if not products_data:
                 break
