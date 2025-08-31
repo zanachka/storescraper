@@ -105,9 +105,8 @@ class Wei(StoreWithUrlExtensions):
             "Chrome/122.0.0.0 Safari/537.3"
         )
 
-        product_urls = []
         page = 0
-        local_urls = []
+        seen_urls = set()
         done = False
 
         while not done:
@@ -130,16 +129,12 @@ class Wei(StoreWithUrlExtensions):
 
             for cell in product_cells:
                 product_url = cell.find("a")["href"]
-                if product_url in local_urls:
-                    done = True
-                    break
-                local_urls.append(product_url)
+                if product_url in seen_urls:
+                    return
+                seen_urls.add(product_url)
+                yield product_url
 
             page += 1
-
-        product_urls.extend(local_urls)
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
