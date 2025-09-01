@@ -197,10 +197,11 @@ class KDTec(StoreWithUrlExtensions):
         if soup.find("span", "font-bold"):
             part_number = soup.find("span", "font-bold").text
         else:
-            pn_p = soup.find(
+            pn_p_tag = soup.find(
                 "div", "woocommerce-product-details__short-description"
-            ).find("p")
-            if pn_p:
+            )
+            if pn_p_tag:
+                pn_p = pn_p_tag.find("p")
                 pn_p_1 = pn_p.text.split("Part number: ")
                 pn_p_2 = pn_p.text.split("Número de parte: ")
                 if len(pn_p_1) > 1:
