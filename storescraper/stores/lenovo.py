@@ -93,9 +93,12 @@ class Lenovo(StoreWithUrlExtensions):
 
         res = session.get(url)
         soup = BeautifulSoup(res.text, "lxml")
-        subseries_code = soup.find("meta", {"name": "subseriesPHcode"})[
-            "content"
-        ].strip()
+        subseries = soup.find("meta", {"name": "subseriesPHcode"})
+
+        if not subseries:
+            return []
+
+        subseries_code = subseries["content"].strip()
 
         if subseries_code:
             return cls._products_for_url_with_subseries_code(
