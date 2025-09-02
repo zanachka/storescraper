@@ -6,7 +6,7 @@ import re
 from bs4 import BeautifulSoup
 
 from decimal import Decimal
-from storescraper.utils import html_to_markdown, remove_words
+from storescraper.utils import html_to_markdown
 
 
 from storescraper.categories import (
@@ -50,6 +50,7 @@ class Sandos(StoreWithUrlExtensions):
         [8, PROCESSOR],
         [10, MOTHERBOARD],
         [12, MOTHERBOARD],
+        [14, VIDEO_CARD],
         [15, VIDEO_CARD],
         [16, VIDEO_CARD],
         [17, VIDEO_CARD],
@@ -107,7 +108,6 @@ class Sandos(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         session.headers["content-type"] = "application/json"
         page = 1
-        product_urls = []
 
         while True:
             time.sleep(2)
@@ -120,17 +120,16 @@ class Sandos(StoreWithUrlExtensions):
 
             products = response["resultado"]["items"]
 
-            if products == []:
+            if not products:
                 if page == 1:
                     logging.warning(f"Empty category: {url_extension}")
                 break
 
-            product_urls += [
-                f"https://sandos.cl{product['url']}" for product in products
-            ]
-            page += 1
+            for product in products:
+                product_url = f"https://sandos.cl{product['url']}"
+                yield product_url
 
-        return product_urls
+            page += 1
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
