@@ -755,6 +755,10 @@ class MercadoLibreChile(Store):
         price = Decimal(data["initialState"]["schema"][0]["offers"]["price"]).quantize(
             Decimal(cls.price_accuracy)
         )
+
+        if price == 0:
+            return []
+
         description, part_number = cls.get_description_and_part_number(data)
 
         if "description" in data["initialState"]["components"]:
