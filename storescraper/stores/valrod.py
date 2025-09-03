@@ -47,7 +47,7 @@ class Valrod(Store):
             ["monitores", MONITOR],
             ["hardware/fuentes-de-poder", POWER_SUPPLY],
             ["hardware/disipadores", CPU_COOLER],
-            ["enfriadores-liquidos", CPU_COOLER],
+            ["hardware/enfriadores-liquidos", CPU_COOLER],
             ["hardware/ventiladores", CASE_FAN],
             ["perifericos-y-accesorios/mouse-y-mousepads", MOUSE],
             ["perifericos-y-accesorios/teclados", KEYBOARD],
