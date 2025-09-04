@@ -21,7 +21,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class InvasionGamer(StoreWithUrlExtensions):
@@ -47,7 +47,6 @@ class InvasionGamer(StoreWithUrlExtensions):
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
         session = session_with_proxy(extra_args)
-        product_urls = []
         page = 1
 
         while True:
@@ -66,12 +65,10 @@ class InvasionGamer(StoreWithUrlExtensions):
                 break
 
             for container in product_containers:
-                product_url = container.find("a")["href"]
-                product_urls.append(f"https://invasiongamer.com{product_url}")
+                product_url = f"https://invasiongamer.com{container.find("a")["href"]}"
+                yield product_url
 
             page += 1
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -86,14 +83,6 @@ class InvasionGamer(StoreWithUrlExtensions):
         )
         offer_price = (price * Decimal(0.95)).quantize(0)
 
-        if "PREVENTA" in name.upper():
-            stock = 0
-        else:
-            stock_text = soup.find("meta", {"property": "product:availability"})[
-                "content"
-            ]
-            stock = -1 if stock_text == "instock" else 0
-
         condition = (
             "https://schema.org/OpenBoxCondition"
             if "OPEN" in name.upper()
@@ -103,6 +92,16 @@ class InvasionGamer(StoreWithUrlExtensions):
         description = (
             html_to_markdown(description_tag.text) if description_tag else None
         )
+
+        if "PREVENTA" in name.upper():
+            stock = 0
+        elif description and "ARRIBO" in description.upper():
+            stock = 0
+        else:
+            stock_text = soup.find("meta", {"property": "product:availability"})[
+                "content"
+            ]
+            stock = -1 if stock_text == "instock" else 0
 
         p = Product(
             name,
