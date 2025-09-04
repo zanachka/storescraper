@@ -65,7 +65,8 @@ class InvasionGamer(StoreWithUrlExtensions):
                 break
 
             for container in product_containers:
-                product_url = f"https://invasiongamer.com{container.find("a")["href"]}"
+                product_path = container.find("a")["href"]
+                product_url = f"https://invasiongamer.com{product_path}"
                 yield product_url
 
             page += 1
