@@ -109,6 +109,7 @@ class SonyStore(Store):
 
         products = []
         json_products = json.loads(api_response.text)[0]["items"]
+
         for json_product in json_products:
             name = json_product["name"]
             part_number = json_product["name"].replace("|", "").strip()
@@ -127,7 +128,8 @@ class SonyStore(Store):
 
             price = Decimal(json_product["sellers"][0]["commertialOffer"]["Price"])
             picture_urls = [
-                picture["imageUrl"].split("?v")[0] for picture in json_product["images"]
+                picture["imageUrl"].split("?v")[0].replace(" ", "%20")
+                for picture in json_product["images"]
             ]
 
             p = Product(
