@@ -60,7 +60,10 @@ class Sukasa(Store):
         response = session.get(endpoint)
 
         with gzip.GzipFile(fileobj=io.BytesIO(response.content)) as f:
-            data = f.read().decode("utf-8")
+            try:
+                data = f.read().decode("utf-8")
+            except gzip.BadGzipFile:
+                return []
 
         try:
             product_data = json.loads(data)
