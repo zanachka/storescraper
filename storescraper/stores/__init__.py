@@ -97,6 +97,7 @@ from .lg_ec import LgEc
 from .lg_pe import LgPe
 from .lg_shop_ec import LgShopEc
 from .lider import Lider
+from .lider_v2 import LiderV2
 from .lider_supermercado import LiderSupermercado
 from .lifemax import Lifemax
 from .llevatelo import Llevatelo
