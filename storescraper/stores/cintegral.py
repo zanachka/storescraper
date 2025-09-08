@@ -1,6 +1,5 @@
 import json
 from bs4 import BeautifulSoup
-from decimal import Decimal
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import (

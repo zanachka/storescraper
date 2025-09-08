@@ -12,6 +12,8 @@ from storescraper.utils import (
 
 
 class LiderV2(Lider):
+    preferred_products_for_url_concurrency = 20
+
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
         seen_urls = set()
