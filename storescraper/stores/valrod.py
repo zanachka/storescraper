@@ -118,14 +118,16 @@ class Valrod(Store):
             tag["src"].split("?")[0]
             for tag in soup.find("div", "product-previews-wrapper").findAll("img")
         ]
+        upper_name = name.upper()
 
-        if "CAJA ABIERTA" in name.upper():
+        if "CAJA ABIERTA" in upper_name or "SEGUNDA SELECCION" in upper_name:
             condition = "https://schema.org/RefurbishedCondition"
         else:
             condition = "https://schema.org/NewCondition"
 
-        description = html_to_markdown(
-            soup.find("div", {"id": "product-description"}).text
+        description_tag = soup.find("div", {"id": "product-description"})
+        description = (
+            html_to_markdown(description_tag.text) if description_tag else None
         )
 
         p = Product(

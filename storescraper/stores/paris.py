@@ -465,6 +465,8 @@ class Paris(Store):
         if not json_response["results"]:
             return []
 
+        product_data = None
+
         if len(json_response["results"]) == 1:
             product_data = json_response["results"][0]
         else:
@@ -472,6 +474,9 @@ class Paris(Store):
                 if entry["key"] == url.split("-")[-1].replace(".html", ""):
                     product_data = entry
                     break
+
+        if not product_data:
+            return []
 
         name = f"{product_data['brand']} {product_data['name']['es-CL']}"
 
