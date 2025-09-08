@@ -36,6 +36,7 @@ from storescraper.categories import (
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import (
+    get_price_from_price_specification,
     session_with_proxy,
     html_to_markdown,
 )
@@ -196,10 +197,7 @@ class NotebooksYa(StoreWithUrlExtensions):
         offer = product_data["offers"][0]
         key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
-        gtag = soup.find("script", {"id": "gla-gtag-events-js-extra"})
-        gtag_text = re.search(r"var glaGtagData = ({.*?});", gtag.string, re.S).group(1)
-        data = json.loads(gtag_text)
-        offer_price = Decimal(data["products"][str(key)]["price"])
+        offer_price = get_price_from_price_specification(product_data)
         normal_price = Decimal(math.ceil(offer_price * Decimal(1.03)))
 
         if normal_price > Decimal("100000000") or offer_price > Decimal("100000000"):
