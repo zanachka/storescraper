@@ -92,9 +92,10 @@ class BackOnline(StoreWithUrlExtensions):
             condition = "https://schema.org/NewCondition"
 
         product_data = json.loads(
-            soup.findAll("script", {"type": "application/ld+json"})[2].text
+            soup.findAll("script", {"type": "application/ld+json"})[1].text
         )
         description = product_data["description"]
+        print(product_data)
 
         if len(variations_tags) <= 3:
             if "open" in product_data["brand"]["name"].lower():
@@ -103,7 +104,11 @@ class BackOnline(StoreWithUrlExtensions):
             name = product_data["name"]
             sku = product_data["sku"]
             picture_urls = product_data.get("image")
-            offer = product_data["offers"][0]
+
+            if not isinstance(picture_urls, list):
+                picture_urls = [picture_urls] if picture_urls else []
+
+            offer = product_data["offers"]
             key = str(re.search(r"variant=(\d+)", offer["url"]).groups()[0])
             stock = -1 if (offer["availability"] == "http://schema.org/InStock") else 0
             price = Decimal(offer["price"]).quantize(0)
