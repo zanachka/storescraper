@@ -52,6 +52,8 @@ class Cintegral(StoreWithUrlExtensions):
         ("proyeccion", PROJECTOR),
         ("multifuncionales", PRINTER),
         ("impresoras", PRINTER),
+        ("impresoras-laser", PRINTER),
+        ("impresoras-tinta", PRINTER),
         ("plotter", PRINTER),
         ("toners", PRINTER_SUPPLY),
         ("tintas", PRINTER_SUPPLY),
