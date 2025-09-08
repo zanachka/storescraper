@@ -164,9 +164,9 @@ class LiderV2(Lider):
 
         sku = product_data["usItemId"]
         picture_urls = [
-            img["url"]
+            img["url"].split("?")[0]
             for img in product_data["imageInfo"]["allImages"]
-            if validators.url(img["url"])
+            if validators.url(img["url"].split("?")[0])
         ]
         seller_name = product_data["sellerName"]
         seller = None if seller_name == "Lider" else seller_name
@@ -178,8 +178,10 @@ class LiderV2(Lider):
             )
             else 0
         )
-        description_value = product_data["shortDescription"]
-        description = html_to_markdown(description_value) if description_value else None
+
+        description = html_to_markdown(data["data"]["idml"]["longDescription"])
+        for entry in data["data"]["idml"]["specifications"]:
+            description += f"\n{entry['name']}: {entry['value']}"
 
         product = Product(
             name,
