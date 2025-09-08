@@ -127,7 +127,7 @@ class Valrod(Store):
 
         description_tag = soup.find("div", {"id": "product-description"})
         description = (
-            html_to_markdown(description_tag).text if description_tag else None
+            html_to_markdown(description_tag.text) if description_tag else None
         )
 
         p = Product(
