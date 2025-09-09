@@ -1,6 +1,7 @@
 import json
 import re
 from decimal import Decimal
+import time
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
@@ -125,8 +126,16 @@ class MyShop(StoreWithUrlExtensions):
                 raise Exception("Page overflow: " + url_extension)
 
             payload = {"tipo": "3", "page": str(page), "idFamilia": url_extension}
-            res = session.post("https://www.myshop.cl/servicio/producto", json=payload)
-            products_data = res.json()["resultado"]["items"]
+
+            for i in range(5):
+                try:
+                    res = session.post(
+                        "https://www.myshop.cl/servicio/producto", json=payload
+                    )
+                    products_data = res.json()["resultado"]["items"]
+                    break
+                except:
+                    time.sleep(10)
 
             if not products_data:
                 if page == 1:
