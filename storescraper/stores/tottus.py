@@ -13,6 +13,7 @@ class Tottus(Falabella):
         {"id": None, "section_prefix": "GRUPO", "exclude_marketplace": False},
     ]
     seller_id = "TOTTUS"
+    include_mejores_marcas = False
     banners_base_url = "https://tottus.cl/"
     product_url_template = (
         "https://tottus.falabella.com/tottus-cl/product/{}/product/{}"

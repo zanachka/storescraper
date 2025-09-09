@@ -36,7 +36,8 @@ class Falabella(Store):
     product_url_template = (
         "https://www.falabella.com/falabella-cl/product/{}/product/{}"
     )
-    seller_id = "FALABELLA"
+    seller_id = "FALABELLA Y MEJORES MARCAS"
+    include_mejores_marcas = True
     banners_base_url = "https://www.falabella.com/falabella-cl/{}"
     banners_sections_data = [
         [bs.HOME, "Home", bs.SUBSECTION_TYPE_HOME, ""],
@@ -224,7 +225,11 @@ class Falabella(Store):
         ],
     ]
     section_position_variants = [
-        {"id": "FALABELLA", "section_prefix": "FALABELLA", "exclude_marketplace": True},
+        {
+            "id": "FALABELLA Y MEJORES MARCAS",
+            "section_prefix": "FALABELLA",
+            "exclude_marketplace": True,
+        },
         {"id": None, "section_prefix": "GRUPO", "exclude_marketplace": False},
     ]
 
@@ -907,7 +912,13 @@ class Falabella(Store):
                 )
 
             if seller_id:
-                pag_url += "&f.derived.variant.sellerId={}".format(seller_id)
+                if cls.include_mejores_marcas:
+                    field_name = "f.derived.variant.sellerId_popularBrand"
+                else:
+                    field_name = "f.derived.variant.sellerId"
+                pag_url += "&{}={}".format(field_name, seller_id)
+
+            print(pag_url)
 
             res = cls.retrieve_json_page(session, pag_url)
 
