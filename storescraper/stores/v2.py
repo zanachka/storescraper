@@ -98,8 +98,7 @@ class V2(StoreWithUrlExtensions):
         else:
             condition = "https://schema.org/NewCondition"
 
-        offer_price = Decimal(json_container["price_amount"])
-        normal_price = (offer_price * Decimal("1.03")).quantize(0)
+        price = Decimal(json_container["price_amount"])
         picture_urls = [
             tag["src"] for tag in soup.find("ul", "product-images").findAll("img")
         ]
@@ -113,8 +112,8 @@ class V2(StoreWithUrlExtensions):
             url,
             sku,
             stock,
-            normal_price,
-            offer_price,
+            price,
+            price,
             "CLP",
             sku=sku,
             picture_urls=picture_urls,
