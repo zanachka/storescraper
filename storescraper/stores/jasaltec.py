@@ -34,7 +34,11 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
+from storescraper.utils import (
+    cf_session_with_proxy,
+    html_to_markdown,
+    remove_words,
+)
 
 
 class Jasaltec(Store):
@@ -111,20 +115,19 @@ class Jasaltec(Store):
             ["tintas", PRINTER_SUPPLY],
         ]
 
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         product_urls = []
         for url_extension, local_category in url_extensions:
+
             if local_category != category:
                 continue
+
             page = 1
+
             while True:
                 if page > 15:
                     raise Exception("page overflow: " + url_extension)
-                url_webpage = (
-                    "https://jasaltec.cl/categoria-producto/{}/"
-                    "page/{}/?_pjax=.main-page-wrapper"
-                    "&per_page=36".format(url_extension, page)
-                )
+                url_webpage = f"https://jasaltec.cl/categoria-producto/{url_extension}/page/{page}/"
                 print(url_webpage)
                 response = session.get(url_webpage)
 
@@ -132,7 +135,7 @@ class Jasaltec(Store):
                     raise Exception(url_webpage)
 
                 soup = BeautifulSoup(response.text, "lxml")
-                product_containers = soup.findAll("div", "product-grid-item")
+                product_containers = soup.find_all("div", "product-grid-item")
 
                 if not product_containers:
                     if page == 1:
@@ -142,13 +145,15 @@ class Jasaltec(Store):
                 for container in product_containers:
                     product_url = container.find("a")["href"]
                     product_urls.append(product_url)
+
                 page += 1
+
         return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        session = session_with_proxy(extra_args)
+        session = cf_session_with_proxy(extra_args)
         response = session.get(url)
 
         if response.status_code == 403:
