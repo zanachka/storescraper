@@ -760,12 +760,16 @@ class Falabella(Store):
                 if "falabella" not in model["offerings"][0]["sellerId"].lower():
                     seller_entry = model["offerings"][0]
 
-            stock = 0
             seller = (
                 seller_entry.get("sellerName", seller_entry["sellerId"])
                 if seller_entry
                 else None
             )
+
+            if seller:
+                part_number = seller_entry["sellerSkuId"]
+            else:
+                part_number = None
 
             if is_international_shipping:
                 stock = 0
@@ -813,6 +817,7 @@ class Falabella(Store):
                 condition=condition,
                 seller=seller,
                 description=description,
+                part_number=part_number,
             )
 
             products.append(p)
