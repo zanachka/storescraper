@@ -150,7 +150,12 @@ class LiderV2(Lider):
         name = f"{product_data['brand']} {product_data['name']}"
         key = product_data["offerId"]
         price_info = product_data["priceInfo"]
-        normal_price = Decimal(price_info["currentPrice"]["price"])
+        current_price = price_info["currentPrice"]
+
+        if not current_price:
+            return []
+
+        normal_price = Decimal(current_price["price"])
         offer_price = normal_price
         promo_data = [
             promo_entry
