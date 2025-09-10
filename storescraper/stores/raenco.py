@@ -62,7 +62,7 @@ class Raenco(Store):
                 if page >= 15:
                     raise Exception("Page overflow")
 
-                url = "https://raenco.com/departamentos/{}?" "marca=381".format(
+                url = "https://www.raenco.com/departamentos/{}?" "marca=381".format(
                     category_path
                 )
 
