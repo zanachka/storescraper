@@ -105,6 +105,7 @@ class CNava(Store):
             ["televisores", TELEVISION],
             ["electrodomesticos", ACCESORIES],
             ["impresoras-y-multifuncionales/suministros1", PRINTER_SUPPLY],
+            ["impresoras-y-multifuncionales/toner-y-tambor", PRINTER_SUPPLY],
         ]
 
         session = session_with_proxy(extra_args)
