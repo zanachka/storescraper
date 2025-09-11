@@ -1,3 +1,4 @@
+from decimal import Decimal
 import json
 from bs4 import BeautifulSoup
 from storescraper.product import Product
@@ -5,7 +6,6 @@ from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import (
     session_with_proxy,
     html_to_markdown,
-    get_price_from_price_specification,
 )
 from storescraper.categories import (
     NOTEBOOK,
@@ -102,28 +102,28 @@ class Cintegral(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url, verify=False)
         soup = BeautifulSoup(response.text, "lxml")
-        product_data_tag = soup.find("script", {"type": "application/ld+json"})
+        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[1]
+        product_data_tag = soup.find_all("script", {"type": "application/ld+json"})[0]
 
         if not product_data_tag:
             return []
 
-        product_data = json.loads(product_data_tag.text)
-        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
-        name = product_data["name"]
+        product_data_entries = json.loads(product_data_tag.text)["@graph"]
 
+        for entry in product_data_entries:
+            if entry["@type"] == "Product":
+                product_data = entry
+
+        name = product_data["name"]
         part_number_tag = soup.find("div", "field_682c8d88970c3")
         part_number = (
             part_number_tag.contents[1].strip()
             if part_number_tag
             else product_data["sku"]
         )
-        offers = product_data["offers"]
-
-        assert len(offers) == 1
-
-        offer = offers[0]
+        offer = product_data["offers"]
         stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
-        price = get_price_from_price_specification(product_data)
+        price = Decimal(offer["price"])
         picture_urls = [
             img["src"]
             for img in soup.find("div", "product-image-slider").find_all("img")
