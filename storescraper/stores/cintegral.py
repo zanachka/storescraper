@@ -127,7 +127,7 @@ class Cintegral(StoreWithUrlExtensions):
             else product_data["sku"]
         )
         offer = product_data["offers"]
-        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
         price = Decimal(offer["price"])
         picture_urls = [
             img["src"]
