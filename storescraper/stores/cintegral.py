@@ -102,7 +102,12 @@ class Cintegral(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url, verify=False)
         soup = BeautifulSoup(response.text, "lxml")
-        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[1]
+        key_tag = soup.find("link", {"rel": "shortlink"})
+
+        if not key_tag:
+            return []
+
+        key = key_tag["href"].split("?p=")[1]
         product_data_tag = soup.find_all("script", {"type": "application/ld+json"})[0]
 
         if not product_data_tag:
