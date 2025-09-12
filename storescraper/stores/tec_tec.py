@@ -51,10 +51,7 @@ class TecTec(StoreWithUrlExtensions):
     @classmethod
     def get_session(cls, extra_args=None):
         session = session_with_proxy(extra_args)
-        session.headers["user-agent"] = (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
-        )
+        session.headers["user-agent"] = "curl/8.5.0"
         return session
 
     @classmethod
