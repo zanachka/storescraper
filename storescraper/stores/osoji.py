@@ -91,6 +91,10 @@ class Osoji(StoreWithUrlExtensions):
         name = product_data["item_name"]
         key = str(product_data["item_id"])
         stock = product_data["stocklevel"]
+
+        if stock == None:
+            stock = -1
+
         price = Decimal(product_data["price"])
         sku = product_data["sku"]
         description_tag = soup.find(
