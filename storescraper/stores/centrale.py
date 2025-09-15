@@ -91,7 +91,7 @@ class Centrale(StoreWithUrlExtensions):
         product_urls = []
         page = 1
         while True:
-            if page > 40:
+            if page > 50:
                 raise Exception("page overflow: " + url_extension)
             url_webpage = "https://centrale.cl/categoria-producto" "/{}/page/{}".format(
                 url_extension, page
