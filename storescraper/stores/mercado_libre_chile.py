@@ -920,7 +920,12 @@ class MercadoLibreChile(Store):
 
         res = session.get(url)
         soup = BeautifulSoup(res.text, "lxml")
-        price = Decimal(soup.find("meta", {"itemprop": "price"})["content"])
+        price_tag = soup.find("meta", {"itemprop": "price"})
+
+        if not price_tag:
+            return []
+
+        price = Decimal(price_tag["content"])
 
         if not min_price or price < min_price:
             min_price = price
