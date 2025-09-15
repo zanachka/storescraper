@@ -12,8 +12,7 @@ from storescraper.categories import GAMING_CHAIR
 
 class KroneStore(StoreWithUrlExtensions):
     url_extensions = [
-        ["sillas-gamer-oficina-krone-xl", GAMING_CHAIR],
-        ["krone-signature", GAMING_CHAIR],
+        ["catalogo-sillas-kronestore", GAMING_CHAIR],
     ]
 
     @classmethod
@@ -31,7 +30,7 @@ class KroneStore(StoreWithUrlExtensions):
             print(url)
             response = session.get(url)
             soup = BeautifulSoup(response.text, "lxml")
-            products = soup.findAll("li", "grid__item")
+            products = soup.findAll("product-block", "product-block")
 
             if not products:
                 if page == 1:
@@ -52,9 +51,8 @@ class KroneStore(StoreWithUrlExtensions):
         session = cls.get_session(extra_args)
         soup = BeautifulSoup(session.get(url).text, "lxml")
         product_data = json.loads(
-            soup.find_all("script", {"type": "application/ld+json"})[1].text
+            soup.find_all("script", {"type": "application/ld+json"})[2].text
         )
-
         name = product_data["name"]
         description = html_to_markdown(product_data["description"])
 
