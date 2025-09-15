@@ -154,11 +154,15 @@ class MacOnline(Store):
         else:
             json_container = soup.find("script", {"type": "application/ld+json"})
             json_data = json.loads(json_container.text)
-
             name = json_data["name"]
             sku = json_data["sku"]
             price = Decimal(json_data["offers"]["price"])
-            description = html_to_markdown(json_data.get("description", ""))
+            description_tag = soup.find("div", {"id": "tab-description"})
+            if description_tag:
+                description = html_to_markdown(description_tag.text)
+            else:
+                description = None
+            print(description)
             picture_urls = [x.split("?")[0] for x in json_data["image"]]
 
             if "INTERNACIONAL" in name.upper():

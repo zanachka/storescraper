@@ -12,7 +12,7 @@ from storescraper.utils import (
 
 
 class LiderV2(Lider):
-    preferred_products_for_url_concurrency = 20
+    preferred_products_for_url_concurrency = 30
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
