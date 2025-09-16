@@ -138,6 +138,15 @@ class Paris(Store):
             "Tecno > Accesorios Computación > Monitores",
         ),
         (
+            "tecGamers",
+            MONITOR,
+            "Tecno > Gamers > Monitores",
+            {
+                "key": "tipoProductoAll",
+                "stringValues": ["Monitores"],
+            },
+        ),
+        (
             "tecAccompDiscosDuros",
             SOLID_STATE_DRIVE,
             "Tecno > Accesorios Computación > Discos Duros",
