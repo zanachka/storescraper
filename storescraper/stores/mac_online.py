@@ -162,7 +162,6 @@ class MacOnline(Store):
                 description = html_to_markdown(description_tag.text)
             else:
                 description = None
-            print(description)
             picture_urls = [x.split("?")[0] for x in json_data["image"]]
 
             if "INTERNACIONAL" in name.upper():
