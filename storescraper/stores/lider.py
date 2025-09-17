@@ -56,11 +56,11 @@ class Lider(Store):
         # "chrome123",
         # "chrome124",
         # ----
+        "chrome99_android",
+        "chrome131_android",
         "chrome131",
         "chrome133a",
         "chrome136",
-        "chrome99_android",
-        "chrome131_android",
         "edge99",
         "edge101",
         "safari153",
