@@ -83,9 +83,7 @@ class AgenciasWayOnline(StoreWithUrlExtensions):
                 text = bold_tag.text.strip().lower()
                 text_value = bold_tag.next_sibling.strip()
 
-                if text == "sku:":
-                    sku = text_value
-                elif text == "modelo:":
+                if text == "modelo:":
                     model = text_value
 
         if not model:
@@ -105,6 +103,7 @@ class AgenciasWayOnline(StoreWithUrlExtensions):
             )
             part_number = model
 
+        sku = soup.find("span", "sku").text.strip()
         stock_tag = soup.find("span", "awl-inner-text")
         stock = 0 if stock_tag and stock_tag.text.lower() == "¡agotado!" else -1
         description_tag = soup.findAll("div", "elementor-widget-n-accordion")[1]
