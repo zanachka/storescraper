@@ -12,7 +12,7 @@ from storescraper.utils import (
 
 
 class LiderV2(Lider):
-    preferred_products_for_url_concurrency = 30
+    preferred_products_for_url_concurrency = 10
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
@@ -211,30 +211,34 @@ class LiderV2(Lider):
 
     @classmethod
     def _run_impersonators(cls, query_url, graphql_request_body, extra_args):
-        for impersonator in cls.USER_AGENTS:
-            print("Trying " + impersonator)
-            extra_args = extra_args or {}
-            extra_args["impersonate"] = impersonator
-            session = cf_session_with_proxy(extra_args)
+        extra_args = extra_args or {}
+        extra_args["impersonate"] = "chrome136"
+        session = cf_session_with_proxy(extra_args)
 
-            session.headers.update(
-                {
-                    "Content-Type": "application/json",
-                    "x-o-bu": "LIDER-CL",
-                    "x-o-mart": "B2C",
-                    "x-o-vertical": "EA",
-                    "X-APOLLO-OPERATION-NAME": (
-                        "Browse" if "browse" in query_url else "ItemById"
-                    ),
-                }
-            )
+        session.headers.update(
+            {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "accept-encoding": "gzip, deflate, br, zstd",
+                "accept-language": "en-US,en;q=0.9",
+                "content-type": "application/json",
+                "priority": "u=0, i",
+                "sec-ch-ua-platform": '"Linux"',
+                "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+                "X-APOLLO-OPERATION-NAME": (
+                    "Browse" if "browse" in query_url else "ItemById"
+                ),
+                "x-o-bu": "LIDER-CL",
+                "x-o-mart": "B2C",
+                "x-o-vertical": "EA",
+            }
+        )
 
+        for i in range(5):
             response = session.post(query_url, json=graphql_request_body)
 
             try:
                 data = json.loads(response.text)
                 return data
-            except Exception:
+            except Exception as e:
                 continue
-        else:
-            raise Exception("No user agents left")
+        raise Exception("Exceeded number of retries")
