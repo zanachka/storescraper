@@ -28,8 +28,9 @@ class Novey(Store):
 
         for script in soup.find_all("script"):
             if script.string and script.string.startswith("window.algoliaConfig"):
+                decoded = script.string.encode("utf-8").decode("unicode_escape")
                 algolia_json_content = re.search(
-                    r"window\.algoliaConfig\s*=\s*(\{.*\});", script.string
+                    r"JSON\.parse\('([^']+)'\)", decoded
                 ).group(1)
                 algolia_data = json.loads(algolia_json_content)
                 algolia_application_id = algolia_data["applicationId"]
