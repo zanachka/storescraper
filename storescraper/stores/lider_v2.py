@@ -119,7 +119,7 @@ class LiderV2(Lider):
         if promo_data:
             assert len(promo_data) == 1
             offer_price = Decimal(
-                remove_words(promo_data[0]["templateData"]["priceString"].split(".")[0])
+                remove_words(promo_data[0]["templateData"]["priceString"])
             )
 
         sku = product_data["usItemId"]
