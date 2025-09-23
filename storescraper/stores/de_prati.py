@@ -55,9 +55,8 @@ class DePrati(Store):
         session = requests.Session(impersonate="chrome120")
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        product_json = json.loads(
-            soup.find("input", {"name": "producthidden"})["value"]
-        )
+        product_json = json.loads(soup.find("product-details-panel")[":rawproduct"])
+
         name = product_json["name"]
         sku = product_json["code"]
         description = html_to_markdown(product_json["description"])
