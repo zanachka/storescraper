@@ -1,8 +1,10 @@
 import json
+
+from bs4 import BeautifulSoup
+
 from storescraper.stores.lider import Lider
 import validators
 from decimal import Decimal
-from pathlib import Path
 from storescraper.product import Product
 from storescraper.utils import (
     html_to_markdown,
@@ -29,42 +31,29 @@ class LiderV2(Lider):
 
     @classmethod
     def _get_product_urls(cls, category_id, extra_args, exclude_marketplace=True):
-        query_url = "https://www.lider.cl/orchestra/graphql/browse"
-        path = Path(__file__).with_name("lider_request.txt")
+        extra_args = extra_args or {}
+        extra_args["impersonate"] = "chrome136"
+        session = cf_session_with_proxy(extra_args)
 
-        with path.open("r") as f:
-            graphql_query = f.read()
+        base_url = f"https://www.lider.cl/browse/a/{category_id}"
+        if exclude_marketplace:
+            base_url += "?facet=ss_sellertype%3ALider"
 
         page = 1
 
         while True:
             print(f"{category_id} Page: {page}")
-            graphql_variables = {
-                "page": page,
-                "prg": "desktop",
-                "catId": category_id,
-                "sort": "best_match",
-                "ps": 44,
-                "fetchMarquee": True,
-                "fetchSkyline": True,
-                "fetchSbaTop": False,
-                "fetchGallery": False,
-                "fetchDac": False,
-                "tenant": "CHILE_EA_GLASS",
-                "enablePromoData": True,
-            }
+            separator = "&" if "?" in base_url else "?"
+            url = f"{base_url}{separator}page={page}"
+            print(url)
+            response = session.get(url)
+            soup = BeautifulSoup(response.text, "lxml")
+            next_tag = soup.find("script", {"id": "__NEXT_DATA__"})
+            page_data = json.loads(next_tag.text)
 
-            if exclude_marketplace:
-                graphql_variables["facet"] = "ss_sellertype:Lider"
-
-            graphql_request_body = {
-                "query": graphql_query,
-                "variables": graphql_variables,
-            }
-            data = cls._run_impersonators(query_url, graphql_request_body, extra_args)
-            products_data = data["data"]["search"]["searchResult"]["itemStacks"][0][
-                "itemsV2"
-            ]
+            products_data = page_data["props"]["pageProps"]["initialData"][
+                "searchResult"
+            ]["itemStacks"][0]["items"]
 
             if not products_data:
                 break
@@ -102,50 +91,14 @@ class LiderV2(Lider):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        sku = url.split("/")[-1]
-        query_url = f"https://www.lider.cl/orchestra/graphql/ip/{sku}"
-        p = Path(__file__).with_name("lider_product_request.txt")
-
-        with p.open("r") as f:
-            graphql_query = f.read()
-
-        graphql_variables = {
-            "pageType": "ItemPageGlobal",
-            "tenant": "CHILE_EA_GLASS",
-            "iId": sku,
-            "fBBAd": True,
-            "eLLBBAds": False,
-            "fSL": True,
-            "fIdml": True,
-            "fMrkDscrp": False,
-            "fRev": True,
-            "fFit": True,
-            "fSeo": True,
-            "fP13": True,
-            "fAff": True,
-            "fMq": True,
-            "fGalAd": False,
-            "fSCar": True,
-            "fDac": False,
-            "spVid": False,
-            "spSBA": False,
-            "fBB": True,
-            "eItIb": True,
-            "fIlc": False,
-            "fSId": True,
-            "eSb": True,
-            "eCc": False,
-            "eSsm": False,
-            "enableRelatedSearch": False,
-            "enableDetailedBeacon": False,
-            "sV": False,
-            "sVC": False,
-            "enablePromoData": True,
-        }
-
-        graphql_request_body = {"query": graphql_query, "variables": graphql_variables}
-        data = cls._run_impersonators(query_url, graphql_request_body, extra_args)
-        product_data = data["data"]["product"]
+        extra_args = extra_args or {}
+        extra_args["impersonate"] = "chrome136"
+        session = cf_session_with_proxy(extra_args)
+        response = session.get(url)
+        soup = BeautifulSoup(response.text, "lxml")
+        next_tag = soup.find("script", {"id": "__NEXT_DATA__"})
+        page_data = json.loads(next_tag.text)
+        product_data = page_data["props"]["pageProps"]["initialData"]["data"]["product"]
 
         name = f"{product_data['brand']} {product_data['name']}"
         key = product_data["offerId"]
@@ -186,8 +139,14 @@ class LiderV2(Lider):
             else 0
         )
 
-        description = html_to_markdown(data["data"]["idml"]["longDescription"])
-        for entry in data["data"]["idml"]["specifications"]:
+        description = html_to_markdown(
+            page_data["props"]["pageProps"]["initialData"]["data"]["idml"][
+                "longDescription"
+            ]
+        )
+        for entry in page_data["props"]["pageProps"]["initialData"]["data"]["idml"][
+            "specifications"
+        ]:
             description += f"\n{entry['name']}: {entry['value']}"
 
         product = Product(
@@ -208,37 +167,3 @@ class LiderV2(Lider):
         )
 
         yield product
-
-    @classmethod
-    def _run_impersonators(cls, query_url, graphql_request_body, extra_args):
-        extra_args = extra_args or {}
-        extra_args["impersonate"] = "chrome136"
-        session = cf_session_with_proxy(extra_args)
-
-        session.headers.update(
-            {
-                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-                "accept-encoding": "gzip, deflate, br, zstd",
-                "accept-language": "en-US,en;q=0.9",
-                "content-type": "application/json",
-                "priority": "u=0, i",
-                "sec-ch-ua-platform": '"Linux"',
-                "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
-                "X-APOLLO-OPERATION-NAME": (
-                    "Browse" if "browse" in query_url else "ItemById"
-                ),
-                "x-o-bu": "LIDER-CL",
-                "x-o-mart": "B2C",
-                "x-o-vertical": "EA",
-            }
-        )
-
-        for i in range(5):
-            response = session.post(query_url, json=graphql_request_body)
-
-            try:
-                data = json.loads(response.text)
-                return data
-            except Exception as e:
-                continue
-        raise Exception("Exceeded number of retries")
