@@ -153,32 +153,38 @@ class MyShop(StoreWithUrlExtensions):
         session = session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        name = soup.find("h1").text.strip()
-        product_data_tag = soup.find("div", "product_meta")
-        sku = product_data_tag.findAll("p")[0].text.strip().split(": ")[1]
-        part_number = product_data_tag.findAll("p")[3].text.strip().split(": ")[1]
+        name = soup.find("div", "title").text.strip()
+        product_tags = soup.find("div", "sku").find_all("span")
+        print(product_tags)
 
-        stock_containers = soup.find("div", "product_desc").findAll("li")
+        assert "SKU" in product_tags[0].text and "Part Number" in product_tags[2].text
+
+        sku = product_tags[0].text.strip().split("SKU: ")[1]
+        part_number = product_tags[2].text.strip().split("Part Number: ")[1]
+        stock_containers = soup.find("div", "stock").findAll("span")
         stock = 0
-        for stock_container in stock_containers:
-            stock += int(re.search(r"(\d+)", stock_container.text).groups()[0])
 
-        price_tags = soup.find("div", "product_d_right").findAll(
-            "span", "current_price"
-        )
+        for stock_container in stock_containers:
+            stock_text = stock_container.text
+
+            if "unidades" in stock_text and stock_text.strip() != "0 unidades":
+                stock = -1
+
+        price_tags = soup.find_all("div", "main-price")
+
         assert len(price_tags) == 2
+
         offer_price = Decimal(remove_words(price_tags[0].text))
         normal_price = Decimal(remove_words(price_tags[1].text))
-
-        picture_urls = [
-            x["data-image"] for x in soup.findAll("a", "elevatezoom-gallery")
-        ]
-        description = html_to_markdown(str(soup.find("div", "product_d_inner")))
-
-        extended_description_tag = soup.find("input", {"id": "ObjectoJSON"})
-        extended_description_json = json.loads(extended_description_tag["value"])
-        description += html_to_markdown(
-            extended_description_json["PRODUCTO"]["descripcion"]
+        picture_urls = list(
+            set(
+                img["src"] for img in soup.find("div", "product-slider").find_all("img")
+            )
+        )
+        description = html_to_markdown(
+            soup.find("div", {"id": "bloqueDescripcion"})
+            .find("div", "infoContenido")
+            .text
         )
 
         if "REACON" in name.upper():
