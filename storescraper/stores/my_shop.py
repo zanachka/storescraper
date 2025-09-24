@@ -179,14 +179,11 @@ class MyShop(StoreWithUrlExtensions):
         normal_price = Decimal(remove_words(price_tags[1].text.strip()))
         picture_urls = list(
             set(
-                img["src"] for img in soup.find("div", "product-slider").find_all("img")
+                img["src"].split("?")[0]
+                for img in soup.find("div", "product-slider").find_all("img")
             )
         )
-        description = html_to_markdown(
-            soup.find("div", {"id": "bloqueDescripcion"})
-            .find("div", "infoContenido")
-            .text
-        )
+        description = html_to_markdown(soup.find("table", "tablaEspecificaciones").text)
 
         if "REACON" in name.upper():
             condition = "https://schema.org/RefurbishedCondition"
