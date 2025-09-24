@@ -63,7 +63,7 @@ class XtremeComponents(StoreWithUrlExtensions):
                 product_data = node
                 break
         else:
-            raise Exception("No product tag found")
+            return []
 
         name = product_data["name"]
         offers = product_data["offers"]
