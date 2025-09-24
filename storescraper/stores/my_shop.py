@@ -1,5 +1,3 @@
-import json
-import re
 from decimal import Decimal
 import time
 from bs4 import BeautifulSoup
