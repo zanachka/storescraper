@@ -94,7 +94,7 @@ class HuaweiShop(StoreWithUrlExtensions):
             elif "productId" in url:
                 product_ids = [url.split("productId=")[1]]
             else:
-                raise Exception("No product ID found")
+                return []
         products = []
 
         for product_id in product_ids:
