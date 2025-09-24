@@ -21,6 +21,7 @@ class Store:
     preferred_discover_urls_concurrency = 3
     preferred_products_for_url_concurrency = 10
     prefer_async = True
+    celery_task_retry_countdown = 3
 
     ##########################################################################
     # API methods

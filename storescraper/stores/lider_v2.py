@@ -15,6 +15,7 @@ from storescraper.utils import (
 
 class LiderV2(Lider):
     preferred_products_for_url_concurrency = 10
+    celery_task_retry_countdown = 6
 
     @classmethod
     def discover_urls_for_category(cls, category, extra_args=None):
