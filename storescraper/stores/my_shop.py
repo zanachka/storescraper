@@ -153,7 +153,6 @@ class MyShop(StoreWithUrlExtensions):
         soup = BeautifulSoup(response.text, "lxml")
         name = soup.find("div", "title").text.strip()
         product_tags = soup.find("div", "sku").find_all("span")
-        print(product_tags)
 
         assert "SKU" in product_tags[0].text and "Part Number" in product_tags[2].text
 
@@ -170,10 +169,14 @@ class MyShop(StoreWithUrlExtensions):
 
         price_tags = soup.find_all("div", "main-price")
 
+        for tag in price_tags:
+            for span in tag.find_all("span"):
+                span.decompose()
+
         assert len(price_tags) == 2
 
-        offer_price = Decimal(remove_words(price_tags[0].text))
-        normal_price = Decimal(remove_words(price_tags[1].text))
+        offer_price = Decimal(remove_words(price_tags[0].text.strip()))
+        normal_price = Decimal(remove_words(price_tags[1].text.strip()))
         picture_urls = list(
             set(
                 img["src"] for img in soup.find("div", "product-slider").find_all("img")
