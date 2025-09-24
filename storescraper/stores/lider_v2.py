@@ -31,9 +31,6 @@ class LiderV2(Lider):
 
     @classmethod
     def _get_product_urls(cls, category_id, extra_args, exclude_marketplace=True):
-        extra_args = extra_args or {}
-        extra_args["impersonate"] = "chrome136"
-        session = cf_session_with_proxy(extra_args)
 
         base_url = f"https://www.lider.cl/browse/a/{category_id}"
         if exclude_marketplace:
@@ -46,10 +43,7 @@ class LiderV2(Lider):
             separator = "&" if "?" in base_url else "?"
             url = f"{base_url}{separator}page={page}"
             print(url)
-            response = session.get(url)
-            soup = BeautifulSoup(response.text, "lxml")
-            next_tag = soup.find("script", {"id": "__NEXT_DATA__"})
-            page_data = json.loads(next_tag.text)
+            page_data = cls.fetch_page(url, extra_args)
 
             products_data = page_data["props"]["pageProps"]["initialData"][
                 "searchResult"
@@ -91,13 +85,7 @@ class LiderV2(Lider):
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        extra_args = extra_args or {}
-        extra_args["impersonate"] = "chrome136"
-        session = cf_session_with_proxy(extra_args)
-        response = session.get(url)
-        soup = BeautifulSoup(response.text, "lxml")
-        next_tag = soup.find("script", {"id": "__NEXT_DATA__"})
-        page_data = json.loads(next_tag.text)
+        page_data = cls.fetch_page(url, extra_args)
         product_data = page_data["props"]["pageProps"]["initialData"]["data"]["product"]
 
         name = f"{product_data['brand']} {product_data['name']}"
@@ -167,3 +155,17 @@ class LiderV2(Lider):
         )
 
         yield product
+
+    @classmethod
+    def fetch_page(cls, url, extra_args):
+        extra_args = extra_args or {}
+        for user_agent in cls.USER_AGENTS:
+            print(user_agent)
+            extra_args["impersonate"] = user_agent
+            session = cf_session_with_proxy(extra_args)
+            response = session.get(url)
+            soup = BeautifulSoup(response.text, "lxml")
+            next_tag = soup.find("script", {"id": "__NEXT_DATA__"})
+            if next_tag:
+                return json.loads(next_tag.text)
+        raise Exception("No user agents left")
