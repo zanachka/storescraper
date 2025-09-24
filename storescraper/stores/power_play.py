@@ -1,7 +1,6 @@
 from decimal import Decimal
 import logging
 import json
-import re
 
 from bs4 import BeautifulSoup
 from storescraper.categories import (
@@ -27,7 +26,6 @@ from storescraper.categories import (
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
 from storescraper.utils import (
-    get_price_from_price_specification,
     html_to_markdown,
     session_with_proxy,
 )
