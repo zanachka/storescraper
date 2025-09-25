@@ -2,18 +2,23 @@ from bs4 import BeautifulSoup
 import json
 
 from storescraper import banner_sections as bs
-from storescraper.utils import session_with_proxy, cf_session_with_proxy
+from storescraper.utils import cf_session_with_proxy
 from .falabella import Falabella
 
 
 class Tottus(Falabella):
     store_and_subdomain = "tottus"
     section_position_variants = [
-        {"id": "TOTTUS", "section_prefix": "TOTTUS", "exclude_marketplace": True},
-        {"id": None, "section_prefix": "GRUPO", "exclude_marketplace": False},
+        {
+            "section_prefix": "TOTTUS",
+            "seller_filter": "f.derived.variant.sellerId=TOTTUS",
+        },
+        {
+            "section_prefix": "GRUPO",
+            "seller_filter": None,
+        },
     ]
-    seller_id = "TOTTUS"
-    include_mejores_marcas = False
+    seller_filter = "f.derived.variant.sellerId=TOTTUS"
     banners_base_url = "https://tottus.cl/"
     product_url_template = (
         "https://tottus.falabella.com/tottus-cl/product/{}/product/{}"

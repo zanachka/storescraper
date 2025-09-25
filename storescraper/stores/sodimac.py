@@ -5,11 +5,16 @@ from .falabella import Falabella
 class Sodimac(Falabella):
     store_and_subdomain = "sodimac"
     section_position_variants = [
-        {"id": "SODIMAC", "section_prefix": "SODIMAC", "exclude_marketplace": True},
-        {"id": None, "section_prefix": "GRUPO", "exclude_marketplace": False},
+        {
+            "section_prefix": "SODIMAC",
+            "seller_filter": "f.derived.variant.sellerId=SODIMAC",
+        },
+        {
+            "section_prefix": "GRUPO",
+            "seller_filter": None,
+        },
     ]
-    seller_id = "SODIMAC"
-    include_mejores_marcas = False
+    seller_filter = "f.derived.variant.sellerId=SODIMAC"
     banners_base_url = "https://sodimac.falabella.com/sodimac-cl/{}"
     banners_sections_data = [
         [bs.HOME, "Home", bs.SUBSECTION_TYPE_HOME, ""],
