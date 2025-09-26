@@ -125,8 +125,7 @@ class XiaomiChile(StoreWithUrlExtensions):
                     if img["type"] == "image"
                 ]
                 description = f"PRODUCTO ACTUAL: {name} - DESCRIPCIÓN GENERAL: {general_description}"
-                print(description)
-                exit()
+
                 p = Product(
                     name,
                     cls.__name__,
