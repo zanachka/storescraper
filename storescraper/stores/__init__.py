@@ -206,6 +206,7 @@ from .wei import Wei
 from .winpy import Winpy
 from .wom import Wom
 from .xtreme_components import XtremeComponents
+from .xiaomi_chile import XiaomiChile
 from .xiaomi_online import XiaomiOnline
 from .z_tech import ZTech
 from .zona_portatil import ZonaPortatil
