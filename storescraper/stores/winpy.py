@@ -96,17 +96,24 @@ class Winpy(StoreWithUrlExtensions):
         base_url = "https://www.winpy.cl"
         session = cf_session_with_proxy(extra_args)
         url = base_url + "/" + url_extension
-
+        prev_containers = None
         page = 1
+
         while True:
             if page >= 40:
                 raise Exception("Page overflow: " + url_extension)
 
             url_with_page = url + "paged/" + str(page) + "/"
             print(url_with_page)
-            soup = BeautifulSoup(session.get(url_with_page).text, "html5lib")
+            response = session.get(url_with_page)
+            soup = BeautifulSoup(response.text, "html5lib")
             product_containers = soup.find("section", {"id": "productos"})
             product_containers = product_containers.findAll("article")
+
+            if product_containers == prev_containers:
+                break
+
+            prev_containers = product_containers
 
             if not product_containers:
                 if page == 1:
@@ -128,7 +135,7 @@ class Winpy(StoreWithUrlExtensions):
         response = session.get(url)
 
         if response.url != url or response.status_code == 404:
-            raise Exception(url, response.url, response.status_code)
+            return []
 
         page_source = response.text
         soup = BeautifulSoup(page_source, "html5lib")
