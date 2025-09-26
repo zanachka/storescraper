@@ -135,7 +135,7 @@ class Winpy(StoreWithUrlExtensions):
         response = session.get(url)
 
         if response.url != url or response.status_code == 404:
-            raise Exception(url, response.url, response.status_code)
+            return []
 
         page_source = response.text
         soup = BeautifulSoup(page_source, "html5lib")
