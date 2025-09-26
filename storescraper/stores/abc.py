@@ -231,19 +231,23 @@ class Abc(Store):
         name = soup.find("h1", {"itemprop": "name"}).text.strip()
         key = soup.find("span", {"itemprop": "sku"})["data-sku"]
         prices_tag = soup.find("div", "prices")
-        internet_price_tag = prices_tag.find("p", "internet")
+        normal_price_tags = [
+            tag
+            for tag in [
+                prices_tag.find("p", "internet"),
+                prices_tag.find("p", "js-internet-price"),
+            ]
+            if tag
+        ]
+        if not normal_price_tags:
+            return []
 
-        if internet_price_tag:
-            normal_price_tag = internet_price_tag.find("span", "price-value")
-        else:
-            js_internet_price_tag = prices_tag.find("p", "js-internet-price")
-
-            if not js_internet_price_tag:
-                return []
-
-            normal_price_tag = js_internet_price_tag.find("span", "price-value")
-
-        normal_price = Decimal(normal_price_tag["data-value"]).quantize(0)
+        normal_price = min(
+            [
+                Decimal(tag.find("span", "price-value")["data-value"]).quantize(0)
+                for tag in normal_price_tags
+            ]
+        )
 
         offer_price_tag = prices_tag.find("p", "js-tlp-price")
 
