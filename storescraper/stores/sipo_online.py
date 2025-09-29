@@ -112,7 +112,7 @@ class SipoOnline(StoreWithUrlExtensions):
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
         product_data = json.loads(
-            soup.find_all("script", {"type": "application/ld+json"})[1].text
+            soup.find_all("script", {"type": "application/ld+json"})[0].text
         )
 
         if "@graph" not in product_data:
