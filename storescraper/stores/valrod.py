@@ -1,5 +1,5 @@
+import json
 import logging
-import re
 from decimal import Decimal
 
 from bs4 import BeautifulSoup
@@ -16,10 +16,11 @@ from storescraper.categories import (
     ACCESORIES,
     POWER_SUPPLY,
     CPU_COOLER,
+    SOLID_STATE_DRIVE,
 )
 from storescraper.product import Product
 from storescraper.store import Store
-from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class Valrod(Store):
@@ -49,6 +50,7 @@ class Valrod(Store):
             ["hardware/disipadores", CPU_COOLER],
             ["hardware/enfriadores-liquidos", CPU_COOLER],
             ["hardware/ventiladores", CASE_FAN],
+            ["hardware/discos-ssd", SOLID_STATE_DRIVE],
             ["perifericos-y-accesorios/mouse-y-mousepads", MOUSE],
             ["perifericos-y-accesorios/teclados", KEYBOARD],
             ["perifericos-y-accesorios/audifonos", HEADPHONES],
@@ -72,12 +74,11 @@ class Valrod(Store):
                 print(url_webpage)
                 response = session.get(url_webpage)
                 soup = BeautifulSoup(response.text, "lxml")
-                product_container = soup.findAll("div", "product-item large")
+                product_container = soup.findAll("div", "product-block__wrapper")
 
                 if not product_container:
                     if page == 1:
                         logging.warning("Empty category: " + url_extension)
-
                     break
 
                 for container in product_container:
@@ -94,30 +95,38 @@ class Valrod(Store):
         session = session_with_proxy(extra_args)
         response = session.get(url)
         soup = BeautifulSoup(response.text, "lxml")
-        name = soup.find("div", "product-name-wrapper").find("h1").text
-        key = soup.find("form", {"id": "addtocart"})["action"].split("/")[-1]
+        name = soup.find("h1", "product-page__title").text
+        key = soup.find("form", {"name": "buy"})["action"].split("/")[-1]
+        scripts = json.loads(soup.find("script", {"type": "application/ld+json"}).text)
+        product_data = None
 
-        sku_match = re.search(r'"sku":\s?"(.+?)"', response.text)
+        for script in scripts:
+            if script["@type"] == "Product":
+                product_data = script
 
-        if sku_match:
-            sku = sku_match.groups()[0]
+        if "sku" in product_data:
+            sku = product_data.get("sku")
         else:
+            sku = json.loads(soup.find("script", "product-attributes-json").text)[
+                "info"
+            ]["variant"].get("sku")
+
+        if sku == "":
             sku = None
 
-        stock_container = soup.find("div", "product-availability").find("span")
-
-        if stock_container.text == "No Disponible" or stock_container.text == "Agotado":
-            stock = 0
-        else:
-            stock = int(stock_container.text)
-
-        price = Decimal(
-            remove_words(soup.find("div", "price").find("span", "special-price").text)
+        offer = product_data["offers"]
+        stock = -1 if offer["availability"] == "http://schema.org/InStock" else 0
+        price = Decimal(offer["price"])
+        picture_urls = list(
+            set(
+                tag["src"].split("?")[0]
+                for tag in soup.find(
+                    "swiper-slider", "product-gallery__carousel--main"
+                ).find_all(
+                    "img", "product-gallery__image product-gallery__image--hidden"
+                )
+            )
         )
-        picture_urls = [
-            tag["src"].split("?")[0]
-            for tag in soup.find("div", "product-previews-wrapper").findAll("img")
-        ]
         upper_name = name.upper()
 
         if "CAJA ABIERTA" in upper_name or "SEGUNDA SELECCION" in upper_name:
@@ -125,7 +134,7 @@ class Valrod(Store):
         else:
             condition = "https://schema.org/NewCondition"
 
-        description_tag = soup.find("div", {"id": "product-description"})
+        description_tag = soup.find("div", "product-details product-details--table")
         description = (
             html_to_markdown(description_tag.text) if description_tag else None
         )
