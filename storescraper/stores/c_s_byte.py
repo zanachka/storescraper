@@ -178,9 +178,12 @@ class CSByte(StoreWithUrlExtensions):
             return products
         else:
             key = soup.find("link", {"rel": "shortlink"})["href"].split("p=")[-1]
-            json_data = json.loads(
-                soup.findAll("script", {"type": "application/ld+json"})[-1].text
-            )["@graph"][1]
+            scripts = soup.find_all("script", {"type": "application/ld+json"})
+
+            if not scripts:
+                return []
+
+            json_data = json.loads(scripts[-1].text)["@graph"][1]
             sku = str(json_data["sku"])
             part_number_tag = soup.find("span", "part-number")
             part_number = (
