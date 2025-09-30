@@ -15,12 +15,6 @@ class Acuenta(StoreWithUrlExtensions):
         ("30001", GROCERIES),
         ("30002", GROCERIES),
         ("30003", GROCERIES),
-        # Marcas Propias
-        ("2001", GROCERIES),
-        ("2002", GROCERIES),
-        ("2003", GROCERIES),
-        ("2004", GROCERIES),
-        ("2006", GROCERIES),
         # Halloween
         ("1301", GROCERIES),
         # Infaltables
