@@ -17,8 +17,6 @@ class Acuenta(StoreWithUrlExtensions):
         ("30003", GROCERIES),
         # Halloween
         ("1301", GROCERIES),
-        # Infaltables
-        ("100", GROCERIES),
         # Mundo bebé
         ("090203", GROCERIES),
         ("090202", GROCERIES),
