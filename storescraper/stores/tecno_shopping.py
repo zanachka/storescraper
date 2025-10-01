@@ -79,11 +79,15 @@ class TecnoShopping(StoreWithUrlExtensions):
         name = product_data["name"]
         sku = product_data["sku"]
         offer = product_data["offers"]
+        prices_container = soup.find("div", "summary entry-summary")
+        prices_container.find("div", "shoptimizer-product-prevnext").decompose()
         offer_price = Decimal(
-            remove_words(soup.find("p", "price_transferencia").text.split()[0])
+            remove_words(
+                prices_container.find("p", "price_transferencia").text.split()[0]
+            )
         )
         normal_price = Decimal(
-            remove_words(soup.find("p", "price_rebajado").text.split()[0])
+            remove_words(prices_container.find("p", "price_rebajado").text.split()[0])
         )
         key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
         stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
