@@ -34,7 +34,7 @@ class V2(StoreWithUrlExtensions):
         ["39-tarjetas-de-video", VIDEO_CARD],
         ["40-almacenamiento", SOLID_STATE_DRIVE],
         ["44-audifonos", HEADPHONES],
-        ["46-celulares", CELL],
+        ["45-celulares", CELL],
     ]
 
     @classmethod
