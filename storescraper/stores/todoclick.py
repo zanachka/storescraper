@@ -93,6 +93,7 @@ class Todoclick(StoreWithUrlExtensions):
         ["ups-572", UPS],
         ["plotter-569", PRINTER],
         ["proyectores-558", PROJECTOR],
+        ["disipadores-748", CPU_COOLER],
     ]
 
     @classmethod
