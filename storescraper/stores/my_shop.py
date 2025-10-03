@@ -1,11 +1,10 @@
-from decimal import Decimal
+import logging
 import time
 from bs4 import BeautifulSoup
-
+from decimal import Decimal
 from storescraper.categories import (
     NOTEBOOK,
     RAM,
-    CELL,
     TABLET,
     ALL_IN_ONE,
     USB_FLASH_DRIVE,
@@ -137,7 +136,7 @@ class MyShop(StoreWithUrlExtensions):
 
             if not products_data:
                 if page == 1:
-                    raise Exception("Empty category: " + url_extension)
+                    logging.warning(f"Empty category: {url_extension}")
                 break
 
             for product_entry in products_data:
