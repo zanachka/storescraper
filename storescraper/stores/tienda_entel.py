@@ -56,14 +56,6 @@ class TiendaEntel(Store):
         except json.decoder.JSONDecodeError:
             return []
 
-        if json_data["planPriceRange"]:
-            offer_price = min(
-                [x["priceIVA"] for x in json_data["planPriceRange"]["rangeDetail"]]
-            )
-            offer_price = Decimal(offer_price).quantize(0)
-        else:
-            offer_price = None
-
         base_name = json_data["renderVOBean"]["productName"]
 
         description = {}
@@ -76,21 +68,24 @@ class TiendaEntel(Store):
         description = json.dumps(description)
 
         for sku in json_data["renderSkusBean"]["skus"]:
-            if not sku["available"]:
-                continue
+            # if not sku["available"]:
+            #     continue
             price_container = sku["skuPrice"]
             if not price_container:
                 continue
 
+            sku_id = sku["skuId"]
+
             normal_price = Decimal(price_container).quantize(0)
 
-            if not offer_price:
-                offer_price = normal_price
-
-            if offer_price > normal_price:
-                offer_price = normal_price
-
-            sku_id = sku["skuId"]
+            offer_price_endpoint = (
+                "https://miportal.entel.cl/restpp/equipments/prices/" + sku_id
+            )
+            offer_price_response = session.get(offer_price_endpoint).json()
+            offer_price_text = min(
+                [x["priceIVA"] for x in offer_price_response["response"]["Prices"]]
+            )
+            offer_price = Decimal(offer_price_text).quantize(0)
 
             pictures_container = []
             stock = 0
