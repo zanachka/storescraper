@@ -457,9 +457,11 @@ class Hites(Store):
                 normal_price_container.find("span", "value")["content"]
             )
         else:
-            normal_price = Decimal(
-                prices.find("h5", "only-normal-price").find("span")["content"]
-            )
+            normal_price_container = prices.find("h5", "only-normal-price")
+            if normal_price_container:
+                normal_price = Decimal(normal_price_container.find("span")["content"])
+            else:
+                return []
 
         offer_price_container = prices.find("h5", "hites-price")
         offer_price = (

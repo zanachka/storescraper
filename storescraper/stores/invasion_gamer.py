@@ -40,7 +40,7 @@ class InvasionGamer(StoreWithUrlExtensions):
         ["accesorios-y-perifericos/sillas-y-escritorios", GAMING_CHAIR],
         ["accesorios-y-perifericos/kit-gamers", KEYBOARD_MOUSE_COMBO],
         ["accesorios-y-perifericos/consolas", VIDEO_GAME_CONSOLE],
-        ["portatiles", NOTEBOOK],
+        ["notebooks-1", NOTEBOOK],
         ["monitores", MONITOR],
     ]
 

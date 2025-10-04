@@ -1,128 +1,86 @@
 import json
-import shlex
 from decimal import Decimal
 
-import subprocess
-from bs4 import BeautifulSoup
-
-from storescraper.categories import TELEVISION, CELL, NOTEBOOK, PRINTER, WEARABLE
+from storescraper.categories import TELEVISION
 from storescraper.product import Product
-from storescraper.store_with_url_extensions import StoreWithUrlExtensions
+from storescraper.store import Store
+from storescraper.utils import session_with_proxy
 
 
-class ClaroEcuador(StoreWithUrlExtensions):
-    url_extensions = [
-        ("tecnologia/api/general/catalogo", TELEVISION),
-        ("tv/api/general/catalogo", TELEVISION),
-        ("laptops/api/general/catalogo", NOTEBOOK),
-        ("postpago/api/general/catalogo", CELL),
-        ("iot/api/general/catalogo", CELL),
-        ("ofertas/api/tu-vida-conectada---impresora/catalogo", PRINTER),
-        ("ofertas/api/tu-vida-conectada---wearables/catalogo", WEARABLE),
-    ]
+class ClaroEcuador(Store):
+    @classmethod
+    def categories(cls):
+        return [TELEVISION]
 
     @classmethod
-    def curl_post_request(cls, url):
-        command = (
-            "curl --location '"
-            + url
-            + "' \
---header 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' \
---header 'X-Requested-With: XMLHttpRequest' \
---data 'financiamiento%5Btipo_pago%5D=contado&financiamiento%5Bcuotas%5D=18&financiamiento%5Briesgo%5D=&financiamiento%5Bentrada%5D=0&financiamiento%5Btarifa%5D=0'"
-        )
-        # Define the command to execute using curl
-        print(command)
-        command = shlex.split(command)
+    def discover_urls_for_category(cls, category, extra_args=None):
+        if category != TELEVISION:
+            return []
 
-        # Execute the curl command and capture the output
-        result = subprocess.run(command, capture_output=True, text=True)
+        session = session_with_proxy(extra_args)
+        session.headers["RSC"] = "1"
 
-        # Return the stdout of the curl command
-        return result.stdout
-
-    @classmethod
-    def curl_get_request(cls, url):
-        command = "curl --location '" + url + "'"
-        # Define the command to execute using curl
-        print(command)
-        command = shlex.split(command)
-
-        # Execute the curl command and capture the output
-        result = subprocess.run(command, capture_output=True, text=True)
-
-        # Return the stdout of the curl command
-        return result.stdout
-
-    @classmethod
-    def discover_urls_for_url_extension(cls, url_extension, extra_args=None):
-        product_urls = []
-        url_webpage = "https://catalogo.claro.com.ec/{}".format(url_extension)
-        print(url_webpage)
-        output = cls.curl_post_request(url_webpage)
-        products_json = json.loads(output)
-        path = url_extension.split("/")[0]
-        if path == "ofertas":
-            path = "tecnologia"
-
-        for slug, product in products_json["content"]["productos"].items():
-            if product["marca"] != "LG":
+        url_webpage = "https://catalogo.claro.com.ec/personas/buscador?q=lg"
+        response = session.get(url_webpage)
+        content = response.content.decode("utf-8")
+        search_results = json.loads(content.split("\n")[-2].split(":", 1)[1])[3]
+        for search_result in search_results["state"]["queries"][1]["state"]["data"][
+            "content"
+        ]:
+            if search_result["category"]["slug"] != "equipos":
                 continue
-
-            product_url = "https://catalogo.claro.com.ec/{}/ver-mas/{}".format(
-                path, slug
-            )
-            product_urls.append(product_url)
-
-        return product_urls
+            product_url = search_result["url"]
+            yield product_url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
-        response = cls.curl_get_request(url)
-        soup = BeautifulSoup(response, "lxml")
-        color_selectors = soup.findAll("input", {"name": "color"})
-        key = color_selectors[0]["value"]
-        assert len(color_selectors) == 1
+        session = session_with_proxy(extra_args)
+        session.headers["RSC"] = "1"
+        response = session.get(url)
+        content = response.content.decode("utf-8")
 
-        name = soup.find("h1").text.strip()
-        picture_tags = soup.find("div", "productoGaleriaShow").findAll("img")
-        # The page repeats the pictures, no idea why
-        picture_tags = picture_tags[: (len(picture_tags) // 2)]
-        picture_urls = [
-            "https://catalogo.claro.com.ec/" + tag["data-src"] for tag in picture_tags
-        ]
+        for line in content.splitlines():
+            if "idProducto" in line:
+                break
+        else:
+            raise Exception("No product data found")
 
-        slug = url.split("/")[-1]
-        endpoint = "https://catalogo.claro.com.ec/api/general/productos/{}/detalles/precios".format(
-            slug
-        )
-        response = cls.curl_post_request(endpoint)
-        prices_json = json.loads(response)
-        best_price = Decimal(0)
-        for price_entry in prices_json["content"]["preciosNormales"]:
-            calculated_price = Decimal(
-                price_entry["cuotas"] * price_entry["cuotaPrConImp"]
-            )
-            if not calculated_price:
-                continue
-            if not best_price or calculated_price < best_price:
-                best_price = calculated_price
-        best_price = best_price.quantize(Decimal("0.01"))
+        product_entry = json.loads(line.split(":", 1)[1])[3]
+        product_entry = product_entry["state"]["queries"][0]["state"]["data"]["content"]
 
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            key,
-            -1,
-            best_price,
-            best_price,
-            "USD",
-            sku=key,
-            picture_urls=picture_urls,
-        )
+        if "producto" not in product_entry:
+            return []
 
-        return [p]
+        for presentacion in product_entry["producto"]["presentaciones"].values():
+            price = Decimal(
+                presentacion["financiamiento"]["precioNormalConImpOriginal"]
+            ).quantize(Decimal("0.01"))
+
+            for color in presentacion["colores"].values():
+                picture_urls = [
+                    "https://catalogo.claro.com.ec/" + tag["rutaZoom"]
+                    for tag in color["imgs"]
+                ]
+
+                for sku in color["skus"].values():
+                    name = sku["nombrePro"]
+                    key = str(sku["id"])
+                    stock = sku["stock"]
+
+                    p = Product(
+                        name,
+                        cls.__name__,
+                        category,
+                        url,
+                        url,
+                        key,
+                        stock,
+                        price,
+                        price,
+                        "USD",
+                        sku=key,
+                        picture_urls=picture_urls,
+                    )
+
+                    yield p
