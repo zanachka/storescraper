@@ -8,8 +8,10 @@ import validators
 from bs4 import BeautifulSoup
 
 from storescraper.categories import (
+    CELL,
     STEREO_SYSTEM,
     MEMORY_CARD,
+    UPS,
     USB_FLASH_DRIVE,
     EXTERNAL_STORAGE_DRIVE,
     STORAGE_DRIVE,
@@ -74,6 +76,8 @@ class SipoOnline(StoreWithUrlExtensions):
         ["tablets", TABLET],
         ["microfono", MICROPHONE],
         ["escritorio-gamer", GAMING_DESK],
+        ["ups_y_energia", UPS],
+        ["celulares", CELL],
     ]
 
     @classmethod
