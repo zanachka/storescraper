@@ -22,6 +22,7 @@ from storescraper.categories import (
     GAMING_CHAIR,
     NOTEBOOK,
     USB_FLASH_DRIVE,
+    VIDEO_GAME_CONSOLE,
 )
 
 
@@ -41,6 +42,7 @@ class UltimateGamerStore(StoreWithUrlExtensions):
         ["almacenamiento/ssd", SOLID_STATE_DRIVE],
         ["almacenamiento/pendrives", USB_FLASH_DRIVE],
         ["productos/sillas", GAMING_CHAIR],
+        ["productos/consolas", VIDEO_GAME_CONSOLE],
     ]
 
     @classmethod
