@@ -123,6 +123,16 @@ class VGamers(StoreWithUrlExtensions):
 
         key = str(product_data["info"]["product"]["id"])
         name = product_data["info"]["product"]["name"]
+        condition = "https://schema.org/NewCondition"
+        upper_name = name.upper()
+
+        if "OPENBOX" in upper_name or "OPEN BOX" in upper_name:
+            condition = "https://schema.org/OpenBoxCondition"
+        elif "USADO" in upper_name:
+            condition = "https://schema.org/UsedCondition"
+        elif "REACONDICIONADO" in upper_name or "RE ACONDICIONADO" in upper_name:
+            condition = "https://schema.org/RefurbishedCondition"
+
         sku = json_data["sku"]
         description = json_data["description"]
         offer = json_data["offers"]
@@ -148,5 +158,6 @@ class VGamers(StoreWithUrlExtensions):
             sku=sku,
             picture_urls=picture_urls,
             description=description,
+            condition=condition,
         )
         return [p]
