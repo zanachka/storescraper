@@ -23,8 +23,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import remove_words, session_with_proxy
-import time
+from storescraper.utils import session_with_proxy
 
 
 class VGamers(StoreWithUrlExtensions):
