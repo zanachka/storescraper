@@ -127,29 +127,7 @@ class VGamers(StoreWithUrlExtensions):
         description = json_data["description"]
         offer = json_data["offers"]
         price = Decimal(offer["price"])
-        tries = 0
-
-        while tries < 5:
-            price_url = f"https://www.vgamers.cl/search?sections=product-feed&omit_filters=true&only_products={key}"
-            price_response = session.get(price_url)
-
-            if price_response.status_code == 200:
-                break
-
-            tries += 1
-            time.sleep(5)
-
-        if price_response.status_code != 200:
-            return []
-
-        price_soup = BeautifulSoup(price_response.text, "lxml")
-        offer_price = Decimal(
-            remove_words(
-                price_soup.find(
-                    "div", "product-block__price product-block__price--new"
-                ).text
-            )
-        )
+        offer_price = Decimal(price * Decimal(0.97)).quantize(0)
         stock = product_data["info"]["product"]["stock"]
         picture_urls = [
             slide.find("img")["src"].split("?")[0]
