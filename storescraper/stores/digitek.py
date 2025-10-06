@@ -14,7 +14,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, remove_words, session_with_proxy
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class Digitek(StoreWithUrlExtensions):
@@ -48,7 +48,9 @@ class Digitek(StoreWithUrlExtensions):
 
             response = session.get(url_webpage)
             soup = BeautifulSoup(response.text, "lxml")
-            product_containers = soup.findAll("product-card")
+            product_containers = soup.find(
+                "custom-pagination", "main-products-grid"
+            ).find_all("product-card")
 
             if not product_containers:
                 if page == 1:
