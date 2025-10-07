@@ -175,7 +175,7 @@ class Acuenta(StoreWithUrlExtensions):
         ("0305", GROCERIES),
         ("0304", GROCERIES),
         ("0302", GROCERIES),
-        ("0306", GROCERIES),
+        # ("0306", GROCERIES),
         ("0303", GROCERIES),
         ("0309", GROCERIES),
         ("0307", GROCERIES),
