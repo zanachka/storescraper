@@ -30,6 +30,7 @@ from storescraper.categories import (
     CPU_COOLER,
     ACCESORIES,
     PROJECTOR,
+    UPS,
 )
 
 
@@ -65,6 +66,7 @@ class Cintegral(StoreWithUrlExtensions):
         ("accesorios-apple", ACCESORIES),
         ("audio", HEADPHONES),
         ("sillas-gamer", GAMING_CHAIR),
+        ("ups", UPS),
     ]
 
     @classmethod
