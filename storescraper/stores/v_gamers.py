@@ -23,8 +23,7 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import remove_words, session_with_proxy
-import time
+from storescraper.utils import session_with_proxy
 
 
 class VGamers(StoreWithUrlExtensions):
@@ -123,33 +122,21 @@ class VGamers(StoreWithUrlExtensions):
 
         key = str(product_data["info"]["product"]["id"])
         name = product_data["info"]["product"]["name"]
+        condition = "https://schema.org/NewCondition"
+        upper_name = name.upper()
+
+        if "OPENBOX" in upper_name or "OPEN BOX" in upper_name:
+            condition = "https://schema.org/OpenBoxCondition"
+        elif "USADO" in upper_name:
+            condition = "https://schema.org/UsedCondition"
+        elif "REACONDICIONADO" in upper_name or "RE ACONDICIONADO" in upper_name:
+            condition = "https://schema.org/RefurbishedCondition"
+
         sku = json_data["sku"]
         description = json_data["description"]
         offer = json_data["offers"]
         price = Decimal(offer["price"])
-        tries = 0
-
-        while tries < 5:
-            price_url = f"https://www.vgamers.cl/search?sections=product-feed&omit_filters=true&only_products={key}"
-            price_response = session.get(price_url)
-
-            if price_response.status_code == 200:
-                break
-
-            tries += 1
-            time.sleep(5)
-
-        if price_response.status_code != 200:
-            return []
-
-        price_soup = BeautifulSoup(price_response.text, "lxml")
-        offer_price = Decimal(
-            remove_words(
-                price_soup.find(
-                    "div", "product-block__price product-block__price--new"
-                ).text
-            )
-        )
+        offer_price = Decimal(price * Decimal(0.97)).quantize(0)
         stock = product_data["info"]["product"]["stock"]
         picture_urls = [
             slide.find("img")["src"].split("?")[0]
@@ -170,5 +157,6 @@ class VGamers(StoreWithUrlExtensions):
             sku=sku,
             picture_urls=picture_urls,
             description=description,
+            condition=condition,
         )
         return [p]

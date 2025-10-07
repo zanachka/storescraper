@@ -81,11 +81,12 @@ class TecnoShopping(StoreWithUrlExtensions):
         offer = product_data["offers"]
         prices_container = soup.find("div", "summary entry-summary")
         prices_container.find("div", "shoptimizer-product-prevnext").decompose()
-        offer_price = Decimal(
-            remove_words(
-                prices_container.find("p", "price_transferencia").text.split()[0]
-            )
-        )
+        base_price = prices_container.find("p", "price_transferencia")
+
+        if not base_price:
+            return []
+
+        offer_price = Decimal(remove_words(base_price.text.split()[0]))
         normal_price = Decimal(
             remove_words(prices_container.find("p", "price_rebajado").text.split()[0])
         )

@@ -68,6 +68,10 @@ class Reuse(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
+
+        if response.status_code == 404:
+            return []
+
         soup = BeautifulSoup(response.text, "lxml")
         product_json = json.loads(
             soup.find("essential-upsell-app-embed")["product-page-product"]
