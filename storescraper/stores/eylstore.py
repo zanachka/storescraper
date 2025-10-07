@@ -1,5 +1,7 @@
+import json
 import logging
 from decimal import Decimal
+import re
 
 from bs4 import BeautifulSoup
 
@@ -11,7 +13,6 @@ from storescraper.categories import (
     MONITOR,
     MOTHERBOARD,
     MOUSE,
-    NOTEBOOK,
     POWER_SUPPLY,
     PROCESSOR,
     RAM,
@@ -20,27 +21,25 @@ from storescraper.categories import (
 )
 from storescraper.product import Product
 from storescraper.store_with_url_extensions import StoreWithUrlExtensions
-from storescraper.utils import html_to_markdown, session_with_proxy, remove_words
+from storescraper.utils import html_to_markdown, session_with_proxy
 
 
 class Eylstore(StoreWithUrlExtensions):
     preferred_products_for_url_concurrency = 3
 
     url_extensions = [
-        ["audifonos", HEADPHONES],
-        ["discos-nvme", SOLID_STATE_DRIVE],
-        ["discos-ssd", SOLID_STATE_DRIVE],
-        ["fuentes-de-poder", POWER_SUPPLY],
-        ["gabinetes", COMPUTER_CASE],
-        ["memorias-ram", RAM],
-        ["monitores", MONITOR],
-        ["mouse", MOUSE],
-        ["notebooks", NOTEBOOK],
-        ["placas-madres", MOTHERBOARD],
         ["procesadores", PROCESSOR],
-        ["refrigeracion", CPU_COOLER],
+        ["gabinetes", COMPUTER_CASE],
+        ["placas-madres", MOTHERBOARD],
+        ["fuentes-de-poder", POWER_SUPPLY],
         ["tarjetas-de-video", VIDEO_CARD],
+        ["tarjetas-de-video", SOLID_STATE_DRIVE],
+        ["memorias-ram", RAM],
+        ["refrigeracion", CPU_COOLER],
         ["teclados", KEYBOARD],
+        ["mouse", MOUSE],
+        ["audifonos", HEADPHONES],
+        ["monitores", MONITOR],
     ]
 
     @classmethod
@@ -53,20 +52,27 @@ class Eylstore(StoreWithUrlExtensions):
         page = 1
 
         while True:
-            url = f"https://eylstore.cl/categoria-producto/{url_extension}?product-page={page}"
+            url = f"https://eylstore.cl/categorias/{url_extension}?page={page}"
             print(url)
             response = session.get(url)
+            print(response)
             soup = BeautifulSoup(response.text, "lxml")
-            product_containers = soup.findAll("li", "product")
+            product_containers = soup.find_all("div", "grid")
+            product_links = []
 
-            if not product_containers:
+            for product_container in product_containers:
+                for a in product_container.find_all(
+                    "a", href=re.compile(r"^/producto/")
+                ):
+                    product_links.append(a["href"])
+
+            if not product_links:
                 if page == 1:
                     logging.warning(f"Empty category: {url_extension}")
                 break
 
-            for product in product_containers:
-                product_url = product.find("a")["href"]
-                product_urls.append(product_url)
+            for product_link in product_links:
+                product_urls.append(f"https://www.eylstore.cl{product_link}")
 
             page += 1
 
@@ -77,50 +83,35 @@ class Eylstore(StoreWithUrlExtensions):
         print(url)
         session = session_with_proxy(extra_args)
         response = session.get(url)
-
-        if response.status_code == 404:
-            return []
-
         soup = BeautifulSoup(response.text, "lxml")
-        name = soup.find("h1", "product_title").text.strip()
-        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
-        sku_tag = soup.find("span", "sku")
+        scripts = soup.find_all("script")
+        pattern = re.compile(r'"product"\s*:\s*\{.*?"id"\s*:\s*"?(\d+)"?', re.DOTALL)
 
-        if sku_tag:
-            sku = soup.find("span", "sku").text.strip()
-        else:
-            sku = None
+        for script in scripts:
+            text = script.string or script.get_text()
 
-        if soup.find("p", "out-of-stock"):
-            stock = 0
-        else:
-            stock = -1
+            for t in (text, text.replace('\\"', '"').replace("\\n", " ")):
+                for m in pattern.finditer(t):
+                    key = m.group(1)
 
-        pricing_tag = soup.find("div", "wc_dynprice") or soup.find(
-            "div", "sticky-atc-price"
+        product_data = json.loads(
+            soup.find("script", {"type": "application/ld+json"}).text
         )
 
-        price_tags = pricing_tag.findAll("span", "woocommerce-Price-amount")
+        name = product_data["name"]
+        offer = product_data["offers"]
+        offer_price = Decimal(offer["price"])
+        normal_price = Decimal(Decimal(1.05) * offer_price).quantize(0)
+        sku = product_data.get("sku")
+        description = html_to_markdown(product_data["description"])
+        picture_urls = product_data["image"]
 
-        if not price_tags:
-            return []
+        stock_endpoint = f"https://www.eylstore.cl/api/productos/{key}/stock"
+        stock_response = session.get(stock_endpoint).json()
+        stock = 0
 
-        normal_price = Decimal(remove_words(price_tags[-1].text))
-        offer_price = (
-            Decimal(remove_words(price_tags[0].text))
-            if len(price_tags) > 1
-            else normal_price
-        )
-
-        picture_urls = []
-        picture_container = soup.find("div", "product-images-container")
-
-        for a in picture_container.findAll("a"):
-            picture_urls.append(a["href"])
-
-        description = html_to_markdown(
-            soup.find("div", "elementor-widget-woostify-product-content").text
-        )
+        for _, v in stock_response.items():
+            stock += v
 
         p = Product(
             name,
@@ -138,4 +129,5 @@ class Eylstore(StoreWithUrlExtensions):
             part_number=sku,
             description=description,
         )
+
         return [p]
