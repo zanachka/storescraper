@@ -78,7 +78,7 @@ class Cintegral(StoreWithUrlExtensions):
         page = 1
 
         while True:
-            if page >= 20:
+            if page >= 30:
                 raise Exception("Page overflow: " + url_extension)
 
             url = f"https://cintegral.cl/categoria/{url_extension}/page/{page}/"
