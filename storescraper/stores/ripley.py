@@ -296,12 +296,19 @@ class Ripley(Store):
             if category != local_category:
                 continue
 
-            for product_url in cls._get_product_urls(
-                category_path, exclude_marketplace=True, extra_args=extra_args
-            ):
-                if product_url not in seen_urls:
-                    seen_urls.add(product_url)
-                    yield product_url
+            # Ripley caching is... weird. SKUs tend to disappear from pages. Execute the scraping using different
+            # orderings to try to catch all SKUs
+
+            for sorting in ["sequence", "price_asc", "price_desc", "review_desc"]:
+                for product_url in cls._get_product_urls(
+                    category_path,
+                    exclude_marketplace=True,
+                    extra_args=extra_args,
+                    sorting=sorting,
+                ):
+                    if product_url not in seen_urls:
+                        seen_urls.add(product_url)
+                        yield product_url
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -889,6 +896,7 @@ class Ripley(Store):
         exclude_marketplace,
         extra_args=None,
         add_sponsored_data=False,
+        sorting=None,
     ):
         session = cls.get_session(extra_args)
         page = 1
@@ -902,6 +910,9 @@ class Ripley(Store):
 
             if exclude_marketplace:
                 url += "&facet=Vendido%20por%3ARipley"
+
+            if sorting:
+                url += "&orderBy={}".format(sorting)
 
             print(url)
             http_response = session.post(url)
