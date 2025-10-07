@@ -1,3 +1,4 @@
+from urllib.parse import parse_qs, urlparse
 from bs4 import BeautifulSoup
 from decimal import Decimal
 import json
@@ -70,48 +71,81 @@ class TecnoShopping(StoreWithUrlExtensions):
         data_entries = json.loads(
             soup.find("script", {"type": "application/ld+json"}).text
         )["@graph"]
-        product_data = None
+        products_data = None
+        has_variant = False
 
         for entry in data_entries:
             if entry["@type"] == "Product":
-                product_data = entry
+                products_data = [entry]
+            elif entry["@type"] == "ProductGroup":
+                products_data = entry["hasVariant"]
+                has_variant = True
 
-        name = product_data["name"]
-        sku = product_data["sku"]
-        offer = product_data["offers"]
-        prices_container = soup.find("div", "summary entry-summary")
-        prices_container.find("div", "shoptimizer-product-prevnext").decompose()
-        base_price = prices_container.find("p", "price_transferencia")
+        products = []
 
-        if not base_price:
-            return []
+        for product_data in products_data:
+            name = product_data["name"]
+            sku = product_data["sku"]
+            offer = product_data["offers"]
 
-        offer_price = Decimal(remove_words(base_price.text.split()[0]))
-        normal_price = Decimal(
-            remove_words(prices_container.find("p", "price_rebajado").text.split()[0])
-        )
-        key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
-        stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
-        description = html_to_markdown(
-            soup.find("div", "woocommerce-Tabs-panel--description").text
-        )
-        picture_urls = [img["url"] for img in product_data["image"]]
+            if has_variant:
+                offer_price = Decimal(offer["price"])
+                normal_price = Decimal(Decimal(1.036) * offer_price).quantize(0)
+            else:
+                prices_container = soup.find("div", "summary entry-summary")
+                prices_container.find("div", "shoptimizer-product-prevnext").decompose()
+                base_price = prices_container.find("p", "price_transferencia")
 
-        p = Product(
-            name,
-            cls.__name__,
-            category,
-            url,
-            url,
-            key,
-            stock,
-            normal_price,
-            offer_price,
-            "CLP",
-            sku=sku,
-            part_number=sku,
-            description=description,
-            picture_urls=picture_urls,
-        )
+                if not base_price:
+                    return []
 
-        return [p]
+                offer_price = Decimal(remove_words(base_price.text.split()[0]))
+                normal_price = Decimal(
+                    remove_words(
+                        prices_container.find("p", "price_rebajado").text.split()[0]
+                    )
+                )
+
+            key = soup.find("link", {"rel": "shortlink"})["href"].split("?p=")[-1]
+
+            if has_variant:
+                parsed_url = urlparse(offer["url"])
+                params = parse_qs(parsed_url.query)
+                attributes = [
+                    v[0]
+                    for k, v in sorted(params.items())
+                    if k.startswith("attribute_") and v
+                ]
+                key += f"-{'-'.join(attributes)}"
+
+            stock = -1 if offer["availability"] == "https://schema.org/InStock" else 0
+            description = html_to_markdown(
+                soup.find("div", "woocommerce-Tabs-panel--description").text
+            )
+            images_container = product_data["image"]
+            picture_urls = (
+                [images_container]
+                if has_variant
+                else [img["url"] for img in product_data["image"]]
+            )
+
+            p = Product(
+                name,
+                cls.__name__,
+                category,
+                url,
+                url,
+                key,
+                stock,
+                normal_price,
+                offer_price,
+                "CLP",
+                sku=sku,
+                part_number=sku,
+                description=description,
+                picture_urls=picture_urls,
+            )
+
+            products.append(p)
+
+        return products
