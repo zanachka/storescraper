@@ -720,6 +720,14 @@ class MercadoLibreChile(Store):
                 + [variation_data["short_description"]["content"]]
             )
 
+            if (
+                "coupons"
+                in data["initialState"]["components"]["track"]["melidata_event"][
+                    "event_data"
+                ]
+            ):
+                description += " STCOUPON"
+
             product = Product(
                 name,
                 cls.__name__,
@@ -763,6 +771,14 @@ class MercadoLibreChile(Store):
 
         if "description" in data["initialState"]["components"]:
             description += data["initialState"]["components"]["description"]["content"]
+
+        if (
+            "coupons"
+            in data["initialState"]["components"]["track"]["melidata_event"][
+                "event_data"
+            ]
+        ):
+            description += " STCOUPON"
 
         picker = None
         condition = "https://schema.org/NewCondition"
