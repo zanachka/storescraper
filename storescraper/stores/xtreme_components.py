@@ -18,7 +18,6 @@ class XtremeComponents(StoreWithUrlExtensions):
 
     @classmethod
     def discover_urls_for_url_extension(cls, url_extension, extra_args):
-        product_urls = []
         session = session_with_proxy(extra_args)
         page = 1
 
@@ -38,11 +37,9 @@ class XtremeComponents(StoreWithUrlExtensions):
 
             for product in products:
                 product_url = product.find("a")["href"]
-                product_urls.append(product_url)
+                yield product_url
 
             page += 1
-
-        return product_urls
 
     @classmethod
     def products_for_url(cls, url, category=None, extra_args=None):
@@ -85,6 +82,11 @@ class XtremeComponents(StoreWithUrlExtensions):
             [picture_container_tag.find("a")["href"]] if picture_container_tag else []
         )
 
+        if "NUEVA" in name.upper():
+            condition = "https://schema.org/NewCondition"
+        else:
+            condition = "https://schema.org/UsedCondition"
+
         p = Product(
             name,
             cls.__name__,
@@ -99,7 +101,7 @@ class XtremeComponents(StoreWithUrlExtensions):
             sku=sku,
             description=description,
             picture_urls=picture_urls,
-            condition="https://schema.org/UsedCondition",
+            condition=condition,
         )
 
         return [p]
