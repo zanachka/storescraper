@@ -74,57 +74,43 @@ class XiaomiChile(StoreWithUrlExtensions):
     def products_for_url(cls, url, category=None, extra_args=None):
         print(url)
         session = session_with_proxy(extra_args)
-        tag = url.split("https://www.mi.com/cl/product/")[1][:-1]
-        endpoint = f"https://go.buy.mi.com/cl/v2/item/productdetail?tag={tag}"
-        response = session.get(endpoint).json()
-        products = response["data"]["item_detail"]["spu_list"]
-        specs_response = session.get(f"https://www.mi.com/cl/product/{tag}/specs/")
+        is_bundle = False
 
-        soup = BeautifulSoup(specs_response.text, "lxml")
-        script_text = None
+        if "bundle" in url:
+            is_bundle = True
+            tag = url.split("/")[-1]
+            endpoint = f"https://go.buy.mi.com/cl/v2/item/detail?from=web&item_id={tag}"
+        else:
+            tag = url.split("https://www.mi.com/cl/product/")[1][:-1]
+            endpoint = f"https://go.buy.mi.com/cl/v2/item/productdetail?tag={tag}"
 
-        for s in soup.find_all("script"):
-            text = s.string if s.string is not None else s.get_text()
-
-            if text and "window.__PRELOADED_STATE__" in text:
-                script_text = text
-                break
-
-        if '"title":"404 - Xiaomi Chile"' in script_text:
-            return []
-
-        specs = json.loads(
-            re.search(
-                r"window\.__PRELOADED_STATE__\s*=\s*({.*?})\s*;?\s*$",
-                script_text,
-                re.DOTALL,
-            ).group(1)
-        )["pagedata"]["data"]
-        specs = json.loads(specs)
-        description_parts = [
-            spec["trans"]
-            for spec in specs.values()
-            if isinstance(spec, dict) and "trans" in spec
-        ]
-        general_description = " | ".join(description_parts)
+        response = session.get(endpoint).json()["data"]
         products_list = []
 
-        for product in products:
-            for variant in product["item_list"]:
-                name = variant["item_name"]
-                key = str(variant["item_id"])
-                stock = 0 if variant["is_out_of_stock"] else -1
-                price = Decimal(variant["price"])
+        if is_bundle:
+            combo_info = response["combo_info"]
+            combo_list = combo_info["combo_list"]
+            base_key = str(combo_info["combo_item_id"])
+
+            for combo in combo_list:
+                key = f"{base_key}-{combo['combo_id']}"
+                price = Decimal(combo["price"])
+                bundles_keys = combo["sku_item"]
+                names = []
+
+                for bundle_key in bundles_keys:
+                    for spu in response["spu_list"]:
+                        for item in spu["item_list"]:
+                            if item["item_id"] == bundle_key:
+                                names.append(item["item_name"])
+
+                name = " + ".join(names)
+                stock = -1
                 picture_urls = [
-                    (
-                        img["src"]
-                        if img["src"].startswith("https:")
-                        else f"https:{img['src']}"
-                    )
-                    for img in variant["resource_list"]
+                    img["src"]
+                    for img in response["resource_list"]
                     if img["type"] == "image"
                 ]
-                description = f"PRODUCTO ACTUAL: {name} - DESCRIPCIÓN GENERAL: {general_description}"
 
                 p = Product(
                     name,
@@ -137,11 +123,76 @@ class XiaomiChile(StoreWithUrlExtensions):
                     price,
                     price,
                     "CLP",
-                    sku=key,
+                    sku=base_key,
                     picture_urls=picture_urls,
-                    description=description,
                 )
 
                 products_list.append(p)
+        else:
+            products = response["item_detail"]["spu_list"]
+            specs_response = session.get(f"https://www.mi.com/cl/product/{tag}/specs/")
+
+            soup = BeautifulSoup(specs_response.text, "lxml")
+            script_text = None
+
+            for s in soup.find_all("script"):
+                text = s.string if s.string is not None else s.get_text()
+
+                if text and "window.__PRELOADED_STATE__" in text:
+                    script_text = text
+                    break
+
+            if '"title":"404 - Xiaomi Chile"' in script_text:
+                return []
+
+            specs = json.loads(
+                re.search(
+                    r"window\.__PRELOADED_STATE__\s*=\s*({.*?})\s*;?\s*$",
+                    script_text,
+                    re.DOTALL,
+                ).group(1)
+            )["pagedata"]["data"]
+            specs = json.loads(specs)
+            description_parts = [
+                spec["trans"]
+                for spec in specs.values()
+                if isinstance(spec, dict) and "trans" in spec
+            ]
+            general_description = " | ".join(description_parts)
+
+            for product in products:
+                for variant in product["item_list"]:
+                    name = variant["item_name"]
+                    key = str(variant["item_id"])
+                    stock = 0 if variant["is_out_of_stock"] else -1
+                    price = Decimal(variant["price"])
+                    picture_urls = [
+                        (
+                            img["src"]
+                            if img["src"].startswith("https:")
+                            else f"https:{img['src']}"
+                        )
+                        for img in variant["resource_list"]
+                        if img["type"] == "image"
+                    ]
+                    description = f"PRODUCTO ACTUAL: {name} - DESCRIPCIÓN GENERAL: {general_description}"
+
+                    p = Product(
+                        name,
+                        cls.__name__,
+                        category,
+                        url,
+                        url,
+                        key,
+                        stock,
+                        price,
+                        price,
+                        "CLP",
+                        sku=key,
+                        picture_urls=picture_urls,
+                        description=description,
+                    )
+
+                    products_list.append(p)
 
         return products_list
