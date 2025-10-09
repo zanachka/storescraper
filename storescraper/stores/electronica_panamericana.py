@@ -32,7 +32,7 @@ class ElectronicaPanamericana(Store):
             if page >= 25:
                 raise Exception("Page overflow")
 
-            url = f"https://electronicapanamericana.com/page/{page}/?post_type=product&brnd=lg"
+            url = f"https://electronicapanamericana.com/marca/lg/page{page}"
             print(url)
             response = session.get(url, verify=False, timeout=30)
             soup = BeautifulSoup(response.text, "lxml")
