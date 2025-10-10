@@ -80,8 +80,12 @@ class Digitek(StoreWithUrlExtensions):
         products = []
         name = product_data["name"]
         description = html_to_markdown(product_data["description"])
-        pictures_container = soup.find("media-gallery").findAll("a", "media--cover")
+        media_gallery = soup.find("media-gallery")
+        pictures_container = (
+            media_gallery.findAll("a", "media--cover") if media_gallery else []
+        )
         picture_urls = [f"https:{a['href'].split('?')[0]}" for a in pictures_container]
+
         product_details = soup.find("div", "product-details").text
 
         product_texts = [name.lower(), product_details.lower()]
@@ -105,7 +109,7 @@ class Digitek(StoreWithUrlExtensions):
 
         if "hasVariant" in product_data:
             for variant in product_data["hasVariant"]:
-                sku = variant["sku"]
+                sku = variant.get("sku")
                 offer = variant["offers"]
                 key = offer["url"].split("?variant=")[1]
                 price = Decimal(offer["price"])
